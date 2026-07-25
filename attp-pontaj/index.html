@@ -763,7 +763,7 @@ ro: {
   act_tipMiscare:'Intrare/Ieșire', act_articol:'Articol', act_cantitate:'Cantitate', act_sursa:'Nume participant/furnizor',
   act_camera:'Cameră', act_oraCazarii:'Ora cazării', act_statut:'Statut',
   act_antrenor:'Antrenor', act_data:'Data', act_ora:'Ora', act_programat:'Programat', act_desfasurat:'Desfășurat', act_da:'DA', act_nu:'NU',
-  act_goale:'—', act_generat:'Raport de schimb generat și salvat în Rapoarte.', act_needShift:'Nu există un schimb activ.',
+  act_goale:'—', act_noEntries:'fără înregistrări', act_generat:'Raport de schimb generat și salvat în Rapoarte.', act_needShift:'Nu există un schimb activ.',
   re_print:'Imprimare', re_sect_participanti:'Rapoarte privind participanții', re_sect_admin:'Rapoarte administrative',
   re_sect_fin:'Rapoarte financiare', re_sect_inv:'Rapoarte de inventar',
   re_r_intarzieri:'Întârzieri înregistrate', re_r_obsAbs:'Observații / absențe', re_r_cazariHostel:'Cazări hostel',
@@ -1011,7 +1011,7 @@ ru: {
   act_tipMiscare:'Приход/расход', act_articol:'Товар', act_cantitate:'Количество', act_sursa:'Имя участника/поставщика',
   act_camera:'Комната', act_oraCazarii:'Время заселения', act_statut:'Статус',
   act_antrenor:'Тренер', act_data:'Дата', act_ora:'Время', act_programat:'Запланировано', act_desfasurat:'Проведено', act_da:'ДА', act_nu:'НЕТ',
-  act_goale:'—', act_generat:'Отчёт смены сформирован и сохранён в Отчётах.', act_needShift:'Нет активной смены.',
+  act_goale:'—', act_noEntries:'нет записей', act_generat:'Отчёт смены сформирован и сохранён в Отчётах.', act_needShift:'Нет активной смены.',
   re_print:'Печать', re_sect_participanti:'Отчёты об участниках', re_sect_admin:'Административные отчёты',
   re_sect_fin:'Финансовые отчёты', re_sect_inv:'Отчёты по складу',
   re_r_intarzieri:'Зарегистрированные опоздания', re_r_obsAbs:'Замечания / отсутствия', re_r_cazariHostel:'Заселения в хостел',
@@ -1774,28 +1774,114 @@ async function ensurePdfFont(doc){
   doc.setFont('NotoSans');
 }
 function pdfCell(value){ return value===''||value==null ? '-' : String(value); }
-async function exportActPdf(act, lang=actExportLanguage){
+const ACT_PDF_COLUMNS = {
+  act_s_intarzieri:[.34,.13,.53],
+  act_s_arbitraj:[.36,.64],
+  act_s_fairplay:[.34,.12,.17,.37],
+  act_s_daune:[.31,.18,.51],
+  act_s_inventar:[.16,.25,.11,.48],
+  act_s_hostel:[.33,.17,.22,.28],
+  act_s_treninguri:[.29,.18,.17,.11,.25],
+  act_s_sarcini:[.24,.76],
+  act_s_observatii:[.31,.22,.47],
+};
+function actPdfColumnStyles(titleKey, width){
+  const proportions = ACT_PDF_COLUMNS[titleKey] || [];
+  return Object.fromEntries(proportions.map((value,index)=>[index,{cellWidth:width*value}]));
+}
+function drawActPdfHeader(doc,act,lang){
+  const pageWidth = doc.internal.pageSize.getWidth();
+  doc.setFillColor(24,33,49);
+  doc.roundedRect(6,6,pageWidth-12,18,2,2,'F');
+  doc.setFillColor(199,164,92);
+  doc.rect(6,6,1.8,18,'F');
+  doc.setFont('NotoSans');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15);
+  doc.text(t('act_docTitle',lang),11,14);
+  doc.setFontSize(7.2);
+  doc.setTextColor(216,221,230);
+  doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}`,11,20);
+  doc.text(`${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,pageWidth-10,20,{align:'right'});
+}
+function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang){
+  const gap = 2;
+  const cardHeight = 7.5;
+  for(let i=0;i<sections.length;i+=2){
+    const pair = sections.slice(i,i+2);
+    const cardWidth = (width-gap*(pair.length-1))/pair.length;
+    pair.forEach((section,index)=>{
+      const cardX = x+index*(cardWidth+gap);
+      doc.setFillColor(247,248,250);
+      doc.setDrawColor(208,213,221);
+      doc.roundedRect(cardX,y,cardWidth,cardHeight,1.1,1.1,'FD');
+      doc.setFont('NotoSans');
+      doc.setFontSize(Math.min(fontSize,5.5));
+      doc.setTextColor(72,80,94);
+      doc.text(`${t(section.titleKey,lang)} - ${t('act_noEntries',lang)}`,cardX+cardWidth/2,y+4.8,{align:'center',maxWidth:cardWidth-3});
+    });
+    y += cardHeight+1.5;
+  }
+  return y;
+}
+function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const padding = fontSize<=4.4 ? .45 : fontSize<=5.2 ? .55 : .7;
+  doc.autoTable({
+    startY:y,
+    head:[
+      [{content:t(section.titleKey,lang),colSpan:section.headers.length,styles:{fillColor:[232,235,240],textColor:[32,42,58],font:'NotoSans'}}],
+      section.headers,
+    ],
+    body:section.rows.map(row=>row.map(pdfCell)),
+    theme:'grid',
+    tableWidth:width,
+    margin:{left:x,right:pageWidth-x-width,top:28,bottom:6},
+    styles:{font:'NotoSans',fontSize,cellPadding:padding,lineColor:[205,210,218],lineWidth:.12,overflow:'linebreak',textColor:[48,55,66]},
+    headStyles:{font:'NotoSans',fontSize,fillColor:[55,65,81],textColor:255,cellPadding:padding},
+    columnStyles:actPdfColumnStyles(section.titleKey,width),
+    pageBreak:'avoid',
+    rowPageBreak:'avoid',
+  });
+  return doc.lastAutoTable.finalY+1.8;
+}
+async function buildActPdfDocument(act,lang,fontSize=6.2){
+  const doc = new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4',compress:true});
+  await ensurePdfFont(doc);
+  drawActPdfHeader(doc,act,lang);
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 6;
+  const gap = 3;
+  const columnWidth = (pageWidth-margin*2-gap)/2;
+  const sections = actSections(act.continut||{},lang);
+  const byKey = Object.fromEntries(sections.map(section=>[section.titleKey,section]));
+  const left = ['act_s_intarzieri','act_s_hostel','act_s_arbitraj','act_s_fairplay','act_s_daune','act_s_inventar'].map(key=>byKey[key]);
+  const right = ['act_s_treninguri','act_s_sarcini','act_s_observatii'].map(key=>byKey[key]);
+  let leftY = 28;
+  const emptyLeft = left.filter(section=>!section.rows.length);
+  if(emptyLeft.length) leftY = drawActPdfEmptyCards(doc,emptyLeft,margin,leftY,columnWidth,fontSize,lang)+.4;
+  left.filter(section=>section.rows.length).forEach(section=>{ leftY=drawActPdfTable(doc,section,margin,leftY,columnWidth,fontSize,lang); });
+  doc.setPage(1);
+  let rightY = 28;
+  const rightX = margin+columnWidth+gap;
+  const emptyRight = right.filter(section=>!section.rows.length);
+  if(emptyRight.length) rightY = drawActPdfEmptyCards(doc,emptyRight,rightX,rightY,columnWidth,fontSize,lang)+.4;
+  right.filter(section=>section.rows.length).forEach(section=>{ rightY=drawActPdfTable(doc,section,rightX,rightY,columnWidth,fontSize,lang); });
+  return doc;
+}
+async function exportActPdf(act,lang=actExportLanguage){
   if(!act) return;
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf',lang)); return; }
-  const doc = new window.jspdf.jsPDF();
-  try { await ensurePdfFont(doc); } catch(e){ alert('Fontul PDF nu s-a putut încărca: ' + e.message); return; }
-  doc.setFontSize(16); doc.text(t('act_docTitle',lang), 12, 14);
-  doc.setFontSize(9); doc.setTextColor(85);
-  doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}    ${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`, 12, 20);
-  let y = 26;
-  actSections(act.continut || {},lang).forEach(s=>{
-    doc.autoTable({
-      startY:y,
-      head:[[{content:t(s.titleKey,lang), colSpan:s.headers.length, styles:{fillColor:[232,235,240], textColor:[35,42,52], font:'NotoSans'}}], s.headers],
-      body: s.rows.length ? s.rows.map(r=>r.map(pdfCell)) : [[{content:t('act_goale',lang), colSpan:s.headers.length, styles:{textColor:[150,150,150], font:'NotoSans'}}]],
-      theme:'grid',
-      margin:{left:12,right:12},
-      styles:{font:'NotoSans', fontSize:8, cellPadding:2, lineColor:[205,210,218], lineWidth:.15, overflow:'linebreak'},
-      headStyles:{font:'NotoSans', fillColor:[55,65,81], textColor:255},
-      rowPageBreak:'avoid',
-    });
-    y = doc.lastAutoTable.finalY + 6;
-  });
+  let doc;
+  try{
+    for(const fontSize of [8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8]){
+      doc = await buildActPdfDocument(act,lang,fontSize);
+      if(doc.internal.getNumberOfPages()===1) break;
+    }
+  }catch(e){
+    alert('PDF-ul nu s-a putut genera: '+e.message);
+    return;
+  }
   doc.save(actFileBase(act,lang)+'.pdf');
 }
 let pastShiftsForAct = null; // null = not loaded yet
