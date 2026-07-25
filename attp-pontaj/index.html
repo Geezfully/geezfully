@@ -744,9 +744,10 @@ ro: {
   ta_none:'Nicio sarcină înregistrată.', ta_needDesc:'Descrieți sarcina.',
   ta_st_nesolutionat:'nesoluționat', ta_st_inLucru:'în lucru', ta_st_solutionat:'soluționat',
 
-  ob_title:'Observații', ob_sub:'Situații scurte despre participanți, cu analiza repetitivității lor.',
-  ob_addTitle:'Înregistrare observație', ob_categorie:'Categorie', ob_descScurta:'Descriere scurtă',
-  ob_descScurtaPh:'detalii...', ob_countSuffix:'observații', ob_none:'Nicio observație.',
+  ob_title:'Observații', ob_sub:'Situații scurte despre participanți sau despre locație și activitatea zilnică.',
+  ob_addTitle:'Înregistrare observație', ob_targetType:'Observația se referă la', ob_targetParticipant:'Participant', ob_targetGeneral:'Situație generală',
+  ob_target:'Participant / Subiect', ob_subject:'Subiect', ob_subjectPh:'ex. Locație, curățenie, vestiar...', ob_categorie:'Categorie', ob_descScurta:'Descriere scurtă',
+  ob_descScurtaPh:'detalii...', ob_countSuffix:'observații', ob_none:'Nicio observație.', ob_needParticipant:'Selectați participantul.', ob_needSubject:'Introduceți subiectul situației.',
 
   re_title:'Rapoarte și statistici', re_sub:'Generare rapoarte pentru orice perioadă. Export: Excel, PDF, imprimare.',
   re_perioada:'Perioadă raport', re_de_la:'De la', re_pana_la:'Până la', re_excel:'Excel', re_pdf:'PDF',
@@ -992,9 +993,10 @@ ru: {
   ta_none:'Задач не зарегистрировано.', ta_needDesc:'Опишите задачу.',
   ta_st_nesolutionat:'не решено', ta_st_inLucru:'в работе', ta_st_solutionat:'решено',
 
-  ob_title:'Замечания', ob_sub:'Краткие ситуации об участниках, с анализом их повторяемости.',
-  ob_addTitle:'Регистрация замечания', ob_categorie:'Категория', ob_descScurta:'Краткое описание',
-  ob_descScurtaPh:'детали...', ob_countSuffix:'замечаний', ob_none:'Замечаний нет.',
+  ob_title:'Замечания', ob_sub:'Краткие ситуации об участниках, объекте или ежедневной работе.',
+  ob_addTitle:'Регистрация замечания', ob_targetType:'Замечание относится к', ob_targetParticipant:'Участник', ob_targetGeneral:'Общая ситуация',
+  ob_target:'Участник / Тема', ob_subject:'Тема', ob_subjectPh:'напр. объект, уборка, раздевалка...', ob_categorie:'Категория', ob_descScurta:'Краткое описание',
+  ob_descScurtaPh:'детали...', ob_countSuffix:'замечаний', ob_none:'Замечаний нет.', ob_needParticipant:'Выберите участника.', ob_needSubject:'Введите тему ситуации.',
 
   re_title:'Отчёты и статистика', re_sub:'Формирование отчётов за любой период. Экспорт: Excel, PDF, печать.',
   re_perioada:'Период отчёта', re_de_la:'С', re_pana_la:'По', re_excel:'Excel', re_pdf:'PDF',
@@ -1174,7 +1176,7 @@ async function fetchAll(){
     arbitraj: (arbitrajR.data||[]).map(r=>({id:r.id, data:r.data, arbitru:r.arbitru, turneu:r.turneu, marcaMingi:r.marca_mingi, cantitateMingi:r.cantitate_mingi, observatii:r.observatii, sesiuneSchimbId:r.sesiune_schimb_id, slotSchimb:r.slot_schimb})),
     inventar: (inventarR.data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie})),
     sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
-    observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
+    observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
     jurnal: (jurnalR.data||[]).map(r=>({id:r.id, cont: serviciuAdminById[r.administrator_serviciu_id]?.nume || publicAdminName(adminById[r.administrator_id]), data:String(r.data).slice(0,10), actiune:r.actiune})),
     trustedIps: (trustedIpsR.data||[]).map(r=>({id:r.id, ip:r.ip, eticheta:r.eticheta, createdAt:r.created_at})),
     treninguri: (treninguriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, antrenor:r.antrenor, data:r.data, ora:r.ora, sumaJucator:Number(r.suma_jucator), sumaAntrenor:Number(r.suma_antrenor), observatii:r.observatii, createdAt:r.created_at})),
@@ -1208,6 +1210,9 @@ async function logAction(actiune){
 
 function participant(id){ return DB.participanti.find(p=>p.id===id); }
 function participantName(id){ const p=participant(id); return p ? `${p.nume} ${p.prenume}` : '—'; }
+function observationTargetName(observation){
+  return observation?.participantId ? participantName(observation.participantId) : (observation?.subiect||'—');
+}
 function arbitru(id){ return DB.arbitri.find(a=>a.id===id); }
 function arbitriActivi(){ return DB.arbitri.filter(a=>a.statut==='activ').sort((a,b)=>a.nume.localeCompare(b.nume,'ro')||a.prenume.localeCompare(b.prenume,'ro')); }
 
@@ -1613,7 +1618,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     hostel: DB.hostel.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), camera: r.observatii || '', ora: fmtTime(r.createdAt), statut: r.statut })),
     treninguri: DB.treninguri.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), antrenor: r.antrenor, data: r.data, ora: r.ora ? String(r.ora).slice(0,5) : '', statut: trainingStatusAt(r, endedAt) })),
     sarcini: DB.sarcini.filter(r=>inShift(r.createdAt)).map(r=>({ statut: r.status, descriere: r.descriere || '' })),
-    observatii: DB.observatii.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), categorie: r.categorie || '', descriere: r.descriere || '' })),
+    observatii: DB.observatii.filter(r=>inShift(r.createdAt)).map(r=>({ nume: observationTargetName(r), categorie: r.categorie || '', descriere: r.descriere || '' })),
   };
 }
 async function saveActSchimb({ shiftId, administratorServiciuId, administratorId, numeAdministrator, startedAt, endedAt }){
@@ -1688,7 +1693,7 @@ function actSections(c, lang=LANG){
     { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, r.camera||'', r.ora||'', trEnum(r.statut,lang)]) },
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
-    { titleKey:'act_s_observatii', headers:[t('act_numeSportiv',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.nume||'—', r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
+    { titleKey:'act_s_observatii', headers:[t('ob_target',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.nume||'—', r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
   ];
 }
 function actSectionTable(titleKey, headers, rows, lang=LANG){
@@ -3663,6 +3668,11 @@ async function updateTaskStatus(id, status){
 }
 
 /* ══════════════════════ OBSERVAȚII ══════════════════════ */
+let observationTargetMode = 'participant';
+function setObservationTargetMode(mode){
+  observationTargetMode = mode==='general' ? 'general' : 'participant';
+  render();
+}
 function renderObservatii(){
   const counts = {};
   DB.observatii.forEach(o=>{ counts[o.categorie]=(counts[o.categorie]||0)+1; });
@@ -3674,9 +3684,18 @@ function renderObservatii(){
 
   <div class="add-form">
     <div class="form-title">${t('ob_addTitle')}</div>
+    <div class="field" style="margin-bottom:14px">
+      <label>${t('ob_targetType')}</label>
+      <div class="toggle-group" role="group" aria-label="${esc(t('ob_targetType'))}">
+        <button type="button" class="toggle-btn ${observationTargetMode==='participant'?'active':''}" aria-pressed="${observationTargetMode==='participant'}" onclick="setObservationTargetMode('participant')">${t('ob_targetParticipant')}</button>
+        <button type="button" class="toggle-btn ${observationTargetMode==='general'?'active':''}" aria-pressed="${observationTargetMode==='general'}" onclick="setObservationTargetMode('general')">${t('ob_targetGeneral')}</button>
+      </div>
+    </div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr 1.4fr auto">
-      <div class="field"><label>${t('th_participant')}</label>${autocompleteField('of-participant', participantAcOptions())}</div>
-      <div class="field"><label>${t('ob_categorie')}</label><select id="of-categorie">${OBS_CATEGORIES.map(c=>`<option value="${c}">${trEnum(c)}</option>`).join('')}</select></div>
+      ${observationTargetMode==='participant'
+        ? `<div class="field"><label>${t('th_participant')}</label>${autocompleteField('of-participant', participantAcOptions())}</div>`
+        : `<div class="field"><label>${t('ob_subject')}</label><input id="of-subiect" maxlength="120" placeholder="${t('ob_subjectPh')}"></div>`}
+      <div class="field"><label>${t('ob_categorie')}</label><select id="of-categorie">${OBS_CATEGORIES.map(c=>`<option value="${c}" ${observationTargetMode==='general'&&c==='Altă situație'?'selected':''}>${trEnum(c)}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ob_descScurta')}</label><input id="of-desc" placeholder="${t('ob_descScurtaPh')}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addObservatie()">${t('btn_add')}</button></div>
     </div>
@@ -3685,23 +3704,29 @@ function renderObservatii(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${DB.observatii.length} ${t('ob_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th>${t('th_data')}</th><th>${t('th_participant')}</th><th>${t('ob_categorie')}</th><th>${t('th_descriere')}</th><th></th></tr></thead>
+      <thead><tr><th>${t('th_data')}</th><th>${t('ob_target')}</th><th>${t('ob_categorie')}</th><th>${t('th_descriere')}</th><th></th></tr></thead>
       <tbody>${DB.observatii.length ? DB.observatii.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(o=>`
-        <tr><td class="td-muted">${fmtDate(o.data)}</td><td class="td-name" onclick="openProfile('${o.participantId}')">${esc(participantName(o.participantId))}</td>
+        <tr><td class="td-muted">${fmtDate(o.data)}</td>${o.participantId
+          ? `<td class="td-name" onclick="openProfile('${o.participantId}')">${esc(observationTargetName(o))}</td>`
+          : `<td class="td-name">${esc(observationTargetName(o))}</td>`}
         <td><span class="badge muted">${esc(trEnum(o.categorie))}</span></td><td>${esc(o.descriere)}</td>
         <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('observatii','${o.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="5">${t('ob_none')}</td></tr>`}</tbody>
     </table></div>
   </div>`;
 }
 async function addObservatie(){
-  const participantId = document.getElementById('of-participant').value;
-  if(!participantId) return;
+  const isGeneral = observationTargetMode==='general';
+  const participantId = isGeneral ? null : document.getElementById('of-participant')?.value;
+  const subiect = isGeneral ? document.getElementById('of-subiect')?.value.trim() : null;
+  if(!isGeneral && !participantId){ alert(t('ob_needParticipant')); return; }
+  if(isGeneral && !subiect){ alert(t('ob_needSubject')); return; }
   const categorie = document.getElementById('of-categorie').value;
-  const row = { data: todayISO(), participant_id:participantId, categorie, descriere: document.getElementById('of-desc').value.trim() || null };
+  const row = { data:todayISO(), participant_id:participantId, subiect, categorie, descriere:document.getElementById('of-desc').value.trim()||null };
   const { data, error } = await sb.from('observatii').insert(row).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
-  DB.observatii.unshift({id:data.id, data:data.data, participantId:data.participant_id, categorie:data.categorie, descriere:data.descriere});
-  await logAction(`A înregistrat o observație (${categorie}) pentru ${participantName(participantId)}`);
+  const saved = {id:data.id, data:data.data, participantId:data.participant_id, subiect:data.subiect, categorie:data.categorie, descriere:data.descriere, createdAt:data.created_at};
+  DB.observatii.unshift(saved);
+  await logAction(`A înregistrat o observație (${categorie}) pentru ${observationTargetName(saved)}`);
   render();
 }
 
@@ -3934,7 +3959,7 @@ function excelReportRows(report){
       r.dataSolutionare
     ));
     DB.observatii.filter(r=>report.includes(r.data)).forEach(r=>add(
-      r.data, 'Observații', r.categorie || 'Observație', participantName(r.participantId), r.descriere || ''
+      r.data, 'Observații', r.categorie || 'Observație', observationTargetName(r), r.descriere || ''
     ));
     DB.jurnal.filter(r=>report.includes(r.data)).forEach(r=>add(
       r.data, 'Jurnal activitate', 'Acțiune administrator', r.cont, r.actiune || ''
