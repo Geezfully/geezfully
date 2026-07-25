@@ -296,6 +296,13 @@
   .toggle-group { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
   .toggle-btn { background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 500; padding: 6px 15px; border-radius: 5px; cursor: pointer; transition: all .15s; }
   .toggle-btn.active { background: var(--gold); color: var(--bg); }
+  .ob-form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+  .ob-form-head .form-title { margin-bottom: 0; }
+  .ob-target-toggle { flex: none; padding: 2px; border-radius: 7px; background: var(--surface2); }
+  .ob-target-toggle .toggle-btn { padding: 4px 10px; font-size: 11.5px; border-radius: 5px; }
+  @media (max-width: 640px) {
+    .ob-form-head { align-items: flex-start; flex-direction: column; }
+  }
 
   /* modal */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
@@ -3683,10 +3690,9 @@ function renderObservatii(){
   <div style="margin-bottom:20px">${OBS_CATEGORIES.map(c=>`<span class="tag">${trEnum(c)} · ${counts[c]||0}</span>`).join('')}</div>
 
   <div class="add-form">
-    <div class="form-title">${t('ob_addTitle')}</div>
-    <div class="field" style="margin-bottom:14px">
-      <label>${t('ob_targetType')}</label>
-      <div class="toggle-group" role="group" aria-label="${esc(t('ob_targetType'))}">
+    <div class="ob-form-head">
+      <div class="form-title">${t('ob_addTitle')}</div>
+      <div class="toggle-group ob-target-toggle" role="group" aria-label="${esc(t('ob_targetType'))}">
         <button type="button" class="toggle-btn ${observationTargetMode==='participant'?'active':''}" aria-pressed="${observationTargetMode==='participant'}" onclick="setObservationTargetMode('participant')">${t('ob_targetParticipant')}</button>
         <button type="button" class="toggle-btn ${observationTargetMode==='general'?'active':''}" aria-pressed="${observationTargetMode==='general'}" onclick="setObservationTargetMode('general')">${t('ob_targetGeneral')}</button>
       </div>
