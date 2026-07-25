@@ -296,13 +296,8 @@
   .toggle-group { display: inline-flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
   .toggle-btn { background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 500; padding: 6px 15px; border-radius: 5px; cursor: pointer; transition: all .15s; }
   .toggle-btn.active { background: var(--gold); color: var(--bg); }
-  .ob-form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
-  .ob-form-head .form-title { margin-bottom: 0; }
-  .ob-target-toggle { flex: none; padding: 2px; border-radius: 7px; background: var(--surface2); }
+  .ob-target-toggle { grid-column: 1; justify-self: start; flex: none; margin-top: -5px; padding: 2px; border-radius: 7px; background: var(--surface2); }
   .ob-target-toggle .toggle-btn { padding: 4px 10px; font-size: 11.5px; border-radius: 5px; }
-  @media (max-width: 640px) {
-    .ob-form-head { align-items: flex-start; flex-direction: column; }
-  }
 
   /* modal */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
@@ -3680,6 +3675,12 @@ function setObservationTargetMode(mode){
   observationTargetMode = mode==='general' ? 'general' : 'participant';
   render();
 }
+function observationTargetToggle(){
+  return `<div class="toggle-group ob-target-toggle" role="group" aria-label="${esc(t('ob_targetType'))}">
+    <button type="button" class="toggle-btn ${observationTargetMode==='participant'?'active':''}" aria-pressed="${observationTargetMode==='participant'}" onclick="setObservationTargetMode('participant')">${t('ob_targetParticipant')}</button>
+    <button type="button" class="toggle-btn ${observationTargetMode==='general'?'active':''}" aria-pressed="${observationTargetMode==='general'}" onclick="setObservationTargetMode('general')">${t('ob_targetGeneral')}</button>
+  </div>`;
+}
 function renderObservatii(){
   const counts = {};
   DB.observatii.forEach(o=>{ counts[o.categorie]=(counts[o.categorie]||0)+1; });
@@ -3690,13 +3691,7 @@ function renderObservatii(){
   <div style="margin-bottom:20px">${OBS_CATEGORIES.map(c=>`<span class="tag">${trEnum(c)} · ${counts[c]||0}</span>`).join('')}</div>
 
   <div class="add-form">
-    <div class="ob-form-head">
-      <div class="form-title">${t('ob_addTitle')}</div>
-      <div class="toggle-group ob-target-toggle" role="group" aria-label="${esc(t('ob_targetType'))}">
-        <button type="button" class="toggle-btn ${observationTargetMode==='participant'?'active':''}" aria-pressed="${observationTargetMode==='participant'}" onclick="setObservationTargetMode('participant')">${t('ob_targetParticipant')}</button>
-        <button type="button" class="toggle-btn ${observationTargetMode==='general'?'active':''}" aria-pressed="${observationTargetMode==='general'}" onclick="setObservationTargetMode('general')">${t('ob_targetGeneral')}</button>
-      </div>
-    </div>
+    <div class="form-title">${t('ob_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr 1.4fr auto">
       ${observationTargetMode==='participant'
         ? `<div class="field"><label>${t('th_participant')}</label>${autocompleteField('of-participant', participantAcOptions())}</div>`
@@ -3704,6 +3699,7 @@ function renderObservatii(){
       <div class="field"><label>${t('ob_categorie')}</label><select id="of-categorie">${OBS_CATEGORIES.map(c=>`<option value="${c}" ${observationTargetMode==='general'&&c==='Altă situație'?'selected':''}>${trEnum(c)}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ob_descScurta')}</label><input id="of-desc" placeholder="${t('ob_descScurtaPh')}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addObservatie()">${t('btn_add')}</button></div>
+      ${observationTargetToggle()}
     </div>
   </div>
 
