@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-26-refresh-reminders-1">
+<meta name="attp-build" content="2026-07-26-live-reminders-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1107,7 +1107,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-26-refresh-reminders-1';
+const APP_BUILD = '2026-07-26-live-reminders-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1133,6 +1133,8 @@ const LOCATION_REFRESH_WINDOWS = [
   {id:'0630', start:390, end:410},
 ];
 let locationRefreshTimer = null;
+let locationRefreshChannel = null;
+let liveRefreshEvents = [];
 let refreshReminderKind = null;
 
 function moldovaClock(now=new Date()){
@@ -1175,8 +1177,34 @@ function forceFreshReload(){
   url.searchParams.set('fresh',Date.now());
   location.replace(url.href);
 }
+function queueLiveRefreshEvent(event){
+  if(!event?.id || liveRefreshEvents.some(item=>item.id===event.id)) return;
+  liveRefreshEvents.push(event);
+  checkLiveRefreshEvents();
+}
+function checkLiveRefreshEvents(){
+  if(isFullAdmin() || !currentShift) return;
+  const now = Date.now();
+  liveRefreshEvents = liveRefreshEvents.filter(event=>new Date(event.expires_at).getTime()>now);
+  const due = liveRefreshEvents.find(event=>{
+    let shown = false;
+    try{ shown = localStorage.getItem(`attp-live-refresh:${event.id}`)==='1'; }catch(_error){}
+    return !shown && new Date(event.scheduled_at).getTime()<=now;
+  });
+  if(!due) return;
+  try{ localStorage.setItem(`attp-live-refresh:${due.id}`,'1'); }catch(_error){}
+  showRefreshReminder('reminder');
+}
+async function connectLocationRefreshEvents(){
+  const { data } = await sb.from('location_refresh_events').select('*').gt('expires_at',new Date().toISOString()).order('scheduled_at');
+  (data||[]).forEach(queueLiveRefreshEvent);
+  locationRefreshChannel = sb.channel(`location-refresh-${currentAdminId}`)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'location_refresh_events'},payload=>queueLiveRefreshEvent(payload.new))
+    .subscribe();
+}
 function checkLocationRefreshReminder(){
   if(isFullAdmin() || !currentShift) return;
+  checkLiveRefreshEvents();
   const clock = moldovaClock();
   for(const window of LOCATION_REFRESH_WINDOWS){
     const scheduledMinute = stableReminderMinute(clock.dateKey,window);
@@ -1192,7 +1220,10 @@ function checkLocationRefreshReminder(){
 }
 function startLocationRefreshReminders(){
   if(locationRefreshTimer) clearInterval(locationRefreshTimer);
+  if(locationRefreshChannel) sb.removeChannel(locationRefreshChannel);
   locationRefreshTimer = null;
+  locationRefreshChannel = null;
+  liveRefreshEvents = [];
   hideRefreshReminder();
   if(isFullAdmin()) return;
   const previewUrl = new URL(location.href);
@@ -1202,6 +1233,7 @@ function startLocationRefreshReminders(){
     showRefreshReminder('reminder');
   }
   checkLocationRefreshReminder();
+  connectLocationRefreshEvents();
   locationRefreshTimer = setInterval(checkLocationRefreshReminder,30000);
 }
 
@@ -1452,7 +1484,10 @@ async function enterApp(userId, displayName, rol){
 async function logout(){
   await sb.auth.signOut();
   if(locationRefreshTimer) clearInterval(locationRefreshTimer);
+  if(locationRefreshChannel) sb.removeChannel(locationRefreshChannel);
   locationRefreshTimer = null;
+  locationRefreshChannel = null;
+  liveRefreshEvents = [];
   hideRefreshReminder();
   currentAdmin = null; currentAdminId = null; currentRole = null; currentShift = null; adminDemoShiftActive = false; shiftStartPrompt = false; DB = null;
   document.body.classList.remove('role-locatie');
