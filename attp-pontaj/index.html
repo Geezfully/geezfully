@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-26-report-sync-1">
+<meta name="attp-build" content="2026-07-26-refresh-reminders-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -357,6 +357,19 @@
   .empty-state { text-align: center; padding: 50px 20px; color: var(--muted); }
   .empty-state .e-icon { font-size: 30px; margin-bottom: 12px; opacity: .5; }
 
+  .refresh-reminder { position: fixed; right: 18px; bottom: 18px; z-index: 90; width: min(360px, calc(100vw - 32px)); padding: 14px 14px 13px; background: rgba(22,27,34,.98); border: 1px solid rgba(200,169,110,.45); border-radius: 10px; box-shadow: 0 14px 36px rgba(0,0,0,.38); display: none; gap: 11px; align-items: flex-start; }
+  .refresh-reminder.visible { display: flex; animation: refreshReminderIn .2s ease-out; }
+  .refresh-reminder.required { border-color: rgba(248,81,73,.68); }
+  .refresh-reminder-icon { width: 28px; height: 28px; flex: none; border-radius: 50%; display: grid; place-items: center; color: var(--gold); background: var(--gold-dim); font-size: 15px; }
+  .refresh-reminder.required .refresh-reminder-icon { color: var(--red); background: rgba(248,81,73,.12); }
+  .refresh-reminder-content { min-width: 0; flex: 1; }
+  .refresh-reminder-title { color: var(--text); font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+  .refresh-reminder-text { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+  .refresh-reminder-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .refresh-reminder-refresh { border: 0; border-radius: 6px; padding: 6px 9px; background: var(--gold); color: #17130d; font-size: 11.5px; font-weight: 700; cursor: pointer; }
+  .refresh-reminder-close { border: 0; background: none; color: var(--muted); font-size: 11.5px; cursor: pointer; padding: 5px 3px; }
+  @keyframes refreshReminderIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
   @media (max-width: 880px) {
     #sidebar { position: fixed; left: -232px; z-index: 50; transition: left .2s; box-shadow: 8px 0 30px rgba(0,0,0,.4); }
     #sidebar.open { left: 0; }
@@ -365,6 +378,7 @@
     .sb-scrim { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
     .sb-scrim.visible { display: block; }
     .profile-grid, .profile-history-grid, .profile-edit-grid { grid-template-columns: 1fr; }
+    .refresh-reminder { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
   }
 </style>
 </head>
@@ -498,6 +512,18 @@
   </div>
 </div>
 
+<aside class="refresh-reminder" id="location-refresh-reminder" role="status" aria-live="polite">
+  <div class="refresh-reminder-icon">↻</div>
+  <div class="refresh-reminder-content">
+    <div class="refresh-reminder-title" id="refresh-reminder-title"></div>
+    <div class="refresh-reminder-text" id="refresh-reminder-text"></div>
+    <div class="refresh-reminder-actions">
+      <button class="refresh-reminder-refresh" id="refresh-reminder-refresh" onclick="forceFreshReload()"></button>
+      <button class="refresh-reminder-close" id="refresh-reminder-close" onclick="hideRefreshReminder()"></button>
+    </div>
+  </div>
+</aside>
+
 <script>
 /* ══════════════════════ STATE ══════════════════════ */
 const SUPABASE_URL = 'https://ildoegipvcgxboijfksw.supabase.co';
@@ -529,6 +555,7 @@ function setLang(l){
   LANG = l; localStorage.setItem('attp-lang', l);
   applyStaticI18n();
   if (DB) { buildSidebar(); navigate(currentView); }
+  if(refreshReminderKind) showRefreshReminder(refreshReminderKind);
 }
 function applyStaticI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
@@ -612,6 +639,13 @@ ro: {
   sh_reportCheckError:'Nu s-a putut verifica raportul de schimb. Schimbul rămâne deschis. Încercați din nou.',
   sh_reportFinalizeError:'Raportul final nu a putut fi actualizat. Schimbul rămâne deschis și datele nu se pierd.',
   app_updateRequired:'A fost publicată o versiune nouă a registrului. Pagina se va reîncărca acum; apoi repetați acțiunea.',
+  refresh_reminderTitle:'Mențineți registrul actualizat',
+  refresh_reminderText:'Reîmprospătați pagina din când în când pentru ca registrul să funcționeze corect și să afișeze datele recente.',
+  refresh_updateTitle:'Actualizare disponibilă',
+  refresh_updateText:'Este disponibilă o versiune nouă. Reîmprospătați pagina înainte de generarea raportului sau încheierea schimbului.',
+  refresh_verifyTitle:'Versiunea nu poate fi verificată',
+  refresh_verifyText:'Schimbul rămâne deschis și datele sunt în siguranță. Verificați conexiunea și încercați din nou.',
+  refresh_now:'Reîmprospătează', refresh_close:'Închide',
   sh_stopConfirm:'Sigur doriți să opriți schimbul? După confirmare, registrul va fi blocat și va trebui început un schimb nou pentru a putea edita din nou.',
   sh_locked:'Registrul este blocat. Începeți un schimb din Tablou de bord.',
 
@@ -863,6 +897,13 @@ ru: {
   sh_reportCheckError:'Не удалось проверить отчёт смены. Смена останется открытой. Повторите попытку.',
   sh_reportFinalizeError:'Не удалось обновить итоговый отчёт. Смена останется открытой, данные не потеряны.',
   app_updateRequired:'Опубликована новая версия журнала. Страница сейчас перезагрузится; затем повторите действие.',
+  refresh_reminderTitle:'Поддерживайте журнал в актуальном состоянии',
+  refresh_reminderText:'Периодически обновляйте страницу, чтобы журнал работал корректно и показывал свежие данные.',
+  refresh_updateTitle:'Доступно обновление',
+  refresh_updateText:'Доступна новая версия. Обновите страницу перед созданием отчёта или завершением смены.',
+  refresh_verifyTitle:'Не удалось проверить версию',
+  refresh_verifyText:'Смена останется открытой, данные в безопасности. Проверьте соединение и повторите попытку.',
+  refresh_now:'Обновить', refresh_close:'Закрыть',
   sh_stopConfirm:'Вы уверены, что хотите завершить смену? После подтверждения журнал будет заблокирован, и для дальнейшего редактирования потребуется начать новую смену.',
   sh_locked:'Журнал заблокирован. Начните смену на панели управления.',
 
@@ -1066,7 +1107,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-26-report-sync-1';
+const APP_BUILD = '2026-07-26-refresh-reminders-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1086,22 +1127,88 @@ function journalActorName(){
   return isFullAdmin() ? publicAdminName(DB?.administratori.find(a=>a.id===currentAdminId)) : activeShiftName();
 }
 
-async function ensureCurrentAppBuild(){
-  if(location.protocol === 'file:') return true;
-  try{
-    const url = new URL('index.html', location.href);
-    url.searchParams.set('build-check', Date.now());
-    const response = await fetch(url, {cache:'no-store'});
-    if(!response.ok) return true;
-    const html = await response.text();
-    const remoteBuild = html.match(/<meta\s+name=["']attp-build["']\s+content=["']([^"']+)["']/i)?.[1];
-    if(remoteBuild && remoteBuild !== APP_BUILD){
-      alert(t('app_updateRequired'));
-      location.reload();
-      return false;
+const LOCATION_REFRESH_WINDOWS = [
+  {id:'01', start:60, end:120},
+  {id:'04', start:240, end:270},
+  {id:'0630', start:390, end:410},
+];
+let locationRefreshTimer = null;
+let refreshReminderKind = null;
+
+function moldovaClock(now=new Date()){
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
+    timeZone:'Europe/Chisinau', year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', hourCycle:'h23',
+  }).formatToParts(now).filter(part=>part.type!=='literal').map(part=>[part.type,part.value]));
+  return {
+    dateKey:`${parts.year}-${parts.month}-${parts.day}`,
+    minuteOfDay:Number(parts.hour)*60+Number(parts.minute),
+  };
+}
+function stableReminderMinute(dateKey,window){
+  const seed = `${dateKey}:${window.id}`;
+  let hash = 2166136261;
+  for(let i=0;i<seed.length;i++) hash = Math.imul(hash ^ seed.charCodeAt(i),16777619);
+  return window.start + ((hash>>>0) % (window.end-window.start));
+}
+function showRefreshReminder(kind='reminder'){
+  if(isFullAdmin()) return;
+  const box = document.getElementById('location-refresh-reminder');
+  if(!box) return;
+  refreshReminderKind = kind;
+  const required = kind!=='reminder';
+  const titleKey = kind==='update' ? 'refresh_updateTitle' : kind==='verify' ? 'refresh_verifyTitle' : 'refresh_reminderTitle';
+  const textKey = kind==='update' ? 'refresh_updateText' : kind==='verify' ? 'refresh_verifyText' : 'refresh_reminderText';
+  box.classList.toggle('required',required);
+  document.getElementById('refresh-reminder-title').textContent = t(titleKey);
+  document.getElementById('refresh-reminder-text').textContent = t(textKey);
+  document.getElementById('refresh-reminder-refresh').textContent = t('refresh_now');
+  document.getElementById('refresh-reminder-close').textContent = t('refresh_close');
+  box.classList.add('visible');
+}
+function hideRefreshReminder(){
+  document.getElementById('location-refresh-reminder')?.classList.remove('visible');
+  refreshReminderKind = null;
+}
+function forceFreshReload(){
+  const url = new URL(location.href);
+  url.searchParams.set('fresh',Date.now());
+  location.replace(url.href);
+}
+function checkLocationRefreshReminder(){
+  if(isFullAdmin() || !currentShift) return;
+  const clock = moldovaClock();
+  for(const window of LOCATION_REFRESH_WINDOWS){
+    const scheduledMinute = stableReminderMinute(clock.dateKey,window);
+    const storageKey = `attp-refresh-reminder:${clock.dateKey}:${window.id}`;
+    let alreadyShown = false;
+    try{ alreadyShown = localStorage.getItem(storageKey)==='1'; }catch(_error){}
+    if(!alreadyShown && clock.minuteOfDay>=scheduledMinute && clock.minuteOfDay<window.end){
+      try{ localStorage.setItem(storageKey,'1'); }catch(_error){}
+      showRefreshReminder('reminder');
+      break;
     }
-  }catch(_error){
-    // A temporary connectivity issue must not block an otherwise available local workflow.
+  }
+}
+function startLocationRefreshReminders(){
+  if(locationRefreshTimer) clearInterval(locationRefreshTimer);
+  locationRefreshTimer = null;
+  hideRefreshReminder();
+  if(isFullAdmin()) return;
+  checkLocationRefreshReminder();
+  locationRefreshTimer = setInterval(checkLocationRefreshReminder,30000);
+}
+
+async function ensureCurrentAppBuild(){
+  if(isFullAdmin() || location.protocol==='file:') return true;
+  const { data, error } = await sb.from('app_config').select('value').eq('key','location_app_build').single();
+  if(error || !data?.value){
+    showRefreshReminder('verify');
+    return false;
+  }
+  if(data.value!==APP_BUILD){
+    showRefreshReminder('update');
+    return false;
   }
   return true;
 }
@@ -1333,10 +1440,14 @@ async function enterApp(userId, displayName, rol){
   document.getElementById('sb-admin').textContent = activeShiftName();
   buildSidebar();
   navigate('dashboard');
+  startLocationRefreshReminders();
 }
 
 async function logout(){
   await sb.auth.signOut();
+  if(locationRefreshTimer) clearInterval(locationRefreshTimer);
+  locationRefreshTimer = null;
+  hideRefreshReminder();
   currentAdmin = null; currentAdminId = null; currentRole = null; currentShift = null; adminDemoShiftActive = false; shiftStartPrompt = false; DB = null;
   document.body.classList.remove('role-locatie');
   document.getElementById('app-shell').classList.remove('visible');
@@ -1614,6 +1725,7 @@ async function confirmLocationShift(){
   await logAction(`A început schimbul de locație: ${employee.nume}`);
   buildSidebar();
   render();
+  checkLocationRefreshReminder();
 }
 /* ══════════════════════ RAPORT DE SCHIMB ══════════════════════ */
 /* Core builder shared by the live "generate for current shift" button and the admin
@@ -2061,6 +2173,7 @@ async function stopDashboardShift(){
     // leaving the UI stuck showing a "live" shift that no longer exists.
     alert(t('sh_stopAlreadyEnded'));
     currentShift = null;
+    hideRefreshReminder();
     dashboardRefereeEditId = null;
     dashboardTrainingRows = 1;
     await fetchAll();
@@ -2072,6 +2185,7 @@ async function stopDashboardShift(){
   }
   await logAction(`A încheiat schimbul de locație: ${shiftName}`);
   currentShift = null;
+  hideRefreshReminder();
   dashboardRefereeEditId = null;
   dashboardTrainingRows = 1;
   document.getElementById('sb-admin').textContent = currentAdmin;
