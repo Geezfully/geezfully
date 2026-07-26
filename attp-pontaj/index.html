@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-26-live-reminders-1">
+<meta name="attp-build" content="2026-07-26-live-reminders-2">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1107,7 +1107,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-26-live-reminders-1';
+const APP_BUILD = '2026-07-26-live-reminders-2';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1183,13 +1183,14 @@ function queueLiveRefreshEvent(event){
   checkLiveRefreshEvents();
 }
 function checkLiveRefreshEvents(){
-  if(isFullAdmin() || !currentShift) return;
+  if(isFullAdmin()) return;
   const now = Date.now();
   liveRefreshEvents = liveRefreshEvents.filter(event=>new Date(event.expires_at).getTime()>now);
   const due = liveRefreshEvents.find(event=>{
     let shown = false;
     try{ shown = localStorage.getItem(`attp-live-refresh:${event.id}`)==='1'; }catch(_error){}
-    return !shown && new Date(event.scheduled_at).getTime()<=now;
+    const shiftAllowed = event.requires_active_shift===false || !!currentShift;
+    return !shown && shiftAllowed && new Date(event.scheduled_at).getTime()<=now;
   });
   if(!due) return;
   try{ localStorage.setItem(`attp-live-refresh:${due.id}`,'1'); }catch(_error){}
@@ -1203,8 +1204,9 @@ async function connectLocationRefreshEvents(){
     .subscribe();
 }
 function checkLocationRefreshReminder(){
-  if(isFullAdmin() || !currentShift) return;
+  if(isFullAdmin()) return;
   checkLiveRefreshEvents();
+  if(!currentShift) return;
   const clock = moldovaClock();
   for(const window of LOCATION_REFRESH_WINDOWS){
     const scheduledMinute = stableReminderMinute(clock.dateKey,window);
