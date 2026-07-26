@@ -1,0 +1,73 @@
+name: ATTP encrypted central database backup
+
+on:
+  schedule:
+    # Moldova alternates between UTC+2 and UTC+3. The guard keeps only 23:00 local.
+    - cron: "0 20,21 * * *"
+  workflow_dispatch:
+    inputs:
+      source_check_only:
+        description: Validate ATTP source access without creating a backup
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: central-database-backup-attp
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Keep the 23:00 Moldova schedule
+        id: schedule_guard
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [[ "$EVENT_NAME" != "schedule" || "$(TZ=Europe/Chisinau date +%H)" == "23" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out source
+        if: ${{ steps.schedule_guard.outputs.run == 'true' }}
+        uses: actions/checkout@v5
+
+      - name: Install PostgreSQL 17 client
+        if: ${{ steps.schedule_guard.outputs.run == 'true' }}
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --batch --yes --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] https://apt.postgresql.org/pub/repos/apt $(. /etc/os-release && echo "$VERSION_CODENAME")-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Install pinned Supabase upload client
+        if: ${{ steps.schedule_guard.outputs.run == 'true' && !inputs.source_check_only }}
+        run: npm install --no-save --ignore-scripts @supabase/supabase-js@2.57.4
+
+      - name: Create, encrypt, and upload ATTP backup
+        if: ${{ steps.schedule_guard.outputs.run == 'true' && !inputs.source_check_only }}
+        env:
+          SOURCE_DB_URL: ${{ secrets.ATTP_BACKUP_DB_URL }}
+          BACKUP_SUPABASE_URL: ${{ secrets.CENTRAL_BACKUP_SUPABASE_URL }}
+          BACKUP_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CENTRAL_BACKUP_PUBLISHABLE_KEY }}
+          BACKUP_GATEWAY_SECRET: ${{ secrets.ATTP_BACKUP_GATEWAY_SECRET }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.ATTP_BACKUP_ENCRYPTION_KEY }}
+        run: bash scripts/create-attp-central-backup.sh
+
+      - name: Validate ATTP source backup access
+        if: ${{ steps.schedule_guard.outputs.run == 'true' && inputs.source_check_only }}
+        env:
+          SOURCE_DB_URL: ${{ secrets.ATTP_BACKUP_DB_URL }}
+        run: |
+          psql "$SOURCE_DB_URL" --no-psqlrc --set=ON_ERROR_STOP=1 --tuples-only --command="select count(*) >= 0 from public.participanti; select count(*) >= 0 from auth.users;"
+          pg_dump --dbname="$SOURCE_DB_URL" --schema-only --no-owner --no-acl --file=/tmp/attp-schema.sql
+          test -s /tmp/attp-schema.sql
