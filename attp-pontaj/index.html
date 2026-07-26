@@ -2,6 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
+<meta name="attp-build" content="2026-07-26-report-sync-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -609,6 +610,8 @@ ro: {
   sh_stopAlreadyEnded:'Acest schimb fusese deja încheiat (probabil dintr-un alt tab sau dispozitiv). Pagina a fost actualizată.',
   sh_reportRequired:'Schimbul nu poate fi încheiat înainte de generarea raportului de schimb. Generați și salvați raportul, apoi încercați din nou.',
   sh_reportCheckError:'Nu s-a putut verifica raportul de schimb. Schimbul rămâne deschis. Încercați din nou.',
+  sh_reportFinalizeError:'Raportul final nu a putut fi actualizat. Schimbul rămâne deschis și datele nu se pierd.',
+  app_updateRequired:'A fost publicată o versiune nouă a registrului. Pagina se va reîncărca acum; apoi repetați acțiunea.',
   sh_stopConfirm:'Sigur doriți să opriți schimbul? După confirmare, registrul va fi blocat și va trebui început un schimb nou pentru a putea edita din nou.',
   sh_locked:'Registrul este blocat. Începeți un schimb din Tablou de bord.',
 
@@ -858,6 +861,8 @@ ru: {
   sh_stopAlreadyEnded:'Эта смена уже была завершена (вероятно, с другой вкладки или устройства). Страница обновлена.',
   sh_reportRequired:'Смену нельзя завершить до создания отчёта смены. Создайте и сохраните отчёт, затем повторите попытку.',
   sh_reportCheckError:'Не удалось проверить отчёт смены. Смена останется открытой. Повторите попытку.',
+  sh_reportFinalizeError:'Не удалось обновить итоговый отчёт. Смена останется открытой, данные не потеряны.',
+  app_updateRequired:'Опубликована новая версия журнала. Страница сейчас перезагрузится; затем повторите действие.',
   sh_stopConfirm:'Вы уверены, что хотите завершить смену? После подтверждения журнал будет заблокирован, и для дальнейшего редактирования потребуется начать новую смену.',
   sh_locked:'Журнал заблокирован. Начните смену на панели управления.',
 
@@ -1061,6 +1066,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
+const APP_BUILD = '2026-07-26-report-sync-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1078,6 +1084,26 @@ function activeShiftName(){
 }
 function journalActorName(){
   return isFullAdmin() ? publicAdminName(DB?.administratori.find(a=>a.id===currentAdminId)) : activeShiftName();
+}
+
+async function ensureCurrentAppBuild(){
+  if(location.protocol === 'file:') return true;
+  try{
+    const url = new URL('index.html', location.href);
+    url.searchParams.set('build-check', Date.now());
+    const response = await fetch(url, {cache:'no-store'});
+    if(!response.ok) return true;
+    const html = await response.text();
+    const remoteBuild = html.match(/<meta\s+name=["']attp-build["']\s+content=["']([^"']+)["']/i)?.[1];
+    if(remoteBuild && remoteBuild !== APP_BUILD){
+      alert(t('app_updateRequired'));
+      location.reload();
+      return false;
+    }
+  }catch(_error){
+    // A temporary connectivity issue must not block an otherwise available local workflow.
+  }
+  return true;
 }
 
 function todayISO(){ return new Date().toISOString().slice(0,10); }
@@ -1184,9 +1210,19 @@ async function fetchAll(){
     treninguri: (treninguriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, antrenor:r.antrenor, data:r.data, ora:r.ora, sumaJucator:Number(r.suma_jucator), sumaAntrenor:Number(r.suma_antrenor), observatii:r.observatii, createdAt:r.created_at})),
     acteSchimb: (acteSchimbR.data||[]).map(r=>({
       id:r.id, data:r.data, numeAdministrator:r.nume_administrator,
+      sesiuneSchimbId:r.sesiune_schimb_id, createdAt:r.created_at,
       inceputPerioada:r.inceput_perioada, sfarsitPerioada:r.sfarsit_perioada, continut:r.continut,
     })),
   };
+  // Older versions could insert more than one snapshot for the same shift. Keep those rows in
+  // Supabase for audit purposes, but show only the newest canonical report in the interface.
+  const reportShiftIds = new Set();
+  DB.acteSchimb = DB.acteSchimb.filter(report=>{
+    if(!report.sesiuneSchimbId) return true;
+    if(reportShiftIds.has(report.sesiuneSchimbId)) return false;
+    reportShiftIds.add(report.sesiuneSchimbId);
+    return true;
+  });
   if(!isFullAdmin()){
     const open = (sesiuniR.data||[])[0];
     currentShift = open ? {
@@ -1599,31 +1635,48 @@ function trainingStatusAt(row, cutoffIso){
 }
 
 async function buildActContinut(startedAt, endedAt, shiftId){
-  const inShift = createdAt => !!createdAt && createdAt >= startedAt && createdAt <= endedAt;
-  const { data: miscariData, error: miscariError } = await sb.from('inventar_miscari').select('*').gte('created_at', startedAt).lte('created_at', endedAt).order('created_at');
-  if(miscariError) throw miscariError;
+  const rowsInWindow = table => sb.from(table).select('*').gte('created_at', startedAt).lte('created_at', endedAt).order('created_at');
+  const arbitrajQuery = shiftId
+    ? sb.from('arbitraj').select('*').eq('sesiune_schimb_id', shiftId).order('slot_schimb')
+    : rowsInWindow('arbitraj');
+  const [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, observatiiR] = await Promise.all([
+    rowsInWindow('intarzieri'),
+    arbitrajQuery,
+    rowsInWindow('fair_play'),
+    rowsInWindow('daune'),
+    rowsInWindow('inventar_miscari'),
+    rowsInWindow('hostel'),
+    rowsInWindow('treninguri'),
+    rowsInWindow('sarcini'),
+    rowsInWindow('observatii'),
+  ]);
+  const failed = [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, observatiiR].find(result=>result.error);
+  if(failed) throw failed.error;
   const inventarById = Object.fromEntries(DB.inventar.map(i=>[i.id,i]));
 
   return {
     admin: { data: startedAt.slice(0,10), nume: '' },
-    intarzieri: DB.intarzieri.filter(r=>inShift(r.createdAt)).map(r=>({ nume: entryPersonName(r), min: r.minuteIntarziere, motiv: r.motiv || '' })),
-    arbitraj: DB.arbitraj.filter(r=>r.sesiuneSchimbId===shiftId).map(r=>({ platou: r.turneu, arbitru: r.arbitru })),
-    fairPlay: DB.fairPlay.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), ora: r.ora ? String(r.ora).slice(0,5) : '', cartonas: r.tipCartonas, descriere: r.descriere || '' })),
-    daune: DB.daune.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), platou: r.teren || '', descriere: `${r.inventarAfectat} — ${r.natura}` })),
+    intarzieri: (intarzieriR.data||[]).map(r=>({ nume: entryPersonName({participantId:r.participant_id, arbitru:r.arbitru}), min: r.minute_intarziere, motiv: r.motiv || '' })),
+    arbitraj: (arbitrajR.data||[]).map(r=>({ platou: r.turneu, arbitru: r.arbitru })),
+    fairPlay: (fairPlayR.data||[]).map(r=>({ nume: participantName(r.participant_id), ora: r.ora ? String(r.ora).slice(0,5) : '', cartonas: r.tip_cartonas, descriere: r.descriere || '' })),
+    daune: (dauneR.data||[]).map(r=>({ nume: participantName(r.participant_id), platou: r.teren || '', descriere: `${r.inventar_afectat} — ${r.natura}` })),
     // Only the automatic consequences of duty actions (issuing gear, marking returns, referee
     // ball issuance) belong in a shift act — manual stock corrections/adjustments/reverts from
     // the Inventar tab are administrative bookkeeping, not something the person on duty did.
-    inventar: (miscariData||[]).filter(r => !INVENTAR_ADMIN_MOTIV_PREFIXES.some(p => (r.motiv||'').startsWith(p))).map(r=>{
+    inventar: (miscariR.data||[]).filter(r => !INVENTAR_ADMIN_MOTIV_PREFIXES.some(p => (r.motiv||'').startsWith(p))).map(r=>{
       const item = inventarById[r.inventar_id];
       return { tip: r.tip, articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id, cantitate: r.cantitate, motiv: cleanActReason(r.motiv) };
     }),
-    hostel: DB.hostel.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), camera: r.observatii || '', ora: fmtTime(r.createdAt), statut: r.statut })),
-    treninguri: DB.treninguri.filter(r=>inShift(r.createdAt)).map(r=>({ nume: participantName(r.participantId), antrenor: r.antrenor, data: r.data, ora: r.ora ? String(r.ora).slice(0,5) : '', statut: trainingStatusAt(r, endedAt) })),
-    sarcini: DB.sarcini.filter(r=>inShift(r.createdAt)).map(r=>({ statut: r.status, descriere: r.descriere || '' })),
-    observatii: DB.observatii.filter(r=>inShift(r.createdAt)).map(r=>({ nume: observationTargetName(r), categorie: r.categorie || '', descriere: r.descriere || '' })),
+    hostel: (hostelR.data||[]).map(r=>({ nume: participantName(r.participant_id), camera: r.observatii || '', ora: fmtTime(r.created_at), statut: r.statut })),
+    treninguri: (treninguriR.data||[]).map(r=>({ nume: participantName(r.participant_id), antrenor: r.antrenor, data: r.data, ora: r.ora ? String(r.ora).slice(0,5) : '', statut: trainingStatusAt(r, endedAt) })),
+    sarcini: (sarciniR.data||[]).map(r=>({ statut: r.status, descriere: r.descriere || '' })),
+    observatii: (observatiiR.data||[]).map(r=>({ nume: observationTargetName({participantId:r.participant_id, subiect:r.subiect}), categorie: r.categorie || '', descriere: r.descriere || '' })),
   };
 }
 async function saveActSchimb({ shiftId, administratorServiciuId, administratorId, numeAdministrator, startedAt, endedAt }){
+  // Refresh lookup data before assembling the snapshot, then read every report section directly
+  // from Supabase. This includes rows added in the same open browser tab and on another device.
+  await fetchAll();
   const continut = await buildActContinut(startedAt, endedAt, shiftId);
   continut.admin.nume = numeAdministrator;
   const row = {
@@ -1636,13 +1689,29 @@ async function saveActSchimb({ shiftId, administratorServiciuId, administratorId
     nume_administrator: numeAdministrator,
     continut,
   };
-  const { data, error } = await sb.from('acte_schimb').insert(row).select().single();
+  let data, error;
+  if(shiftId){
+    const existingResult = await sb.from('acte_schimb').select('id').eq('sesiune_schimb_id',shiftId).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    if(existingResult.error) throw existingResult.error;
+    const result = existingResult.data
+      ? await sb.from('acte_schimb').update(row).eq('id',existingResult.data.id).select().single()
+      : await sb.from('acte_schimb').insert(row).select().single();
+    data = result.data;
+    error = result.error;
+  }else{
+    const result = await sb.from('acte_schimb').insert(row).select().single();
+    data = result.data;
+    error = result.error;
+  }
   if(error) throw error;
-  const act = { id:data.id, data:data.data, numeAdministrator:data.nume_administrator, inceputPerioada:data.inceput_perioada, sfarsitPerioada:data.sfarsit_perioada, continut:data.continut };
-  DB.acteSchimb.unshift(act);
+  const act = { id:data.id, data:data.data, numeAdministrator:data.nume_administrator, sesiuneSchimbId:data.sesiune_schimb_id, createdAt:data.created_at, inceputPerioada:data.inceput_perioada, sfarsitPerioada:data.sfarsit_perioada, continut:data.continut };
+  const existingIndex = DB.acteSchimb.findIndex(item=>item.id===act.id);
+  if(existingIndex>=0) DB.acteSchimb.splice(existingIndex,1,act);
+  else DB.acteSchimb.unshift(act);
   return act;
 }
 async function generateActSchimb(){
+  if(!(await ensureCurrentAppBuild())) return;
   const active = isFullAdmin() ? adminDemoShiftActive : !!currentShift;
   if(!active){ alert(t('act_needShift')); return; }
   const startedAt = isFullAdmin() ? new Date(Date.now() - 8*3600*1000).toISOString() : currentShift.startedAt;
@@ -1957,6 +2026,7 @@ function renderActeSchimbList(){
 async function stopDashboardShift(){
   if(isFullAdmin()) return;
   if(!currentShift) return;
+  if(!(await ensureCurrentAppBuild())) return;
   const shiftId = currentShift.id;
   const { data:reports, error:reportError } = await sb.from('acte_schimb').select('id').eq('sesiune_schimb_id',shiftId).limit(1);
   if(reportError){ alert(t('sh_reportCheckError')+' '+reportError.message); return; }
@@ -1968,6 +2038,21 @@ async function stopDashboardShift(){
   if(!window.confirm(t('sh_stopConfirm'))) return;
   const endedAt = new Date().toISOString();
   const shiftName = currentShift.administrator;
+  try{
+    // The earlier button press is a preview/checkpoint. Immediately before closing, replace it
+    // with a final server-built snapshot through the exact end time while editing is still allowed.
+    await saveActSchimb({
+      shiftId,
+      administratorServiciuId:currentShift.administratorServiciuId,
+      administratorId:null,
+      numeAdministrator:shiftName,
+      startedAt:currentShift.startedAt,
+      endedAt,
+    });
+  }catch(reportError){
+    alert(t('sh_reportFinalizeError')+' '+reportError.message);
+    return;
+  }
   const { data, error } = await sb.from('sesiuni_schimb').update({ended_at:endedAt}).eq('id',currentShift.id).select();
   if(error){ alert(t('sh_stopError')+' '+error.message); return; }
   if(!data?.length){
