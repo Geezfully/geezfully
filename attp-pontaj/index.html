@@ -1195,6 +1195,12 @@ function startLocationRefreshReminders(){
   locationRefreshTimer = null;
   hideRefreshReminder();
   if(isFullAdmin()) return;
+  const previewUrl = new URL(location.href);
+  if(previewUrl.searchParams.get('preview-refresh')==='1'){
+    previewUrl.searchParams.delete('preview-refresh');
+    history.replaceState({},'',`${previewUrl.pathname}${previewUrl.search}${previewUrl.hash}`);
+    showRefreshReminder('reminder');
+  }
   checkLocationRefreshReminder();
   locationRefreshTimer = setInterval(checkLocationRefreshReminder,30000);
 }
