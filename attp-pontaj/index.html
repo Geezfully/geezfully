@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-27-task-handover-1">
+<meta name="attp-build" content="2026-07-27-linen-stock-source-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -730,7 +730,10 @@ ro: {
 
   le_title:'Lenjerie', le_sub:'Evidența lenjeriei de hostel eliberate sportivilor.', le_addTitle:'Eliberare lenjerie',
   le_dataElib:'Data eliberării', le_countSuffix:'înregistrări', le_hint:'Apasă pe statut pentru a marca returnarea',
-  le_th_eliberare:'Eliberare', le_th_returnare:'Returnare', le_none:'Nicio înregistrare.',
+  le_stockSource:'Sursă stoc', le_stockNew:'Nou', le_stockUsed:'Uzat', le_available:'disponibile',
+  le_th_source:'Sursă', le_th_eliberare:'Eliberare', le_th_returnare:'Returnare', le_none:'Nicio înregistrare.',
+  le_noStockNew:'Nu mai există lenjerie nouă în stoc. Alegeți manual „Uzat” dacă doriți să eliberați din stocul uzat.',
+  le_noStockUsed:'Nu mai există lenjerie uzată în stoc. Alegeți manual „Nou” dacă doriți să eliberați din stocul nou.',
   le_confirmReturn:'Confirmați marcarea lenjeriei ca returnată? Odată confirmată, doar administratorii mai pot anula acest lucru.',
   le_lockedHint:'Returnare confirmată — doar administratorii pot anula.',
 
@@ -988,7 +991,10 @@ ru: {
 
   le_title:'Постельное бельё', le_sub:'Учёт постельного белья, выданного спортсменам в хостеле.', le_addTitle:'Выдача белья',
   le_dataElib:'Дата выдачи', le_countSuffix:'записей', le_hint:'Нажмите на статус, чтобы отметить возврат',
-  le_th_eliberare:'Выдача', le_th_returnare:'Возврат', le_none:'Записей нет.',
+  le_stockSource:'Источник запаса', le_stockNew:'Новое', le_stockUsed:'Б/у', le_available:'доступно',
+  le_th_source:'Источник', le_th_eliberare:'Выдача', le_th_returnare:'Возврат', le_none:'Записей нет.',
+  le_noStockNew:'Новое бельё закончилось. Выберите «Б/у» вручную, если хотите выдать бельё из использованного запаса.',
+  le_noStockUsed:'Использованное бельё закончилось. Выберите «Новое» вручную, если хотите выдать бельё из нового запаса.',
   le_confirmReturn:'Подтвердить, что бельё возвращено? После подтверждения отменить это смогут только администраторы.',
   le_lockedHint:'Возврат подтверждён — отменить может только администратор.',
 
@@ -1125,7 +1131,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-27-task-handover-1';
+const APP_BUILD = '2026-07-27-linen-stock-source-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1357,7 +1363,7 @@ async function fetchAll(){
     })),
     spalatorie: (spalatorieR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, tipArticole:r.tip_articole, cantitate:r.cantitate, suma:Number(r.suma), dataReturnare:r.data_returnare})),
     hostel: (hostelR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, dataCazare:r.data_cazare, observatii:r.observatii, statut:r.statut, createdAt:r.created_at})),
-    lenjerie: (lenjerieR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, dataEliberare:r.data_eliberare, dataReturnare:r.data_returnare})),
+    lenjerie: (lenjerieR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, dataEliberare:r.data_eliberare, dataReturnare:r.data_returnare, sursaStoc:r.sursa_stoc||'nou'})),
     daune: (dauneR.data||[]).map(r=>({
       id:r.id, data:r.data, participantId:r.participant_id, inventarAfectat:r.inventar_afectat, natura:r.natura, teren:r.teren,
       bunDeterioratDistrus:r.stare, observatii:r.observatii, valoareEstimata:Number(r.valoare_estimata||0),
@@ -3107,15 +3113,28 @@ async function toggleHostelStatus(id){
 }
 
 /* ══════════════════════ LENJERIE ══════════════════════ */
+function lenjerieStockItem(source){
+  return DB.inventar.find(i=>i.id===(source==='uzat'?'inv-lenjerie-uzat':'inv-lenjerie'));
+}
+function lenjerieAvailable(source){
+  const item = lenjerieStockItem(source);
+  return item ? inventoryCurrent(item) : 0;
+}
+function lenjerieNoStockMessage(source){
+  return t(source==='uzat'?'le_noStockUsed':'le_noStockNew');
+}
 function renderLenjerie(){
+  const newAvailable = lenjerieAvailable('nou');
+  const usedAvailable = lenjerieAvailable('uzat');
   return `
   <div class="view-head"><div class="view-title">${t('le_title')}</div></div>
   <div class="view-sub">${t('le_sub')}</div>
 
   <div class="add-form">
     <div class="form-title">${t('le_addTitle')}</div>
-    <div class="form-grid" style="grid-template-columns:1fr 1fr auto">
+    <div class="form-grid" style="grid-template-columns:1.25fr .8fr .8fr auto">
       <div class="field"><label>${t('th_participant')}</label>${autocompleteField('lf-participant', participantAcOptions())}</div>
+      <div class="field"><label>${t('le_stockSource')}</label><select id="lf-sursa"><option value="nou">${t('le_stockNew')} — ${newAvailable} ${t('le_available')}</option><option value="uzat">${t('le_stockUsed')} — ${usedAvailable} ${t('le_available')}</option></select></div>
       <div class="field"><label>${t('le_dataElib')}</label><input id="lf-eliberare" type="date" value="${todayISO()}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addLenjerie()">${t('btn_add')}</button></div>
     </div>
@@ -3127,25 +3146,32 @@ function renderLenjerie(){
       <div class="table-hint">${t('le_hint')}</div>
     </div>
     <div class="table-scroll"><table>
-      <thead><tr><th>${t('th_participant')}</th><th>${t('le_th_eliberare')}</th><th>${t('le_th_returnare')}</th><th>${t('th_statut')}</th><th></th></tr></thead>
+      <thead><tr><th>${t('th_participant')}</th><th>${t('le_th_source')}</th><th>${t('le_th_eliberare')}</th><th>${t('le_th_returnare')}</th><th>${t('th_statut')}</th><th></th></tr></thead>
       <tbody>${DB.lenjerie.length ? DB.lenjerie.slice().sort((a,b)=>b.dataEliberare.localeCompare(a.dataEliberare)).map(l=>`
         <tr><td class="td-name" onclick="openProfile('${l.participantId}')">${esc(participantName(l.participantId))}</td>
+        <td><span class="badge">${t(l.sursaStoc==='uzat'?'le_stockUsed':'le_stockNew')}</span></td>
         <td class="td-muted">${fmtDate(l.dataEliberare)}</td><td class="td-muted">${l.dataReturnare?fmtDate(l.dataReturnare):'—'}</td>
         <td>${l.dataReturnare && !isFullAdmin()
           ? `<span class="badge green" title="${t('le_lockedHint')}">${trEnum('returnat')}</span>`
           : `<button type="button" class="badge ${l.dataReturnare?'green':'yellow'}" ${disabledAttr()} onclick="toggleLenjerieReturn('${l.id}')" title="${t('le_hint')}">${trEnum(l.dataReturnare?'returnat':'nereturnat')}</button>`}</td>
-        <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('lenjerie','${l.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="5">${t('le_none')}</td></tr>`}</tbody>
+        <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('lenjerie','${l.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="6">${t('le_none')}</td></tr>`}</tbody>
     </table></div>
   </div>`;
 }
 async function addLenjerie(){
   const participantId = document.getElementById('lf-participant').value;
   if(!participantId) return;
-  const row = { participant_id:participantId, data_eliberare: document.getElementById('lf-eliberare').value||todayISO(), data_returnare:null };
+  const sursaStoc = document.getElementById('lf-sursa').value==='uzat'?'uzat':'nou';
+  if(lenjerieAvailable(sursaStoc)<=0){ alert(lenjerieNoStockMessage(sursaStoc)); return; }
+  const row = { participant_id:participantId, data_eliberare: document.getElementById('lf-eliberare').value||todayISO(), data_returnare:null, sursa_stoc:sursaStoc };
   const { data, error } = await sb.from('lenjerie').insert(row).select().single();
-  if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
-  DB.lenjerie.unshift({id:data.id, participantId:data.participant_id, dataEliberare:data.data_eliberare, dataReturnare:data.data_returnare});
-  await refetchInventar(); // trigger a scăzut automat un set din stoc
+  if(error){
+    if(error.message && error.message.includes('LENJERIE_STOC_')) alert(lenjerieNoStockMessage(sursaStoc));
+    else alert('Salvarea a eșuat: ' + error.message);
+    return;
+  }
+  DB.lenjerie.unshift({id:data.id, participantId:data.participant_id, dataEliberare:data.data_eliberare, dataReturnare:data.data_returnare, sursaStoc:data.sursa_stoc||sursaStoc});
+  await refetchInventar(); // triggerul a scăzut automat un set din sursa selectată
   await logAction(`A eliberat lenjerie pentru ${participantName(participantId)}`);
   render();
 }
