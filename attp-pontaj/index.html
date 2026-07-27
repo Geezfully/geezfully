@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-26-live-reminders-2">
+<meta name="attp-build" content="2026-07-27-task-handover-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -116,6 +116,7 @@
     background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 1px 0 rgba(200,169,110,0.14);
     padding: 0 28px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20;
   }
+  #burger-btn { display: none; }
   .header-title { font-size: 15px; font-weight: 600; }
   .header-right { display: flex; align-items: center; gap: 12px; }
   .header-user { font-size: 13px; color: var(--muted); }
@@ -379,6 +380,23 @@
     .sb-scrim.visible { display: block; }
     .profile-grid, .profile-history-grid, .profile-edit-grid { grid-template-columns: 1fr; }
     .refresh-reminder { right: 12px; bottom: 12px; width: calc(100vw - 24px); }
+    #burger-btn {
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 40px; height: 40px; padding: 0; font-size: 18px; line-height: 1;
+    }
+    header { padding: 0 14px; gap: 8px; }
+    .header-title { font-size: 13.5px; }
+    .header-right { gap: 8px; }
+  }
+  @media (max-width: 680px) {
+    /* Every add-form across the app hardcodes its own inline grid-template-columns for desktop
+       density; force them all to a single comfortable column on phones rather than editing each
+       call site individually. */
+    .form-grid { grid-template-columns: 1fr !important; }
+    .add-form { padding: 16px; }
+    .modal-overlay { padding: 16px 10px; }
+    .view-title { font-size: 22px; }
+    .stat-card { min-width: 0; flex: 1 1 calc(50% - 6px); }
   }
 </style>
 </head>
@@ -447,7 +465,7 @@
   <div id="content-scroll">
     <header>
       <div style="display:flex;align-items:center;gap:12px">
-        <button class="btn-ghost" style="display:none" id="burger-btn" onclick="toggleSidebar()">☰</button>
+        <button class="btn-ghost" id="burger-btn" onclick="toggleSidebar()" aria-label="Deschide meniul">☰</button>
         <div class="header-title" id="header-title">Tablou de bord</div>
       </div>
       <div class="header-right">
@@ -1107,7 +1125,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-26-live-reminders-2';
+const APP_BUILD = '2026-07-27-task-handover-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1794,7 +1812,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
   const arbitrajQuery = shiftId
     ? sb.from('arbitraj').select('*').eq('sesiune_schimb_id', shiftId).order('slot_schimb')
     : rowsInWindow('arbitraj');
-  const [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, observatiiR] = await Promise.all([
+  const [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR] = await Promise.all([
     rowsInWindow('intarzieri'),
     arbitrajQuery,
     rowsInWindow('fair_play'),
@@ -1802,12 +1820,17 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     rowsInWindow('inventar_miscari'),
     rowsInWindow('hostel'),
     rowsInWindow('treninguri'),
-    rowsInWindow('sarcini'),
+    sb.from('sarcini').select('*').order('created_at'),
+    sb.from('sarcini_istoric_status').select('sarcina_id,schimbat_la')
+      .eq('status_nou','soluționat')
+      .gte('schimbat_la',startedAt)
+      .lte('schimbat_la',endedAt),
     rowsInWindow('observatii'),
   ]);
-  const failed = [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, observatiiR].find(result=>result.error);
+  const failed = [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR].find(result=>result.error);
   if(failed) throw failed.error;
   const inventarById = Object.fromEntries(DB.inventar.map(i=>[i.id,i]));
+  const sarciniSolutionateInSchimb = new Set((sarciniSolutionateR.data||[]).map(row=>row.sarcina_id));
 
   return {
     admin: { data: startedAt.slice(0,10), nume: '' },
@@ -1824,7 +1847,12 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     }),
     hostel: (hostelR.data||[]).map(r=>({ nume: participantName(r.participant_id), camera: r.observatii || '', ora: fmtTime(r.created_at), statut: r.statut })),
     treninguri: (treninguriR.data||[]).map(r=>({ nume: participantName(r.participant_id), antrenor: r.antrenor, data: r.data, ora: r.ora ? String(r.ora).slice(0,5) : '', statut: trainingStatusAt(r, endedAt) })),
-    sarcini: (sarciniR.data||[]).map(r=>({ statut: r.status, descriere: r.descriere || '' })),
+    // Carry every unfinished task into the handover report, even if it was created during an
+    // earlier shift. Completed tasks belong only to the shift in which the exact transition to
+    // "soluționat" happened; the Set also prevents duplicates if a task changed status twice.
+    sarcini: (sarciniR.data||[])
+      .filter(r=>r.status==='nesoluționat' || r.status==='în lucru' || (r.status==='soluționat' && sarciniSolutionateInSchimb.has(r.id)))
+      .map(r=>({ statut: r.status, descriere: r.descriere || '' })),
     observatii: (observatiiR.data||[]).map(r=>({ nume: observationTargetName({participantId:r.participant_id, subiect:r.subiect}), categorie: r.categorie || '', descriere: r.descriere || '' })),
   };
 }
