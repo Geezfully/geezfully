@@ -3331,8 +3331,8 @@ function renderDaune(){
     <div class="table-header"><div class="table-title">${rows.length} ${t('da2_countSuffix')}</div></div>
     <div class="table-scroll"><table>
       <thead><tr><th>Nr.</th><th>${t('th_data')}</th><th>${t('th_participant')}</th><th>${t('da2_th_teren')}</th><th>${t('da2_th_inventarAfectat')}</th><th>${t('da2_th_natura')}</th><th>${t('da2_valoare')}</th><th>${t('da2_avertizor')}</th><th>${t('th_stare')}</th><th>${t('da2_observatii')}</th><th></th></tr></thead>
-      <tbody>${rows.length ? rows.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(d=>`
-        <tr><td class="td-muted">${d.nrSursa||'—'}</td><td class="td-muted">${fmtDate(d.data)}</td><td class="td-name" onclick="openProfile('${d.participantId}')">${esc(participantName(d.participantId))}</td>
+      <tbody>${rows.length ? rows.slice().sort((a,b)=>b.data.localeCompare(a.data)).map((d,idx)=>`
+        <tr><td class="td-muted">${rows.length-idx}</td><td class="td-muted">${fmtDate(d.data)}</td><td class="td-name" onclick="openProfile('${d.participantId}')">${esc(participantName(d.participantId))}</td>
         <td class="td-muted">${esc(d.teren)||'—'}</td>
         <td>${esc(d.inventarAfectat)}</td><td class="td-muted">${esc(d.natura)}</td>
         <td class="td-gold">${Number(d.valoareEstimata||0).toLocaleString(LANG==='ru'?'ru-RU':'ro-RO')} MDL</td><td class="td-muted">${esc(d.avertizor)||'—'}</td>
