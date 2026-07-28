@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-27-linen-stock-source-1">
+<meta name="attp-build" content="2026-07-28-portrait-shift-report-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1131,7 +1131,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-27-linen-stock-source-1';
+const APP_BUILD = '2026-07-28-portrait-shift-report-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -2069,11 +2069,11 @@ function drawActPdfHeader(doc,act,lang){
   doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}`,11,20);
   doc.text(`${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,pageWidth-10,20,{align:'right'});
 }
-function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang){
+function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang,cardsPerRow=3){
   const gap = 2;
   const cardHeight = 7.5;
-  for(let i=0;i<sections.length;i+=2){
-    const pair = sections.slice(i,i+2);
+  for(let i=0;i<sections.length;i+=cardsPerRow){
+    const pair = sections.slice(i,i+cardsPerRow);
     const cardWidth = (width-gap*(pair.length-1))/pair.length;
     pair.forEach((section,index)=>{
       const cardX = x+index*(cardWidth+gap);
@@ -2111,27 +2111,17 @@ function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
   return doc.lastAutoTable.finalY+1.8;
 }
 async function buildActPdfDocument(act,lang,fontSize=6.2){
-  const doc = new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4',compress:true});
+  const doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
   await ensurePdfFont(doc);
   drawActPdfHeader(doc,act,lang);
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 6;
-  const gap = 3;
-  const columnWidth = (pageWidth-margin*2-gap)/2;
+  const contentWidth = pageWidth-margin*2;
   const sections = actSections(act.continut||{},lang);
-  const byKey = Object.fromEntries(sections.map(section=>[section.titleKey,section]));
-  const left = ['act_s_intarzieri','act_s_hostel','act_s_arbitraj','act_s_fairplay','act_s_daune','act_s_inventar'].map(key=>byKey[key]);
-  const right = ['act_s_treninguri','act_s_sarcini','act_s_observatii'].map(key=>byKey[key]);
-  let leftY = 28;
-  const emptyLeft = left.filter(section=>!section.rows.length);
-  if(emptyLeft.length) leftY = drawActPdfEmptyCards(doc,emptyLeft,margin,leftY,columnWidth,fontSize,lang)+.4;
-  left.filter(section=>section.rows.length).forEach(section=>{ leftY=drawActPdfTable(doc,section,margin,leftY,columnWidth,fontSize,lang); });
-  doc.setPage(1);
-  let rightY = 28;
-  const rightX = margin+columnWidth+gap;
-  const emptyRight = right.filter(section=>!section.rows.length);
-  if(emptyRight.length) rightY = drawActPdfEmptyCards(doc,emptyRight,rightX,rightY,columnWidth,fontSize,lang)+.4;
-  right.filter(section=>section.rows.length).forEach(section=>{ rightY=drawActPdfTable(doc,section,rightX,rightY,columnWidth,fontSize,lang); });
+  let y = 28;
+  const emptySections = sections.filter(section=>!section.rows.length);
+  if(emptySections.length) y = drawActPdfEmptyCards(doc,emptySections,margin,y,contentWidth,fontSize,lang,3)+.4;
+  sections.filter(section=>section.rows.length).forEach(section=>{ y=drawActPdfTable(doc,section,margin,y,contentWidth,fontSize,lang); });
   return doc;
 }
 async function exportActPdf(act,lang=actExportLanguage){
