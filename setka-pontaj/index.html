@@ -3798,9 +3798,34 @@
   }
   async function createNativeActPdf(root){
     if (!window.jspdf || !window.jspdf.jsPDF) throw new Error('Biblioteca PDF nu s-a încărcat.');
+
+    // Calculate the final content edge before creating the document. The act
+    // keeps the standard A4 width, while its height follows the rendered
+    // content instead of leaving the unused lower part of an A4 page visible.
+    const serviceRows = Array.from(root.querySelectorAll('[data-act-row]'));
+    if (serviceRows.length !== ITEM_ROWS.length || !root.querySelector('.act-beneficiary-mark') || !root.querySelector('.act-party:not(.act-beneficiary)')) {
+      throw new Error('Structura actului nu este compatibilă cu generatorul PDF vectorial.');
+    }
+    const pageWidth = 210;
+    const fullPageHeight = 297;
+    const pageMargin = 7;
+    const tableY = 89;
+    const headerHeight = 10;
+    const rowHeight = 5.8;
+    const blankRowHeight = 5.4;
+    const summaryRowHeight = 5.8;
+    const partiesHeight = 59;
+    const finalSummaryY = tableY + headerHeight + serviceRows.length * rowHeight
+      + 3 * blankRowHeight + summaryRowHeight;
+    const paymentY = finalSummaryY + 12;
+    const partiesY = paymentY + 13;
+    const contentBottom = partiesY + partiesHeight;
+    // jsPDF treats pages shorter than their width as landscape. This act is
+    // taller than 210 mm, but retain the guard for future layout reductions.
+    const pageHeight = Math.min(fullPageHeight, Math.max(pageWidth + 0.1, Math.ceil((contentBottom + pageMargin * 2) * 10) / 10));
     const pdf = new window.jspdf.jsPDF({
       unit:'mm',
-      format:'a4',
+      format:[pageWidth, pageHeight],
       orientation:'portrait',
       compress:true,
       putOnlyUsedFonts:true,
@@ -3835,8 +3860,8 @@
     };
 
     pdf.setFillColor(255, 255, 255);
-    pdf.rect(0, 0, 210, 297, 'F');
-    drawRect(7, 7, 196, 283);
+    pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+    drawRect(pageMargin, pageMargin, pageWidth - pageMargin * 2, pageHeight - pageMargin * 2);
 
     pdf.setDrawColor(145, 145, 145);
     pdf.setLineWidth(0.28);
@@ -3885,10 +3910,8 @@
     text('Detaliere:', bodyX, 84);
 
     const tableX = bodyX;
-    const tableY = 89;
     const columns = [84, 31, 27, 24];
     const tableWidth = columns.reduce((sum, value) => sum + value, 0);
-    const headerHeight = 10;
     drawRect(tableX, tableY, tableWidth, headerHeight);
     let columnX = tableX;
     columns.slice(0, -1).forEach(width => {
@@ -3902,11 +3925,6 @@
     centered('Volum servicii', tableX + columns[0] + columns[1], tableY + 6.1, columns[2]);
     centered('Onorariu (mdl)', tableX + columns[0] + columns[1] + columns[2], tableY + 6.1, columns[3]);
 
-    const serviceRows = Array.from(root.querySelectorAll('[data-act-row]'));
-    if (serviceRows.length !== ITEM_ROWS.length || !root.querySelector('.act-beneficiary-mark') || !root.querySelector('.act-party:not(.act-beneficiary)')) {
-      throw new Error('Structura actului nu este compatibilă cu generatorul PDF vectorial.');
-    }
-    const rowHeight = 5.8;
     serviceRows.forEach((row, index) => {
       const y = tableY + headerHeight + index * rowHeight;
       const cells = Array.from(row.querySelectorAll('td')).map(cell => cell.textContent.replace(/✎/g, '').replace(/\s+/g, ' ').trim());
@@ -3939,31 +3957,30 @@
     const deductionLabel = deductionRow ? deductionRow.children[0].textContent.trim() : '';
     const deductionValue = deductionRow ? deductionRow.children[1].textContent.trim() : '';
     for (let index = 0; index < 3; index += 1) {
-      drawRect(tableX, currentY, tableWidth, 5.4);
-      pdf.line(tableX + columns[0] + columns[1] + columns[2], currentY, tableX + columns[0] + columns[1] + columns[2], currentY + 5.4);
+      drawRect(tableX, currentY, tableWidth, blankRowHeight);
+      pdf.line(tableX + columns[0] + columns[1] + columns[2], currentY, tableX + columns[0] + columns[1] + columns[2], currentY + blankRowHeight);
       if (index === 0 && deductionRow) {
         setFont('bold', 7.7);
         text(deductionLabel, tableX + 1.5, currentY + 3.7);
         setFont('bold', 7.7, red);
         centered(deductionValue, tableX + columns[0] + columns[1] + columns[2], currentY + 3.7, columns[3]);
       }
-      currentY += 5.4;
+      currentY += blankRowHeight;
     }
     const totalLabelWidth = columns[0] + columns[1] + columns[2];
-    drawRect(tableX, currentY, tableWidth, 5.8);
-    pdf.line(tableX + totalLabelWidth, currentY, tableX + totalLabelWidth, currentY + 5.8);
+    drawRect(tableX, currentY, tableWidth, summaryRowHeight);
+    pdf.line(tableX + totalLabelWidth, currentY, tableX + totalLabelWidth, currentY + summaryRowHeight);
     setFont('bold', 8);
     text('TOTAL SPRE PLATĂ', tableX + totalLabelWidth - 2, currentY + 4, { align:'right' });
     centered(actPdfText(root, '#actTotal', '0'), tableX + totalLabelWidth, currentY + 4, columns[3]);
-    currentY += 5.8;
-    drawRect(tableX, currentY, tableWidth, 5.8);
-    pdf.line(tableX + totalLabelWidth, currentY, tableX + totalLabelWidth, currentY + 5.8);
+    currentY += summaryRowHeight;
+    drawRect(tableX, currentY, tableWidth, summaryRowHeight);
+    pdf.line(tableX + totalLabelWidth, currentY, tableX + totalLabelWidth, currentY + summaryRowHeight);
     setFont('italic', 8, red);
     text(`inclusiv impozit ${fmtMoney(ACT_TAX_RATE * 100)}%`, tableX + totalLabelWidth - 2, currentY + 4, { align:'right' });
     setFont('bold', 8, red);
     centered(actPdfText(root, '#actTax', '0'), tableX + totalLabelWidth, currentY + 4, columns[3]);
 
-    const paymentY = currentY + 12;
     setFont('bold', 9);
     text('4', sectionX, paymentY);
     setFont('normal', 8.7);
@@ -3975,13 +3992,11 @@
       4
     );
 
-    const partiesY = paymentY + 13;
     const beneficiaryX = bodyX;
     const beneficiaryWidth = 72;
     const providerNoX = 108;
     const providerX = 116;
     const providerWidth = 76;
-    const partiesHeight = 59;
     setFont('bold', 9);
     text('5', sectionX, partiesY + 4);
     text('6', providerNoX, partiesY + 4);
@@ -4056,11 +4071,13 @@
     });
     if (!canvas.width || !canvas.height) throw new Error('Documentul nu a putut fi randat.');
 
-    const pdf = new window.jspdf.jsPDF({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+    const pageWidth = 210;
+    const fullPageHeight = 297;
     const margin = 7;
     const maxWidth = pageWidth - margin * 2;
+    const naturalImageHeight = canvas.height * maxWidth / canvas.width;
+    const pageHeight = Math.min(fullPageHeight, Math.max(pageWidth + 0.1, naturalImageHeight + margin * 2));
+    const pdf = new window.jspdf.jsPDF({ unit:'mm', format:[pageWidth, pageHeight], orientation:'portrait', compress:true });
     const maxHeight = pageHeight - margin * 2;
     let imageWidth = maxWidth;
     let imageHeight = canvas.height * imageWidth / canvas.width;
