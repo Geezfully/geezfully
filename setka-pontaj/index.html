@@ -1030,6 +1030,14 @@
               </label>
             </div>
           </section>
+          <section class="detail-card">
+            <h3 class="detail-card-title">Alte Compensări</h3>
+            <div class="field">
+              <label>Sumă dedusă (MDL)</label>
+              <input type="number" id="dAlteCompensari" step="0.01" min="0">
+              <small style="color:var(--muted); font-size:11.5px; display:block; margin-top:4px">Se scade din onorariu înainte de impozit — resetează la 0 în fiecare lună.</small>
+            </div>
+          </section>
         </div>
 
         <p class="section-label" style="display:none">Scoruri manuale (opțional)</p>
@@ -2110,7 +2118,7 @@
       'Turneu zi','Turneu noapte','Meciuri zi','Meciuri noapte',
       'Locul I zi','Locul I noapte','Locul III zi','Locul III noapte',
       'Arbitraj zi','Arbitraj noapte','Regiune','Km','Taxi acoperit','Total transport (MDL)',
-      'Onorariu (MDL)','Impozit (%)','Impozit (MDL)','Total cu impozit (MDL)',
+      'Alte compensări (MDL)','Onorariu (MDL)','Impozit (%)','Impozit (MDL)','Total cu impozit (MDL)',
       'Notițe','Ultima actualizare'
     ];
     const rows = referees.slice()
@@ -2128,6 +2136,7 @@
           entry.place1_day || 0, entry.place1_night || 0, entry.place3_day || 0, entry.place3_night || 0,
           entry.arbitraj_day || 0, entry.arbitraj_night || 0, entry.region || '', exportNumber(ref.km || 0),
           ref.taxi_covered ? 'Da' : 'Nu', exportNumber(entry.transport_total || 0),
+          exportNumber(-(entry.alte_compensari || 0)),
           exportNumber(fee), exportNumber((globalRates.tax_rate || 0) * 100), exportNumber(tax), exportNumber(fee + tax),
           entry.notes || '', entry.updated_at || ''
         ];
@@ -2215,7 +2224,7 @@
     total += (entry.place3_night||0)     * (rc.place3_night||0);
     total += (entry.arbitraj_day||0)     * (globalRates.arbitraj_day||0);
     total += (entry.arbitraj_night||0)   * (globalRates.arbitraj_night||0);
-    return total;
+    return total - Number(entry.alte_compensari || 0);
   }
 
   function emptyEntry(refereeId){
@@ -2223,7 +2232,7 @@
       tournament_day:0, tournament_night:0, matches_day:0, matches_night:0,
       place1_day:0, place1_night:0, place3_day:0, place3_night:0,
       arbitraj_day:0, arbitraj_night:0, taxi:0, region:'', km:0,
-      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, notes:'' };
+      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, alte_compensari:0, notes:'' };
   }
 
   function hasActivity(entry){
@@ -2573,7 +2582,8 @@
     document.getElementById('dTaxiCovered').checked = ref.taxi_covered === true;
     document.getElementById('dTransportTotal').value = computeTransportAuto(ref, entry);
     document.getElementById('dTransportHint').textContent = transportHintText(ref, entry);
-    ['dRegion','dKm','dTaxiCovered','dNotes'].forEach(id => { document.getElementById(id).disabled = periodLocked; });
+    document.getElementById('dAlteCompensari').value = entry.alte_compensari || 0;
+    ['dRegion','dKm','dTaxiCovered','dNotes','dAlteCompensari'].forEach(id => { document.getElementById(id).disabled = periodLocked; });
     document.getElementById('dKm').oninput = () => {
       ref.km = Number(document.getElementById('dKm').value) || 0;
       refreshTransportField();
@@ -3238,6 +3248,7 @@
     if (ref) { ref.taxi_covered = taxiCoveredChecked; ref.km = kmValue; }
     entry.region = document.getElementById('dRegion').value;
     entry.transport_total = computeTransportAuto(ref, entry);
+    entry.alte_compensari = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
     entry.notes = document.getElementById('dNotes').value;
     await saveEntry(refId);
 
@@ -3556,7 +3567,8 @@
       contract_number: entry.contract_number || ref.contract_number,
       contract_date: entry.contract_date || ref.contract_date,
     };
-    _actState = { refId, ref, snap, category, period: currentPeriod, total: 0, tax: 0, viewOnly: false };
+    const alteCompensari = Number(entry.alte_compensari || 0);
+    _actState = { refId, ref, snap, category, period: currentPeriod, total: 0, tax: 0, alteCompensari, viewOnly: false };
     setActEditable(true);
     let total = 0;
     const rows = ITEM_ROWS.map(([key,label], index) => {
@@ -3571,8 +3583,9 @@
         <td class="r" data-act-fee>${fmtMoney(fee)}</td>
       </tr>`;
     }).join('');
-    const tax = total * ACT_TAX_RATE;
-    const totalIncludingTax = total + tax;
+    const netTotal = total - alteCompensari;
+    const tax = netTotal * ACT_TAX_RATE;
+    const totalIncludingTax = netTotal + tax;
     const monthLabel = `${MONTH_NAMES_RO[currentPeriod.getMonth()]} ${currentPeriod.getFullYear()}`;
     const taxPercent = fmtMoney(ACT_TAX_RATE * 100);
     const participantBic = bicForParticipant(snap);
@@ -3619,10 +3632,11 @@
             <thead><tr><th>Categoria calcul</th><th>Regim calcul<br>(mdl)</th><th>Volum servicii</th><th>Onorariu (mdl)</th></tr></thead>
             <tbody>
               ${rows}
+              ${alteCompensari > 0 ? `<tr class="act-total-row" data-act-deduction><td colspan="3">Alte Compensări</td><td class="r">-${fmtMoney(alteCompensari)}</td></tr>` : ''}
               <tr class="act-blank-row"><td colspan="3"></td><td></td></tr>
               <tr class="act-blank-row"><td colspan="3"></td><td></td></tr>
               <tr class="act-blank-row"><td colspan="3"></td><td></td></tr>
-              <tr class="act-total-row"><td colspan="3">TOTAL SPRE PLATĂ</td><td class="r" id="actTotal">${fmtMoney(total)}</td></tr>
+              <tr class="act-total-row"><td colspan="3">TOTAL SPRE PLATĂ</td><td class="r" id="actTotal">${fmtMoney(netTotal)}</td></tr>
               <tr class="act-tax-row"><td colspan="3">inclusiv impozit ${taxPercent}%</td><td class="r" id="actTax">${fmtMoney(totalIncludingTax)}</td></tr>
             </tbody>
           </table>
@@ -3687,7 +3701,7 @@
       selection.removeAllRanges();
       selection.addRange(range);
     };
-    _actState.total = total;
+    _actState.total = netTotal;
     _actState.tax = tax;
     actModal.classList.add('show');
   }
@@ -3716,12 +3730,13 @@
       row.querySelector('[data-act-fee]').textContent = fmtMoney(fee);
       total += fee;
     });
-    const tax = total * ACT_TAX_RATE;
-    const totalIncludingTax = total + tax;
-    document.getElementById('actTotal').textContent = fmtMoney(total);
+    const netTotal = total - (_actState?.alteCompensari || 0);
+    const tax = netTotal * ACT_TAX_RATE;
+    const totalIncludingTax = netTotal + tax;
+    document.getElementById('actTotal').textContent = fmtMoney(netTotal);
     document.getElementById('actTax').textContent = fmtMoney(totalIncludingTax);
     if (_actState) {
-      _actState.total = total;
+      _actState.total = netTotal;
       _actState.tax = tax;
       if (!_actState.viewOnly) resetSaveActBtn();  // rates/volumes changed — the previous save no longer matches
     }
@@ -3917,9 +3932,21 @@
     });
 
     let currentY = tableY + headerHeight + serviceRows.length * rowHeight;
+    // Read the deduction line straight from the DOM (works for a freshly-opened
+    // act and for a re-downloaded archived act's cloned snapshot alike) rather
+    // than trusting in-memory _actState, which archived acts don't repopulate.
+    const deductionRow = root.querySelector('[data-act-deduction]');
+    const deductionLabel = deductionRow ? deductionRow.children[0].textContent.trim() : '';
+    const deductionValue = deductionRow ? deductionRow.children[1].textContent.trim() : '';
     for (let index = 0; index < 3; index += 1) {
       drawRect(tableX, currentY, tableWidth, 5.4);
       pdf.line(tableX + columns[0] + columns[1] + columns[2], currentY, tableX + columns[0] + columns[1] + columns[2], currentY + 5.4);
+      if (index === 0 && deductionRow) {
+        setFont('bold', 7.7);
+        text(deductionLabel, tableX + 1.5, currentY + 3.7);
+        setFont('bold', 7.7, red);
+        centered(deductionValue, tableX + columns[0] + columns[1] + columns[2], currentY + 3.7, columns[3]);
+      }
       currentY += 5.4;
     }
     const totalLabelWidth = columns[0] + columns[1] + columns[2];
