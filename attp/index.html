@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260719-livetag">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
   .hero-stage{
     position:relative; isolation:isolate; overflow:hidden;
@@ -76,9 +77,46 @@
     padding:56px 24px 64px; display:grid; grid-template-columns:1.1fr .9fr;
     gap:56px; align-items:start;
   }
-  .scoreboard-intro{ padding-top:10px; max-width:480px; }
+  .scoreboard-visual{ min-width:0; }
+  .scoreboard-intro{ position:relative; z-index:3; padding-top:10px; max-width:480px; }
   .scoreboard-intro h2{ margin-top:12px; }
   .scoreboard-intro p{ margin-top:14px; color:var(--chalk-dim); }
+  .pingpong-model-shell{
+    position:relative; min-height:390px; margin-top:-24px; overflow:hidden;
+    border-radius:var(--radius-lg);
+    background:
+      radial-gradient(circle at 54% 48%,rgba(255,107,53,.18),transparent 22%),
+      radial-gradient(circle at 55% 54%,rgba(41,197,194,.13),transparent 48%);
+  }
+  .pingpong-model-shell::before,
+  .pingpong-model-shell::after{
+    content:''; position:absolute; left:50%; top:53%; border:1px solid rgba(41,197,194,.16);
+    border-radius:50%; transform:translate(-50%,-50%) rotate(-12deg); pointer-events:none;
+  }
+  .pingpong-model-shell::before{ width:300px; height:160px; }
+  .pingpong-model-shell::after{ width:220px; height:115px; border-color:rgba(255,107,53,.18); }
+  .pingpong-model{
+    position:relative; z-index:2; display:block; width:100%; height:390px;
+    background:transparent; --poster-color:transparent; cursor:grab;
+    filter:drop-shadow(0 28px 34px rgba(1,7,14,.45));
+  }
+  .pingpong-model:active{ cursor:grabbing; }
+  .pingpong-model-fallback{
+    position:absolute; z-index:1; left:50%; top:52%; width:154px; aspect-ratio:1;
+    border-radius:50%; transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 34% 28%,#fff 0%,#f3f1ec 48%,#c9c4bb 100%);
+    box-shadow:inset -18px -22px 30px rgba(25,40,55,.18),0 28px 40px rgba(1,7,14,.42);
+    transition:opacity .25s ease;
+  }
+  .pingpong-model-shell.is-loaded .pingpong-model-fallback{ opacity:0; }
+  model-viewer:not(:defined) ~ .model-hint,
+  .pingpong-model-shell.has-error .model-hint{ display:none; }
+  .model-hint{
+    position:absolute; z-index:3; left:50%; bottom:14px; transform:translateX(-50%);
+    padding:6px 10px; border:1px solid var(--border); border-radius:999px;
+    background:rgba(7,20,33,.72); color:var(--muted); font:600 10px/1 var(--font-mono);
+    letter-spacing:.06em; text-transform:uppercase; white-space:nowrap;
+  }
   .scoreboard-stage .scoreboard{
     width:100%;
     background:rgba(12,29,49,.88); border-color:rgba(183,202,224,.2);
@@ -95,6 +133,8 @@
     }
     .hero{ grid-template-columns:1fr; padding:44px 24px 52px; }
     .scoreboard-layout{ grid-template-columns:1fr; gap:32px; }
+    .scoreboard-visual{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr); align-items:center; }
+    .pingpong-model-shell{ margin-top:0; }
   }
   @media (max-width:600px){
     .hero-stage{ min-height:0; }
@@ -105,6 +145,10 @@
     .hero{ padding:36px 18px 40px; }
     .scoreboard-layout{ padding:40px 18px 44px; gap:24px; }
     .scoreboard-intro{ padding-top:0; }
+    .scoreboard-visual{ display:block; }
+    .pingpong-model-shell{ min-height:300px; margin-top:-12px; }
+    .pingpong-model{ height:300px; }
+    .model-hint{ display:none; }
   }
 
   .rank-strip{
@@ -252,10 +296,33 @@
 
   <section class="scoreboard-stage" aria-labelledby="recent-results-title">
     <div class="container scoreboard-layout">
-      <div class="scoreboard-intro">
-        <div class="eyebrow">Rezultate</div>
-        <h2 id="recent-results-title">Cele mai recente meciuri</h2>
-        <p>Scorurile turneelor ATTP, sincronizate automat din Setka Cup.</p>
+      <div class="scoreboard-visual">
+        <div class="scoreboard-intro">
+          <div class="eyebrow">Rezultate</div>
+          <h2 id="recent-results-title">Cele mai recente meciuri</h2>
+          <p>Scorurile turneelor ATTP, sincronizate automat din Setka Cup.</p>
+        </div>
+        <div class="pingpong-model-shell" id="pingpongModelShell">
+          <model-viewer
+            id="pingpongModel"
+            class="pingpong-model"
+            src="models/pingpong.glb"
+            alt="Model 3D interactiv al unei mingi de tenis de masă"
+            camera-controls
+            disable-pan
+            touch-action="pan-y"
+            auto-rotate
+            auto-rotate-delay="0"
+            rotation-per-second="10deg"
+            camera-orbit="30deg 72deg 115%"
+            field-of-view="28deg"
+            shadow-intensity="1.2"
+            exposure="1.05"
+            loading="lazy"
+            interaction-prompt="none"></model-viewer>
+          <div class="pingpong-model-fallback" aria-hidden="true"></div>
+          <span class="model-hint" aria-hidden="true">Trage pentru a roti</span>
+        </div>
       </div>
       <div class="scoreboard">
         <div class="scoreboard-head">
@@ -378,6 +445,17 @@ function countUp(el, target, {duration = 1400, format = n => n.toLocaleString('r
   }
   requestAnimationFrame(tick);
 }
+
+const pingPongModel = document.getElementById('pingpongModel');
+const pingPongModelShell = document.getElementById('pingpongModelShell');
+if (pingPongModel && pingPongModelShell) {
+  pingPongModel.addEventListener('load', () => pingPongModelShell.classList.add('is-loaded'), { once:true });
+  pingPongModel.addEventListener('error', () => pingPongModelShell.classList.add('has-error'), { once:true });
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.customElements) {
+    customElements.whenDefined('model-viewer').then(() => { pingPongModel.autoRotate = false; });
+  }
+}
+
 (async function(){
   const [results, ranked, news, partners, tournRows] = await Promise.all([
     fetchRecentResults(6), fetchTopRanked(6), fetchNews(3), fetchPartners(),
