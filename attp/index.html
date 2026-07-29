@@ -97,10 +97,9 @@
   .pingpong-model-shell::after{ width:220px; height:115px; border-color:rgba(255,107,53,.18); }
   .pingpong-model{
     position:relative; z-index:2; display:block; width:100%; height:390px;
-    background:transparent; --poster-color:transparent; cursor:grab;
+    background:transparent; --poster-color:transparent; pointer-events:none;
     filter:drop-shadow(0 28px 34px rgba(1,7,14,.45));
   }
-  .pingpong-model:active{ cursor:grabbing; }
   .pingpong-model-fallback{
     position:absolute; z-index:1; left:50%; top:52%; width:112px; aspect-ratio:1;
     border-radius:50%; transform:translate(-50%,-50%);
@@ -109,14 +108,6 @@
     transition:opacity .25s ease;
   }
   .pingpong-model-shell.is-loaded .pingpong-model-fallback{ opacity:0; }
-  model-viewer:not(:defined) ~ .model-hint,
-  .pingpong-model-shell.has-error .model-hint{ display:none; }
-  .model-hint{
-    position:absolute; z-index:3; left:50%; bottom:14px; transform:translateX(-50%);
-    padding:6px 10px; border:1px solid var(--border); border-radius:999px;
-    background:rgba(7,20,33,.72); color:var(--muted); font:600 10px/1 var(--font-mono);
-    letter-spacing:.06em; text-transform:uppercase; white-space:nowrap;
-  }
   .scoreboard-stage .scoreboard{
     width:100%;
     background:rgba(12,29,49,.88); border-color:rgba(183,202,224,.2);
@@ -148,7 +139,6 @@
     .scoreboard-visual{ display:block; }
     .pingpong-model-shell{ min-height:300px; margin-top:-12px; }
     .pingpong-model{ height:300px; }
-    .model-hint{ display:none; }
   }
 
   .rank-strip{
@@ -308,9 +298,6 @@
             class="pingpong-model"
             src="models/pingpong.glb"
             alt="Model 3D interactiv al unei mingi de tenis de masă"
-            camera-controls
-            disable-pan
-            touch-action="pan-y"
             auto-rotate
             auto-rotate-delay="0"
             rotation-per-second="10deg"
@@ -318,10 +305,8 @@
             field-of-view="28deg"
             shadow-intensity="1.2"
             exposure="1.05"
-            loading="lazy"
-            interaction-prompt="none"></model-viewer>
+            loading="lazy"></model-viewer>
           <div class="pingpong-model-fallback" aria-hidden="true"></div>
-          <span class="model-hint" aria-hidden="true">Trage pentru a roti</span>
         </div>
       </div>
       <div class="scoreboard">
