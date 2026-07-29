@@ -171,13 +171,32 @@
   }
   .campaign-stage::after{
     content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-    background:radial-gradient(ellipse 70% 70% at 14% 44%,rgba(255,255,255,.4),transparent 70%);
+    background:
+      radial-gradient(ellipse 58% 76% at 76% 50%,rgba(242,242,238,.94) 0%,rgba(242,242,238,.78) 28%,rgba(242,242,238,.2) 55%,transparent 72%),
+      radial-gradient(ellipse 70% 70% at 14% 44%,rgba(255,255,255,.4),transparent 70%);
   }
   .campaign-inner{
     width:min(1280px,100%); min-height:100svh; margin:0 auto; padding:clamp(40px,8vw,72px) clamp(20px,4vw,32px);
     display:flex; align-items:center;
   }
-  .campaign-content{ max-width:560px; }
+  .campaign-content{ position:relative; z-index:2; max-width:560px; }
+  .campaign-model-shell{
+    position:absolute; z-index:1; right:2%; top:50%; width:min(48vw,650px); height:min(72vh,620px);
+    transform:translateY(-50%); pointer-events:none;
+  }
+  .campaign-model{
+    display:block; width:100%; height:100%; background:transparent; --poster-color:transparent;
+    pointer-events:none; transform:scale(.66); transform-origin:center;
+    filter:drop-shadow(0 34px 46px rgba(25,40,55,.22));
+  }
+  .campaign-model-fallback{
+    position:absolute; left:50%; top:50%; width:clamp(120px,16vw,220px); aspect-ratio:1;
+    transform:translate(-50%,-50%); border-radius:50%;
+    background:radial-gradient(circle at 34% 28%,#fff 0%,#f3f1ec 48%,#c9c4bb 100%);
+    box-shadow:inset -22px -28px 34px rgba(25,40,55,.16),0 32px 48px rgba(25,40,55,.2);
+    transition:opacity .25s ease;
+  }
+  .campaign-model-shell.is-loaded .campaign-model-fallback{ opacity:0; }
   .campaign-kicker{
     display:inline-flex; align-items:center; gap:9px; margin-bottom:22px; padding:7px 13px;
     border:1px solid rgba(25,40,55,.18); border-radius:999px; background:rgba(242,242,238,.6);
@@ -212,6 +231,10 @@
   @media (max-width:700px){
     .campaign-stage::before{ background:linear-gradient(90deg,rgba(242,242,238,.94),rgba(242,242,238,.7)); }
     .campaign-inner{ align-items:flex-end; padding-bottom:clamp(64px,14vw,96px); }
+    .campaign-model-shell{
+      right:50%; top:30%; width:94vw; height:46vh; transform:translate(50%,-50%); opacity:.82;
+    }
+    .campaign-model{ transform:scale(.58); }
   }
   @media (prefers-reduced-motion:reduce){
     .campaign-reveal,.campaign-stage.is-visible .campaign-reveal{ opacity:1; transform:none; animation:none; }
@@ -428,6 +451,22 @@
     <video class="campaign-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
       <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260518_003132_8b7edcb6-c64d-4a52-a9ca-879942e122ad.mp4" type="video/mp4">
     </video>
+    <div class="campaign-model-shell" id="campaignModelShell" aria-hidden="true">
+      <model-viewer
+        id="campaignPingPongModel"
+        class="campaign-model"
+        src="models/pingpong.glb"
+        alt=""
+        auto-rotate
+        auto-rotate-delay="0"
+        rotation-per-second="8deg"
+        camera-orbit="30deg 72deg 155%"
+        field-of-view="28deg"
+        shadow-intensity="1.1"
+        exposure="1.08"
+        loading="lazy"></model-viewer>
+      <div class="campaign-model-fallback"></div>
+    </div>
     <div class="campaign-inner">
       <div class="campaign-content">
         <div class="campaign-kicker campaign-reveal" style="--campaign-delay:0s">ATTP · Republica Moldova</div>
@@ -544,7 +583,16 @@ if (pingPongModel && pingPongModelShell) {
 const campaignStage = document.getElementById('campaignStage');
 if (campaignStage) {
   const campaignVideo = campaignStage.querySelector('.campaign-video');
+  const campaignModel = document.getElementById('campaignPingPongModel');
+  const campaignModelShell = document.getElementById('campaignModelShell');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (campaignModel && campaignModelShell) {
+    campaignModel.addEventListener('load', () => campaignModelShell.classList.add('is-loaded'), { once:true });
+    campaignModel.addEventListener('error', () => campaignModelShell.classList.add('has-error'), { once:true });
+    if (reduceMotion && window.customElements) {
+      customElements.whenDefined('model-viewer').then(() => { campaignModel.autoRotate = false; });
+    }
+  }
   if ('IntersectionObserver' in window) {
     const campaignObserver = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) campaignStage.classList.add('is-visible');
