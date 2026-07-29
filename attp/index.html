@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://db.onlinewebfonts.com/c/04e6981992c0e2e7642af2074ebe3901?family=Helvetica+Now+Display+Bold" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260719-livetag">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
@@ -147,6 +149,73 @@
     .pingpong-model-shell{ min-height:220px; margin-top:-8px; }
     .pingpong-model{ height:220px; }
     .scoreboard-stage #scoreboardBody{ max-height:430px; }
+  }
+
+  /* ── Full-screen campaign panel ── */
+  .campaign-stage{
+    --campaign-heading:'Helvetica Now Display Bold',sans-serif;
+    --campaign-body:'Inter',sans-serif;
+    --campaign-text:#192837;
+    --campaign-accent:#7342e2;
+    position:relative; isolation:isolate; min-height:100svh; overflow:hidden;
+    color:var(--campaign-text); background:#cfc8c5; font-family:var(--campaign-body);
+  }
+  .campaign-video{
+    position:absolute; inset:0; z-index:-3; width:100%; height:100%; object-fit:cover;
+  }
+  .campaign-stage::before{
+    content:''; position:absolute; inset:0; z-index:-2; pointer-events:none;
+    background:
+      linear-gradient(90deg,rgba(242,242,238,.96) 0%,rgba(242,242,238,.86) 38%,rgba(242,242,238,.28) 70%,rgba(242,242,238,.12) 100%),
+      linear-gradient(180deg,rgba(242,242,238,.16),rgba(242,242,238,.3));
+  }
+  .campaign-stage::after{
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(ellipse 70% 70% at 14% 44%,rgba(255,255,255,.4),transparent 70%);
+  }
+  .campaign-inner{
+    width:min(1280px,100%); min-height:100svh; margin:0 auto; padding:clamp(40px,8vw,72px) clamp(20px,4vw,32px);
+    display:flex; align-items:center;
+  }
+  .campaign-content{ max-width:560px; }
+  .campaign-kicker{
+    display:inline-flex; align-items:center; gap:9px; margin-bottom:22px; padding:7px 13px;
+    border:1px solid rgba(25,40,55,.18); border-radius:999px; background:rgba(242,242,238,.6);
+    font-size:11px; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
+    -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  }
+  .campaign-kicker::before{ content:''; width:7px; height:7px; border-radius:50%; background:var(--campaign-accent); }
+  .campaign-heading{
+    margin:0 0 24px; max-width:560px; color:var(--campaign-text); font-family:var(--campaign-heading);
+    font-size:clamp(1.65rem,5vw,3rem); line-height:1.05; letter-spacing:-.01em;
+  }
+  .campaign-icon{ width:24px; height:24px; position:relative; top:-2px; display:inline-block; vertical-align:middle; color:currentColor; }
+  .campaign-copy{
+    max-width:560px; margin:0; font-size:clamp(.9rem,2.5vw,1.1rem); line-height:1.65; opacity:.8;
+  }
+  .campaign-cta{
+    display:flex; align-items:center; justify-content:space-between; gap:32px; width:max-content; min-width:210px;
+    margin-top:30px; padding:17px 24px; border-radius:50px; background:var(--campaign-accent); color:#fff;
+    font-family:var(--campaign-body); font-size:clamp(.9rem,2vw,1rem); font-weight:600;
+    box-shadow:0 4px 24px rgba(115,66,226,.28);
+    transition:transform .2s ease,filter .2s ease,box-shadow .2s ease;
+  }
+  .campaign-cta:hover{ transform:scale(1.04); filter:brightness(1.1); box-shadow:0 8px 30px rgba(115,66,226,.34); }
+  .campaign-cta:active{ transform:scale(.96); }
+  .campaign-cta:focus-visible{ outline:3px solid rgba(115,66,226,.35); outline-offset:4px; }
+  .campaign-reveal{ opacity:0; transform:translateY(28px); }
+  .campaign-stage.is-visible .campaign-reveal{
+    animation:campaignFadeUp .6s cubic-bezier(.22,1,.36,1) forwards;
+    animation-delay:var(--campaign-delay,0s);
+  }
+  @keyframes campaignFadeUp{ to{ opacity:1; transform:none; } }
+  @media (max-width:700px){
+    .campaign-stage::before{ background:linear-gradient(90deg,rgba(242,242,238,.94),rgba(242,242,238,.7)); }
+    .campaign-inner{ align-items:flex-end; padding-bottom:clamp(64px,14vw,96px); }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .campaign-reveal,.campaign-stage.is-visible .campaign-reveal{ opacity:1; transform:none; animation:none; }
+    .campaign-video{ display:none; }
   }
 
   .rank-strip{
@@ -355,6 +424,29 @@
     </div>
   </section>
 
+  <section class="campaign-stage" id="campaignStage" aria-labelledby="campaign-title">
+    <video class="campaign-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260518_003132_8b7edcb6-c64d-4a52-a9ca-879942e122ad.mp4" type="video/mp4">
+    </video>
+    <div class="campaign-inner">
+      <div class="campaign-content">
+        <div class="campaign-kicker campaign-reveal" style="--campaign-delay:0s">ATTP · Republica Moldova</div>
+        <h2 class="campaign-heading campaign-reveal" id="campaign-title" style="--campaign-delay:.15s">
+          <svg class="campaign-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9-11a.5.5 0 0 1 .87.45l-1.69 6.7A1 1 0 0 0 11.37 9H20a1 1 0 0 1 .78 1.63l-9 11a.5.5 0 0 1-.87-.45l1.69-6.7a1 1 0 0 0-.97-.48z"/></svg>
+          Aprinde jocul. Transformă fiecare meci
+          <svg class="campaign-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/><path d="m9 12 2 2 4-4"/></svg>
+          în progres. Lasă-ți amprenta
+          <svg class="campaign-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .13-5.12 0-6"/><path d="M5 19.5c.5-1.5.8-3.3.8-5.5a6.2 6.2 0 0 1 .2-1.5"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></svg>
+        </h2>
+        <p class="campaign-copy campaign-reveal" style="--campaign-delay:.3s">Turnee constante, clasamente actualizate și o comunitate construită în jurul performanței. ATTP îți oferă locul în care fiecare punct devine parte din parcursul tău.</p>
+        <a href="players.html" class="campaign-cta campaign-reveal" style="--campaign-delay:.45s">
+          <span>Intră în clasament</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m12 16 4-4-4-4"/><path d="M8 12h8"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <section class="container section-tight">
     <div class="eyebrow">Actualități</div>
     <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
@@ -446,6 +538,24 @@ if (pingPongModel && pingPongModelShell) {
   pingPongModel.addEventListener('error', () => pingPongModelShell.classList.add('has-error'), { once:true });
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && window.customElements) {
     customElements.whenDefined('model-viewer').then(() => { pingPongModel.autoRotate = false; });
+  }
+}
+
+const campaignStage = document.getElementById('campaignStage');
+if (campaignStage) {
+  const campaignVideo = campaignStage.querySelector('.campaign-video');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if ('IntersectionObserver' in window) {
+    const campaignObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) campaignStage.classList.add('is-visible');
+      if (campaignVideo && !reduceMotion) {
+        if (entry.isIntersecting) campaignVideo.play().catch(() => {});
+        else campaignVideo.pause();
+      }
+    }, { threshold:.2 });
+    campaignObserver.observe(campaignStage);
+  } else {
+    campaignStage.classList.add('is-visible');
   }
 }
 
