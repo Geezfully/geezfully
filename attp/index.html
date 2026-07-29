@@ -199,8 +199,7 @@
   .tourn-pos{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:9px; flex:0 0 auto; }
   .tourn-pos.gold{ background:var(--spin-dim); color:var(--spin-hi); }
   .homepage-flow{
-    position:relative; isolation:isolate; overflow:clip; background:var(--ink);
-    padding-bottom:clamp(340px,24vw,460px);
+    position:relative; z-index:0; isolation:isolate; overflow:visible; background:var(--ink);
   }
   .homepage-flow::before{
     content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
@@ -218,6 +217,7 @@
     filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
   }
   .homepage-flow > .section-tight{ position:relative; z-index:2; }
+  .homepage-flow + .section-tight{ position:relative; z-index:2; }
   .homepage-flow .rank-strip,
   .homepage-flow #tournGrid{ position:relative; z-index:2; }
   .homepage-flow .rank-card,
@@ -225,12 +225,11 @@
     background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
   @media (max-width:900px){
-    .homepage-flow{ padding-bottom:120px; }
+    html,body{ overflow-x:clip; }
     .homepage-flow-player{ top:300px; right:-96px; width:500px; opacity:.5; }
     .homepage-flow-ball{ top:54px; right:24px; width:46px; opacity:.82; }
   }
   @media (max-width:600px){
-    .homepage-flow{ padding-bottom:80px; }
     .homepage-flow-player{ top:360px; right:-112px; width:420px; opacity:.28; }
     .homepage-flow-ball{ top:80px; right:18px; width:38px; opacity:.72; }
   }
