@@ -198,46 +198,30 @@
   .tourn-mini-row:first-of-type{ border-top:0; }
   .tourn-pos{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:9px; flex:0 0 auto; }
   .tourn-pos.gold{ background:var(--spin-dim); color:var(--spin-hi); }
-  .tournament-showcase{
-    position:relative; isolation:isolate; overflow:hidden; padding:clamp(24px,3.2vw,40px);
-    border:1px solid rgba(83,154,211,.24); border-radius:var(--radius-lg);
-    background:
-      radial-gradient(620px 340px at 88% 8%,rgba(41,197,194,.16),transparent 68%),
-      linear-gradient(135deg,#0b1d30 0%,#102b45 54%,#123b5b 100%);
-    box-shadow:0 28px 64px rgba(2,8,16,.28);
+  .homepage-flow{
+    position:relative; isolation:isolate; overflow:clip; background:var(--ink);
   }
-  .tournament-showcase::before{
-    content:''; position:absolute; z-index:-1; inset:auto -90px -170px auto; width:420px; height:420px;
-    border:1px solid rgba(255,196,55,.11); border-radius:50%; pointer-events:none;
+  .homepage-flow::before{
+    content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
+    background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
   }
-  .tournament-showcase-head{
-    display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,420px); gap:clamp(28px,4vw,56px);
-    align-items:center; margin-bottom:28px;
+  .homepage-flow-player{
+    position:absolute; z-index:1; top:110px; right:clamp(-90px,-3vw,-24px); width:clamp(500px,43vw,680px);
+    height:auto; opacity:.88; pointer-events:none; user-select:none;
+    filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
   }
-  .tournament-showcase-copy{ min-width:0; }
-  .tournament-showcase-title{ display:flex; align-items:end; justify-content:space-between; gap:20px; flex-wrap:wrap; }
-  .tournament-showcase-art{
-    position:relative; display:block; overflow:hidden; width:100%; aspect-ratio:369/210;
-    border:1px solid rgba(183,202,224,.24); border-radius:18px; background:#347db5;
-    box-shadow:0 18px 38px rgba(3,12,23,.34);
+  .homepage-flow > .section-tight{ position:relative; z-index:2; }
+  .homepage-flow .rank-strip,
+  .homepage-flow #tournGrid{ position:relative; z-index:2; }
+  .homepage-flow .rank-card,
+  .homepage-flow .tourn-mini{
+    background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
-  .tournament-showcase-art::after{
-    content:''; position:absolute; inset:0; pointer-events:none;
-    background:linear-gradient(90deg,rgba(7,20,33,.1),transparent 52%),linear-gradient(180deg,transparent 68%,rgba(7,20,33,.16));
-    box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  @media (max-width:900px){
+    .homepage-flow-player{ top:220px; right:-150px; width:560px; opacity:.54; }
   }
-  .tournament-showcase-art img{
-    display:block; width:100%; height:100%; object-fit:cover; filter:saturate(.86) contrast(1.04) hue-rotate(-5deg);
-  }
-  .tournament-showcase .tourn-mini{ background:rgba(10,27,45,.84); border-color:rgba(183,202,224,.18); }
-  @media (max-width:850px){
-    .tournament-showcase-head{ grid-template-columns:1fr; }
-    .tournament-showcase-art{ width:min(100%,560px); }
-  }
-  @media (max-width:520px){
-    .tournament-showcase{ margin-inline:-2px; border-radius:16px; }
-    .tournament-showcase-head{ gap:22px; margin-bottom:22px; }
-    .tournament-showcase-title{ align-items:start; }
+  @media (max-width:600px){
+    .homepage-flow-player{ top:330px; right:-170px; width:460px; opacity:.32; }
   }
 
   .principle-col h3{ font-size:16px; margin-bottom:8px; }
@@ -370,6 +354,9 @@
     </div>
   </section>
 
+  <div class="homepage-flow">
+    <img class="homepage-flow-player" src="images/sections/attp-tournaments-player-cutout.webp" width="720" height="961" loading="lazy" decoding="async" alt="" aria-hidden="true">
+
   <section class="container section-tight">
     <div class="eyebrow">Clasament</div>
     <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
@@ -384,26 +371,18 @@
   </section>
 
   <section class="container section-tight">
-    <div class="tournament-showcase">
-      <div class="tournament-showcase-head">
-        <div class="tournament-showcase-copy">
-          <div class="eyebrow">Turnee</div>
-          <div class="tournament-showcase-title">
-            <h2>Ultimele turnee</h2>
-            <a href="tournaments.html" class="btn btn-sm btn-ghost">Toate turneele →</a>
-          </div>
-        </div>
-        <picture class="tournament-showcase-art">
-          <img src="images/sections/attp-tournaments-player.webp" width="369" height="210" loading="lazy" decoding="async" alt="Table tennis player preparing to serve">
-        </picture>
-      </div>
-      <div class="grid grid-3" id="tournGrid">
-        <div class="card skeleton" style="height:210px"></div>
-        <div class="card skeleton" style="height:210px"></div>
-        <div class="card skeleton" style="height:210px"></div>
-      </div>
+    <div class="eyebrow">Turnee</div>
+    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
+      <h2>Ultimele turnee</h2>
+      <a href="tournaments.html" class="btn btn-sm btn-ghost">Toate turneele →</a>
+    </div>
+    <div class="grid grid-3" id="tournGrid">
+      <div class="card skeleton" style="height:210px"></div>
+      <div class="card skeleton" style="height:210px"></div>
+      <div class="card skeleton" style="height:210px"></div>
     </div>
   </section>
+  </div>
 
   <section class="container section-tight">
     <div class="eyebrow">Actualități</div>
