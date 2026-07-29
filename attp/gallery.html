@@ -15,6 +15,51 @@
 <style>
   html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
 
+  /* ---------- Media editorial stage ---------- */
+  .media-hero{
+    position:relative; isolation:isolate; min-height:clamp(500px,56vw,680px); overflow:hidden;
+    background:#081727; border-bottom:1px solid var(--border);
+  }
+  .media-hero-visual{
+    position:absolute; z-index:-2; inset:0 0 0 27%; width:73%; height:100%;
+    object-fit:cover; object-position:52% 50%; filter:saturate(.92) contrast(1.03);
+  }
+  .media-hero::before{
+    content:''; position:absolute; z-index:-1; inset:0; pointer-events:none;
+    background:
+      linear-gradient(90deg,#081727 0%,rgba(8,23,39,.97) 24%,rgba(8,23,39,.72) 44%,rgba(8,23,39,.16) 72%,rgba(8,23,39,.08) 100%),
+      linear-gradient(180deg,rgba(8,23,39,.18) 0%,rgba(8,23,39,0) 48%,#081727 100%);
+  }
+  .media-hero-inner{ min-height:inherit; display:flex; align-items:center; padding-block:clamp(90px,11vw,150px); }
+  .media-hero-copy{ width:min(560px,48%); }
+  .media-hero-copy .breadcrumb{ margin-bottom:30px; }
+  .media-hero-copy h1{ max-width:530px; font-size:clamp(44px,5.4vw,78px); line-height:.98; letter-spacing:-.04em; }
+  .media-hero-copy .lede{ max-width:500px; color:var(--chalk-dim); }
+  .media-hero-stats{ display:flex; flex-wrap:wrap; gap:10px; margin-top:30px; }
+  .media-hero-stat{
+    display:inline-flex; align-items:center; gap:9px; padding:9px 13px; border:1px solid rgba(116,207,210,.24);
+    border-radius:999px; background:rgba(8,23,39,.46); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+    color:var(--chalk-dim); font-family:var(--font-mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase;
+  }
+  .media-hero-stat::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 12px rgba(45,212,211,.65); }
+  .media-archive{ padding-top:clamp(54px,7vw,88px); }
+  .media-archive-head{ display:flex; align-items:end; justify-content:space-between; gap:24px; margin-bottom:30px; }
+  .media-archive-head h2{ font-size:clamp(28px,3vw,42px); }
+  .media-archive-head p{ max-width:440px; color:var(--muted); text-align:right; }
+  @media (max-width:820px){
+    .media-hero{ min-height:580px; }
+    .media-hero-visual{ inset:0; width:100%; object-position:24% 50%; opacity:.9; }
+    .media-hero::before{
+      background:linear-gradient(180deg,rgba(8,23,39,.3) 0%,rgba(8,23,39,.62) 42%,#081727 88%);
+    }
+    .media-hero-inner{ align-items:flex-end; padding-block:84px 68px; }
+    .media-hero-copy{ width:100%; }
+    .media-hero-copy h1{ max-width:640px; font-size:clamp(40px,11vw,62px); }
+    .media-hero-copy .lede{ color:var(--chalk); }
+    .media-archive-head{ display:block; }
+    .media-archive-head p{ margin-top:10px; text-align:left; }
+  }
+
   /* ---------- Album grid ---------- */
   .album-card{
     position:relative; border-radius:var(--radius); overflow:hidden; background:var(--surface);
@@ -121,12 +166,26 @@
 </div>
 
 <main>
-  <div class="page-head container">
-    <div class="breadcrumb"><a href="index.html">Acasă</a> / Media</div>
-    <div class="eyebrow">Galerie</div>
-    <h1>Momente din turneele ATTP</h1>
-  </div>
-  <section class="container section-tight">
+  <section class="media-hero" aria-labelledby="mediaTitle">
+    <img class="media-hero-visual" src="images/media-performance.webp" alt="" width="1536" height="1024" fetchpriority="high">
+    <div class="container media-hero-inner">
+      <div class="media-hero-copy">
+        <div class="breadcrumb"><a href="index.html">Acasă</a> / Media</div>
+        <div class="eyebrow">Din mijlocul jocului</div>
+        <h1 id="mediaTitle">Momente din turneele ATTP</h1>
+        <p class="lede mt-16">Competiții, cantonamente și oameni surprinși din perspectiva cea mai apropiată de masă.</p>
+        <div class="media-hero-stats" aria-label="Conținutul arhivei media">
+          <span class="media-hero-stat" id="mediaAlbumCount">Arhivă foto</span>
+          <span class="media-hero-stat">Actualizată continuu</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="container media-archive">
+    <div class="media-archive-head">
+      <h2>Albumele asociației</h2>
+      <p>Deschide un album pentru a explora toate fotografiile, apoi navighează-le la dimensiune completă.</p>
+    </div>
     <div class="grid grid-3" id="albumGrid">
       <div class="card skeleton" style="height:220px"></div>
       <div class="card skeleton" style="height:220px"></div>
@@ -175,6 +234,8 @@
 (function(){
   const albums = window.ATTP_GALLERY || [];
   const el = document.getElementById('albumGrid');
+  const albumCount = document.getElementById('mediaAlbumCount');
+  albumCount.textContent = `${albums.length} ${albums.length === 1 ? 'album' : 'albume'} foto`;
   if (!albums.length) {
     el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="tag tag-muted">În curând</span><p class="mt-16">Albumele foto și video vor fi publicate aici pe măsură ce sunt disponibile.</p></div>`;
     return;
