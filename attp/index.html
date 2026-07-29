@@ -206,10 +206,15 @@
     background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
   }
   .homepage-flow-player{
-    position:absolute; z-index:1; top:240px; right:clamp(-90px,-3vw,-24px); width:clamp(500px,43vw,680px);
+    position:absolute; z-index:1; top:230px; right:clamp(26px,4vw,70px); width:clamp(500px,42vw,650px);
     height:auto; opacity:.88; pointer-events:none; user-select:none;
     transform:scaleX(-1); transform-origin:center;
     filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
+  }
+  .homepage-flow-ball{
+    position:absolute; z-index:3; top:18px; right:clamp(42px,5.5vw,92px); width:clamp(42px,4vw,58px);
+    height:auto; pointer-events:none; user-select:none;
+    filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
   }
   .homepage-flow > .section-tight{ position:relative; z-index:2; }
   .homepage-flow .rank-strip,
@@ -219,10 +224,12 @@
     background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
   @media (max-width:900px){
-    .homepage-flow-player{ top:220px; right:-150px; width:560px; opacity:.54; }
+    .homepage-flow-player{ top:300px; right:-96px; width:500px; opacity:.5; }
+    .homepage-flow-ball{ top:54px; right:24px; width:46px; opacity:.82; }
   }
   @media (max-width:600px){
-    .homepage-flow-player{ top:330px; right:-170px; width:460px; opacity:.32; }
+    .homepage-flow-player{ top:360px; right:-112px; width:420px; opacity:.28; }
+    .homepage-flow-ball{ top:80px; right:18px; width:38px; opacity:.72; }
   }
 
   .principle-col h3{ font-size:16px; margin-bottom:8px; }
@@ -356,7 +363,8 @@
   </section>
 
   <div class="homepage-flow">
-    <img class="homepage-flow-player" src="images/sections/attp-tournaments-player-cutout.webp" width="720" height="961" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    <img class="homepage-flow-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    <img class="homepage-flow-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="" aria-hidden="true">
 
   <section class="container section-tight">
     <div class="eyebrow">Clasament</div>
