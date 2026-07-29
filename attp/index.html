@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260719-livetag">
+<link rel="stylesheet" href="css/style.css?v=20260720-loadscreen">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
@@ -242,9 +242,30 @@
   .partner-track span{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:20px; font-weight:600; color:var(--muted); white-space:nowrap; }
   .partner-logo{ height:44px; width:44px; border-radius:50%; object-fit:cover; opacity:.85; filter:grayscale(.15); flex:0 0 auto; }
   @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
 </style>
 </head>
 <body>
+<div id="loadScreen" aria-hidden="true">
+  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
+    <g class="lm-ball-group">
+      <circle class="lm-ball" cx="88" cy="70" r="20"/>
+      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
+    </g>
+    <g class="lm-paddle-group">
+      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
+      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
+      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
+      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
+      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
+      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
+      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
+      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
+    </g>
+  </svg>
+</div>
 
 <header class="topbar">
   <div class="container topbar-inner">
@@ -576,5 +597,6 @@ if (pingPongModel && pingPongModelShell) {
   track.innerHTML = [...items, ...items].map(renderPartner).join('');
 })();
 </script>
+<script src="js/load-screen.js"></script>
 </body>
 </html>

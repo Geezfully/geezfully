@@ -272,3 +272,24 @@ table.data td.r{ text-align:right; }
 @keyframes shimmer{ 0%{ background-position:100% 50%; } 100%{ background-position:0 50%; } }
 .empty-state{ text-align:center; padding:60px 20px; color:var(--muted); border:1px dashed var(--border-hi); border-radius:var(--radius); }
 .empty-state .tag{ margin-bottom:14px; }
+
+/* ── Page scroll lock (gallery lightbox, load screen) ── */
+html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
+
+/* ── Load screen ── */
+#loadScreen{
+  position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+  background:var(--ink);
+  transition:opacity .45s ease;
+}
+#loadScreen.is-hidden{ opacity:0; pointer-events:none; }
+#loadScreen::before{
+  content:''; display:block; width:min(82vw,420px); aspect-ratio:1;
+  background:url('../images/ui/attp-pingpong-loader.gif') center/contain no-repeat;
+}
+#loadScreen .load-mark{ display:none; }
+@media (max-width:600px){ #loadScreen::before{ width:min(92vw,320px); } }
+@media (prefers-reduced-motion:reduce){
+  #loadScreen{ transition:none; }
+  #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png'); }
+}
