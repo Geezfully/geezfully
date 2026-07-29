@@ -13,6 +13,71 @@
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
+  .documents-flow{
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    background:linear-gradient(180deg,#0a2848 0%,var(--ink) 720px);
+  }
+  .documents-hero{
+    position:relative;
+    min-height:clamp(560px,56vw,720px);
+    overflow:hidden;
+    isolation:isolate;
+  }
+  .documents-hero-art{
+    position:absolute;
+    z-index:-2;
+    inset:0 0 0 auto;
+    width:min(61vw,880px);
+    height:100%;
+    object-fit:cover;
+    object-position:center 45%;
+    filter:saturate(.95) contrast(1.03);
+    transform:scale(1.01);
+    -webkit-mask-image:
+      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 12%,#000 38%),
+      linear-gradient(180deg,#000 0%,#000 85%,transparent 100%);
+    -webkit-mask-composite:source-in;
+    mask-image:
+      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 12%,#000 38%),
+      linear-gradient(180deg,#000 0%,#000 85%,transparent 100%);
+    mask-composite:intersect;
+  }
+  .documents-hero::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:0;
+    background:
+      radial-gradient(circle at 80% 38%,rgba(255,199,39,.1),transparent 22%),
+      linear-gradient(90deg,#091d32 0%,rgba(9,29,50,.97) 29%,rgba(9,29,50,.55) 52%,rgba(9,29,50,.08) 78%);
+  }
+  .documents-hero-inner{
+    min-height:inherit;
+    display:flex;
+    align-items:center;
+    padding-block:clamp(88px,9vw,130px);
+  }
+  .documents-hero-copy{ width:min(610px,49%); }
+  .documents-hero-copy h1{
+    font-size:clamp(54px,6.5vw,90px);
+    line-height:.95;
+    letter-spacing:-.05em;
+  }
+  .documents-hero-copy .lede{ max-width:540px; }
+  .documents-hero-note{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    margin-top:26px;
+    color:#f4c94d;
+    font:600 11px/1 var(--font-mono);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .documents-hero-note::before{ content:""; width:28px; height:1px; background:currentColor; }
+  .documents-content{ position:relative; z-index:1; padding-top:clamp(60px,7vw,94px); }
   .doc-row{ display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid transparent; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
   .doc-row:hover{ background:var(--surface); border-color:var(--border); transform:translateX(3px); }
   .doc-icon{ width:36px; height:36px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--muted); }
@@ -22,7 +87,28 @@
   .doc-open{ color:var(--rally); font-family:var(--font-mono); font-size:11px; flex:0 0 auto; }
   .doc-cat{ margin:40px 0 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .doc-cat small{ color:var(--muted); font-family:var(--font-mono); font-size:10.5px; font-weight:500; }
-  @media (max-width:600px){ .doc-row{ align-items:flex-start; padding:13px 8px; } .doc-open{ display:none; } }
+  @media (max-width:820px){
+    .documents-hero{ min-height:740px; }
+    .documents-hero-art{
+      inset:0 0 auto;
+      width:100%;
+      height:60%;
+      object-position:center 50%;
+      transform:none;
+      -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 73%,transparent 100%);
+      mask-image:linear-gradient(180deg,#000 0%,#000 73%,transparent 100%);
+    }
+    .documents-hero::before{ background:linear-gradient(180deg,rgba(7,24,42,.04) 0%,rgba(7,24,42,.15) 36%,rgba(7,24,42,.9) 63%,#091b2e 100%); }
+    .documents-hero-inner{ align-items:flex-end; padding-block:42px 58px; }
+    .documents-hero-copy{ width:100%; }
+    .documents-hero-copy h1{ font-size:clamp(46px,13vw,68px); }
+  }
+  @media (max-width:600px){
+    .doc-row{ align-items:flex-start; padding:13px 8px; }
+    .doc-open{ display:none; }
+    .documents-content{ padding-top:50px; }
+  }
+  @media (prefers-reduced-motion:reduce){ .documents-hero-art{ transform:none; } }
 </style>
 </head>
 <body>
@@ -60,15 +146,23 @@
 </div>
 
 <main>
-  <div class="page-head container">
-    <div class="breadcrumb"><a href="index.html">Acasă</a> / Documente</div>
-    <div class="eyebrow">Bibliotecă</div>
-    <h1>Documentație oficială</h1>
-    <p class="lede mt-16">Statutul asociației, calendarul competițional, regulamentele de turneu și materialele metodice.</p>
-  </div>
-  <section class="container section-tight" id="docSections">
+  <div class="documents-flow">
+    <section class="documents-hero" aria-labelledby="documentsTitle">
+      <img class="documents-hero-art" src="images/sections/documents-library.webp" alt="" width="747" height="780" fetchpriority="high">
+      <div class="container documents-hero-inner">
+        <div class="documents-hero-copy">
+          <div class="breadcrumb"><a href="index.html">Acasă</a> / Documente</div>
+          <div class="eyebrow">Bibliotecă</div>
+          <h1 id="documentsTitle">Documentație oficială</h1>
+          <p class="lede mt-16">Statutul asociației, calendarul competițional, regulamentele de turneu și materialele metodice.</p>
+          <span class="documents-hero-note">Resurse oficiale ATTP</span>
+        </div>
+      </div>
+    </section>
+  <section class="container section-tight documents-content" id="docSections">
     <div class="skeleton" style="height:200px"></div>
   </section>
+  </div>
 </main>
 
 <footer>
