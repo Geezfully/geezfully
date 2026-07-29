@@ -285,11 +285,11 @@ html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
 #loadScreen.is-hidden{ opacity:0; pointer-events:none; }
 #loadScreen::before{
   content:''; display:block; width:min(82vw,420px); aspect-ratio:1;
-  background:url('../images/ui/attp-pingpong-loader.gif') center/contain no-repeat;
+  background:url('../images/ui/attp-pingpong-loader.gif?v=20260729-edgefix') center/contain no-repeat;
 }
 #loadScreen .load-mark{ display:none; }
 @media (max-width:600px){ #loadScreen::before{ width:min(92vw,320px); } }
 @media (prefers-reduced-motion:reduce){
   #loadScreen{ transition:none; }
-  #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png'); }
+  #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png?v=20260729-edgefix'); }
 }
