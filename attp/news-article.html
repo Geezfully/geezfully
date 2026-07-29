@@ -12,8 +12,24 @@
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
+  .article-cover{ aspect-ratio:16/8; border-radius:var(--radius-lg); overflow:hidden; margin-bottom:32px; background:var(--surface-2); }
+  .article-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
   .article-body{ max-width:700px; font-size:17px; line-height:1.75; color:var(--chalk-dim); }
   .article-body p{ margin-bottom:20px; color:var(--chalk-dim); }
+  .article-content h2,.article-content h3,.article-content h4{ margin:34px 0 14px; color:var(--chalk); line-height:1.25; }
+  .article-content ul,.article-content ol{ margin:0 0 22px 24px; }
+  .article-content li{ margin-bottom:8px; }
+  .article-content strong{ color:var(--chalk); }
+  .article-content a{ color:var(--teal); text-decoration:underline; text-underline-offset:3px; }
+  .article-content img{ display:block; width:auto; max-width:100%; height:auto; margin:24px auto; border-radius:12px; }
+  .article-content table{ display:block; width:100%; overflow-x:auto; margin:24px 0; border-collapse:collapse; }
+  .article-content td,.article-content th{ padding:10px 12px; border:1px solid var(--border); }
+  .article-content pre{ max-width:100%; overflow-x:auto; padding:18px; border-radius:10px; background:var(--surface-2); white-space:pre-wrap; }
+  .article-content blockquote{ margin:24px 0; padding:4px 0 4px 20px; border-left:3px solid var(--teal); }
+  .article-content hr{ margin:30px 0; border:0; border-top:1px solid var(--border); }
+  .article-source{ display:inline-flex; align-items:center; gap:8px; margin-top:12px; padding:13px 18px; border:1px solid var(--teal); border-radius:999px; color:var(--teal); font-weight:700; }
+  .article-source:hover{ background:rgba(45,212,211,.09); }
+  @media (max-width:600px){ .article-cover{ aspect-ratio:4/3; } }
 </style>
 </head>
 <body>
@@ -58,6 +74,7 @@
     </div>
   </div>
   <section class="container section-tight">
+    <div class="article-cover" id="articleCover" style="display:none"></div>
     <div class="article-body" id="articleBody"></div>
   </section>
 </main>
@@ -74,19 +91,35 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js"></script>
+<script src="data-news.js?v=20260720-fullnews"></script>
+<script src="data-news-archive.js?v=20260720-fullnews"></script>
+<script src="js/supabase-init.js?v=20260720-fullnews"></script>
 <script>
 (async function(){
   const slug = new URLSearchParams(location.search).get('slug');
-  const { data: n } = await db.from('news').select('*').eq('slug', slug).single();
+  const n = (await fetchNews(200)).find(a => a.slug === slug);
   if (!n) { document.getElementById('articleHead').innerHTML = '<h1>Articol negăsit</h1>'; return; }
   document.title = `${n.title} — ATTP`;
   document.getElementById('crumb').textContent = n.title;
   document.getElementById('articleHead').innerHTML = `
     ${n.tag ? `<span class="tag mb-16">${escapeHtml(n.tag)}</span>` : ''}
     <h1>${escapeHtml(n.title)}</h1>
-    <p class="muted mt-16" style="font-family:var(--font-mono);font-size:13px">${fmtDate(n.published_at)}</p>`;
-  document.getElementById('articleBody').innerHTML = n.body || '';
+    <p class="muted mt-16" style="font-family:var(--font-mono);font-size:13px">${fmtDate(n.date || n.published_at)}</p>`;
+  const image = n.image || n.cover_image_url;
+  if (image) {
+    const cover = document.getElementById('articleCover');
+    cover.style.display = '';
+    cover.innerHTML = `<img src="${image}" alt="">`;
+  }
+  const paragraphs = n.body_html
+    ? `<div class="article-content">${n.body_html}</div>`
+    : Array.isArray(n.body)
+      ? n.body.map(p => `<p>${escapeHtml(p)}</p>`).join('')
+      : (n.body || '');
+  const source = n.source_url && !n.body_html
+    ? `<a class="article-source" href="${encodeURI(n.source_url)}" target="_blank" rel="noopener">${escapeHtml(n.source_label || 'Citește articolul complet pe attp.md')} <span aria-hidden="true">↗</span></a>`
+    : '';
+  document.getElementById('articleBody').innerHTML = paragraphs + source;
 })();
 </script>
 <script src="js/load-screen.js?v=20260729-rare"></script>

@@ -13,10 +13,16 @@
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  .doc-row{ display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; }
-  .doc-row:hover{ background:var(--surface); }
+  .doc-row{ display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid transparent; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
+  .doc-row:hover{ background:var(--surface); border-color:var(--border); transform:translateX(3px); }
   .doc-icon{ width:36px; height:36px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--muted); }
-  .doc-cat{ margin:36px 0 14px; }
+  .doc-title{ min-width:0; flex:1; }
+  .doc-title strong{ display:block; font-size:14.5px; }
+  .doc-meta{ display:block; margin-top:3px; color:var(--muted); font-family:var(--font-mono); font-size:10.5px; }
+  .doc-open{ color:var(--rally); font-family:var(--font-mono); font-size:11px; flex:0 0 auto; }
+  .doc-cat{ margin:40px 0 14px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .doc-cat small{ color:var(--muted); font-family:var(--font-mono); font-size:10.5px; font-weight:500; }
+  @media (max-width:600px){ .doc-row{ align-items:flex-start; padding:13px 8px; } .doc-open{ display:none; } }
 </style>
 </head>
 <body>
@@ -78,10 +84,29 @@
 </footer>
 
 <script src="js/supabase-init.js"></script>
+<script src="data-documents.js"></script>
 <script>
-const CATEGORIES = ['Documente importante','Regulamente turnee','Informații utile'];
+const CATEGORY_ORDER = [
+  'Statutul ATTP',
+  'Calendarul evenimentelor sportive ATTP',
+  'Documente importante ATTP',
+  'Documente actualizate',
+  'Informații utile',
+  'Regulamente și programe turnee ATTP',
+  'Istoria tenisului de masă',
+  'Arbitraj sportiv'
+];
 (async function(){
-  const docs = await fetchDocuments();
+  const localDocs = window.ATTP_DOCUMENTS || [];
+  const databaseDocs = await fetchDocuments();
+  const localTitles = new Set(localDocs.map(d => d.title.toLocaleLowerCase('ro')));
+  const docs = [
+    ...localDocs,
+    ...databaseDocs.filter(d =>
+      d.file_url &&
+      !localTitles.has((d.title || '').toLocaleLowerCase('ro'))
+    )
+  ];
   const el = document.getElementById('docSections');
   if (!docs.length) {
     el.innerHTML = `<div class="empty-state"><span class="tag tag-muted">În curând</span><p class="mt-16">Documentele oficiale (statut, regulamente, calendar competițional) vor fi încărcate aici.</p></div>`;
@@ -89,15 +114,24 @@ const CATEGORIES = ['Documente importante','Regulamente turnee','Informații uti
   }
   const byCat = {};
   docs.forEach(d => (byCat[d.category] ||= []).push(d));
-  el.innerHTML = Object.entries(byCat).map(([cat, items]) => `
-    <h3 class="doc-cat">${escapeHtml(cat)}</h3>
+  const categories = Object.keys(byCat).sort((a,b) => {
+    const ai = CATEGORY_ORDER.indexOf(a), bi = CATEGORY_ORDER.indexOf(b);
+    return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
+  });
+  el.innerHTML = categories.map(cat => {
+    const items = byCat[cat].sort((a,b) => (a.sort_order || 999) - (b.sort_order || 999));
+    return `
+    <h3 class="doc-cat"><span>${escapeHtml(cat)}</span><small>${items.length} ${items.length === 1 ? 'document' : 'documente'}</small></h3>
     ${items.map(d => `
       <a class="doc-row" href="${d.file_url || '#'}" ${d.file_url ? 'target="_blank" rel="noopener"' : ''}>
         <span class="doc-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg></span>
-        <span>${escapeHtml(d.title)}</span>
-        ${!d.file_url ? '<span class="tag tag-muted" style="margin-left:auto">În curând</span>' : ''}
+        <span class="doc-title">
+          <strong>${escapeHtml(d.title)}</strong>
+          ${d.pages ? `<span class="doc-meta">PDF · ${d.pages} ${d.pages === 1 ? 'pagină' : 'pagini'}${d.size_mb ? ` · ${Number(d.size_mb).toFixed(2)} MB` : ''}</span>` : ''}
+        </span>
+        ${d.file_url ? '<span class="doc-open">DESCHIDE ↗</span>' : '<span class="tag tag-muted">În curând</span>'}
       </a>`).join('')}
-  `).join('');
+  `}).join('');
 })();
 </script>
 <script src="js/load-screen.js?v=20260729-rare"></script>

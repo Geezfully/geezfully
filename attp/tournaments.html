@@ -13,6 +13,44 @@
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
+  .tourn-flow{
+    position:relative; isolation:isolate; overflow:hidden;
+    background:linear-gradient(180deg,#0a1929 0%,#0d2034 30%,var(--ink) 85%);
+  }
+  .tourn-flow::before{
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background-image:radial-gradient(rgba(242,245,244,.06) 1px, transparent 1px);
+    background-size:26px 26px;
+    -webkit-mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
+    mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
+  }
+  .tourn-flow::after{
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(560px 420px at 88% 4%, rgba(232,184,75,.13), transparent 72%);
+  }
+  .page-head.tourn-hero{
+    display:grid; grid-template-columns:1fr auto; align-items:center; gap:32px;
+    border-bottom:0; padding-bottom:8px;
+  }
+  .tourn-list-section{ padding-top:4px; }
+  .tourn-trophy{ width:158px; height:auto; flex:0 0 auto; }
+  .tourn-trophy .cup-main{ fill:#E8B84B; }
+  .tourn-trophy .cup-hi{ fill:#F6D98A; }
+  .tourn-trophy .cup-base{ fill:#C89A3C; }
+  .tourn-trophy .cup-handle{ fill:none; stroke:#C89A3C; }
+  .tourn-trophy .ball{ fill:var(--chalk); }
+  .tourn-trophy .ball-seam{ fill:none; stroke:var(--ink); opacity:.5; }
+  .tourn-trophy .ground{ fill:#000; opacity:.25; }
+  @media (prefers-reduced-motion:no-preference){
+    .tourn-trophy .cup-group{ animation:tournTrophyFloat 5s ease-in-out infinite; transform-origin:160px 220px; }
+    @keyframes tournTrophyFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+  }
+  @media (max-width:820px){
+    .page-head.tourn-hero{ grid-template-columns:1fr; }
+    .tourn-trophy{ display:none; }
+  }
+  .empty-trophy{ width:64px; height:auto; margin:0 auto 18px; display:block; opacity:.7; }
+
   .tourn-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:16px; }
   .tourn-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
   .tourn-head h3{ font-size:17px; }
@@ -58,19 +96,37 @@
 </div>
 
 <main>
-  <div class="page-head container">
-    <div class="breadcrumb"><a href="index.html">Acasă</a> / Turnee</div>
-    <div class="eyebrow">Rezultate live</div>
-    <h1>Turnee cu participare ATTP</h1>
-    <p class="lede mt-16">Fiecare turneu de mai jos e reconstituit automat din rezultatele jucătorilor afiliați ATTP, sincronizate direct din Setka Cup — sursa reală a rezultatelor.</p>
+  <div class="tourn-flow">
+  <div class="page-head tourn-hero container">
+    <div>
+      <div class="breadcrumb"><a href="index.html">Acasă</a> / Turnee</div>
+      <div class="eyebrow">Rezultate live</div>
+      <h1>Turnee cu participare ATTP</h1>
+      <p class="lede mt-16">Fiecare turneu de mai jos e reconstituit automat din rezultatele jucătorilor afiliați ATTP, sincronizate direct din Setka Cup — sursa reală a rezultatelor.</p>
+    </div>
+    <svg class="tourn-trophy" viewBox="0 0 320 300" fill="none" aria-hidden="true">
+      <ellipse class="ground" cx="160" cy="256" rx="100" ry="10"/>
+      <g class="cup-group">
+        <path class="cup-handle" d="M90,55 C55,55 50,110 90,130" stroke-width="14" stroke-linecap="round"/>
+        <path class="cup-handle" d="M210,55 C245,55 250,110 210,130" stroke-width="14" stroke-linecap="round"/>
+        <path class="cup-main" d="M85,35 Q85,25 95,25 L205,25 Q215,25 215,35 C215,90 205,150 165,165 L165,170 L185,170 Q195,170 195,180 L195,190 Q195,200 185,200 L115,200 Q105,200 105,190 L105,180 Q105,170 115,170 L135,170 L135,165 C95,150 85,90 85,35 Z"/>
+        <ellipse class="cup-hi" cx="118" cy="88" rx="13" ry="52" opacity=".55" transform="rotate(-8 118 88)"/>
+        <path class="cup-base" d="M100,207 h80 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-80 a4,4 0 0 1 -4,-4 v-10 a4,4 0 0 1 4,-4 Z"/>
+        <path class="cup-base" d="M80,221 h120 a5,5 0 0 1 5,5 v10 a5,5 0 0 1 -5,5 h-120 a5,5 0 0 1 -5,-5 v-10 a5,5 0 0 1 5,-5 Z"/>
+        <circle class="ball" cx="248" cy="238" r="17"/>
+        <path class="ball-seam" d="M238,225 Q248,221 258,225" stroke-width="2" stroke-linecap="round"/>
+        <path class="ball-seam" d="M238,251 Q248,255 258,251" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </svg>
   </div>
-  <section class="container section-tight">
+  <section class="container section-tight tourn-list-section">
     <div id="tournamentList">
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
     </div>
   </section>
+  </div>
 </main>
 
 <footer>
@@ -97,7 +153,20 @@
   const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
 
   const el = document.getElementById('tournamentList');
-  if (!tournaments.length) { el.innerHTML = '<div class="empty-state"><p>Rezultatele apar aici imediat ce sunt sincronizate.</p></div>'; return; }
+  if (!tournaments.length) {
+    el.innerHTML = `<div class="empty-state" style="text-align:center">
+      <svg class="empty-trophy" viewBox="0 0 320 300" fill="none" aria-hidden="true">
+        <path class="cup-handle" d="M90,55 C55,55 50,110 90,130" stroke-width="14" stroke-linecap="round"/>
+        <path class="cup-handle" d="M210,55 C245,55 250,110 210,130" stroke-width="14" stroke-linecap="round"/>
+        <path class="cup-main" d="M85,35 Q85,25 95,25 L205,25 Q215,25 215,35 C215,90 205,150 165,165 L165,170 L185,170 Q195,170 195,180 L195,190 Q195,200 185,200 L115,200 Q105,200 105,190 L105,180 Q105,170 115,170 L135,170 L135,165 C95,150 85,90 85,35 Z"/>
+        <ellipse class="cup-hi" cx="118" cy="88" rx="13" ry="52" opacity=".55" transform="rotate(-8 118 88)"/>
+        <path class="cup-base" d="M100,207 h80 a4,4 0 0 1 4,4 v10 a4,4 0 0 1 -4,4 h-80 a4,4 0 0 1 -4,-4 v-10 a4,4 0 0 1 4,-4 Z"/>
+        <path class="cup-base" d="M80,221 h120 a5,5 0 0 1 5,5 v10 a5,5 0 0 1 -5,5 h-120 a5,5 0 0 1 -5,-5 v-10 a5,5 0 0 1 5,-5 Z"/>
+      </svg>
+      <p>Rezultatele apar aici imediat ce sunt sincronizate.</p>
+    </div>`;
+    return;
+  }
 
   el.innerHTML = tournaments.map(t => `
     <div class="tourn-card">

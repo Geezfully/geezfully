@@ -24,13 +24,13 @@
   .hero-stage::before{
     content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
     background:url('images/masters-team-hero.webp') center top / 100% auto no-repeat;
-    opacity:.76; transform:scale(1.015); transform-origin:center top;
+    opacity:.94; transform:scale(1.015); transform-origin:center top;
   }
   .hero-stage::after{
     content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
     background:
-      linear-gradient(90deg, rgba(5,15,26,.96) 0%, rgba(5,15,26,.82) 35%, rgba(5,15,26,.28) 68%, rgba(5,15,26,.42) 100%),
-      linear-gradient(180deg, rgba(5,15,26,.08) 0%, rgba(5,15,26,.16) 34%, rgba(5,15,26,.88) 68%, #071421 100%),
+      linear-gradient(90deg, rgba(5,15,26,.92) 0%, rgba(5,15,26,.66) 35%, rgba(5,15,26,.1) 68%, rgba(5,15,26,.16) 100%),
+      linear-gradient(180deg, rgba(5,15,26,.04) 0%, rgba(5,15,26,.08) 34%, rgba(5,15,26,.62) 80%, #071421 100%),
       radial-gradient(700px 480px at 12% 30%, rgba(255,107,53,.13), transparent 66%);
   }
   .hero{
@@ -117,12 +117,6 @@
     -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
   }
   .scoreboard-stage .scoreboard-head{ background:rgba(23,46,72,.72); }
-  .scoreboard-stage #scoreboardBody{
-    max-height:500px; overflow-y:auto; overscroll-behavior:contain;
-    scrollbar-width:thin; scrollbar-color:var(--border-hi) transparent;
-  }
-  .scoreboard-stage #scoreboardBody::-webkit-scrollbar{ width:6px; }
-  .scoreboard-stage #scoreboardBody::-webkit-scrollbar-thumb{ background:var(--border-hi); border-radius:999px; }
   @media (max-width:980px){
     .hero-stage::before{ background-position:58% 12%; }
     .hero-stage::after{
@@ -147,7 +141,6 @@
     .scoreboard-visual{ display:block; }
     .pingpong-model-shell{ min-height:220px; margin-top:-8px; }
     .pingpong-model{ height:220px; }
-    .scoreboard-stage #scoreboardBody{ max-height:430px; }
   }
 
   .rank-strip{
@@ -484,7 +477,9 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js"></script>
+<script src="data-news.js?v=20260720-fullnews"></script>
+<script src="data-news-archive.js?v=20260720-fullnews"></script>
+<script src="js/supabase-init.js?v=20260720-fullnews"></script>
 <script>
 // Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
 // Skips straight to the final value when the user has asked for reduced motion.
@@ -513,7 +508,7 @@ if (pingPongModel && pingPongModelShell) {
 
 (async function(){
   const [results, ranked, news, partners, tournRows] = await Promise.all([
-    fetchRecentResults(6), fetchTopRanked(6), fetchNews(3), fetchPartners(),
+    fetchRecentResults(5), fetchTopRanked(6), fetchNews(3), fetchPartners(),
     db.from('tournament_results').select('*').eq('status','finished').order('start_date',{ascending:false}).limit(150).then(r => r.data || []),
   ]);
 

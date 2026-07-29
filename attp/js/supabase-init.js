@@ -87,9 +87,35 @@ async function fetchTopRanked(limit = 10){
     .slice(0, limit);
 }
 async function fetchNews(limit = 20){
-  const { data, error } = await db.from('news').select('*').order('published_at', { ascending:false }).limit(limit);
-  if (error) { console.error(error); return []; }
-  return data || [];
+  const localNews = [
+    ...(window.ATTP_NEWS || []),
+    ...(window.ATTP_NEWS_ARCHIVE || []),
+  ].map(n => ({
+    ...n,
+    published_at: n.published_at || n.date,
+    cover_image_url: n.cover_image_url || n.image || null,
+  }));
+
+  const { data, error } = await db.from('news').select('*').order('published_at', { ascending:false });
+  if (error) console.error(error);
+
+  const bySlug = new Map(localNews.map(n => [n.slug, n]));
+  (data || []).forEach(n => {
+    const local = bySlug.get(n.slug) || {};
+    bySlug.set(n.slug, {
+      ...local,
+      ...n,
+      image: n.cover_image_url || local.image ||
+        (n.slug === 'noul-site-attp-este-live' ? 'images/news/noul-site-attp-este-live.webp' : null),
+      cover_image_url: n.cover_image_url || local.cover_image_url ||
+        (n.slug === 'noul-site-attp-este-live' ? 'images/news/noul-site-attp-este-live.webp' : null),
+      date: n.published_at || local.date,
+    });
+  });
+
+  return [...bySlug.values()]
+    .sort((a,b) => new Date(b.published_at || b.date) - new Date(a.published_at || a.date))
+    .slice(0, limit);
 }
 async function fetchPartners(){
   const { data, error } = await db.from('partners').select('*').order('sort_order');
