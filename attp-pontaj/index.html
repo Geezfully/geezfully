@@ -2157,7 +2157,7 @@ function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
   return doc.lastAutoTable.finalY+2.2;
 }
 async function buildActPdfDocument(act,lang,fontSize=6.2){
-  const doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
+  const doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true,putOnlyUsedFonts:true});
   await ensurePdfFont(doc);
   drawActPdfPaper(doc);
   drawActPdfHeader(doc,act,lang);
@@ -2176,9 +2176,23 @@ async function exportActPdf(act,lang=actExportLanguage){
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf',lang)); return; }
   let doc;
   try{
-    for(const fontSize of [8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8]){
-      doc = await buildActPdfDocument(act,lang,fontSize);
-      if(doc.internal.getNumberOfPages()===1) break;
+    const fontSizes = [8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8];
+    doc = await buildActPdfDocument(act,lang,fontSizes[0]);
+    if(doc.internal.getNumberOfPages()>1){
+      let first = 1;
+      let last = fontSizes.length-1;
+      let fittedDoc = null;
+      while(first<=last){
+        const index = Math.floor((first+last)/2);
+        const candidate = await buildActPdfDocument(act,lang,fontSizes[index]);
+        if(candidate.internal.getNumberOfPages()===1){
+          fittedDoc = candidate;
+          last = index-1;
+        }else{
+          first = index+1;
+        }
+      }
+      doc = fittedDoc || await buildActPdfDocument(act,lang,fontSizes[fontSizes.length-1]);
     }
   }catch(e){
     alert('PDF-ul nu s-a putut genera: '+e.message);
