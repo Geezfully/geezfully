@@ -2052,20 +2052,57 @@ function actPdfColumnStyles(titleKey, width){
   const proportions = ACT_PDF_COLUMNS[titleKey] || [];
   return Object.fromEntries(proportions.map((value,index)=>[index,{cellWidth:width*value}]));
 }
+const ACT_PDF_PAPER = [243,238,224];
+const ACT_PDF_INK = [33,29,20];
+const ACT_PDF_MUTED = [138,127,99];
+const ACT_PDF_RULE = [217,207,178];
+function drawActPdfPaper(doc){
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  doc.setFillColor(...ACT_PDF_PAPER);
+  doc.rect(0,0,pageWidth,pageHeight,'F');
+  doc.setDrawColor(237,231,214);
+  doc.setLineWidth(.08);
+  for(let y=7;y<pageHeight-5;y+=7.1) doc.line(10,y,pageWidth-10,y);
+}
 function drawActPdfHeader(doc,act,lang){
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.setFillColor(24,33,49);
-  doc.roundedRect(6,6,pageWidth-12,18,2,2,'F');
-  doc.setFillColor(199,164,92);
-  doc.rect(6,6,1.8,18,'F');
   doc.setFont('NotoSans');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(15);
-  doc.text(t('act_docTitle',lang),11,14);
-  doc.setFontSize(7.2);
-  doc.setTextColor(216,221,230);
-  doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}`,11,20);
-  doc.text(`${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,pageWidth-10,20,{align:'right'});
+  doc.setTextColor(...ACT_PDF_MUTED);
+  doc.setFontSize(6.8);
+  if(doc.setCharSpace) doc.setCharSpace(.65);
+  doc.text(lang==='ru'?'ATTP · ЭЛЕКТРОННЫЙ ЖУРНАЛ':'ATTP · REGISTRU ELECTRONIC',13,13);
+  if(doc.setCharSpace) doc.setCharSpace(0);
+
+  doc.setFont(lang==='ru'?'NotoSans':'times',lang==='ru'?'normal':'bold');
+  doc.setTextColor(...ACT_PDF_INK);
+  doc.setFontSize(18);
+  doc.text(t('act_docTitle',lang),13,23);
+
+  doc.setFont('NotoSans');
+  doc.setFontSize(8.2);
+  doc.setTextColor(91,83,64);
+  doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}  ·  ${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,13,31,{maxWidth:150});
+
+  const [year,month,day] = String(act.data||todayISO()).split('-');
+  const monthLabel = (MONTH_NAMES[lang==='ru'?'ru':'ro'][Number(month)-1]||'').slice(0,3).toUpperCase();
+  const stampX = pageWidth-27;
+  const stampY = 22;
+  doc.setDrawColor(163,73,47);
+  doc.setTextColor(163,73,47);
+  doc.setLineWidth(.7);
+  doc.circle(stampX,stampY,11.5,'S');
+  doc.setFont(lang==='ru'?'NotoSans':'times',lang==='ru'?'normal':'bold');
+  doc.setFontSize(6.8);
+  doc.text(monthLabel,stampX,stampY-3.2,{align:'center',angle:-7});
+  doc.setFontSize(10.5);
+  doc.text(day||'',stampX,stampY+1.5,{align:'center',angle:-7});
+  doc.setFontSize(6.8);
+  doc.text(year||'',stampX,stampY+6,{align:'center',angle:-7});
+
+  doc.setDrawColor(...ACT_PDF_INK);
+  doc.setLineWidth(.65);
+  doc.line(13,40,pageWidth-13,40);
 }
 function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang,cardsPerRow=3){
   const gap = 2;
@@ -2075,12 +2112,12 @@ function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang,cardsPerRow=3
     const cardWidth = (width-gap*(pair.length-1))/pair.length;
     pair.forEach((section,index)=>{
       const cardX = x+index*(cardWidth+gap);
-      doc.setFillColor(247,248,250);
-      doc.setDrawColor(208,213,221);
+      doc.setFillColor(...ACT_PDF_PAPER);
+      doc.setDrawColor(...ACT_PDF_RULE);
       doc.roundedRect(cardX,y,cardWidth,cardHeight,1.1,1.1,'FD');
       doc.setFont('NotoSans');
       doc.setFontSize(Math.min(fontSize,5.5));
-      doc.setTextColor(72,80,94);
+      doc.setTextColor(...ACT_PDF_MUTED);
       doc.text(`${t(section.titleKey,lang)} - ${t('act_noEntries',lang)}`,cardX+cardWidth/2,y+4.8,{align:'center',maxWidth:cardWidth-3});
     });
     y += cardHeight+1.5;
@@ -2093,58 +2130,55 @@ function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
   doc.autoTable({
     startY:y,
     head:[
-      [{content:t(section.titleKey,lang),colSpan:section.headers.length,styles:{fillColor:[232,235,240],textColor:[32,42,58],font:'NotoSans'}}],
-      section.headers,
+      [{content:t(section.titleKey,lang).toUpperCase(),colSpan:section.headers.length}],
+      section.headers.map(header=>String(header).toUpperCase()),
     ],
     body:section.rows.map(row=>row.map(pdfCell)),
-    theme:'grid',
+    theme:'plain',
     tableWidth:width,
-    margin:{left:x,right:pageWidth-x-width,top:28,bottom:6},
-    styles:{font:'NotoSans',fontSize,cellPadding:padding,lineColor:[205,210,218],lineWidth:.12,overflow:'linebreak',textColor:[48,55,66]},
-    headStyles:{font:'NotoSans',fontSize,fillColor:[55,65,81],textColor:255,cellPadding:padding},
+    margin:{left:x,right:pageWidth-x-width,top:45,bottom:7},
+    styles:{font:'NotoSans',fontStyle:'normal',fontSize,cellPadding:padding,fillColor:ACT_PDF_PAPER,lineColor:ACT_PDF_RULE,lineWidth:{top:0,right:0,bottom:.12,left:0},overflow:'linebreak',textColor:ACT_PDF_INK},
+    headStyles:{font:'NotoSans',fontStyle:'normal',fontSize,fillColor:ACT_PDF_PAPER,textColor:ACT_PDF_MUTED,cellPadding:padding,lineColor:ACT_PDF_RULE,lineWidth:{top:0,right:0,bottom:.16,left:0}},
     columnStyles:actPdfColumnStyles(section.titleKey,width),
     pageBreak:'avoid',
     rowPageBreak:'avoid',
+    didParseCell:data=>{
+      if(data.section==='head' && data.row.index===0){
+        data.cell.styles.fontSize = fontSize+1.2;
+        data.cell.styles.textColor = [107,95,67];
+        data.cell.styles.cellPadding = {top:1.35,right:padding,bottom:1.1,left:0};
+        data.cell.styles.lineWidth = {top:0,right:0,bottom:.22,left:0};
+      }else if(data.section==='head'){
+        data.cell.styles.fontSize = Math.max(3.8,fontSize-.6);
+        data.cell.styles.cellPadding = {top:1,right:padding,bottom:.9,left:padding};
+      }
+    },
   });
-  return doc.lastAutoTable.finalY+1.8;
+  return doc.lastAutoTable.finalY+2.2;
 }
-async function buildActPdfDocument(act,lang,fontSize=6.2,pageHeight=297){
-  const pageWidth = 210;
-  const orientation = pageHeight < pageWidth ? 'landscape' : 'portrait';
-  const doc = new window.jspdf.jsPDF({orientation,unit:'mm',format:[pageWidth,pageHeight],compress:true});
+async function buildActPdfDocument(act,lang,fontSize=6.2){
+  const doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
   await ensurePdfFont(doc);
+  drawActPdfPaper(doc);
   drawActPdfHeader(doc,act,lang);
-  const renderedPageWidth = doc.internal.pageSize.getWidth();
-  const margin = 6;
-  const contentWidth = renderedPageWidth-margin*2;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 13;
+  const contentWidth = pageWidth-margin*2;
   const sections = actSections(act.continut||{},lang);
-  let y = 28;
+  let y = 46;
   const emptySections = sections.filter(section=>!section.rows.length);
   if(emptySections.length) y = drawActPdfEmptyCards(doc,emptySections,margin,y,contentWidth,fontSize,lang,3)+.4;
   sections.filter(section=>section.rows.length).forEach(section=>{ y=drawActPdfTable(doc,section,margin,y,contentWidth,fontSize,lang); });
-  doc.__actContentBottom = y;
   return doc;
 }
 async function exportActPdf(act,lang=actExportLanguage){
   if(!act) return;
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf',lang)); return; }
   let doc;
-  let selectedFontSize = 6.2;
   try{
     for(const fontSize of [8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8]){
       doc = await buildActPdfDocument(act,lang,fontSize);
-      selectedFontSize = fontSize;
       if(doc.internal.getNumberOfPages()===1) break;
-    }
-    if(doc.internal.getNumberOfPages()===1){
-      const fullPageHeight = 297;
-      const minPageHeight = 60;
-      const bottomMargin = 6;
-      const fittedPageHeight = Math.min(fullPageHeight, Math.max(minPageHeight, Math.ceil((doc.__actContentBottom+bottomMargin)*10)/10));
-      if(fittedPageHeight < fullPageHeight-.1){
-        const fittedDoc = await buildActPdfDocument(act,lang,selectedFontSize,fittedPageHeight);
-        if(fittedDoc.internal.getNumberOfPages()===1) doc = fittedDoc;
-      }
     }
   }catch(e){
     alert('PDF-ul nu s-a putut genera: '+e.message);
