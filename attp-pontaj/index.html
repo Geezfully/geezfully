@@ -1843,9 +1843,9 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     arbitraj: (arbitrajR.data||[]).map(r=>({ platou: r.turneu, arbitru: r.arbitru })),
     fairPlay: (fairPlayR.data||[]).map(r=>({ nume: participantName(r.participant_id), ora: r.ora ? String(r.ora).slice(0,5) : '', cartonas: r.tip_cartonas, descriere: r.descriere || '' })),
     daune: (dauneR.data||[]).map(r=>({ nume: participantName(r.participant_id), platou: r.teren || '', descriere: `${r.inventar_afectat} — ${r.natura}` })),
-    // The handover report must contain every inventory movement recorded during the shift,
-    // including stock entered manually from the Inventar page.
-    inventar: (miscariR.data||[]).map(r=>{
+    // Keep every real stock entry and exit recorded during the shift. Administrative
+    // corrections only repair a counter and must not be presented as physical movement.
+    inventar: (miscariR.data||[]).filter(r=>!(r.motiv||'').startsWith('Corecție manuală din pagina Inventar')).map(r=>{
       const item = inventarById[r.inventar_id];
       return { tip: r.tip, articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id, cantitate: r.cantitate, motiv: cleanActReason(r.motiv) };
     }),
