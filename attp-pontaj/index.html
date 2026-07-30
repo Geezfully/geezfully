@@ -2034,7 +2034,7 @@ async function ensurePdfFont(doc){
   }
   doc.addFileToVFS('NotoSans-Regular.ttf', pdfFontBase64);
   doc.addFont('NotoSans-Regular.ttf', 'NotoSans', 'normal');
-  doc.setFont('NotoSans');
+  doc.setFont('NotoSans','normal');
 }
 function pdfCell(value){ return value===''||value==null ? '-' : String(value); }
 const ACT_PDF_COLUMNS = {
@@ -2067,7 +2067,7 @@ function drawActPdfPaper(doc){
 }
 function drawActPdfHeader(doc,act,lang){
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.setFont('NotoSans');
+  doc.setFont('NotoSans','normal');
   doc.setTextColor(...ACT_PDF_MUTED);
   doc.setFontSize(6.8);
   if(doc.setCharSpace) doc.setCharSpace(.65);
@@ -2079,7 +2079,7 @@ function drawActPdfHeader(doc,act,lang){
   doc.setFontSize(18);
   doc.text(t('act_docTitle',lang),13,23);
 
-  doc.setFont('NotoSans');
+  doc.setFont('NotoSans','normal');
   doc.setFontSize(8.2);
   doc.setTextColor(91,83,64);
   doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}  ·  ${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,13,31,{maxWidth:150});
@@ -2115,7 +2115,7 @@ function drawActPdfEmptyCards(doc,sections,x,y,width,fontSize,lang,cardsPerRow=3
       doc.setFillColor(...ACT_PDF_PAPER);
       doc.setDrawColor(...ACT_PDF_RULE);
       doc.roundedRect(cardX,y,cardWidth,cardHeight,1.1,1.1,'FD');
-      doc.setFont('NotoSans');
+      doc.setFont('NotoSans','normal');
       doc.setFontSize(Math.min(fontSize,5.5));
       doc.setTextColor(...ACT_PDF_MUTED);
       doc.text(`${t(section.titleKey,lang)} - ${t('act_noEntries',lang)}`,cardX+cardWidth/2,y+4.8,{align:'center',maxWidth:cardWidth-3});
@@ -2176,7 +2176,7 @@ async function exportActPdf(act,lang=actExportLanguage){
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf',lang)); return; }
   let doc;
   try{
-    const fontSizes = [8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8];
+    const fontSizes = [12,11.5,11,10.5,10,9.5,9,8.5,8,7.6,7.2,6.8,6.4,6,5.6,5.2,4.8,4.4,4,3.8];
     doc = await buildActPdfDocument(act,lang,fontSizes[0]);
     if(doc.internal.getNumberOfPages()>1){
       let first = 1;
