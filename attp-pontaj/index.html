@@ -1800,7 +1800,6 @@ async function confirmLocationShift(){
    (sesiuni_schimb.started_at → ended_at, or → now for a still-open shift), never by calendar
    date, since these are night shifts and a date filter would wrongly split one shift's data
    across two days. */
-const INVENTAR_ADMIN_MOTIV_PREFIXES = ['Ajustare manuală din pagina Inventar', 'Corecție manuală din pagina Inventar', 'Anulare returnare'];
 function cleanActReason(value){
   return String(value||'').replace(/\s*#[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b/ig, '').trim();
 }
@@ -1844,10 +1843,9 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     arbitraj: (arbitrajR.data||[]).map(r=>({ platou: r.turneu, arbitru: r.arbitru })),
     fairPlay: (fairPlayR.data||[]).map(r=>({ nume: participantName(r.participant_id), ora: r.ora ? String(r.ora).slice(0,5) : '', cartonas: r.tip_cartonas, descriere: r.descriere || '' })),
     daune: (dauneR.data||[]).map(r=>({ nume: participantName(r.participant_id), platou: r.teren || '', descriere: `${r.inventar_afectat} — ${r.natura}` })),
-    // Only the automatic consequences of duty actions (issuing gear, marking returns, referee
-    // ball issuance) belong in a shift act — manual stock corrections/adjustments/reverts from
-    // the Inventar tab are administrative bookkeeping, not something the person on duty did.
-    inventar: (miscariR.data||[]).filter(r => !INVENTAR_ADMIN_MOTIV_PREFIXES.some(p => (r.motiv||'').startsWith(p))).map(r=>{
+    // The handover report must contain every inventory movement recorded during the shift,
+    // including stock entered manually from the Inventar page.
+    inventar: (miscariR.data||[]).map(r=>{
       const item = inventarById[r.inventar_id];
       return { tip: r.tip, articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id, cantitate: r.cantitate, motiv: cleanActReason(r.motiv) };
     }),
