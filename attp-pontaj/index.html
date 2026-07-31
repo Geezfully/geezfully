@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="act-pdf-fonts.js?v=20260731-1"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { overflow-x: hidden; }
@@ -316,6 +317,7 @@
   .act-doc-title { font-family: Georgia, 'Times New Roman', serif; font-size: 25px; letter-spacing: .01em; }
   .act-doc-meta { margin-top: 8px; font-size: 12.5px; color: #5b5340; line-height: 1.6; }
   .act-doc-meta b { color: #211d14; }
+  .act-admin-name { display: inline-block; margin-left: 3px; color: #211d14; font-size: 18px; font-weight: 700; line-height: 1; vertical-align: -1px; }
   .act-stamp { flex: none; width: 92px; height: 92px; border-radius: 50%; border: 2px solid #a3492f; color: #a3492f; display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-9deg); font-family: Georgia, serif; font-size: 10.5px; line-height: 1.35; letter-spacing: .04em; opacity: .82; }
   .act-stamp b { display: block; font-size: 15px; letter-spacing: .02em; }
   .act-section { margin-bottom: 20px; position: relative; }
@@ -1082,8 +1084,8 @@ ru: {
   act_dataSchimb:'Дата смены', act_numeAdmin:'Имя администратора',
   act_numeSportiv:'Имя спортсмена', act_min:'Мин', act_motiv:'Причина',
   act_numeArbitru:'Имя судьи', act_cartonas:'Карточка', act_descriere:'Описание', act_platou:'Площадка',
-  act_tipMiscare:'Приход/расход', act_articol:'Товар', act_cantitate:'Количество', act_sursa:'Имя участника/поставщика',
-  act_camera:'Комната', act_oraCazarii:'Время заселения', act_statut:'Статус',
+  act_tipMiscare:'Приход/расход', act_articol:'Наименование', act_cantitate:'Кол-во', act_sursa:'Имя участника/поставщика',
+  act_camera:'Комната', act_oraCazarii:'Заселение', act_statut:'Статус',
   act_antrenor:'Тренер', act_data:'Дата', act_ora:'Время', act_programat:'Запланировано', act_desfasurat:'Проведено', act_da:'ДА', act_nu:'НЕТ',
   act_goale:'—', act_noEntries:'нет записей', act_generat:'Отчёт смены сформирован и сохранён в Отчётах.', act_needShift:'Нет активной смены.',
   re_print:'Печать', re_sect_participanti:'Отчёты об участниках', re_sect_admin:'Административные отчёты',
@@ -1804,6 +1806,12 @@ function cleanActReason(value){
   return String(value||'').replace(/\s*#[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b/ig, '').trim();
 }
 
+function actRoomNumber(value){
+  const raw = String(value||'').trim();
+  if(!raw) return '';
+  return raw.replace(/^(?:camer(?:a|ă)|комната|komnata)\s*(?:nr\.?|№|#)?\s*/iu,'').trim();
+}
+
 function trainingStatusAt(row, cutoffIso){
   const cutoffLocal = new Intl.DateTimeFormat('sv-SE', {
     timeZone:'Europe/Chisinau', year:'numeric', month:'2-digit', day:'2-digit',
@@ -1948,7 +1956,7 @@ function actSections(c, lang=LANG){
     { titleKey:'act_s_fairplay', headers:[t('act_numeSportiv',lang), t('act_ora',lang), t('act_cartonas',lang), t('act_descriere',lang)], rows:(c.fairPlay||[]).map(r=>[r.nume, r.ora||'', trEnum(r.cartonas,lang), r.descriere||'']) },
     { titleKey:'act_s_daune', headers:[t('act_numeSportiv',lang), t('act_platou',lang), t('act_descriere',lang)], rows:(c.daune||[]).map(r=>[r.nume, r.platou||'', r.descriere||'']) },
     { titleKey:'act_s_inventar', headers:[t('act_tipMiscare',lang), t('act_articol',lang), t('act_cantitate',lang), t('act_motiv',lang)], rows:(c.inventar||[]).map(r=>[trEnum(r.tip,lang), r.articol, r.cantitate, cleanActReason(r.motiv)]) },
-    { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, r.camera||'', r.ora||'', trEnum(r.statut,lang)]) },
+    { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, actRoomNumber(r.camera), r.ora||'', trEnum(r.statut,lang)]) },
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
     { titleKey:'act_s_observatii', headers:[t('ob_target',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.nume||'—', r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
@@ -1977,7 +1985,7 @@ function renderActDoc(act, lang=LANG){
       <div>
         <div class="act-doc-eyebrow">${lang==='ru'?'ATTP · Электронный журнал':'ATTP · Registru electronic'}</div>
         <div class="act-doc-title">${t('act_docTitle',lang)}</div>
-        <div class="act-doc-meta"><b>${t('act_dataSchimb',lang)}:</b> ${dateLabel} &nbsp;·&nbsp; <b>${t('act_numeAdmin',lang)}:</b> ${esc(c.admin?.nume || act.numeAdministrator)}</div>
+        <div class="act-doc-meta"><b>${t('act_dataSchimb',lang)}:</b> ${dateLabel} &nbsp;·&nbsp; <b>${t('act_numeAdmin',lang)}:</b><span class="act-admin-name">${esc(c.admin?.nume || act.numeAdministrator)}</span></div>
       </div>
       ${actStampHtml(act.data,lang)}
     </div>
@@ -2022,18 +2030,27 @@ function exportActExcel(act, lang=actExportLanguage){
    Embed a real Unicode font (Noto Sans, subset to Latin+Cyrillic) so RO/RU text renders correctly
    instead of being transliterated or garbled. */
 let pdfFontBase64 = null;
+let pdfFontBoldBase64 = null;
 async function ensurePdfFont(doc){
   if(!pdfFontBase64){
-    const res = await fetch('fonts/NotoSans-Regular-subset.ttf');
-    if(!res.ok) throw new Error('font fetch failed: ' + res.status);
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    let binary = '';
-    const chunk = 0x8000;
-    for(let i=0; i<bytes.length; i+=chunk) binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
-    pdfFontBase64 = btoa(binary);
+    // A bundled font keeps PDF export working when the app is opened via file://,
+    // where browsers block fetch() calls for local font files.
+    pdfFontBase64 = window.ACT_PDF_FONTS?.['LiberationSans-Regular.ttf'] || null;
+    if(!pdfFontBase64){
+      const res = await fetch('fonts/NotoSans-Regular-subset.ttf');
+      if(!res.ok) throw new Error('font fetch failed: ' + res.status);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      let binary = '';
+      const chunk = 0x8000;
+      for(let i=0; i<bytes.length; i+=chunk) binary += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+      pdfFontBase64 = btoa(binary);
+    }
   }
+  pdfFontBoldBase64 = pdfFontBoldBase64 || window.ACT_PDF_FONTS?.['LiberationSans-Bold.ttf'] || pdfFontBase64;
   doc.addFileToVFS('NotoSans-Regular.ttf', pdfFontBase64);
+  doc.addFileToVFS('NotoSans-Bold.ttf', pdfFontBoldBase64);
   doc.addFont('NotoSans-Regular.ttf', 'NotoSans', 'normal');
+  doc.addFont('NotoSans-Bold.ttf', 'NotoSans', 'bold');
   doc.setFont('NotoSans','normal');
 }
 function pdfCell(value){ return value===''||value==null ? '-' : String(value); }
@@ -2042,8 +2059,8 @@ const ACT_PDF_COLUMNS = {
   act_s_arbitraj:[.36,.64],
   act_s_fairplay:[.34,.12,.17,.37],
   act_s_daune:[.31,.18,.51],
-  act_s_inventar:[.16,.25,.11,.48],
-  act_s_hostel:[.33,.17,.22,.28],
+  act_s_inventar:[.24,.24,.10,.42],
+  act_s_hostel:[.35,.12,.25,.28],
   act_s_treninguri:[.29,.18,.17,.11,.25],
   act_s_sarcini:[.24,.76],
   act_s_observatii:[.31,.22,.47],
@@ -2082,7 +2099,24 @@ function drawActPdfHeader(doc,act,lang){
   doc.setFont('NotoSans','normal');
   doc.setFontSize(8.2);
   doc.setTextColor(91,83,64);
-  doc.text(`${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}  ·  ${t('act_numeAdmin',lang)}: ${act.numeAdministrator||''}`,13,31,{maxWidth:150});
+  const dateMeta = `${t('act_dataSchimb',lang)}: ${fmtDate(act.data)}  ·  `;
+  const adminMeta = `${t('act_numeAdmin',lang)}: `;
+  doc.text(dateMeta,13,31);
+  const adminMetaX = 13 + doc.getTextWidth(dateMeta);
+  doc.text(adminMeta,adminMetaX,31);
+  const adminNameX = adminMetaX + doc.getTextWidth(adminMeta);
+  const adminName = String(act.numeAdministrator||'').trim() || '-';
+  const adminNameMaxWidth = Math.max(24,pageWidth-41-adminNameX);
+  const targetAdminNameSize = 11.5;
+  doc.setFont('NotoSans','bold');
+  doc.setFontSize(targetAdminNameSize);
+  const naturalNameWidth = doc.getTextWidth(adminName);
+  const adminNameFontSize = naturalNameWidth > adminNameMaxWidth
+    ? Math.max(8.8,targetAdminNameSize*(adminNameMaxWidth/naturalNameWidth))
+    : targetAdminNameSize;
+  doc.setFontSize(adminNameFontSize);
+  doc.setTextColor(...ACT_PDF_INK);
+  doc.text(adminName,adminNameX,31,{maxWidth:adminNameMaxWidth});
 
   const [year,month,day] = String(act.data||todayISO()).split('-');
   const monthLabel = (MONTH_NAMES[lang==='ru'?'ru':'ro'][Number(month)-1]||'').slice(0,3).toUpperCase();
