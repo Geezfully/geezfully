@@ -326,7 +326,8 @@
   .act-table td, .act-table th { padding: 6px 9px; border-bottom: 1px solid #e6dfc9; text-align: left; vertical-align: top; }
   .act-table th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #8a7f63; font-weight: 600; }
   .act-table tr:last-child td { border-bottom: none; }
-  .act-table-act_s_hostel th:nth-child(2), .act-table-act_s_hostel td:nth-child(2) { text-align: center; }
+  .act-table-act_s_hostel th:nth-child(2), .act-table-act_s_hostel td:nth-child(2),
+  .act-table-act_s_hostel th:nth-child(3), .act-table-act_s_hostel td:nth-child(3) { text-align: center; }
   .act-empty-row td { color: #a89c7c; font-style: italic; }
   @media (max-width: 640px) {
     .act-doc { padding: 24px 20px; }
@@ -2069,7 +2070,10 @@ const ACT_PDF_COLUMNS = {
 function actPdfColumnStyles(titleKey, width){
   const proportions = ACT_PDF_COLUMNS[titleKey] || [];
   const styles = Object.fromEntries(proportions.map((value,index)=>[index,{cellWidth:width*value}]));
-  if(titleKey==='act_s_hostel' && styles[1]) styles[1].halign = 'center';
+  if(titleKey==='act_s_hostel'){
+    if(styles[1]) styles[1].halign = 'center';
+    if(styles[2]) styles[2].halign = 'center';
+  }
   return styles;
 }
 const ACT_PDF_PAPER = [243,238,224];
