@@ -2193,6 +2193,10 @@ function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
         data.cell.styles.fontSize = Math.max(3.8,fontSize-.6);
         data.cell.styles.cellPadding = {top:1,right:padding,bottom:.9,left:padding};
       }
+      const centeredHostelCell = section.titleKey==='act_s_hostel'
+        && (data.column.index===1 || data.column.index===2)
+        && (data.section==='body' || (data.section==='head' && data.row.index===1));
+      if(centeredHostelCell) data.cell.styles.halign = 'center';
     },
   });
   return doc.lastAutoTable.finalY+2.2;
