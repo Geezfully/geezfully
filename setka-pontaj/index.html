@@ -4016,14 +4016,17 @@
 
     const mark = root.querySelector('.act-beneficiary-mark');
     if (mark?.src) {
-      const maxMarkWidth = 65;
-      const maxMarkHeight = 27;
+      // The physical SETKA-PRO stamp is about 1.56x the diameter of the
+      // previous PDF rendering. Keep its natural aspect ratio and let it
+      // overlap the beneficiary details, matching the stamped paper act.
+      const maxMarkWidth = 78;
+      const maxMarkHeight = 42;
       const sourceWidth = mark.naturalWidth || mark.width || maxMarkWidth;
       const sourceHeight = mark.naturalHeight || mark.height || maxMarkHeight;
       const markScale = Math.min(maxMarkWidth / sourceWidth, maxMarkHeight / sourceHeight);
       const markWidth = sourceWidth * markScale;
       const markHeight = sourceHeight * markScale;
-      pdf.addImage(mark.src, 'PNG', beneficiaryX + 3, partiesY + 32, markWidth, markHeight, 'beneficiary-mark', 'FAST');
+      pdf.addImage(mark.src, 'PNG', beneficiaryX - 2, partiesY + 17, markWidth, markHeight, 'beneficiary-mark', 'FAST');
     }
 
     const providerRows = Array.from(root.querySelectorAll('.act-party:not(.act-beneficiary) .act-provider-row'));
