@@ -521,8 +521,10 @@
   .act-party{ position:relative; min-height:128px; border:1px solid #cfd3d8; padding:4px; font-size:11.5px; line-height:1.38; }
   .act-party-title{ font-style:italic; }
   .act-party b{ font-weight:700; }
-  .act-beneficiary{ min-height:160px; }
-  .act-beneficiary-mark{ display:block; width:285px; max-width:100%; height:auto; object-fit:contain; object-position:left top; margin:2px 0 -11px 5px; mix-blend-mode:multiply; }
+  .act-beneficiary{ min-height:186px; }
+  /* Kept in step with the PDF's mark sizing so the on-screen preview matches
+     what actually prints. */
+  .act-beneficiary-mark{ display:block; width:374px; max-width:none; height:auto; object-fit:contain; object-position:left top; margin:2px 0 -11px -18px; mix-blend-mode:multiply; }
   .act-provider-row{ display:grid; grid-template-columns:64px 1fr; min-height:22px; align-items:center; border-bottom:1px solid #aaa; }
   .act-provider-row:last-of-type{ border-bottom:0; }
   .act-provider-name{ display:grid; grid-template-columns:1fr 1fr; gap:8px; text-align:center; font-weight:700; padding-top:5px; }
@@ -989,6 +991,10 @@
         <button class="btn btn-gold" id="downloadTransportBtn">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6.5 9.5 10 13l3.5-3.5"/><path d="M4 15v2h12v-2"/></svg>
           Descarcă CSV
+        </button>
+        <button class="btn btn-gold" id="downloadTransportPdfBtn">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6.5 9.5 10 13l3.5-3.5"/><path d="M4 15v2h12v-2"/></svg>
+          Descarcă PDF
         </button>
       </div>
     </div>
@@ -2139,7 +2145,7 @@
           entry.tournament_day || 0, entry.tournament_night || 0, entry.matches_day || 0, entry.matches_night || 0,
           entry.place1_day || 0, entry.place1_night || 0, entry.place3_day || 0, entry.place3_night || 0,
           entry.arbitraj_day || 0, entry.arbitraj_night || 0, entry.region || '', exportNumber(ref.km || 0),
-          ref.taxi_covered ? 'Da' : 'Nu', exportNumber(entry.transport_total || 0),
+          ref.taxi_covered ? 'Da' : 'Nu', exportNumber(computeTransportAuto(ref, entry)),
           exportNumber(-(entry.alte_compensari || 0)),
           exportNumber(fee), exportNumber((globalRates.tax_rate || 0) * 100), exportNumber(tax), exportNumber(fee + tax),
           entry.notes || '', entry.updated_at || ''
@@ -2165,7 +2171,7 @@
       // km is a persistent per-referee setting now, not a monthly one — it alone
       // shouldn't keep someone listed every month regardless of whether they
       // actually traveled. Show them only if something for THIS month is non-zero.
-      .filter(({ ref, entry }) => (entry.region || '').trim() || (Number(entry.transport_total) || 0) !== 0 || ref.taxi_covered === true);
+      .filter(({ ref, entry }) => (entry.region || '').trim() || computeTransportAuto(ref, entry) !== 0 || ref.taxi_covered === true);
   }
   function openTransportModal(){
     const rows = transportRows();
@@ -2174,7 +2180,7 @@
     body.innerHTML = '';
     let grandTotal = 0;
     rows.forEach(({ ref, entry }) => {
-      const total = Number(entry.transport_total) || 0;
+      const total = computeTransportAuto(ref, entry);
       grandTotal += total;
       const tr = document.createElement('tr');
       tr.innerHTML = `<td>${escapeHtml(ref.last_name)} ${escapeHtml(ref.first_name)}</td>
@@ -2193,9 +2199,9 @@
     const headers = ['Luna','Nume','Prenume','Regiune','Km','Taxi acoperit','Total transport (MDL)'];
     const dataRows = rows.map(({ ref, entry }) => [
       periodKey(currentPeriod).slice(0, 7), ref.last_name, ref.first_name,
-      entry.region || '', exportNumber(ref.km || 0), ref.taxi_covered ? 'Da' : 'Nu', exportNumber(entry.transport_total || 0)
+      entry.region || '', exportNumber(ref.km || 0), ref.taxi_covered ? 'Da' : 'Nu', exportNumber(computeTransportAuto(ref, entry))
     ]);
-    const grandTotal = rows.reduce((sum, { entry }) => sum + (Number(entry.transport_total) || 0), 0);
+    const grandTotal = rows.reduce((sum, { ref, entry }) => sum + computeTransportAuto(ref, entry), 0);
     dataRows.push(['', '', '', '', '', 'Total', exportNumber(grandTotal)]);
     const csv = '﻿' + [headers, ...dataRows].map(row => row.map(csvCell).join(';')).join('\r\n');
     const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
@@ -2208,10 +2214,120 @@
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  // Drawn as real text/lines rather than a screenshot — same approach as the
+  // platouri table export, so the file stays small and sharp at any zoom.
+  async function downloadTransportPdf(){
+    const btn = document.getElementById('downloadTransportPdfBtn');
+    if (btn.disabled) return;
+    const originalLabel = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = 'Se generează…';
+    try {
+      if (!window.jspdf || !window.jspdf.jsPDF) throw new Error('Biblioteca PDF nu s-a încărcat.');
+      const rows = transportRows();
+      if (!rows.length) throw new Error('Nimeni nu are date de transport luna asta.');
+      const pdf = new window.jspdf.jsPDF({ unit:'mm', format:'a4', orientation:'portrait', compress:true });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 12;
+      const safeText = value => String(value ?? '').replace(/[șş]/gi, c => c === c.toUpperCase() ? 'S' : 's').replace(/[țţ]/gi, c => c === c.toUpperCase() ? 'T' : 't');
+      const cols = [
+        { label:'Participant', width:56, align:'left' },
+        { label:'Regiune',     width:38, align:'left' },
+        { label:'Km',          width:22, align:'right' },
+        { label:'Taxi',        width:20, align:'center' },
+        { label:'Total (MDL)', width:pageWidth - margin * 2 - 56 - 38 - 22 - 20, align:'right' },
+      ];
+      const headerHeight = 9;
+      const bodyTop = margin + 15 + headerHeight;
+      const totalRowHeight = 9;
+      // Single A4 page, always — never paginate. Rows shrink to fit whatever
+      // the month's participant count happens to be, rather than spilling over.
+      const bodySpace = pageHeight - margin - totalRowHeight - 2 - bodyTop;
+      const rowHeight = Math.min(8, bodySpace / rows.length);
+      const bodyFontSize = Math.max(3.6, Math.min(8.5, rowHeight * 1.05));
+      const textBaseline = rowHeight / 2 + bodyFontSize * 0.125;
+      let y = 0;
+
+      const drawHeader = () => {
+        pdf.setTextColor(24, 30, 36);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        pdf.text('Transport participanti', margin, margin + 5);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(90, 97, 105);
+        pdf.text(`${safeText(MONTH_NAMES_RO[currentPeriod.getMonth()])} ${currentPeriod.getFullYear()}`, pageWidth - margin, margin + 5, { align:'right' });
+        pdf.setFontSize(7.5);
+        pdf.text('Separat de onorariu — doar pentru evidenta interna.', margin, margin + 10.5);
+        y = margin + 15;
+        let x = margin;
+        pdf.setFillColor(235, 238, 241);
+        pdf.setDrawColor(190, 196, 204);
+        pdf.rect(margin, y, pageWidth - margin * 2, headerHeight, 'FD');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.setTextColor(20, 25, 30);
+        cols.forEach(col => {
+          const tx = col.align === 'right' ? x + col.width - 2 : col.align === 'center' ? x + col.width / 2 : x + 2;
+          pdf.text(safeText(col.label).toUpperCase(), tx, y + 6, { align:col.align === 'left' ? 'left' : col.align });
+          x += col.width;
+        });
+        y += headerHeight;
+      };
+
+      drawHeader();
+      let grandTotal = 0;
+      rows.forEach(({ ref, entry }, index) => {
+        const total = computeTransportAuto(ref, entry);
+        grandTotal += total;
+        const values = [
+          `${ref.last_name} ${ref.first_name}`,
+          entry.region || '—',
+          fmtMoney(ref.km || 0),
+          ref.taxi_covered ? 'Da' : 'Nu',
+          `${fmtMoney(total)}`,
+        ];
+        let x = margin;
+        pdf.setDrawColor(214, 219, 224);
+        pdf.setFillColor(index % 2 ? 248 : 255, index % 2 ? 249 : 255, index % 2 ? 250 : 255);
+        pdf.rect(margin, y, pageWidth - margin * 2, rowHeight, 'FD');
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(bodyFontSize);
+        pdf.setTextColor(30, 36, 42);
+        cols.forEach((col, i) => {
+          const tx = col.align === 'right' ? x + col.width - 2 : col.align === 'center' ? x + col.width / 2 : x + 2;
+          pdf.text(safeText(values[i]), tx, y + textBaseline, { align:col.align === 'left' ? 'left' : col.align, maxWidth:col.width - 4 });
+          x += col.width;
+        });
+        y += rowHeight;
+      });
+
+      y += 2;
+      pdf.setFillColor(231, 229, 220);
+      pdf.setDrawColor(190, 196, 204);
+      pdf.rect(margin, y, pageWidth - margin * 2, totalRowHeight, 'FD');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(9);
+      pdf.setTextColor(20, 25, 30);
+      pdf.text('TOTAL DE PLATIT', margin + 2, y + 6);
+      pdf.text(`${fmtMoney(grandTotal)} MDL`, pageWidth - margin - 2, y + 6, { align:'right' });
+
+      pdf.save(`transport-setka-${periodKey(currentPeriod).slice(0, 7)}.pdf`);
+    } catch (error) {
+      console.error('Transport PDF failed', error);
+      alert(t('Nu s-a putut genera PDF-ul: ') + (error.message || error));
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
+    }
+  }
+
   document.getElementById('transportPreviewBtn').addEventListener('click', openTransportModal);
   document.getElementById('closeTransport').addEventListener('click', () => document.getElementById('transportModal').classList.remove('show'));
   document.getElementById('closeTransportBtn').addEventListener('click', () => document.getElementById('transportModal').classList.remove('show'));
   document.getElementById('downloadTransportBtn').addEventListener('click', downloadTransportCsv);
+  document.getElementById('downloadTransportPdfBtn').addEventListener('click', downloadTransportPdf);
 
   // ══ FEE CALC — mirrors the entry_totals SQL view exactly ══
   function computeFee(referee, entry){
@@ -2247,7 +2363,8 @@
   function detailPreview(entry, refId){
     const items = [];
     if ((entry.region || '').trim()) items.push(escapeHtml(entry.region.trim()));
-    if (Number(entry.transport_total)) items.push(`Transport ${fmtMoney(entry.transport_total)} MDL`);
+    const transportTotal = computeTransportAuto(referees.find(r => r.id === refId), entry);
+    if (transportTotal) items.push(`Transport ${fmtMoney(transportTotal)} MDL`);
     if ((entry.notes || '').trim()) items.push('Notițe');
     const bonusCount = (bonusesByRef[refId] || []).length;
     if (bonusCount) items.push(`${bonusCount} ${bonusCount === 1 ? 'bonus' : 'bonusuri'}`);
@@ -2425,6 +2542,11 @@
     if (!entry) return;
     const dot = document.getElementById('dot-' + refId);
     try {
+      // Transport is a pure function of km/taxi + this month's tournament count,
+      // and tournaments are edited from the main table — not just the Detalii
+      // modal — so recompute on every save. Otherwise the stored figure freezes
+      // at whatever the trip count was the last time Detalii happened to be saved.
+      entry.transport_total = computeTransportAuto(referees.find(r => r.id === refId), entry);
       const payload = Object.assign({}, entry, { referee_id: refId, period: periodKey(currentPeriod), updated_by: session.user.id });
       delete payload.id;
       const { data, error } = await db.from('monthly_entries')
@@ -4067,17 +4189,20 @@
 
     const mark = root.querySelector('.act-beneficiary-mark');
     if (mark?.src) {
-      // The physical SETKA-PRO stamp is about 1.56x the diameter of the
-      // previous PDF rendering. Keep its natural aspect ratio and let it
-      // overlap the beneficiary details, matching the stamped paper act.
-      const maxMarkWidth = 78;
-      const maxMarkHeight = 42;
+      // Sized to match the physical stamp as closely as the layout allows.
+      // Hard ceiling on width: the Prestator column starts at x=116, and the
+      // participant's IBAN/name must never be covered — so the mark is shifted
+      // left to the page margin to buy width, and both axes are capped so it
+      // can't spill past the box no matter what aspect ratio the image has.
+      const markX = 10;
+      const maxMarkWidth = providerX - markX - 4;
+      const maxMarkHeight = 52;
       const sourceWidth = mark.naturalWidth || mark.width || maxMarkWidth;
       const sourceHeight = mark.naturalHeight || mark.height || maxMarkHeight;
       const markScale = Math.min(maxMarkWidth / sourceWidth, maxMarkHeight / sourceHeight);
       const markWidth = sourceWidth * markScale;
       const markHeight = sourceHeight * markScale;
-      pdf.addImage(mark.src, 'PNG', beneficiaryX - 2, partiesY + 17, markWidth, markHeight, 'beneficiary-mark', 'FAST');
+      pdf.addImage(mark.src, 'PNG', markX, partiesY + 15, markWidth, markHeight, 'beneficiary-mark', 'FAST');
     }
 
     const providerRows = Array.from(root.querySelectorAll('.act-party:not(.act-beneficiary) .act-provider-row'));
