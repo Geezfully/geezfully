@@ -792,6 +792,10 @@ ro: {
   an_adaugaEligibil:'Adaugă jucător eligibil', an_eligibilAdaugat:'+ Adaugă', an_eligibilNone:'Niciun jucător eligibil încă.',
   an_needJucator:'Selectați un jucător eligibil.', an_neeligibil:'Acest jucător nu este marcat eligibil pentru antrenament.',
   an_perioada:'Filtrează după lună', an_luna:'Lună', an_toateLunile:'Toate lunile',
+  an_btnRaportJucatori:'⇩ Raport pe jucători (PDF)', an_raportTitlu:'Raport antrenamente pe jucători',
+  an_raportPerioada:'Perioada', an_raportToate:'Toate lunile', an_raportNimic:'Nicio sesiune de antrenament în perioada selectată.',
+  an_raportTh_nr:'Nr.', an_raportTh_jucator:'Jucător', an_raportTh_sesiuni:'Sesiuni', an_raportTh_total:'Total achitat',
+  an_raportTotalGeneral:'TOTAL GENERAL', an_raportJucatoriDistincti:'Jucători', an_raportGenerat:'Generat la',
 
   iv_title:'Inventar', iv_sub:'Stocul bunurilor aflate la locație. Cantitatea curentă scade automat la eliberări.',
   iv_lowStock:'articole sub stocul minim admis.', iv_addTitle:'Intrare / corectare stoc', iv_articol:'Articol',
@@ -1053,6 +1057,10 @@ ru: {
   an_adaugaEligibil:'Добавить допущенного игрока', an_eligibilAdaugat:'+ Добавить', an_eligibilNone:'Пока нет допущенных игроков.',
   an_needJucator:'Выберите допущенного игрока.', an_neeligibil:'Этот игрок не отмечен как допущенный к тренировкам.',
   an_perioada:'Фильтр по месяцу', an_luna:'Месяц', an_toateLunile:'Все месяцы',
+  an_btnRaportJucatori:'⇩ Отчёт по игрокам (PDF)', an_raportTitlu:'Отчёт по тренировкам по игрокам',
+  an_raportPerioada:'Период', an_raportToate:'Все месяцы', an_raportNimic:'За выбранный период нет тренировок.',
+  an_raportTh_nr:'№', an_raportTh_jucator:'Игрок', an_raportTh_sesiuni:'Сессии', an_raportTh_total:'Всего оплачено',
+  an_raportTotalGeneral:'ОБЩИЙ ИТОГ', an_raportJucatoriDistincti:'Игроков', an_raportGenerat:'Сформировано',
 
   iv_title:'Инвентарь', iv_sub:'Запас товаров на локации. Текущее количество автоматически снижается при выдаче.',
   iv_lowStock:'товаров ниже допустимого минимума.', iv_addTitle:'Приход / корректировка склада', iv_articol:'Товар',
@@ -3782,6 +3790,86 @@ function trainingSessionsFiltered(){
   const m = antrenamenteFilter.month;
   return DB.treninguri.filter(r => !m || r.data.slice(0,7)===m);
 }
+// Trainer columns follow the fixed TRAINERS order, but historic rows may name a trainer
+// who is no longer on the list — keep those as trailing columns so no money goes missing.
+function trainingTrainerColumns(rows){
+  const extra = [...new Set(rows.map(r=>r.antrenor).filter(a=>a && !TRAINERS.includes(a)))].sort();
+  return [...TRAINERS, ...extra];
+}
+function trainingPlayerTotals(rows=trainingSessionsFiltered()){
+  const byPlayer = new Map();
+  rows.forEach(r=>{
+    let entry = byPlayer.get(r.participantId);
+    if(!entry){
+      entry = { participantId:r.participantId, nume:participantName(r.participantId), sesiuni:0, total:0, perAntrenor:{} };
+      byPlayer.set(r.participantId, entry);
+    }
+    const suma = Number(r.sumaJucator||0);
+    entry.sesiuni += 1;
+    entry.total += suma;
+    entry.perAntrenor[r.antrenor] = (entry.perAntrenor[r.antrenor]||0) + suma;
+  });
+  return [...byPlayer.values()].sort((a,b)=> b.total-a.total || a.nume.localeCompare(b.nume,'ro'));
+}
+async function exportAntrenamentePdf(){
+  if(!window.jspdf?.jsPDF){ alert(t('re_noPdf')); return; }
+  const rows = trainingSessionsFiltered();
+  const totals = trainingPlayerTotals(rows);
+  if(!totals.length){ alert(t('an_raportNimic')); return; }
+  const trainers = trainingTrainerColumns(rows);
+  // Past ~4 trainer columns the player name gets squeezed unreadably on A4 portrait, so widen the page instead.
+  const orientation = trainers.length > 4 ? 'landscape' : 'portrait';
+  const doc = new window.jspdf.jsPDF({ orientation });
+  try { await ensurePdfFont(doc); } catch(e){ alert('Fontul PDF nu s-a putut incarca: ' + e.message); return; }
+
+  const perioada = antrenamenteFilter.month ? monthLabel(antrenamenteFilter.month) : t('an_raportToate');
+  const totalGeneral = totals.reduce((s,r)=>s+r.total,0);
+  const totalSesiuni = totals.reduce((s,r)=>s+r.sesiuni,0);
+
+  doc.setFont('NotoSans','bold'); doc.setFontSize(15); doc.setTextColor(35,42,52);
+  doc.text(t('an_raportTitlu'), 12, 15);
+  doc.setFont('NotoSans','normal'); doc.setFontSize(9); doc.setTextColor(85);
+  doc.text(`${t('an_raportPerioada')}: ${perioada}`, 12, 21.5);
+  doc.text(`${t('an_raportJucatoriDistincti')}: ${totals.length}   ·   ${t('an_totalSesiuni')}: ${totalSesiuni}   ·   ${t('an_totalIncasat')}: ${totalGeneral} MDL`, 12, 26.5);
+  doc.text(`${t('an_raportGenerat')}: ${fmtDate(moldovaClock().dateKey)}`, 12, 31.5);
+
+  // Give the fixed columns their due, reserve a legible minimum for the name, then let the
+  // trainer columns absorb whatever is left — never let the total exceed the printable width.
+  const usable = doc.internal.pageSize.getWidth() - 24;
+  const wNr = 11, wSesiuni = 16, wTotal = 30, minJucator = 45;
+  const flexible = usable - wNr - wSesiuni - wTotal;
+  const wTrainer = Math.min(24, (flexible - minJucator) / trainers.length);
+  const wJucator = flexible - wTrainer*trainers.length;
+  const columnStyles = { 0:{cellWidth:wNr, halign:'center'}, 1:{cellWidth:wJucator} , 2:{cellWidth:wSesiuni, halign:'center'} };
+  trainers.forEach((_,i)=>{ columnStyles[3+i] = { cellWidth:wTrainer, halign:'right' }; });
+  columnStyles[3+trainers.length] = { cellWidth:wTotal, halign:'right', fontStyle:'bold' };
+
+  doc.autoTable({
+    startY:36,
+    head:[[t('an_raportTh_nr'), t('an_raportTh_jucator'), t('an_raportTh_sesiuni'), ...trainers, t('an_raportTh_total')]],
+    body: totals.map((r,i)=>[
+      i+1, pdfCell(r.nume), r.sesiuni,
+      ...trainers.map(tr=> r.perAntrenor[tr] ? `${r.perAntrenor[tr]}` : '-'),
+      `${r.total}`,
+    ]),
+    foot:[[
+      '', t('an_raportTotalGeneral'), totalSesiuni,
+      ...trainers.map(()=> ''),
+      `${totalGeneral}`,
+    ]],
+    theme:'grid',
+    margin:{left:12,right:12,top:12,bottom:12},
+    styles:{font:'NotoSans', fontSize:8.2, cellPadding:2.1, lineColor:[205,210,218], lineWidth:.15, overflow:'linebreak'},
+    headStyles:{font:'NotoSans', fontStyle:'bold', fillColor:[55,65,81], textColor:255, cellPadding:2.4, halign:'center'},
+    footStyles:{font:'NotoSans', fontStyle:'bold', fillColor:[232,235,240], textColor:[35,42,52], cellPadding:2.4},
+    alternateRowStyles:{fillColor:[247,249,251]},
+    columnStyles,
+    rowPageBreak:'avoid',
+    showFoot:'lastPage', // a grand total repeated on every page reads like a page subtotal
+    didParseCell:d=>{ if(d.section==='foot' && d.column.index>=2) d.cell.styles.halign = 'right'; },
+  });
+  doc.save(`antrenamente_jucatori_${antrenamenteFilter.month || 'total'}.pdf`);
+}
 function renderAntrenamente(){
   const rows = trainingSessionsFiltered();
   const totalIncasat = rows.reduce((s,r)=>s+Number(r.sumaJucator||0),0);
@@ -3803,7 +3891,10 @@ function renderAntrenamente(){
         <option value="" ${!antrenamenteFilter.month?'selected':''}>${t('an_toateLunile')}</option>
         ${antrenamenteMonthsAvailable().map(m=>`<option value="${m}" ${antrenamenteFilter.month===m?'selected':''}>${monthLabel(m)}</option>`).join('')}
       </select></div>
-      <div class="field" style="justify-content:flex-end"><button class="btn-ghost" onclick="antrenamenteFilter={month:''}; render();">${t('an_toateLunile')}</button></div>
+      <div class="field" style="justify-content:flex-end"><div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-ghost" onclick="antrenamenteFilter={month:''}; render();">${t('an_toateLunile')}</button>
+        <button class="btn-primary" onclick="exportAntrenamentePdf()">${t('an_btnRaportJucatori')}</button>
+      </div></div>
     </div>
   </div>
 
