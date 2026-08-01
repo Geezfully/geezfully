@@ -1100,6 +1100,10 @@
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="9" width="10" height="7" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg>
           Luna este blocată — se afișează profilul salvat pentru ea. Deblocheaz-o pentru a modifica.
         </div>
+        <div class="period-locked-banner" id="refModalPastMonthBanner" style="display:none">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10" cy="10" r="6.5"/><path d="M10 6.5V10l2.5 1.5"/></svg>
+          <span id="refModalPastMonthText"></span>
+        </div>
         <div class="ref-profile-layout no-profile" id="refProfileLayout">
           <aside class="ref-player-card" id="refPlayerCard" hidden></aside>
           <div class="form-grid">
@@ -3448,6 +3452,10 @@
     // is fully disabled, so there's no risk of accidentally overwriting the
     // live profile with an old value just by opening and saving.
     const entry = refId ? (entries[refId] || {}) : {};
+    // On an open past month the category is that month's own value and is edited in
+    // place, so the field has to show the snapshot rather than the live profile —
+    // otherwise the form contradicts the badge in the table row behind it.
+    const pastMonth = !!refId && !locked && !isCurrentMonth(currentPeriod);
     const display = (refId && locked) ? {
       last_name: entry.last_name || ref.last_name,
       first_name: entry.first_name || ref.first_name,
@@ -3458,7 +3466,7 @@
       contract_number: entry.contract_number || ref.contract_number,
       contract_date: entry.contract_date || ref.contract_date,
       active: ref.active,
-    } : ref;
+    } : pastMonth ? Object.assign({}, ref, { category: entry.category || ref.category }) : ref;
     document.getElementById('refModalTitle').textContent = refId ? 'Editează participant' : 'Participant nou';
     document.getElementById('rLastName').value = display.last_name || '';
     document.getElementById('rFirstName').value = display.first_name || '';
@@ -3474,6 +3482,13 @@
     });
     document.getElementById('saveRef').disabled = locked;
     document.getElementById('refModalLockedBanner').style.display = locked ? 'flex' : 'none';
+    document.getElementById('refModalPastMonthBanner').style.display = pastMonth ? 'flex' : 'none';
+    if (pastMonth) {
+      const label = MONTH_NAMES[currentPeriod.getMonth()] + ' ' + currentPeriod.getFullYear();
+      document.getElementById('refModalPastMonthText').textContent = currentLang === 'ru'
+        ? `Категория изменится только за ${label}. Остальные поля профиля общие для всех месяцев.`
+        : `Categoria se schimbă doar pentru ${label}. Restul datelor din profil sunt comune tuturor lunilor.`;
+    }
     document.getElementById('deleteRefBtn').style.display = (refId && !locked) ? '' : 'none';
     const profileLayout = document.getElementById('refProfileLayout');
     const playerCard = document.getElementById('refPlayerCard');
@@ -3493,6 +3508,29 @@
   document.getElementById('closeRef').addEventListener('click', closeRefModal);
   document.getElementById('cancelRef').addEventListener('click', closeRefModal);
 
+  async function assertOk(query){
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  }
+
+  // Writes the category for the month currently on screen, leaving every other month
+  // and the live profile untouched.
+  async function saveMonthCategory(refId, category){
+    const existing = entries[refId];
+    if (existing && existing.id) {
+      entries[refId] = await assertOk(db.from('monthly_entries')
+        .update({ category, updated_by: session.user.id }).eq('id', existing.id).select().single());
+      return;
+    }
+    // This referee has no row for the month yet. Create one carrying the category —
+    // the insert trigger fills the rest of the snapshot from the live profile, and the
+    // figures stay zero, so the row reads as inactive until someone enters numbers.
+    const payload = Object.assign(emptyEntry(refId), { category, updated_by: session.user.id });
+    entries[refId] = await assertOk(db.from('monthly_entries')
+      .upsert(payload, { onConflict: 'referee_id,period' }).select().single());
+  }
+
   document.getElementById('saveRef').addEventListener('click', async () => {
     if (periodLocked) return;
     const payload = {
@@ -3507,10 +3545,25 @@
       active: !document.getElementById('rHidden').checked,
     };
     if (!payload.last_name || !payload.first_name) { alert(t('Nume și prenume sunt obligatorii.')); return; }
-    if (editingRefId) {
-      await db.from('referees').update(payload).eq('id', editingRefId);
-    } else {
-      await db.from('referees').insert(payload);
+    try {
+      if (!editingRefId) {
+        await assertOk(db.from('referees').insert(payload));
+      } else if (isCurrentMonth(currentPeriod)) {
+        // Current month: the live profile is authoritative and a database trigger
+        // mirrors the change into this month's snapshot.
+        await assertOk(db.from('referees').update(payload).eq('id', editingRefId));
+      } else {
+        // Past month: the category belongs to that month alone, so it goes straight
+        // to its monthly_entries row and the live profile keeps its own value. The
+        // remaining fields stay global and are saved to the profile as usual.
+        const { category, ...globalFields } = payload;
+        await assertOk(db.from('referees').update(globalFields).eq('id', editingRefId));
+        await saveMonthCategory(editingRefId, category);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(t('Nu s-a putut salva: ') + (err.message || err));
+      return;
     }
     await loadStaticData();
     await loadPeriod();
