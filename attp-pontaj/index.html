@@ -724,6 +724,11 @@ ro: {
   sp_confirmReturn:'Confirmați marcarea articolelor ca returnate de la spălătorie? Odată confirmată, doar administratorii mai pot anula acest lucru.',
   sp_lockedHint:'Returnare confirmată — doar administratorii pot anula.',
   sp_filtruTitle:'Schimbă luna', sp_luna:'Lună', sp_toatePerioadele:'Toate lunile',
+  sp_btnRaport:'⇩ Raport lunar (PDF)', sp_raportTitlu:'Raport spălătorie',
+  sp_raportPerioada:'Perioada', sp_raportToate:'Toate lunile', sp_raportNimic:'Nicio înregistrare de spălătorie în perioada selectată.',
+  sp_raportTh_nr:'Nr.', sp_raportTh_beneficiar:'Participant / locație', sp_raportTh_operatiuni:'Operațiuni',
+  sp_raportTh_articole:'Articole', sp_raportTh_total:'Total',
+  sp_raportTotalGeneral:'TOTAL GENERAL', sp_raportBeneficiari:'Beneficiari', sp_raportGenerat:'Generat la',
 
   ho_title:'Hostel', ho_sub:'Cazările pe noapte ale sportivilor la locație.', ho_cazatiAzi:'Cazați azi',
   ho_totalNopti:'Total nopți înregistrate', ho_addTitle:'Înregistrare cazare', ho_dataCazarii:'Data cazării',
@@ -989,6 +994,11 @@ ru: {
   sp_confirmReturn:'Подтвердить возврат изделий из прачечной? После подтверждения отменить это смогут только администраторы.',
   sp_lockedHint:'Возврат подтверждён — отменить может только администратор.',
   sp_filtruTitle:'Сменить месяц', sp_luna:'Месяц', sp_toatePerioadele:'Все месяцы',
+  sp_btnRaport:'⇩ Месячный отчёт (PDF)', sp_raportTitlu:'Отчёт по прачечной',
+  sp_raportPerioada:'Период', sp_raportToate:'Все месяцы', sp_raportNimic:'За выбранный период нет записей по прачечной.',
+  sp_raportTh_nr:'№', sp_raportTh_beneficiar:'Участник / локация', sp_raportTh_operatiuni:'Операций',
+  sp_raportTh_articole:'Изделий', sp_raportTh_total:'Всего',
+  sp_raportTotalGeneral:'ОБЩИЙ ИТОГ', sp_raportBeneficiari:'Получателей', sp_raportGenerat:'Сформировано',
 
   ho_title:'Хостел', ho_sub:'Ночные заселения спортсменов на локации.', ho_cazatiAzi:'Заселены сегодня',
   ho_totalNopti:'Всего ночей зарегистрировано', ho_addTitle:'Регистрация заселения', ho_dataCazarii:'Дата заселения',
@@ -3075,6 +3085,76 @@ function spalatorieFiltered(){
   const month = spalatorieFilter.month;
   return DB.spalatorie.filter(r => !month || r.data.slice(0,7)===month);
 }
+// Rows without a participant are the location's own laundry — they get their own bucket
+// so the per-beneficiary totals still add up to the month's total spend.
+function spalatorieBeneficiaryTotals(rows=spalatorieFiltered()){
+  const byBeneficiary = new Map();
+  rows.forEach(r=>{
+    const key = r.participantId || '__locatie__';
+    let entry = byBeneficiary.get(key);
+    if(!entry){
+      entry = {
+        key,
+        nume: r.participantId ? participantName(r.participantId) : t('sp_locatia'),
+        operatiuni:0, articole:0, total:0,
+      };
+      byBeneficiary.set(key, entry);
+    }
+    entry.operatiuni += 1;
+    entry.articole += Number(r.cantitate||1);
+    entry.total += Number(r.suma||0);
+  });
+  return [...byBeneficiary.values()].sort((a,b)=> b.total-a.total || a.nume.localeCompare(b.nume,'ro'));
+}
+async function exportSpalatoriePdf(){
+  if(!window.jspdf?.jsPDF){ alert(t('re_noPdf')); return; }
+  const rows = spalatorieFiltered();
+  const totals = spalatorieBeneficiaryTotals(rows);
+  if(!totals.length){ alert(t('sp_raportNimic')); return; }
+  const doc = new window.jspdf.jsPDF();
+  try { await ensurePdfFont(doc); } catch(e){ alert('Fontul PDF nu s-a putut incarca: ' + e.message); return; }
+
+  const perioada = spalatorieFilter.month ? monthLabel(spalatorieFilter.month) : t('sp_raportToate');
+  const sum = f => totals.reduce((s,r)=>s+r[f],0);
+  const totalGeneral = sum('total'), totalOperatiuni = sum('operatiuni'), totalArticole = sum('articole');
+
+  doc.setFont('NotoSans','bold'); doc.setFontSize(15); doc.setTextColor(35,42,52);
+  doc.text(t('sp_raportTitlu'), 12, 15);
+  doc.setFont('NotoSans','normal'); doc.setFontSize(9); doc.setTextColor(85);
+  doc.text(`${t('sp_raportPerioada')}: ${perioada}`, 12, 21.5);
+  doc.text(`${t('sp_raportBeneficiari')}: ${totals.length}   ·   ${t('sp_operatiuni')}: ${totalOperatiuni}   ·   ${t('sp_totalChelt')}: ${totalGeneral} MDL`, 12, 26.5);
+  doc.text(`${t('sp_raportGenerat')}: ${fmtDate(moldovaClock().dateKey)}`, 12, 31.5);
+
+  const usable = doc.internal.pageSize.getWidth() - 24;
+  const wNr = 11, wOperatiuni = 24, wArticole = 24, wTotal = 30;
+  const wBeneficiar = usable - wNr - wOperatiuni - wArticole - wTotal;
+
+  doc.autoTable({
+    startY:36,
+    head:[[t('sp_raportTh_nr'), t('sp_raportTh_beneficiar'), t('sp_raportTh_operatiuni'), t('sp_raportTh_articole'), t('sp_raportTh_total')]],
+    body: totals.map((r,i)=>[
+      i+1, pdfCell(r.nume), r.operatiuni, r.articole, `${r.total}`,
+    ]),
+    foot:[[ '', t('sp_raportTotalGeneral'), totalOperatiuni, totalArticole, `${totalGeneral}` ]],
+    theme:'grid',
+    margin:{left:12,right:12,top:12,bottom:12},
+    styles:{font:'NotoSans', fontSize:8.2, cellPadding:2.1, lineColor:[205,210,218], lineWidth:.15, overflow:'linebreak'},
+    headStyles:{font:'NotoSans', fontStyle:'bold', fillColor:[55,65,81], textColor:255, cellPadding:2.4, halign:'center'},
+    footStyles:{font:'NotoSans', fontStyle:'bold', fillColor:[232,235,240], textColor:[35,42,52], cellPadding:2.4},
+    alternateRowStyles:{fillColor:[247,249,251]},
+    columnStyles:{
+      0:{cellWidth:wNr, halign:'center'},
+      1:{cellWidth:wBeneficiar},
+      2:{cellWidth:wOperatiuni, halign:'center'},
+      3:{cellWidth:wArticole, halign:'center'},
+      4:{cellWidth:wTotal, halign:'right', fontStyle:'bold'},
+    },
+    rowPageBreak:'avoid',
+    showFoot:'lastPage',
+    didParseCell:d=>{ if(d.section==='foot' && d.column.index>=2) d.cell.styles.halign = d.column.index===4 ? 'right' : 'center'; },
+  });
+  doc.save(`spalatorie_${spalatorieFilter.month || 'total'}.pdf`);
+}
 function renderSpalatorie(){
   const rows = spalatorieFiltered();
   const total = rows.reduce((s,r)=>s+Number(r.suma||0),0);
@@ -3103,7 +3183,10 @@ function renderSpalatorie(){
         <option value="" ${!spalatorieFilter.month?'selected':''}>${t('sp_toatePerioadele')}</option>
         ${spalatorieMonthsAvailable().map(m=>`<option value="${m}" ${spalatorieFilter.month===m?'selected':''}>${monthLabel(m)}</option>`).join('')}
       </select></div>
-      <div class="field" style="justify-content:flex-end"><button class="btn-ghost" onclick="spalatorieFilter={month:''}; render();">${t('sp_toatePerioadele')}</button></div>
+      <div class="field" style="justify-content:flex-end"><div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-ghost" onclick="spalatorieFilter={month:''}; render();">${t('sp_toatePerioadele')}</button>
+        <button class="btn-primary" onclick="exportSpalatoriePdf()">${t('sp_btnRaport')}</button>
+      </div></div>
     </div>
   </div>
 
