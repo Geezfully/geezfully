@@ -3585,7 +3585,6 @@
     }).join('');
     const netTotal = total - alteCompensari;
     const tax = netTotal * ACT_TAX_RATE;
-    const totalIncludingTax = netTotal + tax;
     const monthLabel = `${MONTH_NAMES_RO[currentPeriod.getMonth()]} ${currentPeriod.getFullYear()}`;
     const taxPercent = fmtMoney(ACT_TAX_RATE * 100);
     const participantBic = bicForParticipant(snap);
@@ -3637,7 +3636,7 @@
               <tr class="act-blank-row"><td colspan="3"></td><td></td></tr>
               <tr class="act-blank-row"><td colspan="3"></td><td></td></tr>
               <tr class="act-total-row"><td colspan="3">TOTAL SPRE PLATĂ</td><td class="r" id="actTotal">${fmtMoney(netTotal)}</td></tr>
-              <tr class="act-tax-row"><td colspan="3">inclusiv impozit ${taxPercent}%</td><td class="r" id="actTax">${fmtMoney(totalIncludingTax)}</td></tr>
+              <tr class="act-tax-row"><td colspan="3">inclusiv impozit ${taxPercent}%</td><td class="r" id="actTax">${fmtMoney(tax)}</td></tr>
             </tbody>
           </table>
         </div>
@@ -3732,9 +3731,8 @@
     });
     const netTotal = total - (_actState?.alteCompensari || 0);
     const tax = netTotal * ACT_TAX_RATE;
-    const totalIncludingTax = netTotal + tax;
     document.getElementById('actTotal').textContent = fmtMoney(netTotal);
-    document.getElementById('actTax').textContent = fmtMoney(totalIncludingTax);
+    document.getElementById('actTax').textContent = fmtMoney(tax);
     if (_actState) {
       _actState.total = netTotal;
       _actState.tax = tax;
