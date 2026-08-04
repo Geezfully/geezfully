@@ -285,6 +285,31 @@
   tr.flag-red td:first-child { border-left: 2px solid var(--red); }
   tr.flag-yellow td:first-child { border-left: 2px solid var(--yellow); }
 
+  /* Sarcini — status is encoded by rail colour, grouping and recession so the
+     label only ever has to confirm what the colour already said. */
+  tr.task-row td:first-child { border-left: 3px solid transparent; }
+  tr.task-nesolutionat td:first-child { border-left-color: var(--red); }
+  tr.task-inlucru td:first-child { border-left-color: var(--yellow); }
+  tr.task-solutionat td:first-child { border-left-color: var(--green); }
+  tr.task-solutionat { opacity: .55; }
+  tr.task-solutionat:hover { opacity: 1; }
+  .task-group td {
+    padding: 7px 18px; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+  }
+  .task-group.g-nesolutionat td { background: rgba(248,81,73,.06); color: var(--red); }
+  .task-group.g-inlucru td { background: rgba(210,166,74,.06); color: var(--yellow); }
+  .task-group.g-solutionat td { background: rgba(63,185,80,.05); color: var(--green); }
+  .task-group td:first-child { border-left: 3px solid transparent; }
+  .task-select {
+    border-radius: 5px; font-size: 12px; padding: 4px 6px; cursor: pointer;
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+  }
+  .task-select.s-nesolutionat { background: rgba(248,81,73,.13); border-color: rgba(248,81,73,.45); color: var(--red); }
+  .task-select.s-inlucru { background: rgba(210,166,74,.13); border-color: rgba(210,166,74,.45); color: var(--yellow); }
+  .task-select.s-solutionat { background: rgba(63,185,80,.11); border-color: rgba(63,185,80,.35); color: var(--green); }
+  .task-select option { background: var(--surface); color: var(--text); }
+
   .tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); margin: 2px 4px 2px 0; }
   .category-filter-panel { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
   .category-filter-chip { appearance: none; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 6px 12px; font: inherit; font-size: 12px; cursor: pointer; transition: all .15s; }
@@ -4157,6 +4182,22 @@ function taskAdministratorSelect(){
   const accounts = realAdmins().map(a=>`<option value="account:${a.id}" ${a.id===currentAdminId?'selected':''}>${esc(adminName(a))}</option>`).join('');
   return `<select id="taf-admin"><optgroup label="${esc(t('nav_serviciu'))}">${roster}</optgroup><optgroup label="${esc(t('st_admins'))}">${accounts}</optgroup></select>`;
 }
+const TASK_STATUS_ORDER = ['nesoluționat','în lucru','soluționat'];
+const TASK_STATUS_SLUG = { 'nesoluționat':'nesolutionat', 'în lucru':'inlucru', 'soluționat':'solutionat' };
+// Groups the tasks for display only. The .slice() matters: sort() reorders in place,
+// so sorting DB.sarcini directly would permanently shuffle the loaded data.
+function sarciniGrouped(){
+  const groups = TASK_STATUS_ORDER.map(status => ({
+    status, slug: TASK_STATUS_SLUG[status], label: trEnum(status),
+    rows: DB.sarcini.filter(s => s.status===status),
+  }));
+  // Anything with an unexpected status still gets shown rather than silently dropped.
+  const alteStatusuri = DB.sarcini.filter(s => !TASK_STATUS_ORDER.includes(s.status));
+  if(alteStatusuri.length) groups.push({ status:'—', slug:'other', label:'—', rows:alteStatusuri });
+  return groups
+    .filter(g => g.rows.length)
+    .map(g => ({ ...g, rows: g.rows.slice().sort((a,b)=>b.dataInreg.localeCompare(a.dataInreg)) }));
+}
 function renderSarcini(){
   return `
   <div class="view-head"><div class="view-title">${t('ta_title')}</div></div>
@@ -4182,13 +4223,15 @@ function renderSarcini(){
     <div class="table-header"><div class="table-title">${DB.sarcini.length} ${t('ta_countSuffix')}</div></div>
     <div class="table-scroll"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('ta_th_inregDe')}</th><th>${t('th_descriere')}</th><th>${t('ta_th_status')}</th><th>${t('ta_th_solDe')}</th><th></th></tr></thead>
-      <tbody>${DB.sarcini.length ? DB.sarcini.slice().sort((a,b)=>b.dataInreg.localeCompare(a.dataInreg)).map(task=>{
+      <tbody>${DB.sarcini.length ? sarciniGrouped().map(group=>`
+        <tr class="task-group g-${group.slug}"><td colspan="6">${esc(group.label)} · ${group.rows.length}</td></tr>
+        ${group.rows.map(task=>{
         const stale = task.status!=='soluționat' && daysDiff(task.dataInreg)<=-2;
-        return `<tr class="${stale?'flag-red':''}">
+        return `<tr class="task-row task-${group.slug}">
           <td class="td-muted">${stale?'<span class="row-flag red"></span>':''}${fmtDate(task.dataInreg)}</td>
           <td class="td-muted">${esc(task.adminInreg)}</td><td>${esc(task.descriere)}</td>
           <td>
-            <select onchange="updateTaskStatus('${task.id}', this.value)" style="background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:5px;font-size:12px;padding:4px 6px;cursor:pointer">
+            <select class="task-select s-${group.slug}" onchange="updateTaskStatus('${task.id}', this.value)">
               <option value="nesoluționat" ${task.status==='nesoluționat'?'selected':''}>${trEnum('nesoluționat')}</option>
               <option value="în lucru" ${task.status==='în lucru'?'selected':''}>${trEnum('în lucru')}</option>
               <option value="soluționat" ${task.status==='soluționat'?'selected':''}>${trEnum('soluționat')}</option>
@@ -4197,7 +4240,7 @@ function renderSarcini(){
           <td class="td-muted">${esc(task.adminSolutionare)||'—'}</td>
           <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('sarcini','${task.id}')">${t('btn_delete')}</button></td>
         </tr>`;
-      }).join('') : `<tr><td class="td-empty" colspan="6">${t('ta_none')}</td></tr>`}</tbody>
+      }).join('')}`).join('') : `<tr><td class="td-empty" colspan="6">${t('ta_none')}</td></tr>`}</tbody>
     </table></div>
   </div>`;
 }
