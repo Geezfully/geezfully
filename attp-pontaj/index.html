@@ -595,6 +595,16 @@ const CLOTHING_SIZES = ['M','L','XL','XXL','XXXL'];
 const SPORT_CATEGORIES = ['MS','CMS','Categoria I','Categoria II','Categoria III','Amator'];
 const OBS_CATEGORIES = ['Joc pasiv','Simptome de boală','Fără cartelă','Absent','Lipsă vestimentație','Comportament necorespunzător','Conflict','Altă situație'];
 
+/* Doi sportivi (Anatolie și Alexandru) folosesc profilul „Ivanov Anatolie Alexandru”.
+   Vestimentația de mai jos a fost ridicată de celălalt, deci o ascundem din profil ca
+   administratorii să nu se încurce. Ascundere pur vizuală: înregistrările rămân în
+   jurnalul Vestimentație, în inventar și în rapoarte. (Dacă rândurile sunt șterse și
+   readăugate, ID-urile se schimbă și vor reapărea în profil.) */
+const VESTIMENTATIE_HIDDEN_FROM_PROFILE = new Set([
+  '6bb91f0f-898a-4325-ba89-aa11e5ba70a6', // Maiou roșu XL, 2025-02-22
+  '808c1b98-32b2-49e7-8821-76f32c8f90bb', // Maiou albastru XL, 2025-02-22
+]);
+
 /* ══════════════════════ I18N ══════════════════════ */
 let LANG = localStorage.getItem('attp-lang') || 'ro';
 function t(key, lang=LANG){ return (I18N[lang] && I18N[lang][key]) || I18N.ro[key] || key; }
@@ -2813,7 +2823,7 @@ function renderProfile(editing = false){
         ${list(DB.intarzieri.filter(i=>i.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${t('pa_intarziere_word')}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_vestimentatie')}</div>
-        ${list(DB.vestimentatie.filter(v=>v.participantId===id), r=>`<div class="mini-row"><span>${esc(trEnum(r.tip))} · ${esc(r.marime)} × ${r.cantitate}</span><span>${fmtDate(r.data)}</span></div>`)}
+        ${list(DB.vestimentatie.filter(v=>v.participantId===id && !VESTIMENTATIE_HIDDEN_FROM_PROFILE.has(v.id)), r=>`<div class="mini-row"><span>${esc(trEnum(r.tip))} · ${esc(r.marime)} × ${r.cantitate}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_cazari')}</div>
         ${list(DB.hostel.filter(h=>h.participantId===id), r=>`<div class="mini-row"><span>${esc(r.observatii)||t('pa_cazare_word')}</span><span>${fmtDate(r.dataCazare)}</span></div>`)}
