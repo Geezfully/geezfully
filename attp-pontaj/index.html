@@ -353,6 +353,8 @@
   .act-table tr:last-child td { border-bottom: none; }
   .act-table-act_s_hostel th:nth-child(2), .act-table-act_s_hostel td:nth-child(2),
   .act-table-act_s_hostel th:nth-child(3), .act-table-act_s_hostel td:nth-child(3) { text-align: center; }
+  .act-table-act_s_pauzatehnica th:nth-child(2), .act-table-act_s_pauzatehnica td:nth-child(2),
+  .act-table-act_s_pauzatehnica th:nth-child(3), .act-table-act_s_pauzatehnica td:nth-child(3) { text-align: center; }
   .act-empty-row td { color: #a89c7c; font-style: italic; }
   @media (max-width: 640px) {
     .act-doc { padding: 24px 20px; }
@@ -664,7 +666,7 @@ ro: {
   nav_vestimentatie:'Vestimentație', nav_serviciu:'Serviciu administratori', nav_spalatorie:'Spălătorie',
   nav_hostel:'Hostel', nav_lenjerie:'Lenjerie', nav_medical:'Medical', nav_daune:'Daune și recuperări', nav_fairplay:'Fair Play',
   nav_arbitraj:'Arbitraj', nav_antrenamente:'Antrenamente', nav_inventar:'Inventar', nav_sarcini:'Sarcini', nav_observatii:'Observații',
-  nav_rapoarte:'Rapoarte', nav_setari:'Setări',
+  nav_pauzatehnica:'Pauză tehnică', nav_rapoarte:'Rapoarte', nav_setari:'Setări',
   sb_sub:'Registru · ATTP', sb_shift:'Schimb curent', hdr_logout:'Ieșire',
 
   th_cont:'Cont', th_data:'Data', th_actiune:'Acțiune', th_participant:'Participant', th_stare:'Stare',
@@ -857,6 +859,15 @@ ro: {
   ob_target:'Participant / Subiect', ob_subject:'Subiect', ob_subjectPh:'ex. Locație, curățenie, vestiar...', ob_categorie:'Categorie', ob_descScurta:'Descriere scurtă',
   ob_descScurtaPh:'detalii...', ob_countSuffix:'observații', ob_none:'Nicio observație.', ob_needParticipant:'Selectați participantul.', ob_needSubject:'Introduceți subiectul situației.',
 
+  pt_title:'Pauză tehnică', pt_sub:'Evidența întârzierilor la începutul meciurilor — intervalul pauzei, terenul și motivul.',
+  pt_addTitle:'Înregistrare pauză tehnică', pt_oraStart:'De la ora', pt_oraStop:'Până la ora', pt_teren:'Teren',
+  pt_descriere:'Ce s-a întâmplat', pt_descrierePh:'ex. Plasă ruptă, schimbată în 15 min.',
+  pt_th_interval:'Interval', pt_th_durata:'Durată', pt_th_teren:'Teren', pt_th_descriere:'Descriere',
+  pt_countSuffix:'pauze înregistrate', pt_none:'Nicio pauză tehnică înregistrată.',
+  pt_needOre:'Completați ora de început și ora de sfârșit.', pt_needDescriere:'Descrieți motivul pauzei tehnice.',
+  pt_totalPauze:'Pauze (30 zile)', pt_totalMinute:'Minute pierdute (30 zile)', pt_medie:'Durată medie',
+  pt_minSuffix:'min', pt_showing:(n,total)=>`Cele mai recente ${n} din ${total}`,
+
   re_title:'Rapoarte și statistici', re_sub:'Generare rapoarte pentru orice perioadă. Export: Excel, PDF, imprimare.',
   re_perioada:'Perioadă raport', re_de_la:'De la', re_pana_la:'Până la', re_excel:'Excel', re_pdf:'PDF',
   act_sectionTitle:'Rapoarte de schimb', act_sectionSub:'Rapoartele generate la închiderea fiecărui schimb.',
@@ -866,6 +877,7 @@ ro: {
   act_docTitle:'Raport de schimb', act_perioada:'Perioada',
   act_s_admin:'Admin', act_s_intarzieri:'Întârzieri', act_s_arbitraj:'Arbitraj', act_s_fairplay:'Fair Play',
   act_s_daune:'Daune', act_s_inventar:'Inventar', act_s_hostel:'Hostel', act_s_treninguri:'Trening', act_s_sarcini:'Sarcini', act_s_observatii:'Observații',
+  act_s_pauzatehnica:'Pauză tehnică', act_teren:'Teren', act_interval:'Interval', act_durata:'Durată',
   act_dataSchimb:'Data schimb', act_numeAdmin:'Nume administrator',
   act_numeSportiv:'Nume sportiv', act_min:'Min', act_motiv:'Motiv',
   act_numeArbitru:'Nume arbitru', act_cartonas:'Cartonaș', act_descriere:'Descriere', act_platou:'Platou',
@@ -934,6 +946,7 @@ ru: {
   nav_vestimentatie:'Форма', nav_serviciu:'Смены администраторов', nav_spalatorie:'Прачечная',
   nav_hostel:'Хостел', nav_lenjerie:'Постельное бельё', nav_medical:'Медицина', nav_daune:'Ущерб и возмещение', nav_fairplay:'Фэйр-плей',
   nav_arbitraj:'Судейство', nav_antrenamente:'Тренировки', nav_inventar:'Инвентарь', nav_sarcini:'Задачи', nav_observatii:'Замечания',
+  nav_pauzatehnica:'Технический перерыв',
   nav_rapoarte:'Отчёты', nav_setari:'Настройки',
   sb_sub:'Журнал · ATTP', sb_shift:'Текущая смена', hdr_logout:'Выход',
 
@@ -1127,6 +1140,15 @@ ru: {
   ob_target:'Участник / Тема', ob_subject:'Тема', ob_subjectPh:'напр. объект, уборка, раздевалка...', ob_categorie:'Категория', ob_descScurta:'Краткое описание',
   ob_descScurtaPh:'детали...', ob_countSuffix:'замечаний', ob_none:'Замечаний нет.', ob_needParticipant:'Выберите участника.', ob_needSubject:'Введите тему ситуации.',
 
+  pt_title:'Технический перерыв', pt_sub:'Учёт задержек начала матчей — интервал перерыва, корт и причина.',
+  pt_addTitle:'Регистрация технического перерыва', pt_oraStart:'С', pt_oraStop:'По', pt_teren:'Корт',
+  pt_descriere:'Что произошло', pt_descrierePh:'напр. Порвана сетка, заменена за 15 мин.',
+  pt_th_interval:'Интервал', pt_th_durata:'Длительность', pt_th_teren:'Корт', pt_th_descriere:'Описание',
+  pt_countSuffix:'перерывов зарегистрировано', pt_none:'Технических перерывов нет.',
+  pt_needOre:'Укажите время начала и окончания.', pt_needDescriere:'Опишите причину технического перерыва.',
+  pt_totalPauze:'Перерывы (30 дней)', pt_totalMinute:'Потеряно минут (30 дней)', pt_medie:'Средняя длительность',
+  pt_minSuffix:'мин', pt_showing:(n,total)=>`Последние ${n} из ${total}`,
+
   re_title:'Отчёты и статистика', re_sub:'Формирование отчётов за любой период. Экспорт: Excel, PDF, печать.',
   re_perioada:'Период отчёта', re_de_la:'С', re_pana_la:'По', re_excel:'Excel', re_pdf:'PDF',
   act_sectionTitle:'Отчёты смены', act_sectionSub:'Отчёты, сформированные при закрытии каждой смены.',
@@ -1136,6 +1158,7 @@ ru: {
   act_docTitle:'Отчёт смены', act_perioada:'Период',
   act_s_admin:'Админ', act_s_intarzieri:'Опоздания', act_s_arbitraj:'Арбитраж', act_s_fairplay:'Фэйр-плей',
   act_s_daune:'Ущерб', act_s_inventar:'Инвентарь', act_s_hostel:'Хостел', act_s_treninguri:'Тренировки', act_s_sarcini:'Задачи', act_s_observatii:'Замечания',
+  act_s_pauzatehnica:'Технический перерыв', act_teren:'Корт', act_interval:'Интервал', act_durata:'Длительность',
   act_dataSchimb:'Дата смены', act_numeAdmin:'Имя администратора',
   act_numeSportiv:'Имя спортсмена', act_min:'Мин', act_motiv:'Причина',
   act_numeArbitru:'Имя судьи', act_cartonas:'Карточка', act_descriere:'Описание', act_platou:'Площадка',
@@ -1364,7 +1387,7 @@ function realAdmins(){ return DB.administratori.filter(a=>!a.ascuns && a.rol==='
 async function fetchAll(){
   const [
     administratoriR, serviciuAdministratoriR, participantiR, arbitriR, intarzieriR, vestimentatieR, serviciuR, spalatorieR,
-    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR
+    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR
   ] = await Promise.all([
     sb.from('administratori').select('*'),
     sb.from('serviciu_administratori').select('*').eq('activ', true).order('nume'),
@@ -1382,6 +1405,7 @@ async function fetchAll(){
     sb.from('inventar').select('*').order('denumire'),
     sb.from('sarcini').select('*').order('data_inreg', {ascending:false}),
     sb.from('observatii').select('*').order('data', {ascending:false}),
+    sb.from('pauze_tehnice').select('*').order('data', {ascending:false}),
     isFullAdmin() ? sb.from('jurnal').select('*').order('data', {ascending:false}).limit(200) : Promise.resolve({data:[]}),
     sb.from('trusted_ips').select('*').order('created_at', {ascending:false}),
     sb.from('treninguri').select('*').order('data', {ascending:false}),
@@ -1433,6 +1457,7 @@ async function fetchAll(){
     inventar: (inventarR.data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie})),
     sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
     observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
+    pauzeTehnice: (pauzeTehniceR.data||[]).map(r=>({id:r.id, data:r.data, oraStart:String(r.ora_start||'').slice(0,5), oraStop:String(r.ora_stop||'').slice(0,5), teren:r.teren, descriere:r.descriere, createdAt:r.created_at})),
     jurnal: (jurnalR.data||[]).map(r=>({id:r.id, cont: serviciuAdminById[r.administrator_serviciu_id]?.nume || publicAdminName(adminById[r.administrator_id]), data:String(r.data).slice(0,10), actiune:r.actiune})),
     trustedIps: (trustedIpsR.data||[]).map(r=>({id:r.id, ip:r.ip, eticheta:r.eticheta, createdAt:r.created_at})),
     treninguri: (treninguriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, antrenor:r.antrenor, data:r.data, ora:r.ora, sumaJucator:Number(r.suma_jucator), sumaAntrenor:Number(r.suma_antrenor), observatii:r.observatii, createdAt:r.created_at})),
@@ -1610,6 +1635,7 @@ const NAV = [
   {id:'inventar', key:'nav_inventar', icon:'▣'},
   {id:'sarcini', key:'nav_sarcini', icon:'✓'},
   {id:'observatii', key:'nav_observatii', icon:'✎'},
+  {id:'pauzatehnica', key:'nav_pauzatehnica', icon:'⏸'},
   {id:'rapoarte', key:'nav_rapoarte', icon:'▥'},
   {id:'setari', key:'nav_setari', icon:'⚙'},
 ];
@@ -1732,6 +1758,7 @@ function render(){
     vestimentatie: renderVestimentatie, serviciu: renderServiciu, spalatorie: renderSpalatorie,
     hostel: renderHostel, lenjerie: renderLenjerie, medical: renderMedical, daune: renderDaune, fairplay: renderFairPlay,
     arbitraj: renderArbitraj, antrenamente: renderAntrenamente, inventar: renderInventar, sarcini: renderSarcini, observatii: renderObservatii,
+    pauzatehnica: renderPauzaTehnica,
     rapoarte: renderRapoarte, setari: renderSetari,
   };
   main.innerHTML = fns[currentView] ? fns[currentView]() : '';
@@ -1880,7 +1907,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
   const arbitrajQuery = shiftId
     ? sb.from('arbitraj').select('*').eq('sesiune_schimb_id', shiftId).order('slot_schimb')
     : rowsInWindow('arbitraj');
-  const [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR] = await Promise.all([
+  const [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR, pauzeTehniceR] = await Promise.all([
     rowsInWindow('intarzieri'),
     arbitrajQuery,
     rowsInWindow('fair_play'),
@@ -1894,8 +1921,9 @@ async function buildActContinut(startedAt, endedAt, shiftId){
       .gte('schimbat_la',startedAt)
       .lte('schimbat_la',endedAt),
     rowsInWindow('observatii'),
+    rowsInWindow('pauze_tehnice'),
   ]);
-  const failed = [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR].find(result=>result.error);
+  const failed = [intarzieriR, arbitrajR, fairPlayR, dauneR, miscariR, hostelR, treninguriR, sarciniR, sarciniSolutionateR, observatiiR, pauzeTehniceR].find(result=>result.error);
   if(failed) throw failed.error;
   const inventarById = Object.fromEntries(DB.inventar.map(i=>[i.id,i]));
   const sarciniSolutionateInSchimb = new Set((sarciniSolutionateR.data||[]).map(row=>row.sarcina_id));
@@ -1921,6 +1949,10 @@ async function buildActContinut(startedAt, endedAt, shiftId){
       .filter(r=>r.status==='nesoluționat' || r.status==='în lucru' || (r.status==='soluționat' && sarciniSolutionateInSchimb.has(r.id)))
       .map(r=>({ statut: r.status, descriere: r.descriere || '' })),
     observatii: (observatiiR.data||[]).map(r=>({ nume: observationTargetName({participantId:r.participant_id, subiect:r.subiect}), categorie: r.categorie || '', descriere: r.descriere || '' })),
+    pauzeTehnice: (pauzeTehniceR.data||[]).map(r=>{
+      const oraStart = String(r.ora_start||'').slice(0,5), oraStop = String(r.ora_stop||'').slice(0,5);
+      return { teren: r.teren || '', oraStart, oraStop, durata: pauzaDurata(oraStart, oraStop), descriere: r.descriere || '' };
+    }),
   };
 }
 async function saveActSchimb({ shiftId, administratorServiciuId, administratorId, numeAdministrator, startedAt, endedAt }){
@@ -2015,6 +2047,10 @@ function actSections(c, lang=LANG){
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
     { titleKey:'act_s_observatii', headers:[t('ob_target',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.nume||'—', r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
+    { titleKey:'act_s_pauzatehnica', headers:[t('act_teren',lang), t('act_interval',lang), t('act_durata',lang), t('act_descriere',lang)], rows:(c.pauzeTehnice||[]).map(r=>{
+      const durata = r.durata!=null ? r.durata : pauzaDurata(r.oraStart, r.oraStop);
+      return [r.teren||'', r.oraStart&&r.oraStop ? `${r.oraStart} — ${r.oraStop}` : '', durata==null ? '' : `${durata} ${t('pt_minSuffix',lang)}`, r.descriere||''];
+    }) },
   ];
 }
 function actSectionTable(titleKey, headers, rows, lang=LANG){
@@ -2119,11 +2155,12 @@ const ACT_PDF_COLUMNS = {
   act_s_treninguri:[.29,.18,.17,.11,.25],
   act_s_sarcini:[.24,.76],
   act_s_observatii:[.31,.22,.47],
+  act_s_pauzatehnica:[.16,.20,.13,.51],
 };
 function actPdfColumnStyles(titleKey, width){
   const proportions = ACT_PDF_COLUMNS[titleKey] || [];
   const styles = Object.fromEntries(proportions.map((value,index)=>[index,{cellWidth:width*value}]));
-  if(titleKey==='act_s_hostel'){
+  if(titleKey==='act_s_hostel' || titleKey==='act_s_pauzatehnica'){
     if(styles[1]) styles[1].halign = 'center';
     if(styles[2]) styles[2].halign = 'center';
   }
@@ -2246,10 +2283,10 @@ function drawActPdfTable(doc,section,x,y,width,fontSize,lang){
         data.cell.styles.fontSize = Math.max(3.8,fontSize-.6);
         data.cell.styles.cellPadding = {top:1,right:padding,bottom:.9,left:padding};
       }
-      const centeredHostelCell = section.titleKey==='act_s_hostel'
+      const centeredCell = (section.titleKey==='act_s_hostel' || section.titleKey==='act_s_pauzatehnica')
         && (data.column.index===1 || data.column.index===2)
         && (data.section==='body' || (data.section==='head' && data.row.index===1));
-      if(centeredHostelCell) data.cell.styles.halign = 'center';
+      if(centeredCell) data.cell.styles.halign = 'center';
     },
   });
   return doc.lastAutoTable.finalY+2.2;
@@ -2954,7 +2991,7 @@ async function removeRow(collection, id){
   const { data, error } = await sb.from(collection).delete().eq('id', id).select();
   if(error){ alert('Ștergerea a eșuat: ' + error.message); return; }
   if(!data || !data.length){ alert('Ștergerea a eșuat: nu aveți permisiunea necesară.'); return; }
-  const stateKey = collection==='trusted_ips' ? 'trustedIps' : collection==='fair_play' ? 'fairPlay' : collection==='acte_schimb' ? 'acteSchimb' : collection;
+  const stateKey = collection==='trusted_ips' ? 'trustedIps' : collection==='fair_play' ? 'fairPlay' : collection==='acte_schimb' ? 'acteSchimb' : collection==='pauze_tehnice' ? 'pauzeTehnice' : collection;
   if(Array.isArray(DB[stateKey])) DB[stateKey] = DB[stateKey].filter(r=>r.id!==id);
   else await fetchAll();
   await logAction(`A șters o înregistrare din „${collection}”`);
@@ -4348,6 +4385,86 @@ async function addObservatie(){
   const saved = {id:data.id, data:data.data, participantId:data.participant_id, subiect:data.subiect, categorie:data.categorie, descriere:data.descriere, createdAt:data.created_at};
   DB.observatii.unshift(saved);
   await logAction(`A înregistrat o observație (${categorie}) pentru ${observationTargetName(saved)}`);
+  render();
+}
+
+/* ══════════════════════ PAUZĂ TEHNICĂ ══════════════════════ */
+// durata în minute între două ore „HH:MM”; pauzele care trec de miezul nopții se rotesc peste 24h
+function pauzaDurata(oraStart, oraStop){
+  if(!oraStart || !oraStop) return null;
+  const [h1,m1] = oraStart.split(':').map(Number), [h2,m2] = oraStop.split(':').map(Number);
+  if([h1,m1,h2,m2].some(n=>Number.isNaN(n))) return null;
+  let minute = (h2*60+m2) - (h1*60+m1);
+  if(minute < 0) minute += 24*60;
+  return minute;
+}
+// tabelul arată doar cele mai recente înregistrări, cu derulare internă (ca jurnalul din Tablou de bord)
+const PAUZA_TEHNICA_LIMIT = 30;
+function pauzeTehniceSortate(){
+  return DB.pauzeTehnice.slice().sort((a,b)=>`${b.data}T${b.oraStart||''}`.localeCompare(`${a.data}T${a.oraStart||''}`));
+}
+function renderPauzaTehnica(){
+  const rows = pauzeTehniceSortate();
+  const vizibile = rows.slice(0, PAUZA_TEHNICA_LIMIT);
+  const from = addDays(todayISO(), -30);
+  const recente = rows.filter(p=>p.data >= from);
+  const minuteTotal = recente.reduce((sum,p)=>sum + (pauzaDurata(p.oraStart,p.oraStop)||0), 0);
+  const medie = recente.length ? Math.round(minuteTotal/recente.length) : 0;
+  return `
+  <div class="view-head"><div class="view-title">${t('pt_title')}</div></div>
+  <div class="view-sub">${t('pt_sub')}</div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">${t('pt_totalPauze')}</div><div class="stat-value">${recente.length}</div></div>
+    <div class="stat-card warn"><div class="stat-label">${t('pt_totalMinute')}</div><div class="stat-value">${minuteTotal}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('pt_medie')}</div><div class="stat-value">${medie} ${t('pt_minSuffix')}</div></div>
+  </div>
+
+  <div class="add-form">
+    <div class="form-title">${t('pt_addTitle')}</div>
+    <div class="form-grid" style="grid-template-columns:0.9fr 0.7fr 0.7fr 0.9fr 2fr auto">
+      <div class="field"><label>${t('th_data')}</label><input id="ptf-data" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>${t('pt_oraStart')}</label><input id="ptf-ora-start" type="time"></div>
+      <div class="field"><label>${t('pt_oraStop')}</label><input id="ptf-ora-stop" type="time"></div>
+      <div class="field"><label>${t('pt_teren')}</label><select id="ptf-teren">${DAUNE_TERENURI.map(teren=>`<option>${teren}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('pt_descriere')}</label><input id="ptf-descriere" maxlength="400" placeholder="${t('pt_descrierePh')}"></div>
+      <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addPauzaTehnica()">${t('btn_add')}</button></div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header"><div class="table-title">${rows.length} ${t('pt_countSuffix')}</div>${rows.length > vizibile.length ? `<div class="table-hint">${t('pt_showing')(vizibile.length, rows.length)}</div>` : ''}</div>
+    <div class="table-scroll recent-actions-scroll"><table>
+      <thead><tr><th>${t('th_data')}</th><th>${t('pt_th_interval')}</th><th>${t('pt_th_durata')}</th><th>${t('pt_th_teren')}</th><th>${t('pt_th_descriere')}</th><th></th></tr></thead>
+      <tbody>${vizibile.length ? vizibile.map(p=>{
+        const durata = pauzaDurata(p.oraStart, p.oraStop);
+        return `<tr><td class="td-muted">${fmtDate(p.data)}</td>
+        <td class="td-muted">${esc(p.oraStart)} — ${esc(p.oraStop)}</td>
+        <td class="td-gold">${durata==null?'—':`${durata} ${t('pt_minSuffix')}`}</td>
+        <td><span class="badge gold">${esc(p.teren)}</span></td>
+        <td>${esc(p.descriere)||'—'}</td>
+        <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('pauze_tehnice','${p.id}')">${t('btn_delete')}</button></td></tr>`;
+      }).join('') : `<tr><td class="td-empty" colspan="6">${t('pt_none')}</td></tr>`}</tbody>
+    </table></div>
+  </div>`;
+}
+async function addPauzaTehnica(){
+  const oraStart = document.getElementById('ptf-ora-start').value;
+  const oraStop = document.getElementById('ptf-ora-stop').value;
+  if(!oraStart || !oraStop){ alert(t('pt_needOre')); return; }
+  const descriere = document.getElementById('ptf-descriere').value.trim();
+  if(!descriere){ alert(t('pt_needDescriere')); return; }
+  const row = {
+    data: document.getElementById('ptf-data').value || todayISO(),
+    ora_start: oraStart,
+    ora_stop: oraStop,
+    teren: document.getElementById('ptf-teren').value,
+    descriere,
+  };
+  const { data, error } = await sb.from('pauze_tehnice').insert(row).select().single();
+  if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
+  DB.pauzeTehnice.unshift({id:data.id, data:data.data, oraStart:String(data.ora_start||'').slice(0,5), oraStop:String(data.ora_stop||'').slice(0,5), teren:data.teren, descriere:data.descriere, createdAt:data.created_at});
+  await logAction(`A înregistrat o pauză tehnică pe terenul ${row.teren} (${oraStart}–${oraStop})`);
   render();
 }
 
