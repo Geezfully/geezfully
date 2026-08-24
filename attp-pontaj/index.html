@@ -109,7 +109,14 @@
   }
   .sb-item:hover { background: var(--surface2); color: var(--text); }
   .sb-item.active { background: var(--gold-dim); color: var(--gold); font-weight: 600; }
-  .sb-icon { width: 18px; text-align: center; flex-shrink: 0; font-size: 14px; }
+  .sb-icon {
+    width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 30px;
+    border-radius: 8px; color: currentColor; background: rgba(139,148,158,.055);
+    border: 1px solid transparent; transition: background .15s, border-color .15s, transform .15s;
+  }
+  .sb-icon svg { width: 17px; height: 17px; }
+  .sb-item:hover .sb-icon { background: rgba(139,148,158,.11); transform: translateX(1px); }
+  .sb-item.active .sb-icon { background: rgba(200,169,110,.14); border-color: rgba(200,169,110,.28); }
   .sb-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; border-radius: 20px; padding: 1px 6px; min-width: 16px; text-align: center; }
   .sb-foot { padding: 14px 20px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted); }
 
@@ -138,9 +145,20 @@
   .btn-danger:disabled { opacity: .35; cursor: not-allowed; background: none; }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
   .btn-icon { width: 15px; height: 15px; vertical-align: -2px; margin-right: 6px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ui-icon { width: 17px; height: 17px; display: inline-block; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
   #content-scroll { flex: 1; height: 100dvh; overflow-y: auto; }
   main { padding: 28px 32px 60px; max-width: 1220px; margin: 0 auto; width: 100%; }
+  button.has-ui-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+  button.has-ui-icon > .ui-icon { width: 15px; height: 15px; }
+  .btn-danger.has-ui-icon > .ui-icon { width: 14px; height: 14px; }
+  .modal-close.has-ui-icon { display: grid; place-items: center; }
+  .modal-close.has-ui-icon > .ui-icon { width: 20px; height: 20px; }
+  .view-head .view-title { display: flex; align-items: center; gap: 11px; }
+  .view-title-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; color: var(--gold); background: var(--gold-dim); border: 1px solid rgba(200,169,110,.28); }
+  .view-title-icon svg { width: 19px; height: 19px; }
+  .form-title, .table-title, .alerts-panel-head { position: relative; }
+  .section-icon { width: 17px; height: 17px; color: var(--gold); margin-right: 7px; vertical-align: -4px; }
 
   .view-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 8px; }
   .view-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; }
@@ -150,6 +168,7 @@
     background: rgba(200,169,110,.08); border: 1px solid rgba(200,169,110,.3); border-radius: 8px; padding: 10px 16px;
     font-size: 12.5px; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
   }
+  .locked-banner .ui-icon { width: 17px; height: 17px; margin-right: 7px; vertical-align: -3px; }
 
   /* stats */
   .stats-row { display: flex; gap: 12px; margin-bottom: 26px; flex-wrap: wrap; }
@@ -254,7 +273,7 @@
   .table-scroll { overflow-x: auto; }
   .recent-actions-scroll { height: 540px; overflow: auto; }
   .vestimentatie-scroll { height: 900px; overflow: auto; }
-  .service-calendar-scroll { max-height: 1392px; overflow: auto; }
+  .service-calendar-scroll { max-height: calc(41px + (10 * 54px)); overflow: auto; }
   .service-calendar-scroll thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); }
   table { width: 100%; border-collapse: collapse; }
   th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 500; padding: 10px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
@@ -309,6 +328,28 @@
   .task-select.s-inlucru { background: rgba(210,166,74,.13); border-color: rgba(210,166,74,.45); color: var(--yellow); }
   .task-select.s-solutionat { background: rgba(63,185,80,.11); border-color: rgba(63,185,80,.35); color: var(--green); }
   .task-select option { background: var(--surface); color: var(--text); }
+  .task-filter-bar { display: flex; align-items: center; gap: 10px; }
+  .task-list-scroll { overflow: auto; }
+  .task-list-scroll.has-overflow {
+    max-height: calc(41px + (var(--task-group-count) * 33px) + (var(--task-visible-count) * 54px));
+  }
+  .task-list-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
+  .task-table-segment + .task-table-segment { border-top: 1px solid var(--border); }
+  .reports-list-scroll { overflow: auto; }
+  .reports-list-scroll.has-overflow { max-height: calc(41px + (10 * 54px)); }
+  .reports-list-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
+  .observations-list-scroll { overflow: auto; }
+  .observations-list-scroll.has-overflow { max-height: calc(41px + (10 * 54px)); }
+  .observations-list-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
+  .linen-list-scroll { overflow: auto; }
+  .linen-list-scroll.has-overflow { max-height: calc(41px + (10 * 54px)); }
+  .linen-list-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
+  .hostel-entries-scroll { overflow: auto; }
+  .hostel-entries-scroll.has-overflow { max-height: calc(41px + (10 * 54px)); }
+  .hostel-entries-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
+  .late-entries-scroll { overflow: auto; }
+  .late-entries-scroll.has-overflow { max-height: calc(41px + (10 * 54px)); }
+  .late-entries-scroll thead th { position: sticky; top: 0; z-index: 3; background: var(--surface); }
 
   .tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--surface2); border: 1px solid var(--border); color: var(--text); margin: 2px 4px 2px 0; }
   .category-filter-panel { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
@@ -496,7 +537,7 @@
   <div id="content-scroll">
     <header>
       <div style="display:flex;align-items:center;gap:12px">
-        <button class="btn-ghost" id="burger-btn" onclick="toggleSidebar()" aria-label="Deschide meniul">☰</button>
+        <button class="btn-ghost" id="burger-btn" onclick="toggleSidebar()" aria-label="Deschide meniul"></button>
         <div class="header-title" id="header-title">Tablou de bord</div>
       </div>
       <div class="header-right">
@@ -562,7 +603,7 @@
 </div>
 
 <aside class="refresh-reminder" id="location-refresh-reminder" role="status" aria-live="polite">
-  <div class="refresh-reminder-icon">↻</div>
+  <div class="refresh-reminder-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 8a8 8 0 0 1 13.2-2L20 7M4 17l.7 1A8 8 0 0 0 18 16"/></svg></div>
   <div class="refresh-reminder-content">
     <div class="refresh-reminder-title" id="refresh-reminder-title"></div>
     <div class="refresh-reminder-text" id="refresh-reminder-text"></div>
@@ -677,7 +718,7 @@ ro: {
 
   da_title:'Tablou de bord', da_stat_activi:'Participanți activi', da_stat_medical:'Avize medicale',
   da_stat_stoc:'Articole sub stoc minim', da_stat_sarcini:'Sarcini nesoluționate >48h',
-  da_stat_hostel:'Cazați hostel (azi)', da_alerts_title:'⚠ Alerte automate',
+  da_stat_hostel:'Cazați hostel (azi)', da_alerts_title:'Alerte automate',
   da_alerts_empty:'Nicio alertă activă în acest moment.', da_jurnal_title:'Jurnal activitate — ultimele acțiuni',
   da_total_inreg:'total înregistrați', da_expira30:'expiră', da_din:'din', da_categorii:'categorii',
   da_total_lucru:'total în lucru', da_total_inregistrari:'total înregistrări',
@@ -746,7 +787,7 @@ ro: {
   ve_lockedHint:'Returnare confirmată — doar administratorii pot anula.',
 
   se_title:'Serviciu administratori', se_sub:'Graficul de serviciu / schimburile administratorilor la locație.',
-  se_overlap:'⚠ Suprapunere de schimburi detectată pe:', se_addTitle:'Adăugare schimb',
+  se_overlap:'Suprapunere de schimburi detectată pe:', se_addTitle:'Adăugare schimb',
   se_raportTitle:'Raport schimburi lucrate', se_nrSchimburi:'Nr. schimburi', se_calendarTitle:'Calendar schimburi',
   se_startTime:'Început', se_endTime:'Sfârșit',
   se_filterMonth:'Schimbă luna', se_month:'Lună', se_allMonths:'Toate lunile',
@@ -851,6 +892,7 @@ ro: {
   ta_total:'Total sarcini', ta_nesolutionate:'Nesoluționate', ta_restante:'Restante >48h',
   ta_addTitle:'Înregistrare sarcină', ta_descriere:'Descriere problemă', ta_descrierePh:'ex. Bec ars în vestiar',
   ta_th_inregDe:'Înregistrat de', ta_th_status:'Status', ta_th_solDe:'Soluționat de', ta_countSuffix:'sarcini',
+  ta_filterAll:'Toate', ta_filterOpen:'Nesoluționate', ta_filterSolved:'Soluționate',
   ta_none:'Nicio sarcină înregistrată.', ta_needDesc:'Descrieți sarcina.',
   ta_st_nesolutionat:'nesoluționat', ta_st_inLucru:'în lucru', ta_st_solutionat:'soluționat',
 
@@ -878,6 +920,7 @@ ro: {
   act_s_admin:'Admin', act_s_intarzieri:'Întârzieri', act_s_arbitraj:'Arbitraj', act_s_fairplay:'Fair Play',
   act_s_daune:'Daune', act_s_inventar:'Inventar', act_s_hostel:'Hostel', act_s_treninguri:'Trening', act_s_sarcini:'Sarcini', act_s_observatii:'Observații',
   act_s_pauzatehnica:'Pauză tehnică', act_teren:'Teren', act_interval:'Interval', act_durata:'Durată',
+  act_conditie:'Condiție',
   act_dataSchimb:'Data schimb', act_numeAdmin:'Nume administrator',
   act_numeSportiv:'Nume sportiv', act_min:'Min', act_motiv:'Motiv',
   act_numeArbitru:'Nume arbitru', act_cartonas:'Cartonaș', act_descriere:'Descriere', act_platou:'Platou',
@@ -958,7 +1001,7 @@ ru: {
 
   da_title:'Панель управления', da_stat_activi:'Активные участники', da_stat_medical:'Медицинские справки',
   da_stat_stoc:'Товары ниже минимума', da_stat_sarcini:'Нерешённые задачи >48ч',
-  da_stat_hostel:'Заселены в хостел (сегодня)', da_alerts_title:'⚠ Автоматические уведомления',
+  da_stat_hostel:'Заселены в хостел (сегодня)', da_alerts_title:'Автоматические уведомления',
   da_alerts_empty:'Активных уведомлений нет.', da_jurnal_title:'Журнал активности — последние действия',
   da_total_inreg:'всего зарегистрировано', da_expira30:'истекают', da_din:'из', da_categorii:'категорий',
   da_total_lucru:'всего в работе', da_total_inregistrari:'всего записей',
@@ -1027,7 +1070,7 @@ ru: {
   ve_lockedHint:'Возврат подтверждён — отменить может только администратор.',
 
   se_title:'Смены администраторов', se_sub:'График смен администраторов на локации.',
-  se_overlap:'⚠ Обнаружено пересечение смен на:', se_addTitle:'Добавление смены',
+  se_overlap:'Обнаружено пересечение смен на:', se_addTitle:'Добавление смены',
   se_raportTitle:'Отчёт по отработанным сменам', se_nrSchimburi:'Кол-во смен', se_calendarTitle:'Календарь смен',
   se_startTime:'Начало', se_endTime:'Окончание',
   se_filterMonth:'Сменить месяц', se_month:'Месяц', se_allMonths:'Все месяцы',
@@ -1132,6 +1175,7 @@ ru: {
   ta_total:'Всего задач', ta_nesolutionate:'Нерешённые', ta_restante:'Просрочено >48ч',
   ta_addTitle:'Регистрация задачи', ta_descriere:'Описание проблемы', ta_descrierePh:'напр. Перегорела лампа в раздевалке',
   ta_th_inregDe:'Зарегистрировал', ta_th_status:'Статус', ta_th_solDe:'Решил', ta_countSuffix:'задач',
+  ta_filterAll:'Все', ta_filterOpen:'Нерешённые', ta_filterSolved:'Решённые',
   ta_none:'Задач не зарегистрировано.', ta_needDesc:'Опишите задачу.',
   ta_st_nesolutionat:'не решено', ta_st_inLucru:'в работе', ta_st_solutionat:'решено',
 
@@ -1159,6 +1203,7 @@ ru: {
   act_s_admin:'Админ', act_s_intarzieri:'Опоздания', act_s_arbitraj:'Арбитраж', act_s_fairplay:'Фэйр-плей',
   act_s_daune:'Ущерб', act_s_inventar:'Инвентарь', act_s_hostel:'Хостел', act_s_treninguri:'Тренировки', act_s_sarcini:'Задачи', act_s_observatii:'Замечания',
   act_s_pauzatehnica:'Технический перерыв', act_teren:'Корт', act_interval:'Интервал', act_durata:'Длительность',
+  act_conditie:'Состояние',
   act_dataSchimb:'Дата смены', act_numeAdmin:'Имя администратора',
   act_numeSportiv:'Имя спортсмена', act_min:'Мин', act_motiv:'Причина',
   act_numeArbitru:'Имя судьи', act_cartonas:'Карточка', act_descriere:'Описание', act_platou:'Площадка',
@@ -1615,29 +1660,130 @@ async function resumeSession(){
 }
 applyStaticI18n();
 setAuthMode('admin');
-resumeSession();
+const ICON_PREVIEW_MODE = new URLSearchParams(location.search).has('icon-preview');
+if(!ICON_PREVIEW_MODE) resumeSession();
+
+/* ══════════════════════ ICON SYSTEM ══════════════════════ */
+const ICONS = {
+  dashboard:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  participants:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  shirt:'<path d="M8 4 4 6l-2 4 4 2v8h12v-8l4-2-2-4-4-2a4.5 4.5 0 0 1-8 0Z"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>',
+  washer:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M4 7h16M8 4h.01M11 4h.01"/><circle cx="12" cy="14" r="5"/><path d="M9 14c1.5-1.5 4.5 1.5 6 0"/>',
+  hostel:'<path d="M3 21V9l9-6 9 6v12M9 21v-7h6v7"/><path d="M3 21h18"/>',
+  linen:'<path d="M4 5h16v14H4zM8 5V3h8v2M4 10h16"/><path d="M8 14h8"/>',
+  medical:'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+  damage:'<path d="M12 3 2.8 20h18.4L12 3Z"/><path d="m13 8-3 4 3 1-2 4"/>',
+  fairplay:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/><circle cx="16" cy="16" r="1.5"/>',
+  referee:'<path d="M4 14c3-5 7-7 12-7h5v5h-5c-3 0-5 1-7 4l-5-2Z"/><path d="M9 16v4M6 18h6"/><circle cx="18" cy="9.5" r="1"/>',
+  training:'<path d="M6 9v6M3 10v4M18 9v6M21 10v4M6 12h12"/><path d="M2 12h1M21 12h1"/>',
+  inventory:'<path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z"/><path d="m3 7.5 9 4.5 9-4.5M3 12l9 4.5 9-4.5M3 16.5l9 4.5 9-4.5"/>',
+  tasks:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8.5 11l2 2 4-4M8 17h8"/>',
+  observations:'<path d="M4 4h16v13H8l-4 4V4Z"/><path d="M8 9h8M8 13h5"/>',
+  pause:'<circle cx="12" cy="12" r="9"/><path d="M9 8v8M15 8v8"/>',
+  reports:'<path d="M6 2h9l4 4v16H6z"/><path d="M14 2v5h5M9 17v-4M12 17V9M15 17v-2"/>',
+  settings:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h7M15 18h5"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="13" cy="18" r="2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
+  save:'<path d="M5 3h12l3 3v15H4V3h1Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/>',
+  close:'<path d="M6 6l12 12M18 6 6 18"/>',
+  download:'<path d="M12 3v12M8 11l4 4 4-4M5 20h14"/>',
+  print:'<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7z"/>',
+  refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 8a8 8 0 0 1 13.2-2L20 7M4 17l.7 1A8 8 0 0 0 18 16"/>',
+  logout:'<path d="M10 17l5-5-5-5M15 12H3M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>',
+  play:'<circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z"/>',
+  stop:'<circle cx="12" cy="12" r="9"/><rect x="9" y="9" width="6" height="6" rx="1"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 4l4 4M14 6l2 2"/>',
+  file:'<path d="M6 2h9l4 4v16H6z"/><path d="M14 2v5h5M9 12h6M9 16h6"/>',
+  check:'<path d="m5 12 4 4L19 6"/>',
+  alert:'<path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v4M12 17h.01"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>'
+};
+function icon(name, className='ui-icon'){
+  return `<svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[name]||ICONS.file}</svg>`;
+}
+function buttonIconName(button){
+  if(button.querySelector('svg')) return null;
+  if(button.matches('.toggle-btn,.category-filter-chip,.badge,.lang-btn')) return null;
+  const action=(button.getAttribute('onclick')||'').toLowerCase();
+  const label=(button.textContent||'').trim().toLowerCase();
+  if(button.matches('.modal-close') || /closemodal|cancel|anulează|отмена/.test(action+' '+label)) return 'close';
+  if(/dele|remove|șterge|sterge|удал/.test(action+' '+label)) return 'trash';
+  if(/logout|ieșire|выход/.test(action+' '+label)) return 'logout';
+  if(/print|imprim|печать/.test(action+' '+label)) return 'print';
+  if(/export|\.pdf|excel|download|descar|скач/.test(action+' '+label)) return 'download';
+  if(/reload|refresh|reîncar|обнов/.test(action+' '+label)) return 'refresh';
+  if(/rotatelocatiepin|pin/.test(action+' '+label)) return 'key';
+  if(/stopdashboardshift|oprește|înche|заверш/.test(action+' '+label)) return 'stop';
+  if(/openshiftpanel|confirmlocationshift|pornește|start|начать/.test(action+' '+label)) return 'play';
+  if(/save|salvează|salveaza|сохран/.test(action+' '+label)) return 'save';
+  if(/edit|correct|corect|editează|редакт|измен/.test(action+' '+label)) return 'edit';
+  if(/generat|raport|report|отч[её]т/.test(action+' '+label)) return 'file';
+  if(/add|adau|înregistr|eliberează|добав|зарегистр|выдать/.test(action+' '+label)) return 'plus';
+  if(/toggleSidebar/i.test(button.getAttribute('onclick')||'')) return 'menu';
+  return null;
+}
+function stripLegacyButtonSymbol(button){
+  for(const node of button.childNodes){
+    if(node.nodeType===Node.TEXT_NODE && node.textContent.trim()){
+      node.textContent=node.textContent.replace(/^\s*[+✕☰↻⚠]\s*/, '');
+      break;
+    }
+  }
+}
+function enhanceIcons(root=document){
+  root.querySelectorAll('button:not([data-iconized])').forEach(button=>{
+    const name=buttonIconName(button);
+    button.dataset.iconized='true';
+    if(!name) return;
+    stripLegacyButtonSymbol(button);
+    if(button.matches('.modal-close')) button.textContent='';
+    button.insertAdjacentHTML('afterbegin',icon(name));
+    button.classList.add('has-ui-icon');
+  });
+  const title=root.querySelector('.view-title:not([data-iconized])');
+  if(title && currentView){
+    title.dataset.iconized='true';
+    title.insertAdjacentHTML('afterbegin',`<span class="view-title-icon">${icon(NAV.find(n=>n.id===currentView)?.icon||'file')}</span>`);
+  }
+  root.querySelectorAll('.form-title:not([data-iconized]),.table-title:not([data-iconized]),.alerts-panel-head:not([data-iconized])').forEach(el=>{
+    el.dataset.iconized='true';
+    for(const node of el.childNodes){
+      if(node.nodeType===Node.TEXT_NODE && node.textContent.trim()){
+        node.textContent=node.textContent.replace(/^\s*⚠\s*/, '');
+        break;
+      }
+    }
+    const name=el.matches('.form-title')?'plus':el.matches('.alerts-panel-head')?'bell':'list';
+    el.insertAdjacentHTML('afterbegin',icon(name,'ui-icon section-icon'));
+  });
+}
 
 /* ══════════════════════ NAV ══════════════════════ */
 const NAV = [
-  {id:'dashboard', key:'nav_dashboard', icon:'▣'},
-  {id:'participanti', key:'nav_participanti', icon:'◉'},
-  {id:'intarzieri', key:'nav_intarzieri', icon:'◷'},
-  {id:'vestimentatie', key:'nav_vestimentatie', icon:'▤'},
-  {id:'serviciu', key:'nav_serviciu', icon:'▦'},
-  {id:'spalatorie', key:'nav_spalatorie', icon:'♨'},
-  {id:'hostel', key:'nav_hostel', icon:'⌂'},
-  {id:'lenjerie', key:'nav_lenjerie', icon:'▧'},
-  {id:'medical', key:'nav_medical', icon:'✚'},
-  {id:'daune', key:'nav_daune', icon:'⚠'},
-  {id:'fairplay', key:'nav_fairplay', icon:'▮'},
-  {id:'arbitraj', key:'nav_arbitraj', icon:'●'},
-  {id:'antrenamente', key:'nav_antrenamente', icon:'★'},
-  {id:'inventar', key:'nav_inventar', icon:'▣'},
-  {id:'sarcini', key:'nav_sarcini', icon:'✓'},
-  {id:'observatii', key:'nav_observatii', icon:'✎'},
-  {id:'pauzatehnica', key:'nav_pauzatehnica', icon:'⏸'},
-  {id:'rapoarte', key:'nav_rapoarte', icon:'▥'},
-  {id:'setari', key:'nav_setari', icon:'⚙'},
+  {id:'dashboard', key:'nav_dashboard', icon:'dashboard'},
+  {id:'participanti', key:'nav_participanti', icon:'participants'},
+  {id:'intarzieri', key:'nav_intarzieri', icon:'clock'},
+  {id:'vestimentatie', key:'nav_vestimentatie', icon:'shirt'},
+  {id:'serviciu', key:'nav_serviciu', icon:'calendar'},
+  {id:'spalatorie', key:'nav_spalatorie', icon:'washer'},
+  {id:'hostel', key:'nav_hostel', icon:'hostel'},
+  {id:'lenjerie', key:'nav_lenjerie', icon:'linen'},
+  {id:'medical', key:'nav_medical', icon:'medical'},
+  {id:'daune', key:'nav_daune', icon:'damage'},
+  {id:'fairplay', key:'nav_fairplay', icon:'fairplay'},
+  {id:'arbitraj', key:'nav_arbitraj', icon:'referee'},
+  {id:'antrenamente', key:'nav_antrenamente', icon:'training'},
+  {id:'inventar', key:'nav_inventar', icon:'inventory'},
+  {id:'sarcini', key:'nav_sarcini', icon:'tasks'},
+  {id:'observatii', key:'nav_observatii', icon:'observations'},
+  {id:'pauzatehnica', key:'nav_pauzatehnica', icon:'pause'},
+  {id:'rapoarte', key:'nav_rapoarte', icon:'reports'},
+  {id:'setari', key:'nav_setari', icon:'settings'},
 ];
 const LOCATION_HIDDEN_VIEWS = new Set(['setari']);
 
@@ -1650,7 +1796,7 @@ function buildSidebar(){
   }).map(item => {
     const badge = navBadge(item.id);
     return `<button class="sb-item" data-view="${item.id}" onclick="navigate('${item.id}')">
-      <span class="sb-icon">${item.icon}</span><span>${esc(t(item.key))}</span>
+      <span class="sb-icon">${icon(item.icon)}</span><span>${esc(t(item.key))}</span>
       ${badge ? `<span class="sb-badge">${badge}</span>` : ''}
     </button>`;
   }).join('');
@@ -1762,6 +1908,7 @@ function render(){
     rapoarte: renderRapoarte, setari: renderSetari,
   };
   main.innerHTML = fns[currentView] ? fns[currentView]() : '';
+  enhanceIcons(main);
 }
 function participantAcOptions(extra){
   const base = DB.participanti.filter(p=>p.statut==='activ').map(p=>({value:p.id, label:`${p.nume} ${p.prenume}`}));
@@ -1938,7 +2085,16 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     // corrections only repair a counter and must not be presented as physical movement.
     inventar: (miscariR.data||[]).filter(r=>!(r.motiv||'').startsWith('Corecție manuală din pagina Inventar')).map(r=>{
       const item = inventarById[r.inventar_id];
-      return { tip: r.tip, articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id, cantitate: r.cantitate, motiv: cleanActReason(r.motiv) };
+      // Stocul nou și cel uzat sunt articole separate cu aceeași denumire și mărime
+      // (ex. inv-r-l / inv-r-l-uzat), deci fără condiție rândurile ar fi identice în raport.
+      // Pentru un articol lipsă din inventar condiția rămâne necunoscută, nu presupusă „nou”.
+      return {
+        tip: r.tip,
+        articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id,
+        conditie: item ? (item.conditie==='uzat' ? 'uzat' : 'nou') : null,
+        cantitate: r.cantitate,
+        motiv: cleanActReason(r.motiv),
+      };
     }),
     hostel: (hostelR.data||[]).map(r=>({ nume: participantName(r.participant_id), camera: r.observatii || '', ora: fmtTime(r.created_at), statut: r.statut })),
     treninguri: (treninguriR.data||[]).map(r=>({ nume: participantName(r.participant_id), antrenor: r.antrenor, data: r.data, ora: r.ora ? String(r.ora).slice(0,5) : '', statut: trainingStatusAt(r, endedAt) })),
@@ -2036,13 +2192,18 @@ function openActPreviewById(id){
   openActPreview(DB.acteSchimb.find(x=>x.id===id));
 }
 /* Section definitions shared by the on-screen preview and both exports, so all three always agree. */
+// Rapoartele salvate înainte de adăugarea condiției nu o conțin — se afișează „—”, nu „nou”.
+function actConditieLabel(conditie, lang=LANG){
+  if(conditie!=='nou' && conditie!=='uzat') return '';
+  return t(conditie==='uzat' ? 'le_stockUsed' : 'le_stockNew', lang);
+}
 function actSections(c, lang=LANG){
   return [
     { titleKey:'act_s_intarzieri', headers:[t('act_numeSportiv',lang), t('act_min',lang), t('act_motiv',lang)], rows:(c.intarzieri||[]).map(r=>[r.nume, r.min ?? '', r.motiv||'']) },
     { titleKey:'act_s_arbitraj', headers:[t('act_platou',lang), t('act_numeArbitru',lang)], rows:(c.arbitraj||[]).map(r=>[r.platou, r.arbitru]) },
     { titleKey:'act_s_fairplay', headers:[t('act_numeSportiv',lang), t('act_ora',lang), t('act_cartonas',lang), t('act_descriere',lang)], rows:(c.fairPlay||[]).map(r=>[r.nume, r.ora||'', trEnum(r.cartonas,lang), r.descriere||'']) },
     { titleKey:'act_s_daune', headers:[t('act_numeSportiv',lang), t('act_platou',lang), t('act_descriere',lang)], rows:(c.daune||[]).map(r=>[r.nume, r.platou||'', r.descriere||'']) },
-    { titleKey:'act_s_inventar', headers:[t('act_tipMiscare',lang), t('act_articol',lang), t('act_cantitate',lang), t('act_motiv',lang)], rows:(c.inventar||[]).map(r=>[trEnum(r.tip,lang), r.articol, r.cantitate, cleanActReason(r.motiv)]) },
+    { titleKey:'act_s_inventar', headers:[t('act_tipMiscare',lang), t('act_articol',lang), t('act_conditie',lang), t('act_cantitate',lang), t('act_motiv',lang)], rows:(c.inventar||[]).map(r=>[trEnum(r.tip,lang), r.articol, actConditieLabel(r.conditie,lang), r.cantitate, cleanActReason(r.motiv)]) },
     { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, actRoomNumber(r.camera), r.ora||'', trEnum(r.statut,lang)]) },
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
@@ -2150,7 +2311,7 @@ const ACT_PDF_COLUMNS = {
   act_s_arbitraj:[.36,.64],
   act_s_fairplay:[.34,.12,.17,.37],
   act_s_daune:[.31,.18,.51],
-  act_s_inventar:[.23,.23,.16,.38],
+  act_s_inventar:[.18,.25,.11,.09,.37],
   act_s_hostel:[.35,.12,.25,.28],
   act_s_treninguri:[.29,.18,.17,.11,.25],
   act_s_sarcini:[.24,.76],
@@ -2389,7 +2550,7 @@ function renderActeSchimbList(){
 
   <div class="table-wrap">
     <div class="table-header"><div><div class="table-title">${t('act_sectionTitle')}</div><div class="view-sub" style="margin:4px 0 0">${t('act_sectionSub')}</div></div></div>
-    <div class="table-scroll"><table>
+    <div class="table-scroll reports-list-scroll ${acts.length>10?'has-overflow':''}"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('act_numeAdmin')}</th><th></th>${canDelete?'<th></th>':''}</tr></thead>
       <tbody>${acts.length ? acts.map(a=>`<tr><td class="td-muted">${fmtDate(a.data)}</td><td>${esc(a.numeAdministrator)}</td>
         <td><button class="btn-ghost btn-sm" data-act-id="${esc(a.id)}" onclick="openActPreviewById(this.dataset.actId)">${t('act_docTitle')}</button></td>
@@ -2464,7 +2625,7 @@ function renderShiftWorkflow(){
   const active = isFullAdmin() ? adminDemoShiftActive : !!currentShift;
   if(!active){
     return `<section class="shift-launch">
-      <div class="shift-launch-icon">✓</div>
+      <div class="shift-launch-icon">${icon('play')}</div>
       <h3>${t('sh_startTitle')}</h3>
       <p>${t('sh_startSub')}</p>
       ${shiftStartPrompt && !isFullAdmin() ? `<div class="shift-start-confirm">
@@ -2964,7 +3125,7 @@ function renderIntarzieri(){
 
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${t('it_allTitle')}</div></div>
-    <div class="table-scroll"><table>
+    <div class="table-scroll late-entries-scroll ${DB.intarzieri.length>10?'has-overflow':''}"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('th_participant')}</th><th>${t('it_minute')}</th><th>${t('it_motiv')}</th><th></th></tr></thead>
       <tbody>${DB.intarzieri.length ? DB.intarzieri.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(i=>`
         <tr><td class="td-muted">${fmtDate(i.data)}</td><td class="td-name" ${i.participantId?`onclick="openProfile('${i.participantId}')"`:''}>${esc(entryPersonName(i))}</td>
@@ -3094,7 +3255,7 @@ function renderServiciu(){
   <div class="view-head"><div class="view-title">${t('se_title')}</div></div>
   <div class="view-sub">${t('se_sub')}</div>
 
-  ${overlaps.length ? `<div class="locked-banner" style="border-color:rgba(248,81,73,.35);color:var(--red);background:rgba(248,81,73,.08)">${t('se_overlap')} ${overlaps.map(([d])=>fmtDate(d)).join(', ')}</div>` : ''}
+  ${overlaps.length ? `<div class="locked-banner" style="border-color:rgba(248,81,73,.35);color:var(--red);background:rgba(248,81,73,.08)">${icon('alert')} ${t('se_overlap')} ${overlaps.map(([d])=>fmtDate(d)).join(', ')}</div>` : ''}
 
   <div class="add-form">
     <div class="form-title">${t('se_filterMonth')}</div>
@@ -3339,7 +3500,7 @@ function renderHostel(){
       <div class="table-title">${t('ho_toateCazarile')}</div>
       <div class="table-hint">${t('ho_statutHint')}</div>
     </div>
-    <div class="table-scroll"><table>
+    <div class="table-scroll hostel-entries-scroll ${DB.hostel.length>10?'has-overflow':''}"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('th_participant')}</th><th>${t('ho_th_observatii')}</th><th>${t('ho_th_statut')}</th><th></th></tr></thead>
       <tbody>${DB.hostel.length ? DB.hostel.slice().sort((a,b)=>b.dataCazare.localeCompare(a.dataCazare)).map(h=>`
         <tr><td class="td-muted">${fmtDate(h.dataCazare)}</td><td class="td-name" onclick="openProfile('${h.participantId}')">${esc(participantName(h.participantId))}</td>
@@ -3404,7 +3565,7 @@ function renderLenjerie(){
       <div class="table-title">${DB.lenjerie.length} ${t('le_countSuffix')}</div>
       <div class="table-hint">${t('le_hint')}</div>
     </div>
-    <div class="table-scroll"><table>
+    <div class="table-scroll linen-list-scroll ${DB.lenjerie.length>10?'has-overflow':''}"><table>
       <thead><tr><th>${t('th_participant')}</th><th>${t('le_th_source')}</th><th>${t('le_th_eliberare')}</th><th>${t('le_th_returnare')}</th><th>${t('th_statut')}</th><th></th></tr></thead>
       <tbody>${DB.lenjerie.length ? DB.lenjerie.slice().sort((a,b)=>b.dataEliberare.localeCompare(a.dataEliberare)).map(l=>`
         <tr><td class="td-name" onclick="openProfile('${l.participantId}')">${esc(participantName(l.participantId))}</td>
@@ -4135,7 +4296,7 @@ function renderInventar(){
   <div class="view-head"><div class="view-title">${t('iv_title')}</div></div>
   <div class="view-sub">${t('iv_sub')}</div>
 
-  ${lowStockItems().length ? `<div class="locked-banner" style="border-color:rgba(210,166,74,.4)">⚠ ${lowStockItems().length} ${t('iv_lowStock')}</div>` : ''}
+  ${lowStockItems().length ? `<div class="locked-banner" style="border-color:rgba(210,166,74,.4)">${icon('alert')} ${lowStockItems().length} ${t('iv_lowStock')}</div>` : ''}
 
   <div class="add-form">
     <div class="form-title">${t('iv_addTitle')}</div>
@@ -4231,21 +4392,68 @@ function taskAdministratorSelect(){
 }
 const TASK_STATUS_ORDER = ['nesoluționat','în lucru','soluționat'];
 const TASK_STATUS_SLUG = { 'nesoluționat':'nesolutionat', 'în lucru':'inlucru', 'soluționat':'solutionat' };
+let taskFilter = 'all';
+function setTaskFilter(filter){
+  taskFilter = ['all','open','solved'].includes(filter) ? filter : 'all';
+  render();
+}
+function sarciniFiltered(){
+  if(taskFilter==='open') return DB.sarcini.filter(s=>s.status==='nesoluționat' || s.status==='în lucru');
+  if(taskFilter==='solved') return DB.sarcini.filter(s=>s.status==='soluționat');
+  return DB.sarcini.slice();
+}
 // Groups the tasks for display only. The .slice() matters: sort() reorders in place,
 // so sorting DB.sarcini directly would permanently shuffle the loaded data.
-function sarciniGrouped(){
+function sarciniGrouped(rows=DB.sarcini){
   const groups = TASK_STATUS_ORDER.map(status => ({
     status, slug: TASK_STATUS_SLUG[status], label: trEnum(status),
-    rows: DB.sarcini.filter(s => s.status===status),
+    rows: rows.filter(s => s.status===status),
   }));
   // Anything with an unexpected status still gets shown rather than silently dropped.
-  const alteStatusuri = DB.sarcini.filter(s => !TASK_STATUS_ORDER.includes(s.status));
+  const alteStatusuri = rows.filter(s => !TASK_STATUS_ORDER.includes(s.status));
   if(alteStatusuri.length) groups.push({ status:'—', slug:'other', label:'—', rows:alteStatusuri });
   return groups
     .filter(g => g.rows.length)
     .map(g => ({ ...g, rows: g.rows.slice().sort((a,b)=>b.dataInreg.localeCompare(a.dataInreg)) }));
 }
+function taskTableHead(){
+  return `<thead><tr><th>${t('th_data')}</th><th>${t('ta_th_inregDe')}</th><th>${t('th_descriere')}</th><th>${t('ta_th_status')}</th><th>${t('ta_th_solDe')}</th><th></th></tr></thead>`;
+}
+function taskGroupsRows(groups){
+  return groups.map(group=>`
+    <tr class="task-group g-${group.slug}"><td colspan="6">${esc(group.label)} · ${group.rows.length}</td></tr>
+    ${group.rows.map(task=>{
+      const stale = task.status!=='soluționat' && daysDiff(task.dataInreg)<=-2;
+      return `<tr class="task-row task-${group.slug}">
+        <td class="td-muted">${stale?'<span class="row-flag red"></span>':''}${fmtDate(task.dataInreg)}</td>
+        <td class="td-muted">${esc(task.adminInreg)}</td><td>${esc(task.descriere)}</td>
+        <td>
+          <select class="task-select s-${group.slug}" onchange="updateTaskStatus('${task.id}', this.value)">
+            <option value="nesoluționat" ${task.status==='nesoluționat'?'selected':''}>${trEnum('nesoluționat')}</option>
+            <option value="în lucru" ${task.status==='în lucru'?'selected':''}>${trEnum('în lucru')}</option>
+            <option value="soluționat" ${task.status==='soluționat'?'selected':''}>${trEnum('soluționat')}</option>
+          </select>
+        </td>
+        <td class="td-muted">${esc(task.adminSolutionare)||'—'}</td>
+        <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('sarcini','${task.id}')">${t('btn_delete')}</button></td>
+      </tr>`;
+    }).join('')}`).join('');
+}
+function taskTableSegment(groups, solvedSegment=false){
+  if(!groups.length) return '';
+  const rowCount=groups.reduce((sum,group)=>sum+group.rows.length,0);
+  const scrollSolved=solvedSegment && rowCount>10;
+  return `<div class="table-scroll task-list-scroll task-table-segment ${scrollSolved?'has-overflow':''}" ${scrollSolved?'style="--task-group-count:1;--task-visible-count:10"':''}><table>
+    ${taskTableHead()}<tbody>${taskGroupsRows(groups)}</tbody>
+  </table></div>`;
+}
 function renderSarcini(){
+  const filteredTasks = sarciniFiltered();
+  const groups = sarciniGrouped(filteredTasks);
+  const solvedGroups = groups.filter(group=>group.status==='soluționat');
+  const activeGroups = groups.filter(group=>group.status!=='soluționat');
+  const openCount = DB.sarcini.filter(s=>s.status==='nesoluționat' || s.status==='în lucru').length;
+  const solvedCount = DB.sarcini.filter(s=>s.status==='soluționat').length;
   return `
   <div class="view-head"><div class="view-title">${t('ta_title')}</div></div>
   <div class="view-sub">${t('ta_sub')}</div>
@@ -4267,28 +4475,19 @@ function renderSarcini(){
   </div>
 
   <div class="table-wrap">
-    <div class="table-header"><div class="table-title">${DB.sarcini.length} ${t('ta_countSuffix')}</div></div>
-    <div class="table-scroll"><table>
-      <thead><tr><th>${t('th_data')}</th><th>${t('ta_th_inregDe')}</th><th>${t('th_descriere')}</th><th>${t('ta_th_status')}</th><th>${t('ta_th_solDe')}</th><th></th></tr></thead>
-      <tbody>${DB.sarcini.length ? sarciniGrouped().map(group=>`
-        <tr class="task-group g-${group.slug}"><td colspan="6">${esc(group.label)} · ${group.rows.length}</td></tr>
-        ${group.rows.map(task=>{
-        const stale = task.status!=='soluționat' && daysDiff(task.dataInreg)<=-2;
-        return `<tr class="task-row task-${group.slug}">
-          <td class="td-muted">${stale?'<span class="row-flag red"></span>':''}${fmtDate(task.dataInreg)}</td>
-          <td class="td-muted">${esc(task.adminInreg)}</td><td>${esc(task.descriere)}</td>
-          <td>
-            <select class="task-select s-${group.slug}" onchange="updateTaskStatus('${task.id}', this.value)">
-              <option value="nesoluționat" ${task.status==='nesoluționat'?'selected':''}>${trEnum('nesoluționat')}</option>
-              <option value="în lucru" ${task.status==='în lucru'?'selected':''}>${trEnum('în lucru')}</option>
-              <option value="soluționat" ${task.status==='soluționat'?'selected':''}>${trEnum('soluționat')}</option>
-            </select>
-          </td>
-          <td class="td-muted">${esc(task.adminSolutionare)||'—'}</td>
-          <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('sarcini','${task.id}')">${t('btn_delete')}</button></td>
-        </tr>`;
-      }).join('')}`).join('') : `<tr><td class="td-empty" colspan="6">${t('ta_none')}</td></tr>`}</tbody>
-    </table></div>
+    <div class="table-header">
+      <div class="table-title">${filteredTasks.length} ${t('ta_countSuffix')}</div>
+      <div class="task-filter-bar">
+        <div class="toggle-group" role="group" aria-label="${esc(t('ta_countSuffix'))}">
+          <button type="button" class="toggle-btn ${taskFilter==='all'?'active':''}" aria-pressed="${taskFilter==='all'}" onclick="setTaskFilter('all')">${t('ta_filterAll')} · ${DB.sarcini.length}</button>
+          <button type="button" class="toggle-btn ${taskFilter==='open'?'active':''}" aria-pressed="${taskFilter==='open'}" onclick="setTaskFilter('open')">${t('ta_filterOpen')} · ${openCount}</button>
+          <button type="button" class="toggle-btn ${taskFilter==='solved'?'active':''}" aria-pressed="${taskFilter==='solved'}" onclick="setTaskFilter('solved')">${t('ta_filterSolved')} · ${solvedCount}</button>
+        </div>
+      </div>
+    </div>
+    ${filteredTasks.length
+      ? `${taskTableSegment(activeGroups,false)}${taskTableSegment(solvedGroups,true)}`
+      : `<div class="table-scroll task-table-segment"><table>${taskTableHead()}<tbody><tr><td class="td-empty" colspan="6">${t('ta_none')}</td></tr></tbody></table></div>`}
   </div>`;
 }
 async function addSarcina(){
@@ -4361,7 +4560,7 @@ function renderObservatii(){
 
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${DB.observatii.length} ${t('ob_countSuffix')}</div></div>
-    <div class="table-scroll"><table>
+    <div class="table-scroll observations-list-scroll ${DB.observatii.length>10?'has-overflow':''}"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('ob_target')}</th><th>${t('ob_categorie')}</th><th>${t('th_descriere')}</th><th></th></tr></thead>
       <tbody>${DB.observatii.length ? DB.observatii.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(o=>`
         <tr><td class="td-muted">${fmtDate(o.data)}</td>${o.participantId
@@ -4911,6 +5110,88 @@ async function rotateLocatiePin(){
 
 /* ══════════════════════ INIT ══════════════════════ */
 document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal('profile-modal'); closeModal('arbitru-modal'); closeModal('act-modal'); } });
+
+let iconEnhanceFrame = 0;
+const iconObserver = new MutationObserver(()=>{
+  cancelAnimationFrame(iconEnhanceFrame);
+  iconEnhanceFrame = requestAnimationFrame(()=>enhanceIcons(document));
+});
+iconObserver.observe(document.getElementById('app-shell'), { childList:true, subtree:true });
+enhanceIcons(document);
+
+// Local-only review mode for the icon redesign. It never authenticates, fetches,
+// writes, or subscribes to Supabase; it only renders representative mock content.
+function startIconPreview(){
+  const today=todayISO();
+  currentAdminId='icon-preview-admin';
+  currentAdmin='Previzualizare iconuri';
+  currentRole='admin';
+  adminDemoShiftActive=true;
+  DB={
+    administratori:[{id:currentAdminId,nume:'Previzualizare',prenume:'Iconuri',rol:'admin',ascuns:false}],
+    serviciuAdministratori:[{id:'employee-1',nume:'Ahmetzeanov Rustam'}],
+    participanti:[
+      {id:'p1',nrDulap:'12',nume:'Exemplu',prenume:'Participant',dataNasterii:'1995-04-12',adresa:'Chișinău',telefon:'+373 60 000 000',email:'',dataAvizMedical:addDays(today,4),marime:'M',categorieSportiva:'Seniori',statut:'activ',dataInregistrarii:today,eligibilAntrenament:true},
+      {id:'p2',nrDulap:'27',nume:'Model',prenume:'Sportiv',dataNasterii:'2001-09-18',adresa:'Chișinău',telefon:'+373 69 000 000',email:'',dataAvizMedical:addDays(today,90),marime:'L',categorieSportiva:'Tineret',statut:'activ',dataInregistrarii:today,eligibilAntrenament:true},
+    ],
+    arbitri:[{id:'a1',nrDulap:'A1',nume:'Arbitru',prenume:'Exemplu',statut:'activ',dataInregistrarii:today}],
+    intarzieri:Array.from({length:14},(_,index)=>({
+      id:`late-${index}`, participantId:index%2?'p1':'p2', arbitru:null, data:addDays(today,-index),
+      minuteIntarziere:5+(index%4)*5, motiv:index%3===0?'Transport':'Motiv demonstrativ', createdAt:new Date().toISOString(),
+    })),
+    vestimentatie:[],
+    serviciu:Array.from({length:14},(_,index)=>{
+      const data=addDays(today,-index);
+      return {id:`service-${index}`,data,administratorServiciuId:'employee-1',administratorId:null,
+        inceputLa:`${data}T06:45:00+03:00`,sfarsitLa:`${data}T14:30:00+03:00`,administrator:'Ahmetzeanov Rustam'};
+    }),
+    spalatorie:[],
+    hostel:Array.from({length:14},(_,index)=>({
+      id:`hostel-${index}`, participantId:index%2?'p1':'p2', dataCazare:addDays(today,-index),
+      observatii:index%3===0?'Cazare demonstrativă':null, statut:index%4===0?'închis':'activ', createdAt:new Date().toISOString(),
+    })),
+    lenjerie:Array.from({length:14},(_,index)=>({
+      id:`linen-${index}`, participantId:index%2?'p1':'p2', dataEliberare:addDays(today,-index),
+      dataReturnare:index%3===0?addDays(today,-index+1):null, sursaStoc:index%2?'nou':'uzat',
+    })),
+    daune:[], fairPlay:[], arbitraj:[],
+    inventar:[
+      {id:'i1',denumire:'Maiouri albastre',culoare:'Albastru',marime:'M',um:'buc',cantitateInitiala:12,intrari:2,iesiri:5,cantitateMinima:5,stare:'bună',observatii:'',conditie:'nou'},
+      {id:'i2',denumire:'Mingi noi DHS — 40+',culoare:'—',marime:'—',um:'buc',cantitateInitiala:20,intrari:0,iesiri:18,cantitateMinima:5,stare:'bună',observatii:'',conditie:'nou'},
+    ],
+    sarcini:[
+      {id:'t1',dataInreg:today,adminInreg:'Ahmetzeanov Rustam',status:'nesoluționat',actiuni:'',dataSolutionare:null,adminSolutionare:'',descriere:'Verificare iluminare sală',createdAt:new Date().toISOString()},
+      {id:'t2',dataInreg:addDays(today,-1),adminInreg:'Sobietki Rostislav',status:'în lucru',actiuni:'',dataSolutionare:null,adminSolutionare:'',descriere:'Înlocuire plasă masă',createdAt:new Date().toISOString()},
+      ...Array.from({length:14},(_,index)=>({
+        id:`ts-${index}`, dataInreg:addDays(today,-index-2), adminInreg:'Ahmetzeanov Rustam', status:'soluționat', actiuni:'',
+        dataSolutionare:addDays(today,-index-1), adminSolutionare:'Ahmetzeanov Rustam', descriere:`Sarcină soluționată — exemplul ${index+1}`, createdAt:new Date().toISOString(),
+      })),
+    ],
+    observatii:Array.from({length:14},(_,index)=>({
+      id:`observation-${index}`, data:addDays(today,-index), participantId:index%3===0?null:(index%2?'p1':'p2'),
+      subiect:index%3===0?'Locație':null, categorie:OBS_CATEGORIES[index%OBS_CATEGORIES.length],
+      descriere:`Observație demonstrativă ${index+1}`, createdAt:new Date().toISOString(),
+    })),
+    pauzeTehnice:[], trustedIps:[], treninguri:[],
+    acteSchimb:Array.from({length:14},(_,index)=>({
+      id:`report-${index}`, data:addDays(today,-index), numeAdministrator:index%2?'Ahmetzeanov Rustam':'Sobietki Rostislav',
+      sesiuneSchimbId:`preview-shift-${index}`, createdAt:new Date().toISOString(), inceputPerioada:null, sfarsitPerioada:null, continut:{},
+    })),
+    jurnal:[
+      {id:'j1',cont:'Ahmetzeanov Rustam',data:today,actiune:'A început schimbul de locație'},
+      {id:'j2',cont:'Sobietki Rostislav',data:today,actiune:'A înregistrat o sarcină'},
+    ],
+  };
+  document.body.classList.remove('role-locatie');
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app-shell').classList.add('visible');
+  document.getElementById('header-user').textContent=currentAdmin;
+  document.getElementById('sb-admin').textContent=currentAdmin;
+  buildSidebar();
+  const previewView=new URLSearchParams(location.search).get('view');
+  navigate(NAV.some(item=>item.id===previewView) ? previewView : 'dashboard');
+}
+if(ICON_PREVIEW_MODE) startIconPreview();
 </script>
 </body>
 </html>
