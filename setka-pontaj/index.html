@@ -4631,6 +4631,47 @@
     }
   });
 
+  // "Acceptă tot" used to await one RPC per item, so a batch of 500 spent
+  // minutes waiting on round-trips to Supabase rather than on database work —
+  // each call is microseconds of SQL wrapped in ~250ms of latency. Run several
+  // in flight instead, but keep everything touching the same participant+month
+  // on one chain: those writes hit the same studio_entries / monthly_entries
+  // row, so overlapping them would just contend on row locks.
+  // supabase-js resolves rather than rejects on failure, so the error has to be
+  // read off the result — the old sequential loop discarded it entirely.
+  async function acceptInParallel(items, keyOf, run, limit = 6){
+    const chains = new Map();
+    items.forEach(item => {
+      const key = keyOf(item);
+      if (!chains.has(key)) chains.set(key, []);
+      chains.get(key).push(item);
+    });
+    const queue = [...chains.values()];
+    const failures = [];
+    let cursor = 0;
+    await Promise.all(Array.from({ length: Math.min(limit, queue.length) }, async () => {
+      while (cursor < queue.length) {
+        for (const item of queue[cursor++]) {
+          try {
+            const { error } = await run(item);
+            if (error) failures.push(error);
+          } catch (error) {
+            failures.push(error);
+          }
+        }
+      }
+    }));
+    return failures;
+  }
+
+  async function withBusyButton(btn, label, work){
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = label;
+    try { return await work(); }
+    finally { btn.disabled = false; btn.innerHTML = original; }
+  }
+
   // ══════════ Sincronizare Setka Cup ══════════
   const setkaSyncModal = document.getElementById('setkaSyncModal');
   const setkaSyncBtn = document.getElementById('openSetkaSyncBtn');
@@ -4881,11 +4922,18 @@
   document.getElementById('setkaAcceptAllBtn').addEventListener('click', async () => {
     if (!setkaCurrentItems.length) return;
     if (!confirm(currentLang === 'ru' ? `Принять все ${setkaCurrentItems.length} видимых изменения?` : `Accepți toate cele ${setkaCurrentItems.length} modificări vizibile?`)) return;
-    for (const it of setkaCurrentItems) {
-      await db.rpc('setka_sync_accept_item', { p_item_id: it.id, p_value: null });
-    }
+    const failures = await withBusyButton(
+      document.getElementById('setkaAcceptAllBtn'),
+      t('Se acceptă…'),
+      () => acceptInParallel(
+        setkaCurrentItems,
+        it => `${it.referee_id}|${it.period}`,
+        it => db.rpc('setka_sync_accept_item', { p_item_id: it.id, p_value: null })
+      )
+    );
     await setkaSyncRefreshAll(); setkaRenderActive();
     await loadPeriod();
+    if (failures.length) alert(t('Nu s-au putut accepta toate: ') + failures.length);
   });
 
   // ══════════ Reclasificare categorii (rating Setka Cup) ══════════
@@ -4958,11 +5006,18 @@
   document.getElementById('reclassAcceptAllBtn').addEventListener('click', async () => {
     if (!reclassItems.length) return;
     if (!confirm(currentLang === 'ru' ? `Принять все ${reclassItems.length} предложения?` : `Accepți toate cele ${reclassItems.length} propuneri?`)) return;
-    for (const it of reclassItems) {
-      await db.rpc('category_reclass_accept', { p_id: it.id, p_category: null });
-    }
+    const failures = await withBusyButton(
+      document.getElementById('reclassAcceptAllBtn'),
+      t('Se acceptă…'),
+      () => acceptInParallel(
+        reclassItems,
+        it => it.referee_id,
+        it => db.rpc('category_reclass_accept', { p_id: it.id, p_category: null })
+      )
+    );
     await reclassRefresh(); reclassRender();
     await loadStaticData(); await loadPeriod();
+    if (failures.length) alert(t('Nu s-au putut accepta toate: ') + failures.length);
   });
 
 })();
