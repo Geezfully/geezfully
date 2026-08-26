@@ -1928,6 +1928,33 @@
     const today = businessPeriod(new Date());
     return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
   }
+  // The day a period closes = the first day of the period that follows it.
+  // Derived from businessPeriod() rather than hardcoded a second time, so the
+  // 2026 exception (August closing on the 27th) is honoured automatically and
+  // nothing needs editing when it expires: for August 2026 this returns
+  // 28 Aug, for September 2026 it returns 1 Oct, otherwise the 1st of the
+  // next calendar month.
+  function nextPeriodStart(period){
+    const key = periodKey(period);
+    const cursor = new Date(period.getFullYear(), period.getMonth(), 1);
+    for (let i = 0; i < 62; i++) {
+      cursor.setDate(cursor.getDate() + 1);
+      if (periodKey(businessPeriod(cursor)) !== key) {
+        return new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+      }
+    }
+    return new Date(period.getFullYear(), period.getMonth() + 1, 1);
+  }
+  function fmtActDate(d){
+    return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + d.getFullYear();
+  }
+  // Act number is "<month of the period>/<contract number>", e.g. 8/79-7 for
+  // an August sheet. Without a contract number there is nothing to build it
+  // from, so the printed line stays blank to be filled in by hand.
+  function actNumberFor(period, contractNumber){
+    const contract = String(contractNumber || '').trim();
+    return contract ? `${period.getMonth() + 1}/${contract}` : '';
+  }
   function periodKey(d){
     // Local date components only — toISOString() converts to UTC first,
     // which silently shifts local midnight back a day for any timezone
@@ -3772,6 +3799,8 @@
     const netTotal = total - alteCompensari;
     const tax = netTotal * ACT_TAX_RATE;
     const monthLabel = `${MONTH_NAMES_RO[currentPeriod.getMonth()]} ${currentPeriod.getFullYear()}`;
+    const actNr = actNumberFor(currentPeriod, snap.contract_number);
+    const actDate = fmtActDate(nextPeriodStart(currentPeriod));
     const taxPercent = fmtMoney(ACT_TAX_RATE * 100);
     const participantBic = bicForParticipant(snap);
     document.getElementById('actDoc').innerHTML = `
@@ -3779,7 +3808,7 @@
         <span class="act-title-line"></span>
         <div>
           <h3>ACT DE PRESTARE A SERVICIILOR SPORTIVE</h3>
-          <div class="act-title-sub"><b>Nr. <span class="act-title-blank">&nbsp;</span></b><span>din data de</span><span class="act-title-blank">&nbsp;</span></div>
+          <div class="act-title-sub"><b>Nr. <span class="act-title-blank" id="actNr">${escapeHtml(actNr) || '&nbsp;'}</span></b><span>din data de</span><span class="act-title-blank" id="actDate">${escapeHtml(actDate)}</span></div>
         </div>
         <span class="act-title-line"></span>
       </div>
@@ -4056,9 +4085,15 @@
     setFont('bold', 9);
     text('Nr.', 76, 25);
     pdf.line(82, 25.5, 101, 25.5);
+    // Read back from the rendered act rather than recomputing: an archived act
+    // is re-inflated from its stored HTML, so this keeps the number and date it
+    // was issued with instead of re-deriving them from today's calendar.
+    // Older archived acts have neither field and fall back to a blank line.
+    centered(actPdfText(root, '#actNr', ''), 82, 25, 19);
     setFont('normal', 9);
     text('din data de', 106, 25);
     pdf.line(126, 25.5, 148, 25.5);
+    centered(actPdfText(root, '#actDate', ''), 126, 25, 22);
 
     const sectionX = 18;
     const bodyX = 26;
