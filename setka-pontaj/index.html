@@ -1898,7 +1898,7 @@
   let globalRates = { arbitraj_day:0, arbitraj_night:0, tax_rate:ACT_TAX_RATE };
   let entries = {};          // referee_id -> monthly_entries row (for current period)
   let bonusesByRef = {};     // referee_id -> non-zero international bonuses for current period
-  let currentPeriod = firstOfMonth(new Date());
+  let currentPeriod = businessPeriod(new Date());
   let searchTerm = '';
   let categoryFilter = '';
   let activityFilter = 'all';
@@ -1913,8 +1913,19 @@
   let periodLocked = false;
 
   function firstOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+  // Mirrors the SQL business_period(). The accounting month is the calendar
+  // month, with ONE exception: the contabil is away from late August until
+  // mid-September 2026 and everyone must be paid first, so August 2026 closes
+  // on the 27th and 28 Aug - 30 Sep all bill as September. Both copies must
+  // agree on which period is "current", otherwise the app writes to a
+  // different month than the nightly job closes. Expires on its own.
+  function businessPeriod(d){
+    const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    if (day >= new Date(2026, 7, 28) && day <= new Date(2026, 8, 30)) return new Date(2026, 8, 1);
+    return firstOfMonth(d);
+  }
   function isCurrentMonth(d){
-    const today = firstOfMonth(new Date());
+    const today = businessPeriod(new Date());
     return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth();
   }
   function periodKey(d){
