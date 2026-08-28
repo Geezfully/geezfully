@@ -2166,7 +2166,7 @@
       'Turneu zi','Turneu noapte','Meciuri zi','Meciuri noapte',
       'Locul I zi','Locul I noapte','Locul III zi','Locul III noapte',
       'Arbitraj zi','Arbitraj noapte','Regiune','Km','Taxi acoperit','Total transport (MDL)',
-      'Alte compensări (MDL)','Onorariu (MDL)','Impozit (%)','Impozit (MDL)','Total cu impozit (MDL)',
+      'Alte compensări (MDL)','Onorariu (MDL)','Impozit (%)','Impozit (MDL)',
       'Notițe','Ultima actualizare'
     ];
     const rows = referees.slice()
@@ -2185,7 +2185,7 @@
           entry.arbitraj_day || 0, entry.arbitraj_night || 0, entry.region || '', exportNumber(ref.km || 0),
           ref.taxi_covered ? 'Da' : 'Nu', exportNumber(computeTransportAuto(ref, entry)),
           exportNumber(-(entry.alte_compensari || 0)),
-          exportNumber(fee), exportNumber((globalRates.tax_rate || 0) * 100), exportNumber(tax), exportNumber(fee + tax),
+          exportNumber(fee), exportNumber((globalRates.tax_rate || 0) * 100), exportNumber(tax),
           entry.notes || '', entry.updated_at || ''
         ];
       });
