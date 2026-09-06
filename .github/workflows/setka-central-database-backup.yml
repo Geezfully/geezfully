@@ -26,6 +26,9 @@ jobs:
   backup:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      ALERT_KEY: ${{ secrets.BACKUP_ALERT_RESEND_KEY }}
+      ALERT_TO: ${{ secrets.BACKUP_ALERT_EMAIL }}
     steps:
       - name: Check out source
         uses: actions/checkout@v5
@@ -61,3 +64,30 @@ jobs:
           psql "$SOURCE_DB_URL" --no-psqlrc --set=ON_ERROR_STOP=1 --tuples-only --command="select count(*) >= 0 from public.studios; select count(*) >= 0 from public.monthly_entries; select count(*) >= 0 from auth.users;"
           pg_dump --dbname="$SOURCE_DB_URL" --schema-only --no-owner --no-acl --file=/tmp/setka-schema.sql
           test -s /tmp/setka-schema.sql
+
+      # The gateway emails on every verified backup and on integrity failures.
+      # This covers the cases it never hears about: a failed dump, bad
+      # credentials, or an upload that dies before the confirm call.
+      - name: Report a failed backup by email
+        if: ${{ failure() && env.ALERT_KEY != '' && env.ALERT_TO != '' }}
+        env:
+          SLUG: setka-pontaj
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          local_date="$(TZ=Europe/Chisinau date +%F)"
+          jq -n \
+            --arg to "$ALERT_TO" \
+            --arg slug "$SLUG" \
+            --arg backup_date "$local_date" \
+            --arg run_url "$RUN_URL" \
+            '{
+              from: "Central Backup <onboarding@resend.dev>",
+              to: [$to],
+              subject: "PROBLEMĂ backup: \($slug) \($backup_date)",
+              html: "<p>Workflow-ul de backup pentru <strong>\($slug)</strong> a eșuat înainte ca backup-ul să ajungă în proiectul central.</p><p><a href=\"\($run_url)\">Deschide log-ul rulării</a></p>"
+            }' > "$RUNNER_TEMP/backup-alert.json"
+          curl --fail-with-body --silent --show-error \
+            -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $ALERT_KEY" \
+            -H "Content-Type: application/json" \
+            --data "@$RUNNER_TEMP/backup-alert.json"
