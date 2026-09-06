@@ -1690,6 +1690,12 @@
     'Nu s-a putut salva actul în arhivă: ': 'Не удалось сохранить акт в архив: ',
     'Ștergi definitiv acest act din arhivă?': 'Удалить этот акт из архива навсегда?',
     'Nu s-a putut șterge actul: ': 'Не удалось удалить акт: ',
+    'Nu s-au putut accepta toate: ': 'Не удалось принять все: ',
+    'Nu s-a putut aplica modificarea: ': 'Не удалось применить изменение: ',
+    'Nu s-a putut șterge modificarea: ': 'Не удалось удалить изменение: ',
+    'Nu s-a putut anula notificarea: ': 'Не удалось отменить уведомление: ',
+    'Nu s-a putut accepta propunerea: ': 'Не удалось принять предложение: ',
+    'Nu s-a putut respinge propunerea: ': 'Не удалось отклонить предложение: ',
   };
   // ── RU_DICT_END ──
   // Auto-derived inverse (Russian -> Romanian) so the toggle can switch back
@@ -3674,6 +3680,29 @@
     return data;
   }
 
+  // supabase-js RESOLVES rather than rejects when the database raises, so an
+  // unchecked db.rpc() silently discards the reason. That is how accepting a
+  // Setka change for a locked month came to look like a dead button: the
+  // trigger's "Perioada MM.YYYY este blocată" never reached the screen.
+  // Returns true on success; on failure it says why and returns false, so the
+  // caller can leave the item where it is instead of pretending it was applied.
+  async function rpcOk(fn, args, failPrefix){
+    const { error } = await db.rpc(fn, args);
+    if (!error) return true;
+    console.error(fn, error);
+    alert(t(failPrefix) + (error.message || error));
+    return false;
+  }
+
+  // Same idea for the "Acceptă tot" paths, which already collect their errors
+  // but used to report a bare count — a number tells you nothing about a lock.
+  function reportFailures(failures, failPrefix){
+    if (!failures.length) return;
+    console.error(failures);
+    const first = failures[0];
+    alert(t(failPrefix) + failures.length + '\n\n' + (first.message || first));
+  }
+
   // Writes the category for the month currently on screen, leaving every other month
   // and the live profile untouched.
   async function saveMonthCategory(refId, category){
@@ -4723,7 +4752,10 @@
   async function setkaSyncCheckOnLogin(){
     try {
       await setkaEnsureStudios();
-      const { data: newlyPresentedBatchId } = await db.rpc('setka_sync_present_pending');
+      // Runs on login, so a failure is logged rather than alerted — there is
+      // nothing the user could do about it mid-sign-in, and the next tick retries.
+      const { data: newlyPresentedBatchId, error: presentError } = await db.rpc('setka_sync_present_pending');
+      if (presentError) console.error('setka_sync_present_pending', presentError);
       await setkaSyncRefreshAll();
       const hasActionable = setkaCurrentItems.length > 0 || setkaMissedItemsCache.length > 0;
       setkaSyncBtn.classList.toggle('has-notice', hasActionable);
@@ -4802,12 +4834,12 @@
         const editing = input.style.display !== 'none';
         const val = editing ? parseInt(input.value, 10) : null;
         if (editing && (isNaN(val) || val < 0)) return;
-        await db.rpc('setka_sync_accept_item', { p_item_id: id, p_value: val });
+        if (!await rpcOk('setka_sync_accept_item', { p_item_id: id, p_value: val }, 'Nu s-a putut aplica modificarea: ')) return;
         await setkaSyncRefreshAll(); setkaRenderActive();
         await loadPeriod();
       });
       row.querySelector('.setka-delete-btn').addEventListener('click', async () => {
-        await db.rpc('setka_sync_delete_item', { p_item_id: id });
+        if (!await rpcOk('setka_sync_delete_item', { p_item_id: id }, 'Nu s-a putut șterge modificarea: ')) return;
         await setkaSyncRefreshAll(); setkaRenderActive();
       });
     });
@@ -4849,12 +4881,12 @@
     list.querySelectorAll('.setka-item').forEach(row => {
       const id = row.dataset.itemId;
       row.querySelector('.setka-accept-btn').addEventListener('click', async () => {
-        await db.rpc('setka_sync_accept_item', { p_item_id: id, p_value: null });
+        if (!await rpcOk('setka_sync_accept_item', { p_item_id: id, p_value: null }, 'Nu s-a putut aplica modificarea: ')) return;
         await setkaSyncRefreshAll(); setkaRenderActive();
         await loadPeriod();
       });
       row.querySelector('.setka-delete-btn').addEventListener('click', async () => {
-        await db.rpc('setka_sync_delete_item', { p_item_id: id });
+        if (!await rpcOk('setka_sync_delete_item', { p_item_id: id }, 'Nu s-a putut șterge modificarea: ')) return;
         await setkaSyncRefreshAll(); setkaRenderActive();
       });
     });
@@ -4884,7 +4916,7 @@
       btn.addEventListener('click', async () => {
         const row = btn.closest('.setka-log-row');
         if (!confirm(t('Anulezi această notificare aplicată? Valorile revin la ce erau înainte.'))) return;
-        await db.rpc('setka_sync_revert_batch', { p_batch_id: row.dataset.batchId });
+        if (!await rpcOk('setka_sync_revert_batch', { p_batch_id: row.dataset.batchId }, 'Nu s-a putut anula notificarea: ')) return;
         await setkaSyncRefreshAll(); setkaRenderActive();
         await loadPeriod();
       });
@@ -4933,7 +4965,7 @@
     );
     await setkaSyncRefreshAll(); setkaRenderActive();
     await loadPeriod();
-    if (failures.length) alert(t('Nu s-au putut accepta toate: ') + failures.length);
+    reportFailures(failures, 'Nu s-au putut accepta toate: ');
   });
 
   // ══════════ Reclasificare categorii (rating Setka Cup) ══════════
@@ -4985,12 +5017,12 @@
       });
       row.querySelector('.reclass-accept-btn').addEventListener('click', async () => {
         const editing = select.style.display !== 'none';
-        await db.rpc('category_reclass_accept', { p_id: id, p_category: editing ? select.value : null });
+        if (!await rpcOk('category_reclass_accept', { p_id: id, p_category: editing ? select.value : null }, 'Nu s-a putut accepta propunerea: ')) return;
         await reclassRefresh(); reclassRender();
         await loadStaticData(); await loadPeriod();
       });
       row.querySelector('.reclass-reject-btn').addEventListener('click', async () => {
-        await db.rpc('category_reclass_reject', { p_id: id });
+        if (!await rpcOk('category_reclass_reject', { p_id: id }, 'Nu s-a putut respinge propunerea: ')) return;
         await reclassRefresh(); reclassRender();
       });
     });
@@ -5017,7 +5049,7 @@
     );
     await reclassRefresh(); reclassRender();
     await loadStaticData(); await loadPeriod();
-    if (failures.length) alert(t('Nu s-au putut accepta toate: ') + failures.length);
+    reportFailures(failures, 'Nu s-au putut accepta toate: ');
   });
 
 })();
