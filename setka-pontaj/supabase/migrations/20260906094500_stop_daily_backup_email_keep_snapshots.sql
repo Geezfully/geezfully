@@ -2,10 +2,12 @@
 --
 -- Backups move to the central Backup project, so the daily Resend email is
 -- removed. The in-database snapshot (backup_snapshots, rolling 3) is kept
--- deliberately: it is SETKA's only protection until the central pipeline is
--- wired and a first backup is verified. Once that happens, unschedule the job:
+-- deliberately: it was SETKA's only protection until the central pipeline was
+-- wired and a first backup verified.
 --
---   select cron.unschedule('daily-backup-email');
+-- FOLLOW-UP, done 2026-09-06: the first central SETKA backup verified (582 KB),
+-- so `daily-backup-email` was unscheduled. This function is now uncalled, and
+-- the three rows left in backup_snapshots are the last of the interim copies.
 --
 -- To restore the email instead, see ../ROLLBACK-send_daily_backup.sql.
 -- No table, column or row is touched by this migration.
