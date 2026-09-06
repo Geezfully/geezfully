@@ -1,4 +1,4 @@
-name: ATTP encrypted central database backup
+name: SETKA encrypted central database backup
 
 on:
   schedule:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       source_check_only:
-        description: Validate ATTP source access without creating a backup
+        description: Validate SETKA source access without creating a backup
         required: false
         type: boolean
         default: false
@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: central-database-backup-attp
+  group: central-database-backup-setka
   cancel-in-progress: false
 
 jobs:
@@ -43,21 +43,21 @@ jobs:
         if: ${{ !inputs.source_check_only }}
         run: npm install --no-save --ignore-scripts @supabase/supabase-js@2.57.4
 
-      - name: Create, encrypt, and upload ATTP backup
+      - name: Create, encrypt, and upload SETKA backup
         if: ${{ !inputs.source_check_only }}
         env:
-          SOURCE_DB_URL: ${{ secrets.ATTP_BACKUP_DB_URL }}
+          SOURCE_DB_URL: ${{ secrets.SETKA_BACKUP_DB_URL }}
           BACKUP_SUPABASE_URL: ${{ secrets.CENTRAL_BACKUP_SUPABASE_URL }}
           BACKUP_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.CENTRAL_BACKUP_PUBLISHABLE_KEY }}
-          BACKUP_GATEWAY_SECRET: ${{ secrets.ATTP_BACKUP_GATEWAY_SECRET }}
-          BACKUP_ENCRYPTION_KEY: ${{ secrets.ATTP_BACKUP_ENCRYPTION_KEY }}
-        run: bash scripts/create-attp-central-backup.sh
+          BACKUP_GATEWAY_SECRET: ${{ secrets.SETKA_BACKUP_GATEWAY_SECRET }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.SETKA_BACKUP_ENCRYPTION_KEY }}
+        run: bash scripts/create-setka-central-backup.sh
 
-      - name: Validate ATTP source backup access
+      - name: Validate SETKA source backup access
         if: ${{ inputs.source_check_only }}
         env:
-          SOURCE_DB_URL: ${{ secrets.ATTP_BACKUP_DB_URL }}
+          SOURCE_DB_URL: ${{ secrets.SETKA_BACKUP_DB_URL }}
         run: |
-          psql "$SOURCE_DB_URL" --no-psqlrc --set=ON_ERROR_STOP=1 --tuples-only --command="select count(*) >= 0 from public.participanti; select count(*) >= 0 from auth.users;"
-          pg_dump --dbname="$SOURCE_DB_URL" --schema-only --no-owner --no-acl --file=/tmp/attp-schema.sql
-          test -s /tmp/attp-schema.sql
+          psql "$SOURCE_DB_URL" --no-psqlrc --set=ON_ERROR_STOP=1 --tuples-only --command="select count(*) >= 0 from public.studios; select count(*) >= 0 from public.monthly_entries; select count(*) >= 0 from auth.users;"
+          pg_dump --dbname="$SOURCE_DB_URL" --schema-only --no-owner --no-acl --file=/tmp/setka-schema.sql
+          test -s /tmp/setka-schema.sql

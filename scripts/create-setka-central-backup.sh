@@ -13,8 +13,8 @@ for name in "${required[@]}"; do
   fi
 done
 
-project_slug="attp-pontaj"
-source_project_ref="ildoegipvcgxboijfksw"
+project_slug="setka-pontaj"
+source_project_ref="ufkeqoeyrhwvvvtiopyt"
 local_date="$(TZ=Europe/Chisinau date +%F)"
 created_at="$(date -u +%FT%TZ)"
 work_dir="$(mktemp -d)"
@@ -41,7 +41,7 @@ dump_bytes="$(wc -c < "$dump_file" | tr -d ' ')"
 
 printf '%s\n' \
   '{' \
-  '  "format": "attp-postgres-backup-v1",' \
+  '  "format": "setka-postgres-backup-v1",' \
   "  \"project_slug\": \"${project_slug}\"," \
   "  \"source_project_ref\": \"${source_project_ref}\"," \
   "  \"created_at\": \"${created_at}\"," \
