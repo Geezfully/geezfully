@@ -449,8 +449,8 @@
   .stats-hygiene-row b{ color:var(--text); }
   .detail-card .field:last-child{ margin-bottom:0; }
   .detail-card.alte-card{ grid-column:1 / -1; }
-  .alte-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
-  .alte-grid .field{ margin-bottom:0; }
+  .alte-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; }
+  .alte-grid .field{ margin-bottom:0; display:flex; flex-direction:column; justify-content:flex-end; }
   .alte-total{ display:flex; justify-content:space-between; align-items:baseline; margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:13px; color:var(--muted); }
   .alte-total b{ color:var(--text); font-size:15px; }
   .alte-lines{ margin:10px 0 0; padding:0; list-style:none; font-size:12px; color:var(--muted); }
@@ -459,7 +459,7 @@
   .alte-lines li span:last-child{ color:var(--text); white-space:nowrap; }
   .alte-sync{ margin-top:8px; font-size:11.5px; color:var(--muted); }
   .alte-sync.err{ color:var(--red); }
-  @media (max-width:640px){ .alte-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:760px){ .alte-grid{ grid-template-columns:1fr 1fr; } }
   .bonus-groups{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .bonus-group{ background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:6px 14px 10px; }
   .bonus-group h3{ margin:10px 0 6px; color:var(--text); font-size:15px; font-weight:700; }
@@ -1060,6 +1060,10 @@
                 <input type="number" id="dAlteCompensari" step="0.01" min="0">
               </div>
               <div class="field">
+                <label>Altele (MDL)</label>
+                <input type="number" id="dAlteAltele" step="0.01" min="0" title="Cazuri speciale">
+              </div>
+              <div class="field">
                 <label>Spălătorie (MDL)</label>
                 <input type="number" id="dAlteSpalatorie" disabled>
               </div>
@@ -1535,6 +1539,8 @@
     'Sincronizat cu ATTP: ': 'Синхронизировано с ATTP: ',
     'Jucători ATTP fără profil potrivit — deducerile lor nu se aplică: ': 'Игроки ATTP без найденного профиля — их удержания не применяются: ',
     'Manual (MDL)': 'Вручную (MDL)',
+    'Altele (MDL)': 'Прочее (MDL)',
+    'Cazuri speciale': 'Особые случаи',
     'Spălătorie (MDL)': 'Прачечная (MDL)',
     'Daune (MDL)': 'Ущерб (MDL)',
     'Antrenamente (MDL)': 'Тренировки (MDL)',
@@ -2443,7 +2449,7 @@
       tournament_day:0, tournament_night:0, matches_day:0, matches_night:0,
       place1_day:0, place1_night:0, place3_day:0, place3_night:0,
       arbitraj_day:0, arbitraj_night:0, taxi:0, region:'', km:0,
-      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, alte_compensari_manual:0, notes:'' };
+      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, alte_compensari_manual:0, alte_compensari_altele:0, notes:'' };
   }
 
   function hasActivity(entry){
@@ -2799,15 +2805,19 @@
     return Number(entry.alte_compensari_manual ?? entry.alte_compensari ?? 0);
   }
   function alteTotal(entry){
-    return alteManual(entry) + ALTE_AUTO_FIELDS.reduce((sum, k) => sum + Number(entry[k] || 0), 0);
+    return alteManual(entry) + Number(entry.alte_compensari_altele || 0)
+      + ALTE_AUTO_FIELDS.reduce((sum, k) => sum + Number(entry[k] || 0), 0);
   }
   function updateAlteTotalLabel(entry){
     const manual = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
+    const altele = Math.abs(Number(document.getElementById('dAlteAltele').value) || 0);
     const auto = ALTE_AUTO_FIELDS.reduce((sum, k) => sum + Number(entry[k] || 0), 0);
-    document.getElementById('dAlteTotal').textContent = fmtMoney(manual + auto);
+    document.getElementById('dAlteTotal').textContent = fmtMoney(manual + altele + auto);
   }
   function fillAlteCompensari(entry){
     document.getElementById('dAlteCompensari').value = alteManual(entry);
+    document.getElementById('dAlteAltele').value = Number(entry.alte_compensari_altele || 0);
+    document.getElementById('dAlteAltele').oninput = () => updateAlteTotalLabel(entry);
     document.getElementById('dAlteSpalatorie').value = Number(entry.alte_compensari_spalatorie || 0);
     document.getElementById('dAlteDaune').value = Number(entry.alte_compensari_daune || 0);
     document.getElementById('dAlteAntrenamente').value = Number(entry.alte_compensari_antrenamente || 0);
@@ -2845,6 +2855,7 @@
         document.getElementById('dAlteDaune').value = Number(row.alte_compensari_daune || 0);
         document.getElementById('dAlteAntrenamente').value = Number(row.alte_compensari_antrenamente || 0);
         document.getElementById('dAlteCompensari').oninput = () => updateAlteTotalLabel(entry);
+        document.getElementById('dAlteAltele').oninput = () => updateAlteTotalLabel(entry);
         updateAlteTotalLabel(entry);
       }
       const participantIds = (links || []).map(l => l.attp_participant_id);
@@ -2918,7 +2929,7 @@
     document.getElementById('dTransportHint').textContent = transportHintText(ref, entry);
     fillAlteCompensari(entry);
     refreshAlteCompensari(refId);
-    ['dRegion','dKm','dTaxiCovered','dNotes','dAlteCompensari'].forEach(id => { document.getElementById(id).disabled = periodLocked; });
+    ['dRegion','dKm','dTaxiCovered','dNotes','dAlteCompensari','dAlteAltele'].forEach(id => { document.getElementById(id).disabled = periodLocked; });
     document.getElementById('dKm').oninput = () => {
       ref.km = Number(document.getElementById('dKm').value) || 0;
       refreshTransportField();
@@ -3584,6 +3595,7 @@
     entry.region = document.getElementById('dRegion').value;
     entry.transport_total = computeTransportAuto(ref, entry);
     entry.alte_compensari_manual = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
+    entry.alte_compensari_altele = Math.abs(Number(document.getElementById('dAlteAltele').value) || 0);
     entry.alte_compensari = alteTotal(entry);
     entry.notes = document.getElementById('dNotes').value;
     await saveEntry(refId);
