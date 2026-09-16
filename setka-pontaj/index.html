@@ -448,6 +448,18 @@
   .stats-hygiene-row:last-child{ border-bottom:0; }
   .stats-hygiene-row b{ color:var(--text); }
   .detail-card .field:last-child{ margin-bottom:0; }
+  .detail-card.alte-card{ grid-column:1 / -1; }
+  .alte-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+  .alte-grid .field{ margin-bottom:0; }
+  .alte-total{ display:flex; justify-content:space-between; align-items:baseline; margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:13px; color:var(--muted); }
+  .alte-total b{ color:var(--text); font-size:15px; }
+  .alte-lines{ margin:10px 0 0; padding:0; list-style:none; font-size:12px; color:var(--muted); }
+  .alte-lines li{ display:flex; justify-content:space-between; gap:10px; padding:4px 0; border-bottom:1px solid var(--border); }
+  .alte-lines li:last-child{ border-bottom:0; }
+  .alte-lines li span:last-child{ color:var(--text); white-space:nowrap; }
+  .alte-sync{ margin-top:8px; font-size:11.5px; color:var(--muted); }
+  .alte-sync.err{ color:var(--red); }
+  @media (max-width:640px){ .alte-grid{ grid-template-columns:1fr 1fr; } }
   .bonus-groups{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .bonus-group{ background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:6px 14px 10px; }
   .bonus-group h3{ margin:10px 0 6px; color:var(--text); font-size:15px; font-weight:700; }
@@ -906,6 +918,10 @@
         </div>
       </div>
 
+      <div class="period-locked-banner" id="attpUnmatchedBanner" style="display:none">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 2 17h16L10 3Z"/><path d="M10 8v4M10 14.5h.01"/></svg>
+        <span id="attpUnmatchedText"></span>
+      </div>
       <div class="period-locked-banner" id="periodLockedBanner" style="display:none">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="10" height="7" rx="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9"/></svg>
         Luna este blocată — datele nu pot fi editate. Deblocheaz-o din butonul de lângă navigarea lunilor pentru a face modificări.
@@ -1036,13 +1052,30 @@
               </label>
             </div>
           </section>
-          <section class="detail-card">
+          <section class="detail-card alte-card">
             <h3 class="detail-card-title">Alte Compensări</h3>
-            <div class="field">
-              <label>Sumă dedusă (MDL)</label>
-              <input type="number" id="dAlteCompensari" step="0.01" min="0">
-              <small style="color:var(--muted); font-size:11.5px; display:block; margin-top:4px">Se scade din onorariu înainte de impozit — resetează la 0 în fiecare lună.</small>
+            <div class="alte-grid">
+              <div class="field">
+                <label>Manual (MDL)</label>
+                <input type="number" id="dAlteCompensari" step="0.01" min="0">
+              </div>
+              <div class="field">
+                <label>Spălătorie (MDL)</label>
+                <input type="number" id="dAlteSpalatorie" disabled>
+              </div>
+              <div class="field">
+                <label>Daune (MDL)</label>
+                <input type="number" id="dAlteDaune" disabled>
+              </div>
+              <div class="field">
+                <label>Antrenamente (MDL)</label>
+                <input type="number" id="dAlteAntrenamente" disabled>
+              </div>
             </div>
+            <div class="alte-total"><span>Total dedus pe act</span><b><span id="dAlteTotal" class="num">0</span> MDL</b></div>
+            <ul class="alte-lines" id="dAlteLines"></ul>
+            <small style="color:var(--muted); font-size:11.5px; display:block; margin-top:8px">Spălătoria, daunele și antrenamentele vin automat din registrul ATTP. Totalul se scade din onorariu înainte de impozit — resetează la 0 în fiecare lună.</small>
+            <div class="alte-sync" id="dAlteSync"></div>
           </section>
         </div>
 
@@ -1494,6 +1527,19 @@
     'Detalii participant': 'Детали участника',
     'Total încasat în': 'Всего получено в',
     'Deplasare': 'Поездки',
+    'Alte Compensări': 'Прочие удержания',
+    'Spălătorie': 'Прачечная',
+    'Daune': 'Ущерб',
+    'Antrenament': 'Тренировка',
+    'Sincronizare ATTP eșuată: ': 'Ошибка синхронизации ATTP: ',
+    'Sincronizat cu ATTP: ': 'Синхронизировано с ATTP: ',
+    'Jucători ATTP fără profil potrivit — deducerile lor nu se aplică: ': 'Игроки ATTP без найденного профиля — их удержания не применяются: ',
+    'Manual (MDL)': 'Вручную (MDL)',
+    'Spălătorie (MDL)': 'Прачечная (MDL)',
+    'Daune (MDL)': 'Ущерб (MDL)',
+    'Antrenamente (MDL)': 'Тренировки (MDL)',
+    'Total dedus pe act': 'Итого к удержанию в акте',
+    'Spălătoria, daunele și antrenamentele vin automat din registrul ATTP. Totalul se scade din onorariu înainte de impozit — resetează la 0 în fiecare lună.': 'Прачечная, ущерб и тренировки подтягиваются автоматически из реестра ATTP. Итог вычитается из гонорара до налога — обнуляется каждый месяц.',
     'Regiune': 'Регион',
     'Distanță (km)': 'Расстояние (км)',
     'Fixă per participant — rămâne aceeași în fiecare lună, până o modifici manual.': 'Фиксировано для участника — остаётся неизменным каждый месяц, пока не изменишь вручную.',
@@ -2084,6 +2130,7 @@
     periodLocked = !!lockRow;
     renderLockUi();
     renderRows();
+    checkUnmatchedAttpPlayers();
   }
 
   function renderLockUi(){
@@ -2396,7 +2443,7 @@
       tournament_day:0, tournament_night:0, matches_day:0, matches_night:0,
       place1_day:0, place1_night:0, place3_day:0, place3_night:0,
       arbitraj_day:0, arbitraj_night:0, taxi:0, region:'', km:0,
-      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, alte_compensari:0, notes:'' };
+      paid_amount:0, conform_calcul:null, transport_total:0, transport_auto_at_save:0, alte_compensari_manual:0, notes:'' };
   }
 
   function hasActivity(entry){
@@ -2593,6 +2640,9 @@
       entry.transport_total = computeTransportAuto(referees.find(r => r.id === refId), entry);
       const payload = Object.assign({}, entry, { referee_id: refId, period: periodKey(currentPeriod), updated_by: session.user.id });
       delete payload.id;
+      // The total and the three ATTP amounts are computed in the database; sending the
+      // copies loaded earlier could only overwrite fresher values.
+      ALTE_AUTO_FIELDS.concat('alte_compensari').forEach(k => delete payload[k]);
       const { data, error } = await db.from('monthly_entries')
         .upsert(payload, { onConflict: 'referee_id,period' })
         .select().single();
@@ -2741,6 +2791,120 @@
     document.getElementById('dTransportHint').textContent = transportHintText(ref, entry);
   }
 
+  // ══════════ Alte compensări: manual + ATTP (spălătorie, daune, antrenamente) ══════════
+  const ALTE_AUTO_FIELDS = ['alte_compensari_spalatorie', 'alte_compensari_daune', 'alte_compensari_antrenamente'];
+  const ATTP_SOURCE_LABELS = { spalatorie: 'Spălătorie', daune: 'Daune', treninguri: 'Antrenament' };
+
+  function alteManual(entry){
+    return Number(entry.alte_compensari_manual ?? entry.alte_compensari ?? 0);
+  }
+  function alteTotal(entry){
+    return alteManual(entry) + ALTE_AUTO_FIELDS.reduce((sum, k) => sum + Number(entry[k] || 0), 0);
+  }
+  function updateAlteTotalLabel(entry){
+    const manual = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
+    const auto = ALTE_AUTO_FIELDS.reduce((sum, k) => sum + Number(entry[k] || 0), 0);
+    document.getElementById('dAlteTotal').textContent = fmtMoney(manual + auto);
+  }
+  function fillAlteCompensari(entry){
+    document.getElementById('dAlteCompensari').value = alteManual(entry);
+    document.getElementById('dAlteSpalatorie').value = Number(entry.alte_compensari_spalatorie || 0);
+    document.getElementById('dAlteDaune').value = Number(entry.alte_compensari_daune || 0);
+    document.getElementById('dAlteAntrenamente').value = Number(entry.alte_compensari_antrenamente || 0);
+    document.getElementById('dAlteCompensari').oninput = () => updateAlteTotalLabel(entry);
+    updateAlteTotalLabel(entry);
+  }
+
+  async function reloadEntry(refId){
+    const { data, error } = await db.from('monthly_entries').select('*')
+      .eq('referee_id', refId).eq('period', periodKey(currentPeriod)).maybeSingle();
+    if (error) { console.error('reloadEntry', error); return; }
+    if (data) entries[refId] = Object.assign(entries[refId] || {}, data);
+  }
+
+  // Pulls the latest ATTP amounts and their line items into the open detail modal
+  // without touching whatever the user is typing in the manual box.
+  async function refreshAlteCompensari(refId){
+    const period = periodKey(currentPeriod);
+    const lines = document.getElementById('dAlteLines');
+    const syncEl = document.getElementById('dAlteSync');
+    lines.innerHTML = '';
+    syncEl.textContent = '';
+    syncEl.classList.remove('err');
+    try {
+      const [{ data: row }, { data: links }, { data: status }] = await Promise.all([
+        db.from('monthly_entries').select('*').eq('referee_id', refId).eq('period', period).maybeSingle(),
+        db.from('attp_referee_links').select('attp_participant_id').eq('referee_id', refId),
+        db.from('attp_sync_status').select('last_success_at, last_error').maybeSingle(),
+      ]);
+      if (detailRefId !== refId) return;
+      if (row) {
+        const entry = entries[refId] = Object.assign(entries[refId] || {}, row);
+        ALTE_AUTO_FIELDS.forEach(k => { entry[k] = row[k]; });
+        document.getElementById('dAlteSpalatorie').value = Number(row.alte_compensari_spalatorie || 0);
+        document.getElementById('dAlteDaune').value = Number(row.alte_compensari_daune || 0);
+        document.getElementById('dAlteAntrenamente').value = Number(row.alte_compensari_antrenamente || 0);
+        document.getElementById('dAlteCompensari').oninput = () => updateAlteTotalLabel(entry);
+        updateAlteTotalLabel(entry);
+      }
+      const participantIds = (links || []).map(l => l.attp_participant_id);
+      if (participantIds.length) {
+        const { data: items } = await db.from('attp_deduceri').select('sursa, data, suma, detalii')
+          .eq('period', period).in('attp_participant_id', participantIds).order('data');
+        if (detailRefId !== refId) return;
+        lines.innerHTML = (items || []).map(it => {
+          const d = new Date(it.data);
+          const day = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0');
+          return `<li><span>${day} · ${escapeHtml(t(ATTP_SOURCE_LABELS[it.sursa] || it.sursa))}${it.detalii ? ' · ' + escapeHtml(it.detalii) : ''}</span><span>−${fmtMoney(Number(it.suma))} MDL</span></li>`;
+        }).join('');
+      }
+      if (status?.last_error) {
+        syncEl.textContent = t('Sincronizare ATTP eșuată: ') + status.last_error;
+        syncEl.classList.add('err');
+      } else if (status?.last_success_at) {
+        syncEl.textContent = t('Sincronizat cu ATTP: ') + new Date(status.last_success_at).toLocaleString(currentLang === 'ru' ? 'ru-RU' : 'ro-RO');
+      }
+    } catch (e) {
+      console.error('refreshAlteCompensari', e);
+    }
+  }
+
+  // Players with ATTP charges this period who could not be matched to a profile.
+  // Their deductions are held back until the name is fixed on either side.
+  async function checkUnmatchedAttpPlayers(){
+    try {
+      const period = periodKey(currentPeriod);
+      const { data: unmatched } = await db.from('attp_referee_links')
+        .select('attp_participant_id, nume, prenume').is('referee_id', null);
+      if (!unmatched?.length) return renderUnmatchedAttpBanner([]);
+      const { data: items } = await db.from('attp_deduceri').select('attp_participant_id, suma')
+        .eq('period', period).in('attp_participant_id', unmatched.map(u => u.attp_participant_id));
+      const withCharges = unmatched.filter(u => (items || []).some(i => i.attp_participant_id === u.attp_participant_id));
+      renderUnmatchedAttpBanner(withCharges.map(u => {
+        const sum = (items || []).filter(i => i.attp_participant_id === u.attp_participant_id).reduce((s, i) => s + Number(i.suma), 0);
+        return `${u.nume} ${u.prenume} (${fmtMoney(sum)} MDL)`;
+      }));
+    } catch (e) {
+      console.error('checkUnmatchedAttpPlayers', e);
+    }
+  }
+  function renderUnmatchedAttpBanner(names){
+    const el = document.getElementById('attpUnmatchedBanner');
+    if (!el) return;
+    el.style.display = names.length ? 'flex' : 'none';
+    document.getElementById('attpUnmatchedText').textContent = names.length
+      ? t('Jucători ATTP fără profil potrivit — deducerile lor nu se aplică: ') + names.join(', ')
+      : '';
+  }
+
+  // Keeps the table's totals current when the tab comes back into view, since
+  // ATTP deductions keep arriving in the background. Skipped while editing.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || !session) return;
+    if (document.querySelector('.modal-backdrop.show') || document.querySelector('input.dirty')) return;
+    loadPeriod();
+  });
+
   function openDetail(refId){
     detailRefId = refId;
     const ref = referees.find(r => r.id === refId);
@@ -2752,7 +2916,8 @@
     document.getElementById('dTaxiCovered').checked = ref.taxi_covered === true;
     document.getElementById('dTransportTotal').value = computeTransportAuto(ref, entry);
     document.getElementById('dTransportHint').textContent = transportHintText(ref, entry);
-    document.getElementById('dAlteCompensari').value = entry.alte_compensari || 0;
+    fillAlteCompensari(entry);
+    refreshAlteCompensari(refId);
     ['dRegion','dKm','dTaxiCovered','dNotes','dAlteCompensari'].forEach(id => { document.getElementById(id).disabled = periodLocked; });
     document.getElementById('dKm').oninput = () => {
       ref.km = Number(document.getElementById('dKm').value) || 0;
@@ -3418,7 +3583,8 @@
     if (ref) { ref.taxi_covered = taxiCoveredChecked; ref.km = kmValue; }
     entry.region = document.getElementById('dRegion').value;
     entry.transport_total = computeTransportAuto(ref, entry);
-    entry.alte_compensari = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
+    entry.alte_compensari_manual = Math.abs(Number(document.getElementById('dAlteCompensari').value) || 0);
+    entry.alte_compensari = alteTotal(entry);
     entry.notes = document.getElementById('dNotes').value;
     await saveEntry(refId);
 
@@ -3796,6 +3962,8 @@
   }
   async function openAct(refId){
     const ref = referees.find(r => r.id === refId);
+    // ATTP deductions sync in the background; print what the database has now.
+    await reloadEntry(refId);
     const entry = entries[refId] || emptyEntry(refId);
     const category = entry.category || ref.category;
     // Snapshot fields locked to this month — never the live referee record —
