@@ -2050,6 +2050,28 @@ function actMovementReason(value){
     : /^Returnare/i.test(actiune) ? 'de la' : '—';
   return nume ? `${actiune} ${legatura} ${nume}` : actiune;
 }
+// Saved acts keep the Romanian stock-movement reason; the Russian export translates the known
+// templates at render time (names and platou labels stay as written). Unknown text passes through.
+const ACT_REASON_RU = [
+  [/^Eliberare vestimentație(?: către (.+))?$/i, (m,n)=>n ? `Выдача формы: ${n}` : 'Выдача формы'],
+  [/^Returnare vestimentație(?: de la (.+))?$/i, (m,n)=>n ? `Возврат формы: ${n}` : 'Возврат формы'],
+  [/^Anulare returnare vestimentație(?: — (.+))?$/i, (m,n)=>n ? `Отмена возврата формы: ${n}` : 'Отмена возврата формы'],
+  [/^Set lenjerie eliberat(?: către (.+))?$/i, (m,n)=>n ? `Выдача комплекта белья: ${n}` : 'Выдача комплекта белья'],
+  [/^Returnare set lenjerie(?: de la (.+))?$/i, (m,n)=>n ? `Возврат комплекта белья: ${n}` : 'Возврат комплекта белья'],
+  [/^Mingi (\S+) eliberate arbitrului (.+)$/i, (m,marca,n)=>`Мячи ${marca} выданы арбитру ${n}`],
+  [/^Corecție mingi arbitraj pentru (.+): anulare valoare anterioară$/i, (m,n)=>`Корректировка мячей для арбитра ${n}: отмена прежнего значения`],
+  [/^Ajustare manuală din pagina Inventar$/i, ()=>'Ручная корректировка на странице Инвентарь'],
+  [/^Intrare înregistrată din tabloul de bord$/i, ()=>'Поступление, внесённое с панели управления'],
+];
+function actReasonText(value, lang=LANG){
+  const motiv = cleanActReason(value);
+  if(lang!=='ru') return motiv;
+  for(const [re, fn] of ACT_REASON_RU){
+    const m = motiv.match(re);
+    if(m) return fn(...m);
+  }
+  return motiv;
+}
 
 function actRoomNumber(value){
   const raw = String(value||'').trim();
@@ -2219,7 +2241,7 @@ function actSections(c, lang=LANG){
     { titleKey:'act_s_arbitraj', headers:[t('act_platou',lang), t('act_numeArbitru',lang)], rows:(c.arbitraj||[]).map(r=>[r.platou, r.arbitru]) },
     { titleKey:'act_s_fairplay', headers:[t('act_numeSportiv',lang), t('act_ora',lang), t('act_cartonas',lang), t('act_descriere',lang)], rows:(c.fairPlay||[]).map(r=>[r.nume, r.ora||'', trEnum(r.cartonas,lang), r.descriere||'']) },
     { titleKey:'act_s_daune', headers:[t('act_numeSportiv',lang), t('act_platou',lang), t('act_descriere',lang)], rows:(c.daune||[]).map(r=>[r.nume, r.platou||'', r.descriere||'']) },
-    { titleKey:'act_s_inventar', headers:[t('act_tipMiscare',lang), t('act_articol',lang), t('act_conditie',lang), t('act_cantitate',lang), t('act_motiv',lang)], rows:(c.inventar||[]).map(r=>[trEnum(r.tip,lang), r.articol, actConditieLabel(r.conditie,lang), r.cantitate, cleanActReason(r.motiv)]) },
+    { titleKey:'act_s_inventar', headers:[t('act_tipMiscare',lang), t('act_articol',lang), t('act_conditie',lang), t('act_cantitate',lang), t('act_motiv',lang)], rows:(c.inventar||[]).map(r=>[trEnum(r.tip,lang), r.articol, actConditieLabel(r.conditie,lang), r.cantitate, actReasonText(r.motiv, lang)]) },
     { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, actRoomNumber(r.camera), r.ora||'', trEnum(r.statut,lang)]) },
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
