@@ -2034,6 +2034,22 @@ async function confirmLocationShift(){
 function cleanActReason(value){
   return String(value||'').replace(/\s*#[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b/ig, '').trim();
 }
+// The stock triggers only record "Eliberare vestimentație #<id>" (or a lenjerie equivalent), so
+// resolve that id to the person who received or returned the item before the id is stripped.
+function actMovementReason(value){
+  const motiv = String(value||'');
+  const m = motiv.match(/^(Eliberare vestimentație|Returnare vestimentație|Anulare returnare vestimentație|Set lenjerie eliberat|Returnare set lenjerie) #([0-9a-f-]{36})\b/i);
+  if(!m) return cleanActReason(motiv);
+  const [, actiune, id] = m;
+  const row = actiune.includes('lenjerie')
+    ? DB.lenjerie.find(r=>r.id===id)
+    : DB.vestimentatie.find(r=>r.id===id);
+  if(!row) return cleanActReason(motiv);
+  const nume = entryPersonName(row);
+  const legatura = /^(Eliberare vestimentație|Set lenjerie eliberat)$/i.test(actiune) ? 'către'
+    : /^Returnare/i.test(actiune) ? 'de la' : '—';
+  return nume ? `${actiune} ${legatura} ${nume}` : actiune;
+}
 
 function actRoomNumber(value){
   const raw = String(value||'').trim();
@@ -2093,7 +2109,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
         articol: item ? `${item.denumire}${item.marime && item.marime!=='—' ? ' — '+item.marime : ''}` : r.inventar_id,
         conditie: item ? (item.conditie==='uzat' ? 'uzat' : 'nou') : null,
         cantitate: r.cantitate,
-        motiv: cleanActReason(r.motiv),
+        motiv: actMovementReason(r.motiv),
       };
     }),
     hostel: (hostelR.data||[]).map(r=>({ nume: participantName(r.participant_id), camera: r.observatii || '', ora: fmtTime(r.created_at), statut: r.statut })),
