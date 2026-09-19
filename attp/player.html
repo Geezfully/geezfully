@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720-loadscreen">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -55,9 +56,9 @@
 </div>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Tenis de masă</span></span></a>
+    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Garanția integrității</span></span></a>
     <nav class="nav-links"><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html" class="active">Jucători</a><a href="tournaments.html">Turnee</a><a href="gallery.html">Media</a><a href="documents.html">Documente</a><a href="fairplay.html">Fair Play</a><a href="contact.html">Contact</a></nav>
-    <div class="lang-switch"><a href="#" class="active">RO</a><a href="#" title="În curând">RU</a><a href="#" title="În curând">EN</a></div>
+    <div class="lang-switch"><a href="player.html" hreflang="ro" lang="ro" class="active">RO</a><a href="ru/player.html" hreflang="ru" lang="ru">RU</a><a href="en/player.html" hreflang="en" lang="en">EN</a></div>
     <button class="nav-toggle" id="navToggle" aria-label="Deschide meniul"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
   </div>
 </header>
@@ -67,25 +68,29 @@
 </div>
 
 <main>
-  <div class="page-head container">
-    <div class="breadcrumb"><a href="index.html">Acasă</a> / <a href="players.html">Jucători</a> / <span id="crumbName">…</span></div>
-    <div class="profile-head" id="profileHead">
-      <div class="card skeleton" style="width:100%;height:88px"></div>
+  <div class="page-flow">
+    <div class="page-head container">
+      <div class="breadcrumb"><a href="index.html">Acasă</a> / <a href="players.html">Jucători</a> / <span id="crumbName">…</span></div>
+      <div class="profile-head" id="profileHead">
+        <div class="card skeleton" style="width:100%;height:88px"></div>
+      </div>
     </div>
+    <section class="container section-tight">
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="card" id="gearCard" style="display:none;margin-bottom:32px">
+        <div class="eyebrow" style="margin-bottom:0">Echipament &amp; stil</div>
+        <div class="gear-grid" id="gearGrid"></div>
+      </div>
+      <div class="eyebrow">Istoric</div>
+      <h2 class="mb-24">Turnee recente</h2>
+      <div class="table-scroll">
+        <table class="data" id="statsTable">
+          <thead><tr><th>Turneu</th><th>Dată</th><th>Div.</th><th class="r">Scor</th><th class="r">Puncte</th><th class="r">Loc</th></tr></thead>
+          <tbody id="statsBody"><tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
   </div>
-  <section class="container section-tight">
-    <div class="kpi-row" id="kpiRow"></div>
-    <div class="card" id="gearCard" style="display:none;margin-bottom:32px">
-      <div class="eyebrow" style="margin-bottom:0">Echipament &amp; stil</div>
-      <div class="gear-grid" id="gearGrid"></div>
-    </div>
-    <div class="eyebrow">Istoric</div>
-    <h2 class="mb-24">Turnee recente</h2>
-    <table class="data" id="statsTable">
-      <thead><tr><th>Turneu</th><th>Dată</th><th>Div.</th><th class="r">Scor</th><th class="r">Puncte</th><th class="r">Loc</th></tr></thead>
-      <tbody id="statsBody"><tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
-    </table>
-  </section>
 </main>
 
 <footer>
@@ -94,19 +99,19 @@
       <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">Asociația Națională a Jucătorilor Profesioniști de Tenis de Masă din Republica Moldova.</p></div>
       <div><h4>Navigare</h4><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html">Jucători</a><a href="tournaments.html">Turnee</a></div>
       <div><h4>Resurse</h4><a href="documents.html">Documente</a><a href="fairplay.html">Fair Play</a><a href="gallery.html">Media</a></div>
-      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a></div>
+      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a><a href="terms.html">Termeni și condiții</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><span>Date live via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Scrieți-i autorului pe WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Clasament via ligas.io · Rezultate via Setka Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js"></script>
+<script src="js/supabase-init.js?v=20260918-photos"></script>
 <script>
 (async function(){
   const id = new URLSearchParams(location.search).get('id');
-  if (!id) { document.getElementById('profileHead').innerHTML = '<p class="muted">Jucător negăsit.</p>'; return; }
-  const { data: p } = await db.from('players').select('*, setka_cup_cache(*)').eq('id', id).single();
-  if (!p) { document.getElementById('profileHead').innerHTML = '<p class="muted">Jucător negăsit.</p>'; return; }
+  if (!id) { document.getElementById('profileHead').innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; return; }
+  const { data: p } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').eq('id', id).single();
+  if (!p) { document.getElementById('profileHead').innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; return; }
   const c = p.setka_cup_cache;
   const s = playerStats(p);
 
@@ -116,26 +121,27 @@
     <div class="profile-avatar">${avatarHtml(p, 'lg')}</div>
     <div>
       <h1>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</h1>
-      <p class="dim mt-8">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.category ? ' · ' + escapeHtml(p.category) : ''}</p>
+      <p class="dim mt-8">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.category ? ' · ' + escapeHtml(t(p.category)) : ''}${p.birth_year ? ' · ' + t('n. {an}').replace('{an}', p.birth_year) : ''}</p>
     </div>`;
 
+  const LIST_LABELS = { masculin:t('în clasamentul masculin'), feminin:t('în clasamentul feminin') };
   document.getElementById('kpiRow').innerHTML = s ? `
-    <div class="kpi"><b class="num" style="color:var(--spin-hi)">${s.rating ?? '—'}</b><span>Rating Setka Cup</span></div>
-    <div class="kpi"><b class="num">${s.tournaments}</b><span>Turnee jucate</span></div>
-    <div class="kpi"><b class="num" style="color:var(--win)">${s.wins}</b><span>Victorii</span></div>
-    <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses}</b><span>Înfrângeri</span></div>
-  ` : '<p class="muted">Acest profil nu este încă legat de datele Setka Cup.</p>';
+    <div class="kpi"><b class="num" style="color:var(--spin-hi)">${s.rating != null ? s.rating.toFixed(1) : '—'}</b><span>${s.position != null ? `${t('Rating · locul')} ${s.position} ${LIST_LABELS[s.list] || s.list}` : t('Rating (nu apare în clasament)')}</span></div>
+    <div class="kpi"><b class="num">${s.tournaments ?? '—'}</b><span>${t('Turnee jucate · Setka Cup')}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--win)">${s.wins ?? '—'}</b><span>${t('Victorii · Setka Cup')}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses ?? '—'}</b><span>${t('Înfrângeri · Setka Cup')}</span></div>
+  ` : `<p class="muted">${t('Acest jucător nu apare încă în clasamentul oficial și nu are meciuri înregistrate.')}</p>`;
 
-  const RANK_LABELS = { rank_1:'Categoria I', rank_2:'Categoria II', rank_3:'Categoria III', candidate:'Candidat de maestru', master:'Maestru al sportului' };
-  const GRIP_LABELS = { european:'Europeană', asian:'Asiatică' };
-  const STYLE_LABELS = { attacking:'Atacant', defensive:'Defensiv' };
-  const HAND_LABELS = { right_hand:'Dreapta', left_hand:'Stânga' };
+  const RANK_LABELS = { rank_1:t('Categoria I'), rank_2:t('Categoria II'), rank_3:t('Categoria III'), candidate:t('Candidat de maestru'), master:t('Maestru al sportului') };
+  const GRIP_LABELS = { european:t('Europeană'), asian:t('Asiatică') };
+  const STYLE_LABELS = { attacking:t('Atacant'), defensive:t('Defensiv') };
+  const HAND_LABELS = { right_hand:t('Dreapta'), left_hand:t('Stânga') };
   const gearItems = [
-    p.game_style && ['Stil de joc', STYLE_LABELS[p.game_style] || p.game_style],
-    p.sport_rank && ['Categorie', RANK_LABELS[p.sport_rank] || p.sport_rank],
-    p.player_grip && ['Priză', GRIP_LABELS[p.player_grip] || p.player_grip],
-    p.playing_hand && ['Mâna de joc', HAND_LABELS[p.playing_hand] || p.playing_hand],
-    p.blade && ['Paletă (lemn)', p.blade],
+    p.game_style && [t('Stil de joc'), STYLE_LABELS[p.game_style] || p.game_style],
+    p.sport_rank && [t('Categorie'), RANK_LABELS[p.sport_rank] || p.sport_rank],
+    p.player_grip && [t('Priză'), GRIP_LABELS[p.player_grip] || p.player_grip],
+    p.playing_hand && [t('Mâna de joc'), HAND_LABELS[p.playing_hand] || p.playing_hand],
+    p.blade && [t('Paletă (lemn)'), p.blade],
     p.forehand && ['Forehand', p.forehand],
     p.backhand && ['Backhand', p.backhand],
   ].filter(Boolean);
@@ -147,17 +153,18 @@
 
   const stats = (c?.tournament_stats || []).slice().sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 25);
   const body = document.getElementById('statsBody');
-  body.innerHTML = stats.length ? stats.map(t => `
+  body.innerHTML = stats.length ? stats.map(tr => `
     <tr>
-      <td>${escapeHtml(t.name||'')}</td>
-      <td class="num">${t.startDate ? fmtDateShort(t.startDate) : '—'}</td>
-      <td>${t.divisionToken === 'man' ? 'Bărbați' : t.divisionToken === 'woman' ? 'Femei' : (t.divisionToken||'—')}</td>
-      <td class="r num">${t.matchWin ?? '–'}:${t.matchLost ?? '–'}</td>
-      <td class="r num">${t.points ?? '—'}</td>
-      <td class="r num">${t.position ?? '—'}</td>
-    </tr>`).join('') : `<tr><td colspan="6"><p class="muted" style="padding:20px 0">${s ? 'Istoricul turneu-cu-turneu se leagă automat de îndată ce profilul e confirmat pe Setka Cup — totalurile de mai sus sunt deja disponibile.' : 'Niciun turneu înregistrat încă.'}</p></td></tr>`;
+      <td>${escapeHtml(tr.name||'')}</td>
+      <td class="num">${tr.startDate ? fmtDateShort(tr.startDate) : '—'}</td>
+      <td>${tr.divisionToken ? divisionLabel(tr.divisionToken) : '—'}</td>
+      <td class="r num">${tr.matchWin ?? '–'}:${tr.matchLost ?? '–'}</td>
+      <td class="r num">${tr.points ?? '—'}</td>
+      <td class="r num">${tr.position ?? '—'}</td>
+    </tr>`).join('') : `<tr><td colspan="6"><p class="muted" style="padding:20px 0">${s?.matches != null ? t('Istoricul turneu-cu-turneu apare de îndată ce profilul e confirmat pe Setka Cup — totalurile de mai sus sunt deja disponibile.') : t('Niciun turneu înregistrat încă pe Setka Cup.')}</p></td></tr>`;
 })();
 </script>
+<script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>
 </html>

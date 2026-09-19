@@ -40,7 +40,17 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{
+  scroll-behavior:smooth;
+  /* Keeps anchor jumps from landing underneath the sticky topbar. */
+  scroll-padding-top:96px;
+}
+@supports (scrollbar-color:auto){
+  html{ scrollbar-color:rgba(242,245,244,.16) transparent; scrollbar-width:thin; }
+}
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+}
 body{
   margin:0; background:var(--ink); color:var(--chalk);
   font-family:var(--font-body); font-size:16px; line-height:1.55;
@@ -52,8 +62,16 @@ body{
     radial-gradient(900px 500px at -10% 10%, rgba(255,107,53,.08), transparent 55%);
   background-repeat:no-repeat;
 }
+/* Viewport-anchored ambient wash so long pages keep the same depth of light
+   all the way down, instead of going flat once the top gradients scroll away. */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(900px 620px at 88% 6%, rgba(41,197,194,.055), transparent 62%),
+    radial-gradient(760px 540px at 4% 84%, rgba(255,107,53,.045), transparent 60%);
+}
 img{ max-width:100%; display:block; }
-a{ color:inherit; text-decoration:none; }
+a{ color:inherit; text-decoration:none; transition:color .18s ease; }
 .num,.mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-feature-settings:'tnum'; }
 ::selection{ background:var(--spin-dim); color:var(--spin-hi); }
 :focus-visible{ outline:2px solid var(--rally); outline-offset:3px; border-radius:4px; }
@@ -102,9 +120,18 @@ p{ margin:0; color:var(--chalk-dim); }
 /* ── Top nav ── */
 .topbar{
   position:sticky; top:0; z-index:50;
-  background:rgba(11,26,43,.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--border);
+  background:rgba(11,26,43,.72); backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
+  /* No hard rule at rest — the seam only materialises (softly) once scrolled. */
+  border-bottom:1px solid transparent;
+  transition:background .35s ease, border-color .35s ease;
 }
+.topbar::after{
+  content:''; position:absolute; left:0; right:0; top:100%; height:22px;
+  background:linear-gradient(180deg, rgba(9,22,37,.42), transparent);
+  opacity:0; transition:opacity .35s ease; pointer-events:none;
+}
+.topbar.is-stuck{ background:rgba(11,26,43,.9); border-bottom-color:var(--border); }
+.topbar.is-stuck::after{ opacity:1; }
 .topbar-inner{ display:flex; align-items:center; gap:28px; padding:16px 0; }
 .brand{ display:flex; align-items:center; gap:10px; margin-right:auto; }
 .brand-mark{
@@ -115,19 +142,39 @@ p{ margin:0; color:var(--chalk-dim); }
 .brand-sub{ font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; margin-top:1px; }
 .nav-links{ display:flex; align-items:center; gap:6px; }
 .nav-links a{
-  padding:9px 13px; border-radius:8px; font-size:14px; font-weight:600; color:var(--chalk-dim);
+  padding:9px 13px; border-radius:8px; font-size:16px; font-weight:600; color:var(--chalk-dim); white-space:nowrap;
   transition:background .15s ease, color .15s ease;
+}
+/* 16px links + the longer brand subtitle only fit at full spacing from ~1170px;
+   tighten between that and the 980px hamburger breakpoint instead of wrapping. */
+@media (min-width:981px) and (max-width:1200px){
+  .topbar-inner{ gap:16px; }
+  .nav-links{ gap:2px; }
+  .nav-links a{ padding:9px 8px; }
+}
+/* English and Russian labels run longer; just above the hamburger breakpoint the
+   subtitle stays on one line and the links close up so the bar never wraps. */
+@media (min-width:981px){ .brand-sub{ white-space:nowrap; } }
+@media (min-width:981px) and (max-width:1060px){
+  .nav-links{ gap:0; }
+  .nav-links a{ padding:9px 6px; }
 }
 .nav-links a:hover, .nav-links a.active{ background:rgba(242,245,244,.06); color:var(--chalk); }
 .lang-switch{ display:flex; align-items:center; gap:2px; background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:3px; }
-.lang-switch a{ padding:6px 10px; border-radius:999px; font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase; }
+.lang-switch a{
+  display:inline-flex; align-items:center; justify-content:center; min-width:38px; min-height:38px;
+  padding:6px 10px; border-radius:999px; font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--muted); text-transform:uppercase;
+}
+@media (max-width:980px){
+  .lang-switch a{ min-width:42px; min-height:42px; }
+}
 .lang-switch a.active{ background:var(--rally); color:#06282c; }
 .nav-toggle{ display:none; }
 #mobileNav{ display:none; }
 @media (max-width:980px){
   .nav-links{ display:none; }
   .nav-toggle{
-    display:flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:8px;
     border:1px solid var(--border-hi); background:transparent; color:var(--chalk); cursor:pointer;
   }
   #mobileNav{
@@ -199,8 +246,17 @@ p{ margin:0; color:var(--chalk-dim); }
 }
 
 /* ── Cards ── */
-.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; }
-.card:hover{ border-color:var(--border-hi); }
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px;
+  transition:transform .28s cubic-bezier(.22,.8,.2,1), border-color .28s ease, box-shadow .28s ease, background .28s ease;
+}
+.card:hover{
+  border-color:var(--border-hi); background:var(--surface-2);
+  transform:translateY(-2px); box-shadow:0 16px 36px rgba(3,9,18,.34);
+}
+@media (prefers-reduced-motion:reduce){
+  .card:hover{ transform:none; }
+}
 .grid{ display:grid; gap:20px; }
 .grid-3{ grid-template-columns:repeat(3,1fr); }
 .grid-4{ grid-template-columns:repeat(4,1fr); }
@@ -222,7 +278,16 @@ p{ margin:0; color:var(--chalk-dim); }
 }
 
 /* ── Footer ── */
-footer{ border-top:1px solid var(--border); padding:56px 0 28px; margin-top:60px; }
+/* Gradient lift-in instead of a hard top rule, so the page settles into the
+   footer rather than butting against it. */
+footer{
+  position:relative; padding:72px 0 28px; margin-top:80px;
+  background:linear-gradient(180deg, transparent, rgba(9,22,37,.55) 45%, rgba(8,20,34,.85) 100%);
+}
+footer::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, transparent, var(--border) 16%, var(--border) 84%, transparent);
+}
 .footer-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:36px; margin-bottom:40px; }
 .footer-grid h4{ font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:14px; font-family:var(--font-mono); font-weight:600; }
 .footer-grid a{ display:block; color:var(--chalk-dim); font-size:14px; padding:5px 0; }
@@ -234,13 +299,34 @@ footer{ border-top:1px solid var(--border); padding:56px 0 28px; margin-top:60px
 @media (max-width:800px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
 @media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; } }
 
+/* ── Interior page flow wrapper ──
+   Shared counterpart to the per-page *-flow gradients on the hero pages, for
+   the simpler interior pages (privacy / article / player profile) that would
+   otherwise open on flat ink and read as a detached header + body. */
+.page-flow{
+  position:relative; isolation:isolate;
+  background:linear-gradient(180deg,#0a2340 0%,rgba(10,28,48,.5) 46%,var(--ink) 640px);
+}
+.page-flow::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(720px 460px at 82% 2%, rgba(41,197,194,.10), transparent 66%);
+}
+
 /* ── Page header (interior pages) ── */
-.page-head{ padding:64px 0 40px; border-bottom:1px solid var(--border); }
+/* Feathered divider rather than a full-bleed 1px cut, so the header melts
+   into the content below instead of reading as a separate block. */
+.page-head{ position:relative; padding:64px 0 40px; }
+.page-head::after{
+  content:''; position:absolute; left:0; right:0; bottom:0; height:1px; pointer-events:none;
+  background:linear-gradient(90deg, transparent, var(--border-hi) 20%, var(--border-hi) 80%, transparent);
+}
 .breadcrumb{ font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-bottom:16px; }
 .breadcrumb a:hover{ color:var(--chalk); }
 
 /* ── Tables (rankings etc) ── */
-table.data{ width:100%; border-collapse:collapse; }
+.table-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -18px; padding:0 18px; }
+@media (min-width:761px){ .table-scroll{ margin:0; padding:0; } }
+table.data{ width:100%; min-width:520px; border-collapse:collapse; }
 table.data th{
   text-align:left; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em;
   color:var(--muted); font-weight:600; padding:10px 14px; border-bottom:1px solid var(--border-hi);
@@ -254,8 +340,10 @@ table.data td.r{ text-align:right; }
 .field label{ display:block; font-size:13px; font-weight:700; color:var(--chalk-dim); margin-bottom:7px; }
 .field input, .field textarea, .field select{
   width:100%; padding:12px 14px; border-radius:9px; border:1px solid var(--border-hi);
-  background:var(--surface); color:var(--chalk); font-family:var(--font-body); font-size:15px;
+  background:var(--surface); color:var(--chalk); font-family:var(--font-body); font-size:16px;
+  min-height:44px;
 }
+.field textarea{ min-height:0; }
 .field input:focus, .field textarea:focus{ outline:2px solid var(--rally); outline-offset:0; border-color:var(--rally); }
 
 /* ── Utility ── */
@@ -272,6 +360,22 @@ table.data td.r{ text-align:right; }
 @keyframes shimmer{ 0%{ background-position:100% 50%; } 100%{ background-position:0 50%; } }
 .empty-state{ text-align:center; padding:60px 20px; color:var(--muted); border:1px dashed var(--border-hi); border-radius:var(--radius); }
 .empty-state .tag{ margin-bottom:14px; }
+
+/* ── Scroll reveal ──
+   Applied automatically by js/reveal.js. Elements ease up into place as they
+   enter the viewport so the page unfolds continuously while scrolling rather
+   than presenting itself as a stack of finished blocks. Opt out per element
+   with data-no-reveal. */
+@media (prefers-reduced-motion:no-preference){
+  .reveal{
+    opacity:0; transform:translateY(20px);
+    transition:opacity .72s cubic-bezier(.22,.8,.2,1), transform .72s cubic-bezier(.22,.8,.2,1);
+    transition-delay:var(--reveal-delay,0s);
+  }
+  .reveal.is-in{ opacity:1; transform:none; }
+}
+/* Never let the reveal state hide content if JS fails to run. */
+.no-js .reveal, html:not(.reveal-ready) .reveal{ opacity:1; transform:none; }
 
 /* ── Page scroll lock (gallery lightbox, load screen) ── */
 html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
@@ -294,3 +398,55 @@ html.show-load-screen #loadScreen{ display:flex; }
   #loadScreen{ transition:none; }
   #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png?v=20260729-edgefix'); }
 }
+
+/* ── Section heroes: studio action photo of an ATTP player ──
+   Copy sits on the ink at the left; the photo fills a right-hand panel whose
+   left and bottom edges fade into the page, so the player never sits under
+   the text. On phones the photo becomes a band above the copy. */
+.photo-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(440px,42vw,580px); }
+.photo-hero-img{
+  position:absolute; z-index:-1; top:0; right:0; width:64%; height:100%;
+  object-fit:cover; object-position:var(--focus, 50% 30%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.45) 16%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.45) 16%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%);
+  mask-composite:intersect;
+}
+.photo-hero-inner{ position:relative; min-height:inherit; display:flex; align-items:center; padding-block:clamp(64px,8vw,104px); }
+.photo-hero-copy{ width:min(560px,46%); }
+.photo-hero-copy h1{ font-size:clamp(44px,5.2vw,74px); line-height:1; letter-spacing:-.035em; }
+.photo-hero-copy .lede{ margin-top:16px; }
+/* Sentence-length titles (Despre, Fair Play) step down so they don't run to five lines. */
+@media (min-width:761px){
+  .photo-hero--long .photo-hero-copy{ width:min(620px,50%); }
+  .photo-hero--long .photo-hero-copy h1{ font-size:clamp(38px,4vw,58px); line-height:1.04; }
+}
+.photo-hero-note{
+  display:inline-flex; align-items:center; gap:10px; margin-top:26px; padding:8px 14px;
+  border:1px solid var(--border-hi); border-radius:999px; background:rgba(11,26,43,.55);
+  font:600 11px/1 var(--font-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--chalk-dim);
+}
+.photo-hero-note::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--spin); box-shadow:0 0 12px rgba(255,107,53,.56); }
+@media (max-width:760px){
+  .photo-hero{ min-height:0; }
+  .photo-hero-img{
+    position:relative; display:block; width:100%; height:auto; aspect-ratio:4/3;
+    -webkit-mask-image:linear-gradient(180deg,#000 60%,transparent 100%); mask-image:linear-gradient(180deg,#000 60%,transparent 100%);
+  }
+  .photo-hero-inner{ padding-block:0 40px; margin-top:-56px; }
+  .photo-hero-copy{ width:100%; }
+  .photo-hero-copy h1{ font-size:clamp(40px,12vw,58px); }
+}
+
+/* Footer credit: "Made by" + the handwritten signature, linking to the author's WhatsApp.
+   The signature file is white ink on transparent, used as a mask painted with
+   currentColor so it follows the link colour on hover and keyboard focus. */
+.foot-by{ display:inline-flex; align-items:center; gap:8px; color:var(--chalk-dim); text-decoration:none; white-space:nowrap; transition:color .2s; }
+.foot-by:hover, .foot-by:focus-visible{ color:var(--spin-hi); }
+.foot-sig{
+  display:inline-block; height:30px; aspect-ratio:2.75; background-color:currentColor;
+  -webkit-mask:url('../images/signature.webp') left center / contain no-repeat;
+  mask:url('../images/signature.webp') left center / contain no-repeat;
+  transform:translateY(1px);
+}
+@media (max-width:640px){ .footer-bottom{ flex-direction:column; align-items:flex-start; } .foot-sig{ height:26px; } }

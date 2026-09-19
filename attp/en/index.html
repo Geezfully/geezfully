@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATTP — National Association of Professional Table Tennis Players</title>
+<meta name="description" content="The official home of the National Association of Professional Table Tennis Players of the Republic of Moldova. Tournaments, rankings, refereeing and live results.">
+<meta property="og:title" content="ATTP — Table tennis in Moldova">
+<meta property="og:description" content="The official home of the National Association of Professional Table Tennis Players of the Republic of Moldova.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230B1A2B%22/><circle cx=%2216%22 cy=%2216%22 r=%228%22 fill=%22%23FF6B35%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script>window.__PAGE_LANG__="en";</script>
+<script src="js/i18n-en.js?v=b0e9293d"></script>
+<script src="js/news-en.js?v=bda6a34b"></script>
+<script src="js/i18n.js?v=20260918-i18n"></script>
+<script src="js/load-screen-gate.js?v=20260729-rare"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+<style>
+  .hero-stage{
+    position:relative; isolation:isolate; overflow:hidden;
+    min-height:calc(100svh - 82px); background:#071421;
+  }
+  .hero-stage::before{
+    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:url('images/masters-team-hero.webp') center top / 100% auto no-repeat;
+    opacity:.94; transform:scale(1.015); transform-origin:center top;
+  }
+  .hero-stage::after{
+    content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(5,15,26,.92) 0%, rgba(5,15,26,.66) 35%, rgba(5,15,26,.1) 68%, rgba(5,15,26,.16) 100%),
+      linear-gradient(180deg, rgba(5,15,26,.04) 0%, rgba(5,15,26,.08) 34%, rgba(5,15,26,.62) 80%, #071421 100%),
+      radial-gradient(700px 480px at 12% 30%, rgba(255,107,53,.13), transparent 66%);
+  }
+  .hero{
+    position:relative; z-index:2;
+    padding:40px 24px 64px; display:grid; grid-template-columns:1.1fr .9fr;
+    gap:0 56px; align-items:start; min-height:0;
+  }
+  .hero-kicker{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+  .hero-copy{ position:relative; isolation:isolate; }
+  .hero-copy > :not(.hero-motion){ position:relative; z-index:1; }
+  .hero-motion{
+    position:absolute; z-index:0; pointer-events:none;
+    width:calc(100% + 96px); height:auto; left:-56px; top:72px;
+    overflow:visible;
+  }
+  .hero-motion .trail-main{ stroke:var(--spin); opacity:.34; }
+  .hero-motion .trail-light{ stroke:var(--spin-hi); opacity:.18; }
+  .hero-motion .trail-live{ stroke:var(--rally); opacity:.24; }
+  .hero-motion .speed-mark{ stroke:var(--spin-hi); opacity:.42; }
+  .hero-motion .hero-ball-ring{ stroke:var(--spin-hi); opacity:.9; }
+  .hero-motion .hero-ball-seam{ stroke:var(--ink); opacity:.72; }
+  @media (max-width:980px){
+    .hero-motion{ width:min(760px,calc(100% + 64px)); left:-40px; opacity:.82; }
+  }
+  @media (max-width:600px){
+    .hero-motion{ width:calc(100% + 34px); left:-22px; top:88px; opacity:.38; }
+    .hero-motion .trail-light{ display:none; }
+    .hero-motion .hero-ball{ display:none; }
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .hero-motion .hero-ball{ animation:heroBallFloat 5s ease-in-out infinite; transform-origin:670px 110px; }
+    @keyframes heroBallFloat{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-7px) rotate(5deg); } }
+  }
+  .hero h1{ margin-bottom:20px; }
+  .hero h1 .accent{ color:var(--spin); }
+  .hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+  .hero-stats{ display:flex; gap:32px; margin-top:44px; flex-wrap:wrap; }
+  .hero-stat b{ display:block; font-family:var(--font-display); font-size:28px; }
+  .hero-stat span{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--font-mono); }
+  .scoreboard-stage{
+    position:relative;
+    /* Top layer feathers this band into the hero above and the ink below, so it
+       reads as a continuation of the page rather than a bordered-off strip.
+       (Replaces the previous hard 1px border-top/border-bottom.) */
+    background:
+      linear-gradient(180deg, #071421 0%, rgba(7,20,33,0) 14%, rgba(11,26,43,0) 84%, var(--ink) 100%),
+      linear-gradient(135deg,#091827 0%,#0d2034 55%,#0a1929 100%);
+  }
+  .scoreboard-layout{
+    padding:44px 24px 52px; display:grid; grid-template-columns:.78fr 1.22fr;
+    gap:48px; align-items:start;
+  }
+  .scoreboard-visual{ min-width:0; }
+  .scoreboard-intro{ position:relative; z-index:3; padding-top:10px; max-width:480px; }
+  .scoreboard-intro h2{ margin-top:12px; }
+  .scoreboard-intro p{ margin-top:14px; color:var(--chalk-dim); }
+  .pingpong-model-shell{
+    position:relative; min-height:280px; margin-top:-8px; overflow:hidden;
+    border-radius:var(--radius-lg);
+    background:
+      radial-gradient(circle at 54% 48%,rgba(255,107,53,.18),transparent 22%),
+      radial-gradient(circle at 55% 54%,rgba(41,197,194,.13),transparent 48%);
+  }
+  .pingpong-model{
+    position:relative; z-index:2; display:block; width:100%; height:280px;
+    background:transparent; --poster-color:transparent; pointer-events:none;
+  }
+  .pingpong-model-fallback{
+    position:absolute; z-index:1; left:50%; top:52%; width:80px; aspect-ratio:1;
+    border-radius:50%; transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 34% 28%,#fff 0%,#f5f5f5 48%,#d4d4d4 100%);
+    box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
+    transition:opacity .25s ease;
+  }
+  .pingpong-model-shell.is-loaded .pingpong-model-fallback{ opacity:0; }
+  @media (prefers-reduced-motion:reduce){
+    .pingpong-model-fallback{ transition:none; }
+  }
+  .scoreboard-stage .scoreboard{
+    width:100%;
+    background:rgba(12,29,49,.88); border-color:rgba(183,202,224,.2);
+    box-shadow:0 28px 70px rgba(2,8,16,.45);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  }
+  .scoreboard-stage .scoreboard-head{ background:rgba(23,46,72,.72); }
+  @media (max-width:980px){
+    .hero-stage::before{ background-position:58% 12%; }
+    .hero-stage::after{
+      background:
+        linear-gradient(90deg, rgba(5,15,26,.9), rgba(5,15,26,.42)),
+        linear-gradient(180deg, rgba(5,15,26,.06) 0%, rgba(5,15,26,.48) 40%, #071421 74%);
+    }
+    .hero{ grid-template-columns:1fr; padding:44px 24px 52px; }
+    .scoreboard-layout{ grid-template-columns:1fr; gap:32px; }
+    .scoreboard-visual{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr); align-items:center; }
+    .pingpong-model-shell{ margin-top:0; }
+  }
+  @media (max-width:600px){
+    .hero-stage{ min-height:0; }
+    .hero-stage::before{ background-position:54% top; background-size:auto 370px; opacity:.72; }
+    .hero-stage::after{
+      background:linear-gradient(180deg, rgba(5,15,26,.08) 0%, rgba(5,15,26,.28) 18%, #071421 365px);
+    }
+    .hero{ padding:36px 18px 40px; }
+    .scoreboard-layout{ padding:40px 18px 44px; gap:24px; }
+    .scoreboard-intro{ padding-top:0; }
+    .scoreboard-visual{ display:block; }
+    .pingpong-model-shell{ min-height:220px; margin-top:-8px; }
+    .pingpong-model{ height:220px; }
+  }
+
+  .rank-strip{
+    display:flex; gap:14px; overflow-x:auto;
+    padding:7px 0 8px; margin-top:-7px;
+    scrollbar-width:none;
+  }
+  .rank-strip::-webkit-scrollbar{ display:none; }
+  .rank-card{
+    flex:0 0 200px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 18px; position:relative; overflow:hidden; text-align:center;
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+  }
+  .rank-card:hover{
+    z-index:2; transform:translateY(-5px); border-color:rgba(41,197,194,.42);
+    background:var(--surface-2); box-shadow:0 18px 34px rgba(3,9,18,.32);
+  }
+  .rank-card:focus-visible{ outline:2px solid var(--rally); outline-offset:3px; }
+  .rank-card .rank-no{
+    position:absolute; top:12px; left:12px; font-family:var(--font-mono); font-size:11px; color:var(--rally-hi);
+    font-weight:700; background:var(--rally-dim); padding:3px 8px; border-radius:999px; z-index:1;
+  }
+  .rank-avatar{
+    width:88px; height:88px; border-radius:50%; overflow:hidden; margin:0 auto 14px; border:2px solid var(--border-hi);
+    background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-size:28px; font-weight:700; box-shadow:0 6px 20px rgba(0,0,0,.3);
+  }
+  .rank-card .rank-name{ font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:4px; }
+  .rank-card .rank-city{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
+  .rank-card .rank-rating{ font-family:var(--font-mono); font-size:24px; font-weight:700; color:var(--spin-hi); }
+  .rank-card .rank-rating small{ font-family:var(--font-body); font-size:11px; color:var(--muted); font-weight:600; margin-left:4px; }
+
+  .news-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:20px; }
+  .news-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; }
+  .news-card .news-cover{ aspect-ratio:16/10; background:linear-gradient(135deg,var(--surface-2),var(--surface-3)); display:flex; align-items:center; justify-content:center; }
+  .news-card .news-body{ padding:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .news-card .news-date{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .news-card h3{ font-size:16px; line-height:1.35; }
+  .news-card.feature{ grid-row:1/3; }
+  .news-card.feature h3{ font-size:22px; }
+  @media (max-width:900px){ .news-grid{ grid-template-columns:1fr; } .news-card.feature{ grid-row:auto; } }
+
+  .tourn-mini{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; display:flex; flex-direction:column; }
+  .tourn-mini-head{ margin-bottom:14px; }
+  .tourn-mini-head h3{ font-size:15.5px; line-height:1.35; }
+  .tourn-mini-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .tourn-mini-date{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); }
+  .tourn-mini-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--border); font-size:13.5px; }
+  .tourn-mini-row:first-of-type{ border-top:0; }
+  .tourn-pos{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:9px; flex:0 0 auto; }
+  .tourn-pos.gold{ background:var(--spin-dim); color:var(--spin-hi); }
+  .homepage-flow{
+    position:relative; z-index:0; isolation:isolate; overflow:visible; background:var(--ink);
+  }
+  .homepage-flow::before{
+    content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
+    background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
+  }
+  .homepage-flow-player{
+    position:absolute; z-index:1; top:230px; right:clamp(26px,4vw,70px); width:clamp(500px,42vw,650px);
+    height:auto; opacity:.88; pointer-events:none; user-select:none;
+    transform:scaleX(-1); transform-origin:center;
+    filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
+  }
+  .homepage-flow-ball{
+    position:absolute; z-index:3; top:94px; right:clamp(474px,calc(31vw + 14px),634px); width:clamp(24px,1.8vw,30px);
+    height:auto; pointer-events:none; user-select:none;
+    filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
+  }
+  .homepage-flow > .section-tight{ position:relative; z-index:2; }
+  .homepage-flow + .section-tight{ position:relative; z-index:2; }
+  .homepage-flow .rank-strip,
+  .homepage-flow #tournGrid{ position:relative; z-index:2; }
+  .homepage-flow .rank-card,
+  .homepage-flow .tourn-mini{
+    background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  }
+  @media (max-width:900px){
+    html,body{ overflow-x:clip; }
+    .homepage-flow-player{ top:300px; right:-96px; width:500px; opacity:.5; }
+    .homepage-flow-ball{ top:63px; right:33px; width:28px; opacity:.82; }
+  }
+  @media (max-width:600px){
+    .homepage-flow-player{ top:360px; right:-112px; width:420px; opacity:.28; }
+    .homepage-flow-ball{ top:87px; right:25px; width:24px; opacity:.72; }
+  }
+
+  .principle-col h3{ font-size:16px; margin-bottom:8px; }
+  .principle-col p{ font-size:14px; }
+  .principles-stage{
+    position:relative;
+    isolation:isolate;
+    overflow:visible;
+  }
+  .principles-stage > :not(.principles-map-art){ position:relative; z-index:2; }
+  .principles-map-art{
+    position:absolute;
+    z-index:1;
+    top:clamp(-82px,-5vw,-62px);
+    left:clamp(-20px,0vw,8px);
+    width:clamp(330px,29vw,440px);
+    height:auto;
+    opacity:.88;
+    pointer-events:none;
+    user-select:none;
+    filter:drop-shadow(0 24px 34px rgba(1,8,16,.3));
+  }
+  @media (max-width:900px){
+    .principles-map-art{ top:-68px; left:-14px; width:320px; opacity:.58; }
+  }
+  @media (max-width:600px){
+    .principles-map-art{ top:-42px; left:-28px; width:250px; opacity:.34; }
+  }
+
+  .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
+  .partner-track{ display:flex; gap:72px; width:max-content; padding-block:8px; animation:scroll 36s linear infinite; align-items:center; }
+  .partner{ display:flex; align-items:center; gap:18px; font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--muted); white-space:nowrap; }
+  .partner-logo{ height:96px; width:96px; border-radius:50%; object-fit:cover; opacity:.9; filter:grayscale(.15); flex:0 0 auto; transition:opacity .2s ease, filter .2s ease, transform .2s ease; }
+  a.partner:hover, a.partner:focus-visible{ color:var(--chalk); }
+  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ opacity:1; filter:none; transform:scale(1.04); }
+  /* Hold the strip still while someone is aiming at (or tabbing through) a logo. */
+  .partner-marquee:hover .partner-track, .partner-marquee:focus-within .partner-track{ animation-play-state:paused; }
+  @media (max-width:600px){
+    .partner-track{ gap:48px; }
+    .partner{ gap:12px; font-size:18px; }
+    .partner-logo{ height:72px; width:72px; }
+  }
+
+  /* ── Follow ATTP ── */
+  /* Sits above the principles map art, which bleeds upward into this section. */
+  .social-stage{ position:relative; z-index:1; }
+  .social-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+  .social-card{
+    --brand:var(--rally);
+    position:relative; display:flex; flex-direction:column; gap:4px; padding:22px 22px 20px;
+    border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface);
+    overflow:hidden; transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .social-card::before{
+    content:''; position:absolute; inset:0 0 auto; height:3px; background:var(--brand); opacity:.55;
+    transition:opacity .2s ease;
+  }
+  .social-card--tiktok{ --brand:#25F4EE; }
+  .social-card--instagram{ --brand:#E1306C; }
+  .social-card--youtube{ --brand:#FF3B30; }
+  .social-card--facebook{ --brand:#4C8DF6; }
+  .social-card:hover, .social-card:focus-visible{ transform:translateY(-3px); border-color:var(--border-hi); background:var(--surface-2); }
+  .social-card:hover::before, .social-card:focus-visible::before{ opacity:1; }
+  .social-icon{
+    width:46px; height:46px; margin-bottom:12px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    color:var(--chalk); background:color-mix(in srgb, var(--brand) 18%, transparent);
+  }
+  .social-name{ font-family:var(--font-display); font-size:19px; font-weight:600; }
+  .social-handle{ font-family:var(--font-mono); font-size:12.5px; color:var(--brand); }
+  .social-desc{ margin-top:8px; font-size:14px; color:var(--chalk-dim); line-height:1.5; }
+  .social-cta{ margin-top:auto; padding-top:16px; font-size:13.5px; font-weight:700; color:var(--chalk); }
+  .social-cta span{ display:inline-block; transition:transform .2s ease; }
+  .social-card:hover .social-cta span{ transform:translateX(3px); }
+  @media (max-width:980px){ .social-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:480px){ .social-card{ padding:18px 16px; } .social-desc{ font-size:13px; } }
+  @media (prefers-reduced-motion:reduce){ .social-card, .social-card:hover{ transform:none; } }
+  @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+</style>
+</head>
+<body>
+<div id="loadScreen" aria-hidden="true">
+  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
+    <g class="lm-ball-group">
+      <circle class="lm-ball" cx="88" cy="70" r="20"/>
+      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
+    </g>
+    <g class="lm-paddle-group">
+      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
+      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
+      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
+      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
+      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
+      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
+      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
+      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
+    </g>
+  </svg>
+</div>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="en/index.html" class="brand">
+      <span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span>
+      <span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="en/about.html">About</a>
+      <a href="en/news.html">News</a>
+      <a href="en/players.html">Players</a>
+      <a href="en/tournaments.html">Tournaments</a>
+      <a href="en/gallery.html">Media</a>
+      <a href="en/documents.html">Documents</a>
+      <a href="en/fairplay.html">Fair Play</a>
+      <a href="en/contact.html">Contact</a>
+    </nav>
+    <div class="lang-switch"><a href="index.html" hreflang="ro" lang="ro">RO</a><a href="ru/index.html" hreflang="ru" lang="ru">RU</a><a href="en/index.html" hreflang="en" lang="en" class="active">EN</a></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+    </button>
+  </div>
+</header>
+
+<div id="mobileNav">
+  <div class="mobile-head">
+    <span class="brand-word">ATTP</span>
+    <button class="nav-toggle" id="navClose" aria-label="Close menu">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+    </button>
+  </div>
+  <a href="en/about.html">About</a>
+  <a href="en/news.html">News</a>
+  <a href="en/players.html">Players</a>
+  <a href="en/tournaments.html">Tournaments</a>
+  <a href="en/gallery.html">Media</a>
+  <a href="en/documents.html">Documents</a>
+  <a href="en/fairplay.html">Fair Play</a>
+  <a href="en/contact.html">Contact</a>
+</div>
+
+<main>
+  <section class="hero-stage">
+    <div class="container hero">
+    <div class="hero-copy">
+      <div class="hero-kicker">
+        <span class="tag">Season 2025 – 2026</span>
+        <span class="tag tag-rally tag-live">Live results</span>
+      </div>
+      <svg class="hero-motion" viewBox="0 0 740 560" fill="none" aria-hidden="true">
+        <path class="trail-light" d="M10 438C112 548 358 547 521 401C565 361 554 274 590 188" stroke-width="2" stroke-linecap="round"/>
+        <path class="trail-main" d="M-8 466C128 574 384 541 527 388C570 342 552 254 600 176" stroke-width="8" stroke-linecap="round"/>
+        <path class="trail-live" d="M38 478C191 554 402 502 536 365C573 327 558 239 608 164" stroke-width="3" stroke-linecap="round"/>
+        <path class="trail-light" d="M96 500C255 541 436 469 568 330" stroke-width="2" stroke-linecap="round"/>
+        <path class="speed-mark" d="M613 155L625 141M620 163L634 148" stroke-width="3" stroke-linecap="round"/>
+        <g class="hero-ball">
+          <circle cx="670" cy="110" r="49" fill="var(--spin)" opacity=".92" class="hero-ball-ring" stroke-width="3"/>
+          <path d="M640 97C648 80 663 70 681 68" stroke="var(--spin-hi)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+          <path d="M702 79C710 89 714 99 714 110" class="hero-ball-seam" stroke-width="5" stroke-linecap="round"/>
+          <path d="M715 119L713 133" class="hero-ball-seam" stroke-width="7" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <h1>Professional table tennis in Moldova, <span class="accent">all in one place</span>.</h1>
+      <p class="lede">ATTP brings together the table tennis players, referees and coaches of the Republic of Moldova under the principles of fair play, integrity and performance — with national tournaments held year-round and rankings that update automatically.</p>
+      <div class="hero-actions">
+        <a href="en/players.html" class="btn btn-primary">See the rankings</a>
+        <a href="en/about.html" class="btn btn-ghost">About ATTP</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><b class="num" id="statPlayers">—</b><span>Registered players</span></div>
+        <div class="hero-stat"><b class="num" id="statTournaments">—</b><span>Tournaments played</span></div>
+        <div class="hero-stat"><b class="num" id="statMatches">—</b><span>Matches played</span></div>
+      </div>
+    </div>
+
+    </div>
+  </section>
+
+  <section class="scoreboard-stage" aria-labelledby="recent-results-title">
+    <div class="container scoreboard-layout">
+      <div class="scoreboard-visual">
+        <div class="scoreboard-intro">
+          <div class="eyebrow">Results</div>
+          <h2 id="recent-results-title">Latest matches</h2>
+          <p>Scores from ATTP tournaments, synced automatically from Setka Cup.</p>
+        </div>
+        <div class="pingpong-model-shell" id="pingpongModelShell">
+          <model-viewer
+            id="pingpongModel"
+            class="pingpong-model"
+            src="models/pingpong.glb?v=20260918-sparkle-orbit"
+            alt="A white DHS RS40+ ball with an orange star, on a tilted orbit"
+            tabindex="-1"
+            auto-rotate-delay="0"
+            rotation-per-second="10deg"
+            camera-orbit="0deg 90deg 0.14m"
+            camera-target="0m 0m 0m"
+            animation-name="Inclined sparkle orbit"
+            field-of-view="28deg"
+            environment-image="neutral"
+            tone-mapping="neutral"
+            shadow-intensity="0"
+            exposure="1.15"
+            interaction-prompt="none"
+            loading="lazy"></model-viewer>
+          <div class="pingpong-model-fallback" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="scoreboard">
+        <div class="scoreboard-head">
+          <span class="live-dot">Recent results</span>
+          <span class="muted" style="font-family:var(--font-mono);font-size:11px">via Setka Cup</span>
+        </div>
+        <div id="scoreboardBody">
+          <div class="skeleton" style="height:60px;padding:20px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="homepage-flow">
+    <img class="homepage-flow-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="" aria-hidden="true">
+    <img class="homepage-flow-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="" aria-hidden="true">
+
+  <section class="container section-tight">
+    <div class="eyebrow">Rankings</div>
+    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
+      <h2>Ranking leaders</h2>
+      <a href="en/players.html" class="btn btn-sm btn-rally">All players →</a>
+    </div>
+    <div class="rank-strip" id="rankStrip">
+      <div class="rank-card skeleton" style="height:150px"></div>
+      <div class="rank-card skeleton" style="height:150px"></div>
+      <div class="rank-card skeleton" style="height:150px"></div>
+    </div>
+  </section>
+
+  <section class="container section-tight">
+    <div class="eyebrow">Tournaments</div>
+    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
+      <h2>Latest tournaments</h2>
+      <a href="en/tournaments.html" class="btn btn-sm btn-ghost">All tournaments →</a>
+    </div>
+    <div class="grid grid-3" id="tournGrid">
+      <div class="card skeleton" style="height:210px"></div>
+      <div class="card skeleton" style="height:210px"></div>
+      <div class="card skeleton" style="height:210px"></div>
+    </div>
+  </section>
+  </div>
+
+  <section class="container section-tight">
+    <div class="eyebrow">News</div>
+    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
+      <h2>Association news</h2>
+      <a href="en/news.html" class="btn btn-sm btn-ghost">All news →</a>
+    </div>
+    <div class="news-grid" id="newsGrid">
+      <div class="card skeleton" style="height:340px"></div>
+      <div class="card skeleton" style="height:160px"></div>
+      <div class="card skeleton" style="height:160px"></div>
+    </div>
+  </section>
+
+  <section class="container section-tight social-stage" aria-labelledby="social-title">
+    <div class="eyebrow">Community</div>
+    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
+      <h2 id="social-title">Follow ATTP</h2>
+      <p class="dim" style="max-width:420px">Matches, people and moments from the hall, every day, on the association’s channels.</p>
+    </div>
+    <div class="social-grid">
+      <a class="social-card social-card--tiktok" href="https://www.tiktok.com/@attp.md" target="_blank" rel="noopener">
+        <span class="social-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.3v13.2a2.7 2.7 0 1 1-2.7-2.7c.3 0 .5 0 .8.1V10.2a6 6 0 0 0-.8-.1 6 6 0 1 0 6 6V9.5a7.6 7.6 0 0 0 4.5 1.4V7.6a4.3 4.3 0 0 1-3.4-1.8z"/></svg></span>
+        <span class="social-name">TikTok</span>
+        <span class="social-handle">@attp.md</span>
+        <span class="social-desc">Short clips from the hall and from tournaments.</span>
+        <span class="social-cta">Follow <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="social-card social-card--instagram" href="https://www.instagram.com/attpmoldova/" target="_blank" rel="noopener">
+        <span class="social-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+        <span class="social-name">Instagram</span>
+        <span class="social-handle">@attpmoldova</span>
+        <span class="social-desc">Photos and stories from the community.</span>
+        <span class="social-cta">Follow <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="social-card social-card--youtube" href="https://www.youtube.com/@ATTPMoldova" target="_blank" rel="noopener">
+        <span class="social-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></span>
+        <span class="social-name">YouTube</span>
+        <span class="social-handle">@ATTPMoldova</span>
+        <span class="social-desc">Full matches and replays.</span>
+        <span class="social-cta">Follow <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="social-card social-card--facebook" href="https://www.facebook.com/profile.php?id=61565205231697" target="_blank" rel="noopener">
+        <span class="social-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.5-1 .9-1H17V2.1L14.1 2C10.8 2 10 4.5 10 6.1v2.4H8v3.9h2V22h4v-9.6h2.8l.4-3.9H14z"/></svg></span>
+        <span class="social-name">Facebook</span>
+        <span class="social-handle">ATTP Moldova</span>
+        <span class="social-desc">Announcements, results and news.</span>
+        <span class="social-cta">Follow <span aria-hidden="true">→</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="container section-tight principles-stage">
+    <img class="principles-map-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
+    <div class="eyebrow">Principles</div>
+    <h2 class="mb-24">What defines us</h2>
+    <div class="grid grid-3">
+      <div class="principle-col"><h3 style="color:var(--spin-hi)">Respect</h3><p class="dim">Known in sport as fair play — an unwritten code that shapes who we are, at the table and away from it.</p></div>
+      <div class="principle-col"><h3 style="color:var(--spin-hi)">Excellence</h3><p class="dim">Pushing past our own limits, however hard it gets, through determination, discipline and steady courage.</p></div>
+      <div class="principle-col"><h3 style="color:var(--spin-hi)">Team</h3><p class="dim">Sport teaches us to treat everyone as equals and to find common goals — that is what makes us an association, not just a list of players.</p></div>
+    </div>
+    <a href="en/about.html" class="btn btn-sm btn-ghost mt-24">About ATTP →</a>
+  </section>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="eyebrow">Partners</div>
+    </div>
+    <div class="partner-marquee">
+      <div class="partner-track" id="partnerTrack"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <span class="brand-word">ATTP</span>
+        <p class="mt-16" style="max-width:280px">National Association of Professional Table Tennis Players of the Republic of Moldova.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <a href="en/about.html">About</a>
+        <a href="en/news.html">News</a>
+        <a href="en/players.html">Players</a>
+        <a href="en/tournaments.html">Tournaments</a>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <a href="en/documents.html">Documents</a>
+        <a href="en/fairplay.html">Fair Play</a>
+        <a href="en/gallery.html">Media</a>
+      </div>
+      <div>
+        <h4>Association</h4>
+        <a href="en/contact.html">Contact</a>
+        <a href="en/privacy.html">Privacy</a><a href="en/terms.html">Terms and conditions</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2023–2026 ATTP. All rights reserved.</span>
+      <a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a>
+      <span>Rankings via ligas.io · Results via Setka Cup</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data-news.js?v=20260720-fullnews"></script>
+<script src="data-news-archive.js?v=20260720-fullnews"></script>
+<script src="js/supabase-init.js?v=20260918-photos"></script>
+<script>
+// Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
+// Skips straight to the final value when the user has asked for reduced motion.
+function countUp(el, target, {duration = 1400, format = n => n.toLocaleString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO')} = {}){
+  if (!Number.isFinite(target)) { el.textContent = '—'; return; }
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = format(target); return; }
+  const start = performance.now();
+  const easeOutExpo = t => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  function tick(now){
+    const t = Math.min(1, (now - start) / duration);
+    el.textContent = format(Math.round(target * easeOutExpo(t)));
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+const pingPongModel = document.getElementById('pingpongModel');
+const pingPongModelShell = document.getElementById('pingpongModelShell');
+if (pingPongModel && pingPongModelShell) {
+  pingPongModel.addEventListener('load', () => {
+    pingPongModelShell.classList.add('is-loaded');
+    syncModelMotion();
+  }, { once:true });
+  pingPongModel.addEventListener('error', () => pingPongModelShell.classList.add('has-error'), { once:true });
+  // Start motion only when visible, and respond to preference changes live.
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let modelVisible = false;
+  const syncModelMotion = () => {
+    const moving = modelVisible && !document.hidden && !reducedMotion.matches;
+    pingPongModel.toggleAttribute('auto-rotate', moving);
+    if (pingPongModel.loaded) {
+      if (moving) pingPongModel.play();
+      else pingPongModel.pause();
+    }
+  };
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      modelVisible = entry.isIntersecting;
+      syncModelMotion();
+    }).observe(pingPongModelShell);
+  } else {
+    modelVisible = true;
+    syncModelMotion();
+  }
+  reducedMotion.addEventListener('change', syncModelMotion);
+  document.addEventListener('visibilitychange', syncModelMotion);
+}
+
+(async function(){
+  const [results, ranked, news, partners, tournRows] = await Promise.all([
+    fetchRecentResults(5), fetchTopRanked(6), fetchNews(3), fetchPartners(),
+    db.from('tournament_results').select('*').eq('status','finished').order('start_date',{ascending:false}).limit(150).then(r => r.data || []),
+  ]);
+
+  // Scoreboard
+  const sbBody = document.getElementById('scoreboardBody');
+  if (!results.length) {
+    sbBody.innerHTML = `<div class="empty-state" style="border:0"><p>${t('Rezultatele apar aici imediat ce sunt sincronizate.')}</p></div>`;
+  } else {
+    sbBody.innerHTML = results.map((r,i) => `
+      <div class="score-row" style="animation-delay:${i*60}ms">
+        <div class="score-name">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</div>
+        <div class="score-chip"><span class="score-win">${r.match_win ?? '–'}</span><span class="score-separator">:</span><span class="score-loss">${r.match_lost ?? '–'}</span></div>
+        <div class="score-tournament">${escapeHtml(r.tournament_name || '')}</div>
+        <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.start_date ? fmtDateShort(r.start_date) : ''}</span></div>
+      </div>`).join('');
+  }
+
+  // Hero stat counters
+  const totalMatches = results.length ? null : null;
+  const { count: playerCount } = await db.from('players').select('id', { count:'exact', head:true }).contains('roles', ['player']);
+  const { data: statRows } = await db.from('players').select('setka_cup_cache(total_tournaments,total_matches), attp_total_tournaments, attp_total_matches').contains('roles', ['player']);
+  const sumT = (statRows||[]).reduce((s,p)=>s+(playerStats(p)?.tournaments||0),0);
+  const sumM = (statRows||[]).reduce((s,p)=>s+(playerStats(p)?.matches||0),0);
+  countUp(document.getElementById('statPlayers'), playerCount);
+  countUp(document.getElementById('statTournaments'), sumT);
+  countUp(document.getElementById('statMatches'), sumM);
+
+  // Ranking strip
+  const rankStrip = document.getElementById('rankStrip');
+  rankStrip.innerHTML = ranked.length ? ranked.map((p,i) => `
+    <a class="rank-card" href="en/player.html?id=${encodeURIComponent(p.id)}" aria-label="Vezi profilul lui ${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}">
+      <span class="rank-no">#${p.ligas_ranking[0].position}</span>
+      <div class="rank-avatar">${avatarHtml(p)}</div>
+      <div class="rank-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</div>
+      <div class="rank-city">${escapeHtml(p.city || 'Moldova')}</div>
+      <div class="rank-rating">${Number(p.ligas_ranking[0].rating).toFixed(1)}<small>${t('rating')}</small></div>
+    </a>`).join('') : `<p class="muted">${t('Clasamentul se actualizează.')}</p>`;
+
+  // Recent tournaments
+  const tournGrid = document.getElementById('tournGrid');
+  const byTournament = {};
+  tournRows.forEach(r => {
+    (byTournament[r.tournament_id] ||= { name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
+  });
+  const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+  tournGrid.innerHTML = tournaments.length ? tournaments.map(tr => `
+    <div class="tourn-mini">
+      <div class="tourn-mini-head">
+        <h3>${escapeHtml(tr.name)}</h3>
+        <div class="tourn-mini-meta">
+          <span class="tourn-mini-date">${fmtDateShort(tr.date)} · ${divisionLabel(tr.division)}</span>
+          <span class="tag tag-rally" style="font-size:10px">${tr.rows.length} ATTP</span>
+        </div>
+      </div>
+      ${tr.rows.sort((a,b)=>(a.position||99)-(b.position||99)).slice(0,3).map(r => `
+        <div class="tourn-mini-row">
+          <span><span class="tourn-pos ${r.position===1?'gold':''}">${r.position ?? '–'}</span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span>
+          <span class="num muted">${r.match_win ?? '–'}:${r.match_lost ?? '–'}</span>
+        </div>`).join('')}
+    </div>`).join('') : `<p class="muted">${t('Turneele apar aici imediat ce sunt sincronizate.')}</p>`;
+
+  // News
+  const newsGrid = document.getElementById('newsGrid');
+  if (!news.length) {
+    newsGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><span class="tag tag-muted">${t('În curând')}</span><p>${t('Primele articole vor fi publicate aici.')}</p></div>`;
+  } else {
+    newsGrid.innerHTML = news.map((n,i) => `
+      <a href="en/news-article.html?slug=${encodeURIComponent(n.slug)}" class="news-card ${i===0?'feature':''}">
+        <div class="news-cover">${n.cover_image_url ? `<img src="${n.cover_image_url}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><circle cx="10" cy="10" r="7"/></svg>`}</div>
+        <div class="news-body">
+          ${n.tag ? `<span class="tag" style="align-self:flex-start">${escapeHtml(n.tag)}</span>` : ''}
+          <h3>${escapeHtml(n.title)}</h3>
+          <span class="news-date">${fmtDate(n.published_at)}</span>
+        </div>
+      </a>`).join('');
+  }
+
+  // Partners
+  const track = document.getElementById('partnerTrack');
+  // Same destinations as the partner logos on the original attp.md. partners.website_url
+  // is still empty in Supabase; once it's filled in, it takes precedence over this map.
+  const PARTNER_LINKS = {
+    'SETKA PRO': 'https://tabletennis.setkacup.com/en/',
+    'FMF': 'https://www.fmf.md/',
+    'BuN&Partener': 'https://bunpartener.md/',
+    'ULTRA': 'https://ultra.md/',
+    'WESPORT': 'https://fmf.md/home/fmf/we-sport-tv/wesport-tv',
+    'EXTERIOR': 'https://exterior.md/',
+    'FTMM': 'https://mttf.md/',
+  };
+  // The track holds the list twice for a seamless loop; the copy is hidden from
+  // screen readers and the tab order so each partner is announced once.
+  const renderPartner = (p, copy) => {
+    const inner = `${p.logo_url ? `<img class="partner-logo" src="${p.logo_url}?v=20260918-equal" alt="" loading="lazy">` : ''}${escapeHtml(p.name)}`;
+    const href = p.website_url || PARTNER_LINKS[p.name];
+    const hidden = copy ? ' aria-hidden="true"' : '';
+    return href
+      ? `<a class="partner" href="${escapeHtml(href)}" target="_blank" rel="noopener"${hidden}${copy ? ' tabindex="-1"' : ''}>${inner}</a>`
+      : `<span class="partner"${hidden}>${inner}</span>`;
+  };
+  const items = partners.length ? partners : Object.keys(PARTNER_LINKS).map(name => ({ name, logo_url:null }));
+  track.innerHTML = items.map(p => renderPartner(p, false)).join('') + items.map(p => renderPartner(p, true)).join('');
+})();
+</script>
+<script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/load-screen.js?v=20260729-rare"></script>
+</body>
+</html>

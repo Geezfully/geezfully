@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Профиль игрока — ATTP</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230B1A2B%22/><circle cx=%2216%22 cy=%2216%22 r=%228%22 fill=%22%23FF6B35%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script>window.__PAGE_LANG__="ru";</script>
+<script src="js/i18n-ru.js?v=1d4e8e44"></script>
+<script src="js/i18n.js?v=20260918-i18n"></script>
+<script src="js/load-screen-gate.js?v=20260729-rare"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  .profile-head{ display:flex; gap:28px; align-items:center; flex-wrap:wrap; }
+  .profile-avatar{
+    width:160px; height:160px; border-radius:50%; overflow:hidden; border:3px solid var(--border-hi);
+    background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-size:52px; font-weight:700; flex:0 0 auto; box-shadow:0 8px 28px rgba(0,0,0,.35);
+  }
+  @media (max-width:600px){ .profile-avatar{ width:112px; height:112px; font-size:38px; } }
+  .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:32px 0; }
+  .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+  .kpi b{ display:block; font-family:var(--font-mono); font-size:24px; }
+  .kpi span{ font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  @media (max-width:700px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
+
+  .gear-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px 28px; margin-top:16px; }
+  .gear-item .gear-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
+  .gear-item .gear-value{ font-size:14.5px; color:var(--chalk); font-weight:600; }
+  @media (max-width:700px){ .gear-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:460px){ .gear-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div id="loadScreen" aria-hidden="true">
+  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
+    <g class="lm-ball-group">
+      <circle class="lm-ball" cx="88" cy="70" r="20"/>
+      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
+    </g>
+    <g class="lm-paddle-group">
+      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
+      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
+      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
+      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
+      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
+      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
+      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
+      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
+    </g>
+  </svg>
+</div>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
+    <nav class="nav-links"><a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html" class="active">Игроки</a><a href="ru/tournaments.html">Турниры</a><a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/contact.html">Контакты</a></nav>
+    <div class="lang-switch"><a href="player.html" hreflang="ro" lang="ro">RO</a><a href="ru/player.html" hreflang="ru" lang="ru" class="active">RU</a><a href="en/player.html" hreflang="en" lang="en">EN</a></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Открыть меню"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+  </div>
+</header>
+<div id="mobileNav">
+  <div class="mobile-head"><span class="brand-word">ATTP</span><button class="nav-toggle" id="navClose" aria-label="Закрыть меню"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg></button></div>
+  <a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html">Игроки</a><a href="ru/tournaments.html">Турниры</a><a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/contact.html">Контакты</a>
+</div>
+
+<main>
+  <div class="page-flow">
+    <div class="page-head container">
+      <div class="breadcrumb"><a href="ru/index.html">Главная</a> / <a href="ru/players.html">Игроки</a> / <span id="crumbName">…</span></div>
+      <div class="profile-head" id="profileHead">
+        <div class="card skeleton" style="width:100%;height:88px"></div>
+      </div>
+    </div>
+    <section class="container section-tight">
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="card" id="gearCard" style="display:none;margin-bottom:32px">
+        <div class="eyebrow" style="margin-bottom:0">Инвентарь и стиль</div>
+        <div class="gear-grid" id="gearGrid"></div>
+      </div>
+      <div class="eyebrow">История</div>
+      <h2 class="mb-24">Последние турниры</h2>
+      <div class="table-scroll">
+        <table class="data" id="statsTable">
+          <thead><tr><th>Турнир</th><th>Дата</th><th>Див.</th><th class="r">Счёт</th><th class="r">Очки</th><th class="r">Место</th></tr></thead>
+          <tbody id="statsBody"><tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">Национальная ассоциация профессиональных игроков в настольный теннис Республики Молдова.</p></div>
+      <div><h4>Навигация</h4><a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html">Игроки</a><a href="ru/tournaments.html">Турниры</a></div>
+      <div><h4>Материалы</h4><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/gallery.html">Медиа</a></div>
+      <div><h4>Ассоциация</h4><a href="ru/contact.html">Контакты</a><a href="ru/privacy.html">Конфиденциальность</a><a href="ru/terms.html">Условия использования</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг: ligas.io · Результаты: Setka Cup</span></div>
+  </div>
+</footer>
+
+<script src="js/supabase-init.js?v=20260918-photos"></script>
+<script>
+(async function(){
+  const id = new URLSearchParams(location.search).get('id');
+  if (!id) { document.getElementById('profileHead').innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; return; }
+  const { data: p } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').eq('id', id).single();
+  if (!p) { document.getElementById('profileHead').innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; return; }
+  const c = p.setka_cup_cache;
+  const s = playerStats(p);
+
+  document.title = `${p.first_name} ${p.last_name} — ATTP`;
+  document.getElementById('crumbName').textContent = `${p.first_name} ${p.last_name}`;
+  document.getElementById('profileHead').innerHTML = `
+    <div class="profile-avatar">${avatarHtml(p, 'lg')}</div>
+    <div>
+      <h1>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</h1>
+      <p class="dim mt-8">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.category ? ' · ' + escapeHtml(t(p.category)) : ''}${p.birth_year ? ' · ' + t('n. {an}').replace('{an}', p.birth_year) : ''}</p>
+    </div>`;
+
+  const LIST_LABELS = { masculin:t('în clasamentul masculin'), feminin:t('în clasamentul feminin') };
+  document.getElementById('kpiRow').innerHTML = s ? `
+    <div class="kpi"><b class="num" style="color:var(--spin-hi)">${s.rating != null ? s.rating.toFixed(1) : '—'}</b><span>${s.position != null ? `${t('Rating · locul')} ${s.position} ${LIST_LABELS[s.list] || s.list}` : t('Rating (nu apare în clasament)')}</span></div>
+    <div class="kpi"><b class="num">${s.tournaments ?? '—'}</b><span>${t('Turnee jucate · Setka Cup')}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--win)">${s.wins ?? '—'}</b><span>${t('Victorii · Setka Cup')}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses ?? '—'}</b><span>${t('Înfrângeri · Setka Cup')}</span></div>
+  ` : `<p class="muted">${t('Acest jucător nu apare încă în clasamentul oficial și nu are meciuri înregistrate.')}</p>`;
+
+  const RANK_LABELS = { rank_1:t('Categoria I'), rank_2:t('Categoria II'), rank_3:t('Categoria III'), candidate:t('Candidat de maestru'), master:t('Maestru al sportului') };
+  const GRIP_LABELS = { european:t('Europeană'), asian:t('Asiatică') };
+  const STYLE_LABELS = { attacking:t('Atacant'), defensive:t('Defensiv') };
+  const HAND_LABELS = { right_hand:t('Dreapta'), left_hand:t('Stânga') };
+  const gearItems = [
+    p.game_style && [t('Stil de joc'), STYLE_LABELS[p.game_style] || p.game_style],
+    p.sport_rank && [t('Categorie'), RANK_LABELS[p.sport_rank] || p.sport_rank],
+    p.player_grip && [t('Priză'), GRIP_LABELS[p.player_grip] || p.player_grip],
+    p.playing_hand && [t('Mâna de joc'), HAND_LABELS[p.playing_hand] || p.playing_hand],
+    p.blade && [t('Paletă (lemn)'), p.blade],
+    p.forehand && ['Forehand', p.forehand],
+    p.backhand && ['Backhand', p.backhand],
+  ].filter(Boolean);
+  if (gearItems.length) {
+    document.getElementById('gearCard').style.display = '';
+    document.getElementById('gearGrid').innerHTML = gearItems.map(([label, value]) => `
+      <div class="gear-item"><div class="gear-label">${escapeHtml(label)}</div><div class="gear-value">${escapeHtml(value)}</div></div>`).join('');
+  }
+
+  const stats = (c?.tournament_stats || []).slice().sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 25);
+  const body = document.getElementById('statsBody');
+  body.innerHTML = stats.length ? stats.map(tr => `
+    <tr>
+      <td>${escapeHtml(tr.name||'')}</td>
+      <td class="num">${tr.startDate ? fmtDateShort(tr.startDate) : '—'}</td>
+      <td>${tr.divisionToken ? divisionLabel(tr.divisionToken) : '—'}</td>
+      <td class="r num">${tr.matchWin ?? '–'}:${tr.matchLost ?? '–'}</td>
+      <td class="r num">${tr.points ?? '—'}</td>
+      <td class="r num">${tr.position ?? '—'}</td>
+    </tr>`).join('') : `<tr><td colspan="6"><p class="muted" style="padding:20px 0">${s?.matches != null ? t('Istoricul turneu-cu-turneu apare de îndată ce profilul e confirmat pe Setka Cup — totalurile de mai sus sunt deja disponibile.') : t('Niciun turneu înregistrat încă pe Setka Cup.')}</p></td></tr>`;
+})();
+</script>
+<script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/load-screen.js?v=20260729-rare"></script>
+</body>
+</html>

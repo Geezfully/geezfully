@@ -9,7 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720-loadscreen">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -137,9 +138,9 @@
 </div>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Tenis de masă</span></span></a>
+    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Garanția integrității</span></span></a>
     <nav class="nav-links"><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html">Jucători</a><a href="tournaments.html">Turnee</a><a href="gallery.html">Media</a><a href="documents.html" class="active">Documente</a><a href="fairplay.html">Fair Play</a><a href="contact.html">Contact</a></nav>
-    <div class="lang-switch"><a href="#" class="active">RO</a><a href="#" title="În curând">RU</a><a href="#" title="În curând">EN</a></div>
+    <div class="lang-switch"><a href="documents.html" hreflang="ro" lang="ro" class="active">RO</a><a href="ru/documents.html" hreflang="ru" lang="ru">RU</a><a href="en/documents.html" hreflang="en" lang="en">EN</a></div>
     <button class="nav-toggle" id="navToggle" aria-label="Deschide meniul"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
   </div>
 </header>
@@ -150,15 +151,16 @@
 
 <main>
   <div class="documents-flow">
-    <section class="documents-hero" aria-labelledby="documentsTitle">
-      <img class="documents-hero-art" src="images/sections/documents-library.webp" alt="" width="747" height="780" fetchpriority="high">
-      <div class="container documents-hero-inner">
-        <div class="documents-hero-copy">
+    <section class="photo-hero" aria-labelledby="documentsTitle">
+      <img class="photo-hero-img" src="images/heroes/documents-1800.webp" srcset="images/heroes/documents-900.webp 900w, images/heroes/documents-1800.webp 1800w" sizes="(max-width:760px) 100vw, 64vw" alt="Adrian Vîrlan, jucător ATTP, în timpul unui meci" width="1800" height="1273" style="--focus:50% 30%" fetchpriority="high">
+      <div class="container photo-hero-inner">
+        <div class="photo-hero-copy">
           <div class="breadcrumb"><a href="index.html">Acasă</a> / Documente</div>
           <div class="eyebrow">Bibliotecă</div>
           <h1 id="documentsTitle">Documentație oficială</h1>
           <p class="lede mt-16">Statutul asociației, calendarul competițional, regulamentele de turneu și materialele metodice.</p>
-          <span class="documents-hero-note">Resurse oficiale ATTP</span>
+          <span class="photo-hero-note">Resurse oficiale ATTP</span>
+        
         </div>
       </div>
     </section>
@@ -174,13 +176,13 @@
       <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">Asociația Națională a Jucătorilor Profesioniști de Tenis de Masă din Republica Moldova.</p></div>
       <div><h4>Navigare</h4><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html">Jucători</a><a href="tournaments.html">Turnee</a></div>
       <div><h4>Resurse</h4><a href="documents.html">Documente</a><a href="fairplay.html">Fair Play</a><a href="gallery.html">Media</a></div>
-      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a></div>
+      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a><a href="terms.html">Termeni și condiții</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><span>Date live via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Scrieți-i autorului pe WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Clasament via ligas.io · Rezultate via Setka Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js"></script>
+<script src="js/supabase-init.js?v=20260918-photos"></script>
 <script src="data-documents.js"></script>
 <script>
 const CATEGORY_ORDER = [
@@ -206,7 +208,7 @@ const CATEGORY_ORDER = [
   ];
   const el = document.getElementById('docSections');
   if (!docs.length) {
-    el.innerHTML = `<div class="empty-state"><span class="tag tag-muted">În curând</span><p class="mt-16">Documentele oficiale (statut, regulamente, calendar competițional) vor fi încărcate aici.</p></div>`;
+    el.innerHTML = `<div class="empty-state"><span class="tag tag-muted">${t('În curând')}</span><p class="mt-16">${t('Documentele oficiale (statut, regulamente, calendar competițional) vor fi încărcate aici.')}</p></div>`;
     return;
   }
   const byCat = {};
@@ -218,19 +220,20 @@ const CATEGORY_ORDER = [
   el.innerHTML = categories.map(cat => {
     const items = byCat[cat].sort((a,b) => (a.sort_order || 999) - (b.sort_order || 999));
     return `
-    <h3 class="doc-cat"><span>${escapeHtml(cat)}</span><small>${items.length} ${items.length === 1 ? 'document' : 'documente'}</small></h3>
+    <h3 class="doc-cat"><span>${escapeHtml(t(cat))}</span><small>${items.length} ${tp(items.length, 'document', 'documente')}</small></h3>
     ${items.map(d => `
       <a class="doc-row" href="${d.file_url || '#'}" ${d.file_url ? 'target="_blank" rel="noopener"' : ''}>
         <span class="doc-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg></span>
         <span class="doc-title">
           <strong>${escapeHtml(d.title)}</strong>
-          ${d.pages ? `<span class="doc-meta">PDF · ${d.pages} ${d.pages === 1 ? 'pagină' : 'pagini'}${d.size_mb ? ` · ${Number(d.size_mb).toFixed(2)} MB` : ''}</span>` : ''}
+          ${d.pages ? `<span class="doc-meta">PDF · ${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${d.size_mb ? ` · ${Number(d.size_mb).toFixed(2)} MB` : ''}</span>` : ''}
         </span>
-        ${d.file_url ? '<span class="doc-open">DESCHIDE ↗</span>' : '<span class="tag tag-muted">În curând</span>'}
+        ${d.file_url ? `<span class="doc-open">${t('DESCHIDE')} ↗</span>` : `<span class="tag tag-muted">${t('În curând')}</span>`}
       </a>`).join('')}
   `}).join('');
 })();
 </script>
+<script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>
 </html>

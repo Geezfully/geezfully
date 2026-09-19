@@ -1,5 +1,25 @@
 window.ATTP_NEWS = [
   {
+    "slug": "tenisul-de-masa-moldovenesc-scrie-istorie-la-sarajevo",
+    "title": "Tenisul de masă moldovenesc scrie istorie la Sarajevo",
+    "date": "2026-09-17",
+    "tag": "Echipa Națională",
+    "image": "images/news/sarajevo-campioni-balcanici-2026.webp",
+    "excerpt": "Republica Moldova are, pentru prima dată, o echipă campioană balcanică la tenis de masă la seniori masculin: Vladislav Ursu, Andrei Puțuntica și Cezar Cozmolici au câștigat titlul la Sarajevo.",
+    "body_html": "\u003cp>Republica Moldova are, pentru prima dată, o echipă campioană balcanică la tenis de masă, categoria seniori, masculin. Performanța a fost obținută la turneul final desfășurat la Sarajevo, în Bosnia și Herțegovina, unde selecționata noastră a demonstrat o formă remarcabilă de la prima până la ultima partidă.\u003c/p>\n\n\u003cp>Trofeul poartă semnătura a trei jucători: \u003cstrong>Vladislav Ursu, Andrei Puțuntica și Cezar Cozmolici\u003c/strong>, sprijiniți pentru această competiție de antrenorul lotului național Veniamin Dubrovin.\u003c/p>\n\n\u003cp>Reprezentativa Moldovei a trecut fără emoții de primele două adversare:\u003c/p>\n\n\u003cp>Cu Macedonia de Nord, scorul a fost tranșant: 3:0\u003c/p>\n\n\u003cp>Aceeași rezoluție și în fața Kosovo: 3:0\u003c/p>\n\n\u003cp>În semifinală, România a fost depășită cu 3:1, calificând Moldova în marea finală\u003c/p>\n\n\u003cp>Ultimul obstacol a fost Serbia, adversar redutabil, care a împins confruntarea până la limită. Scorul final, 3:2 în favoarea Moldovei, spune tot despre nivelul de luptă din teren, echilibrul dintre cele două formații s-a menținut până la al cincilea și decisivul joc al finalei.\u003c/p>\n\n\u003cp>Nicio echipă masculină de seniori a Republicii Moldova nu mai urcase până acum pe prima treaptă a podiumului la un Campionat Balcanic. Titlul cucerit la Sarajevo marchează, astfel, un moment de referință pentru federația și pentru sportul moldovenesc în general.\u003c/p>\n\n\u003cp>Felicitări sportivilor Vladislav Ursu, Andrei Puțuntica și Cezar Cozmolici, precum și antrenorului Veniamin Dubrovin, pentru rezultatul istoric obținut!\u003c/p>\n\n\u003cp>\u003cstrong>Felicitări, băieți - ați intrat în istorie!\u003c/strong>\u003c/p>",
+    "source_url": "https://attp.md/news/tenisul-de-masa-moldovenesc-scrie-istorie-la-sarajevo"
+  },
+  {
+    "slug": "schimbare-la-carma-lotului-national-veniamin-dubrovin-preia-echipa-de-seniori",
+    "title": "Schimbare la cârma Lotului Național: Veniamin Dubrovin preia echipa de seniori",
+    "date": "2026-09-15",
+    "tag": "Echipa Națională",
+    "image": "images/news/veniamin-dubrovin-antrenor-lot-national.webp",
+    "excerpt": "Veniamin Dubrovin, membru ATTP, a fost numit noul antrenor al Lotului Național de Seniori Masculin și debutează chiar la Campionatul Balcanic de la Sarajevo.",
+    "body_html": "\u003cp>Federația de Tenis de Masă din Republica Moldova a anunțat o decizie importantă pentru viitorul echipei naționale: \u003cstrong>Veniamin Dubrovin\u003c/strong>, membrul ATTP, a fost numit noul antrenor al Lotului Național de Seniori Masculin. Echipa ATTP îi urează bun-venit în această nouă funcție și mult succes în misiunea de a duce reprezentativa tricoloră la un nivel superior de performanță.\u003c/p>\n\n\u003cp>Noul antrenor nu are timp de acomodare, iar provocarea începe chiar din prima zi de mandat. În perioada 15-19 septembrie 2026, la Sarajevo (Bosnia și Herțegovina), se desfășoară Campionatul Balcanic de Seniori, competiție la care Veniamin Dubrovin va debuta oficial pe banca tehnică a lotului național.\u003c/p>\n\n\u003cp>La această competiție, echipa Moldovei va fi reprezentată de trei jucători tineri și ambițioși: Vladislav Ursu, Andrei Puțuntică și Cezar Cozmolici, toți membri ai ATTP și jucători de top ai circului Setka Cup. Sub îndrumarea noului antrenor, cei trei sportivi se pregătesc să intre în competiție cu determinare, dăruire și dorința de a face cinste tricolorului.\u003c/p>\n\n\u003cp>ATTP transmite tot sprijinul ei atât sportivilor, cât și antrenorului, la pasul acesta important pentru tenisul de masă moldovenesc.\u003c/p>\n\n\u003cp>\u003cstrong>Hai, Moldova! Mult succes băieților și mult succes, Veniamin!\u003c/strong>\u003c/p>",
+    "source_url": "https://attp.md/news/schimbare-la-carma-lotului-national-veniamin-dubrovin-preia-echipa-de-seniori"
+  },
+  {
     "slug": "echipa-nationala-a-republicii-moldova-si-a-aflat-adversarele-la-campionatul-mondial-2026-de-la-londra",
     "title": "Echipa națională a Republicii Moldova și-a aflat adversarele la Campionatul Mondial 2026 de la Londra",
     "date": "2026-01-26",

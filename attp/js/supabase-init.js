@@ -5,13 +5,18 @@ const db = supabase.createClient(SUPA_URL, SUPA_KEY);
 
 const MONTHS_RO = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
 
+const DATE_LOCALE = { ro:'ro-RO', en:'en-GB', ru:'ru-RU' };
 function fmtDate(iso){
   const d = new Date(iso);
-  return `${d.getDate()} ${MONTHS_RO[d.getMonth()]} ${d.getFullYear()}`;
+  if ((window.ATTP_LANG || 'ro') === 'ro') return `${d.getDate()} ${MONTHS_RO[d.getMonth()]} ${d.getFullYear()}`;
+  return d.toLocaleDateString(DATE_LOCALE[window.ATTP_LANG], { day:'numeric', month:'long', year:'numeric' }).replace(/\s?г\.$/, '');
 }
 function fmtDateShort(iso){
   const d = new Date(iso);
   return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+}
+function divisionLabel(d){
+  return d === 'man' ? t('Bărbați') : d === 'woman' ? t('Femei') : (d || '');
 }
 function escapeHtml(s){
   return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -34,26 +39,49 @@ function avatarHtml(p, size, context = 'player'){
   // Staff and competition portraits are deliberately separate. Some people
   // have both roles, so a single database photo_url must not choose the image
   // for every part of the site.
-  const url = `images/${context === 'team' ? 'team' : 'players'}/${personImageSlug(p)}.webp`;
-  const fallback = setkaPhotoUrl(token, size === 'lg' ? '280x280' : '90x90');
-  const initials = (p.first_name[0]+p.last_name[0]).toUpperCase();
-  const onerror = fallback
-    ? `this.onerror=function(){this.parentElement.textContent='${initials}'};this.src='${fallback}'`
-    : `this.parentElement.textContent='${initials}'`;
-  return `<img src="${url}" alt="" loading="lazy" onerror="${onerror}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
+  let local;
+  if (context === 'team') {
+    local = `images/team/${personImageSlug(p)}.webp`;
+  } else if (p.photo_url && p.photo_url.startsWith('images/players/')) {
+    // Transparent portraits made by tools/player_photos.py (Setka original, background removed).
+    local = p.photo_url;
+  } else if (p.ligas_match_status !== 'created') {
+    // Imported roster: the file is named after the player. Profiles auto-created from
+    // ligas.io have no file unless one was recorded — guessing would 404 or pick a namesake.
+    local = `images/players/${personImageSlug(p)}.webp`;
+  }
+  const chain = [local, setkaPhotoUrl(token, size === 'lg' ? '280x280' : '90x90')].filter(Boolean);
+  const initials = escapeHtml((p.first_name[0]+p.last_name[0]).toUpperCase());
+  if (!chain.length) return initials;
+  return `<img src="${chain[0]}" data-next="${chain.slice(1).join('|')}" data-initials="${initials}" alt="" loading="lazy" onerror="avatarNext(this)" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">`;
 }
+function avatarNext(img){
+  const rest = (img.dataset.next || '').split('|').filter(Boolean);
+  if (!rest.length) { img.parentElement.textContent = img.dataset.initials; return; }
+  img.dataset.next = rest.slice(1).join('|');
+  img.src = rest[0];
+}
+// The official FTMM ranking from ligas.io — the only source of rating and position.
+function playerRanking(p){
+  const r = Array.isArray(p.ligas_ranking) ? p.ligas_ranking[0] : p.ligas_ranking;
+  return r ? { position: r.position, rating: Number(r.rating), list: r.ranking } : null;
+}
+// Rating/position from ligas.io; match and tournament counts from Setka Cup.
 function playerStats(p){
+  const r = playerRanking(p);
   const c = p.setka_cup_cache;
-  if (c && c.rating_sc != null) {
-    return { rating: c.rating_sc, tournaments: c.total_tournaments, matches: c.total_matches, wins: c.wins, losses: c.losses, live: true };
+  let games = null;
+  if (c && c.total_matches != null) {
+    games = { tournaments: c.total_tournaments, matches: c.total_matches, wins: c.wins, losses: c.losses };
+  } else if (p.attp_total_matches > 0) {
+    games = { tournaments: p.attp_total_tournaments, matches: p.attp_total_matches, wins: p.attp_win_matches, losses: p.attp_total_matches - p.attp_win_matches };
   }
-  if (p.attp_total_matches != null && (p.attp_total_matches > 0 || p.attp_rating_sc != null)) {
-    return { rating: p.attp_rating_sc, tournaments: p.attp_total_tournaments, matches: p.attp_total_matches, wins: p.attp_win_matches, losses: p.attp_total_matches - p.attp_win_matches, live: false };
-  }
-  return null;
+  if (!r && !games) return null;
+  return { rating: r ? r.rating : null, position: r ? r.position : null, list: r ? r.list : null, ...(games || { tournaments:null, matches:null, wins:null, losses:null }) };
 }
 function roleLabel(role){
-  return { founder:'Fondator', president:'Președinte', management:'Management', coach:'Antrenor', referee:'Arbitru', player:'Jucător' }[role] || role;
+  const label = { founder:'Fondator', president:'Președinte', management:'Management', coach:'Antrenor', referee:'Arbitru', player:'Jucător' }[role];
+  return label ? t(label) : role;
 }
 
 async function fetchRecentResults(limit = 6){
@@ -71,20 +99,20 @@ async function fetchFeaturedPlayers(){
   return data || [];
 }
 async function fetchAllPlayers(){
-  const { data, error } = await db.from('players').select('*, setka_cup_cache(*)').contains('roles', ['player']).order('last_name');
+  const { data, error } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').contains('roles', ['player']).order('last_name');
   if (error) { console.error(error); return []; }
   return data || [];
 }
-async function fetchTopRanked(limit = 10){
-  const { data, error } = await db.from('players')
-    .select('*, setka_cup_cache!inner(*)')
-    .order('sort_order')
-    .limit(200);
+async function fetchTopRanked(limit = 10, list = 'masculin'){
+  const { data, error } = await db.from('ligas_ranking')
+    .select('ranking, position, rating, players(*, setka_cup_cache(photo_token))')
+    .eq('ranking', list)
+    .order('position')
+    .limit(limit);
   if (error) { console.error(error); return []; }
   return (data || [])
-    .filter(p => p.setka_cup_cache && p.setka_cup_cache.rating_sc != null)
-    .sort((a,b) => b.setka_cup_cache.rating_sc - a.setka_cup_cache.rating_sc)
-    .slice(0, limit);
+    .filter(r => r.players)
+    .map(r => ({ ...r.players, ligas_ranking: [{ ranking: r.ranking, position: r.position, rating: r.rating }] }));
 }
 async function fetchNews(limit = 20){
   const localNews = [
@@ -113,7 +141,14 @@ async function fetchNews(limit = 20){
     });
   });
 
+  // English/Russian pages: translated titles and excerpts from js/news-<lang>.js
+  // (full bodies are fetched per article on news-article.html).
+  const tr = window.ATTP_NEWS_T || {};
   return [...bySlug.values()]
+    .map(n => {
+      const x = tr[n.slug];
+      return { ...n, tag: n.tag ? t(n.tag) : n.tag, translated: !!x || window.ATTP_LANG === 'ro', ...(x ? { title: x.title, excerpt: x.excerpt } : {}) };
+    })
     .sort((a,b) => new Date(b.published_at || b.date) - new Date(a.published_at || a.date))
     .slice(0, limit);
 }

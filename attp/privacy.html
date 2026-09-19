@@ -3,20 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Confidențialitate — ATTP</title>
-<meta name="description" content="Politica de confidențialitate și termenii de utilizare ai site-ului ATTP.">
+<title>Politica de confidențialitate — ATTP</title>
+<meta name="description" content="Cum prelucrează ATTP datele cu caracter personal pe acest site: ce date, în ce scop, cât timp și ce drepturi ai.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230B1A2B%22/><circle cx=%2216%22 cy=%2216%22 r=%228%22 fill=%22%23FF6B35%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260720-loadscreen">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <style>
   .legal-body{ max-width:720px; }
   .legal-body h2{ font-size:19px; margin:36px 0 12px; }
   .legal-body h2:first-child{ margin-top:0; }
   .legal-body p{ margin-bottom:14px; }
-  .legal-note{ background:var(--surface); border:1px solid var(--border-hi); border-radius:var(--radius); padding:18px; margin-bottom:32px; font-size:13.5px; color:var(--muted); }
+  .legal-updated{ font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.04em; color:var(--muted); margin-bottom:24px; }
+  .legal-list{ margin:0 0 14px 20px; color:var(--chalk-dim); }
+  .legal-list li{ margin-bottom:8px; }
+  .legal-body strong{ color:var(--chalk); }
 </style>
 </head>
 <body>
@@ -42,9 +46,9 @@
 </div>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Tenis de masă</span></span></a>
+    <a href="index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Garanția integrității</span></span></a>
     <nav class="nav-links"><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html">Jucători</a><a href="tournaments.html">Turnee</a><a href="gallery.html">Media</a><a href="documents.html">Documente</a><a href="fairplay.html">Fair Play</a><a href="contact.html">Contact</a></nav>
-    <div class="lang-switch"><a href="#" class="active">RO</a><a href="#" title="În curând">RU</a><a href="#" title="În curând">EN</a></div>
+    <div class="lang-switch"><a href="privacy.html" hreflang="ro" lang="ro" class="active">RO</a><a href="ru/privacy.html" hreflang="ru" lang="ru">RU</a><a href="en/privacy.html" hreflang="en" lang="en">EN</a></div>
     <button class="nav-toggle" id="navToggle" aria-label="Deschide meniul"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
   </div>
 </header>
@@ -54,30 +58,65 @@
 </div>
 
 <main>
-  <div class="page-head container">
-    <div class="breadcrumb"><a href="index.html">Acasă</a> / Confidențialitate</div>
-    <div class="eyebrow">Legal</div>
-    <h1>Confidențialitate &amp; termeni</h1>
-  </div>
-  <section class="container section-tight">
-    <div class="legal-note">Acest text este un cadru standard, care trebuie revizuit și completat de conducerea ATTP cu detaliile juridice exacte (entitate înregistrată, IDNO, adresă de sediu) înainte de publicarea finală.</div>
-    <div class="legal-body">
-      <h2>Drepturi de autor</h2>
-      <p class="dim">Conținutul acestui site — texte, clasamente, fotografii și materiale grafice — este protejat de dreptul de autor și aparține ATTP, cu excepția materialelor atribuite explicit unor terți (parteneri, sponsori, surse de date).</p>
+<div class="page-flow">
+<div class="page-head container">
+<div class="breadcrumb"><a href="index.html">Acasă</a> / Confidențialitate</div>
+<div class="eyebrow">Legal</div>
+<h1>Politica de confidențialitate</h1>
+</div>
+<section class="container section-tight">
+<div class="legal-body">
+<p class="legal-updated">Ultima actualizare: 19 septembrie 2026</p>
+<p class="dim">Această politică explică ce date cu caracter personal prelucrează ATTP prin intermediul acestui site, în ce scop și ce drepturi ai. Ea este întocmită în conformitate cu Legea nr. 195/2024 privind protecția datelor cu caracter personal.</p>
 
-      <h2>Date afișate din surse terțe</h2>
-      <p class="dim">Rezultatele turneelor și ratingurile jucătorilor afișate pe acest site provin din platforma Setka Cup, sincronizate automat. ATTP nu controlează acuratețea datelor la sursă, dar actualizează afișarea acestora la intervale regulate.</p>
+<h2>1. Cine suntem</h2>
+<p class="dim">Operatorul datelor este Asociația Națională a Jucătorilor Profesioniști de Tenis de Masă din Republica Moldova (ATTP), IDNO 1023620003702, cu sediul în str. Albișoara 4, MD-2001, Chișinău. Ne poți scrie la <a href="mailto:attp.moldova@gmail.com" style="color:var(--rally-hi)">attp.moldova@gmail.com</a> sau ne poți suna la +373 68 650 404.</p>
 
-      <h2>Date cu caracter personal</h2>
-      <p class="dim">Prelucrăm datele transmise voluntar prin formularul de contact (nume, email, mesaj) exclusiv pentru a răspunde solicitării. Nu vindem și nu transmitem aceste date către terți în scopuri comerciale.</p>
+<h2>2. Ce date prelucrăm</h2>
+<p class="dim"><strong>Vizitatorii site-ului.</strong> Site-ul nu are conturi de utilizator, nu folosește instrumente de analiză a traficului și nu afișează publicitate. Când deschizi o pagină, serverele care livrează site-ul, fonturile și bibliotecile tehnice primesc automat adresa IP și informații despre browser, necesare pentru a trimite conținutul.</p>
+<p class="dim"><strong>Formularul de contact.</strong> Numele, adresa de email, numărul de telefon (opțional), subiectul ales și mesajul pe care ni le trimiți.</p>
+<p class="dim"><strong>Jucătorii și membrii asociației.</strong> Pe paginile de jucători publicăm numele, fotografia, orașul, anul nașterii, categoria și titlul sportiv, date despre stilul de joc și echipament, precum și ratingul, poziția în clasament și rezultatele din competiții. Pentru membrii conducerii și ai echipei ATTP publicăm numele, fotografia și funcția.</p>
 
-      <h2>Cookie-uri</h2>
-      <p class="dim">Site-ul nu folosește cookie-uri de urmărire sau publicitate. Eventualele preferințe locale (precum limba selectată) sunt salvate doar în browserul tău.</p>
+<h2>3. De ce le prelucrăm și pe ce temei</h2>
+<p class="dim"><strong>Pentru a-ți răspunde:</strong> datele din formular sunt folosite doar pentru a răspunde solicitării tale. Temeiul este consimțământul tău, exprimat prin trimiterea mesajului, și demersurile pe care le faci înainte de o eventuală colaborare.</p>
+<p class="dim"><strong>Pentru a informa publicul despre activitatea sportivă:</strong> publicarea rezultatelor, a clasamentelor și a profilurilor de jucători ține de scopul statutar al asociației și de interesul legitim al comunității sportive de a urmări competițiile. Fotografiile sunt realizate la competiții publice.</p>
+<p class="dim"><strong>Pentru a livra site-ul în siguranță:</strong> datele tehnice (adresa IP, browserul) sunt prelucrate în temeiul interesului legitim de a face site-ul să funcționeze și de a-l proteja împotriva abuzurilor.</p>
 
-      <h2>Contact</h2>
-      <p class="dim">Pentru orice întrebare legată de confidențialitate sau conținut, ne poți scrie prin <a href="contact.html" style="color:var(--rally-hi)">pagina de contact</a>.</p>
-    </div>
-  </section>
+<h2>4. Surse de date</h2>
+<p class="dim">Clasamentul și ratingurile provin din clasamentul oficial al Federației de Tenis de Masă a Republicii Moldova, publicat pe platforma <a href="https://ligas.io/mttf/ranking/masculin" target="_blank" rel="noopener" style="color:var(--rally-hi)">ligas.io</a>. Rezultatele turneelor, statisticile meciurilor și o parte din fotografiile jucătorilor provin din platforma <a href="https://tabletennis.setkacup.com" target="_blank" rel="noopener" style="color:var(--rally-hi)">Setka Cup</a>. Aceste date sunt preluate automat, la intervale regulate.</p>
+
+<h2>5. Cui transmitem datele</h2>
+<p class="dim">Nu vindem datele și nu le transmitem în scopuri comerciale. Folosim furnizori tehnici care le prelucrează doar în numele nostru:</p>
+<ul class="legal-list">
+<li><strong>GitHub Pages</strong>: găzduirea site-ului;</li>
+<li><strong>Supabase</strong>: baza de date cu jucători, clasamente și știri;</li>
+<li><strong>Web3Forms</strong>: transmiterea mesajelor din formularul de contact către adresa de email a asociației;</li>
+<li><strong>Google Fonts</strong> și <strong>jsDelivr</strong>: livrarea fonturilor și a bibliotecilor tehnice ale site-ului;</li>
+<li><strong>Google Maps</strong>: harta de pe pagina de contact, încărcată doar dacă alegi să o afișezi.</li>
+</ul>
+<p class="dim">Unii dintre acești furnizori pot prelucra datele pe servere aflate în afara Republicii Moldova, inclusiv în Uniunea Europeană și în Statele Unite. În aceste cazuri transferul se face cu garanțiile prevăzute de lege, de exemplu prin clauzele contractuale standard pe care acești furnizori le aplică.</p>
+<p class="dim">Linkurile către rețelele sociale (Facebook, Instagram, YouTube, TikTok, Telegram) deschid site-urile respective, care au propriile politici de confidențialitate.</p>
+
+<h2 id="cookie">6. Cookie-uri și stocare locală</h2>
+<p class="dim">Site-ul nu folosește cookie-uri de urmărire, de analiză sau de publicitate. Singura informație salvată în browser este una strict tehnică, în stocarea sesiunii (sessionStorage), prin care site-ul știe să nu mai afișeze animația de încărcare când treci de la o pagină la alta; ea se șterge automat când închizi fila. Limba aleasă face parte din adresa paginii și nu este salvată separat.</p>
+<p class="dim">Harta Google de pe pagina de contact nu se încarcă automat. Doar după ce apeși „Afișează harta”, Google poate plasa propriile cookie-uri, conform <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:var(--rally-hi)">politicii de confidențialitate Google</a>.</p>
+
+<h2>7. Cât timp păstrăm datele</h2>
+<p class="dim">Mesajele din formularul de contact le păstrăm cât este necesar pentru a răspunde și pentru eventuala colaborare care urmează, dar nu mai mult de 2 ani de la ultima corespondență. Rezultatele și clasamentele sportive fac parte din istoria competițiilor și sunt păstrate în arhiva publică a asociației. Profilul unui jucător poate fi ascuns sau restrâns la cerere, conform secțiunii următoare.</p>
+
+<h2>8. Drepturile tale</h2>
+<p class="dim">Conform Legii nr. 195/2024, ai dreptul să afli ce date deținem despre tine și să primești o copie a lor, să ceri corectarea datelor inexacte, ștergerea sau restricționarea prelucrării lor, să te opui prelucrării bazate pe interesul legitim (de exemplu publicării fotografiei tale) și să îți retragi oricând consimțământul, fără ca aceasta să afecteze prelucrarea făcută până atunci. Acolo unde se aplică, ai și dreptul la portabilitatea datelor.</p>
+<p class="dim">Pentru a-ți exercita drepturile, scrie-ne la <a href="mailto:attp.moldova@gmail.com" style="color:var(--rally-hi)">attp.moldova@gmail.com</a>. Îți răspundem în cel mult 30 de zile. Datele unui jucător minor pot fi gestionate de părinte sau de tutore.</p>
+<p class="dim">Dacă apreciezi că datele tale nu sunt prelucrate corect, poți depune o plângere la Centrul Național pentru Protecția Datelor cu Caracter Personal: str. Serghei Lazo 48, MD-2004, Chișinău, <a href="https://datepersonale.md" target="_blank" rel="noopener" style="color:var(--rally-hi)">datepersonale.md</a>, centru@datepersonale.md.</p>
+
+<h2>9. Securitate</h2>
+<p class="dim">Site-ul este servit exclusiv prin conexiune criptată (HTTPS). Accesul de modificare a bazei de date este limitat la administratorii site-ului, iar vizitatorii pot doar citi informațiile publice.</p>
+
+<h2>10. Modificări</h2>
+<p class="dim">Putem actualiza această politică atunci când se schimbă site-ul sau legislația. Data ultimei actualizări este afișată la începutul paginii. Condițiile de folosire a site-ului sunt descrise separat, în <a href="terms.html" style="color:var(--rally-hi)">Termeni și condiții</a>.</p>
+</div>
+</section>
+</div>
 </main>
 
 <footer>
@@ -86,15 +125,16 @@
       <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">Asociația Națională a Jucătorilor Profesioniști de Tenis de Masă din Republica Moldova.</p></div>
       <div><h4>Navigare</h4><a href="about.html">Despre</a><a href="news.html">Știri</a><a href="players.html">Jucători</a><a href="tournaments.html">Turnee</a></div>
       <div><h4>Resurse</h4><a href="documents.html">Documente</a><a href="fairplay.html">Fair Play</a><a href="gallery.html">Media</a></div>
-      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a></div>
+      <div><h4>Asociația</h4><a href="contact.html">Contact</a><a href="privacy.html">Confidențialitate</a><a href="terms.html">Termeni și condiții</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><span>Date live via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Toate drepturile rezervate.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Scrieți-i autorului pe WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Clasament via ligas.io · Rezultate via Setka Cup</span></div>
   </div>
 </footer>
 <script>
 document.getElementById('navToggle')?.addEventListener('click', () => document.getElementById('mobileNav').classList.add('show'));
 document.getElementById('navClose')?.addEventListener('click', () => document.getElementById('mobileNav').classList.remove('show'));
 </script>
+<script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>
 </html>

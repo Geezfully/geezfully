@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Игроки — ATTP</title>
+<meta name="description" content="Официальный рейтинг и профили игроков в настольный теннис Республики Молдова, автоматически обновляемые с ligas.io.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230B1A2B%22/><circle cx=%2216%22 cy=%2216%22 r=%228%22 fill=%22%23FF6B35%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<script>window.__PAGE_LANG__="ru";</script>
+<script src="js/i18n-ru.js?v=1d4e8e44"></script>
+<script src="js/i18n.js?v=20260918-i18n"></script>
+<script src="js/load-screen-gate.js?v=20260729-rare"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  .players-flow{
+    position:relative; isolation:isolate; overflow:hidden;
+    background:linear-gradient(180deg,#0a1929 0%,#0d2034 30%,var(--ink) 85%);
+  }
+  .players-flow::before{
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background-image:radial-gradient(rgba(242,245,244,.06) 1px, transparent 1px);
+    background-size:26px 26px;
+    -webkit-mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
+    mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
+  }
+  .players-flow::after{
+    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+    background:
+      radial-gradient(520px 380px at 88% 4%, rgba(41,197,194,.13), transparent 70%),
+      radial-gradient(360px 300px at 68% 22%, rgba(255,107,53,.08), transparent 68%);
+  }
+  .players-hero{ position:relative; isolation:isolate; min-height:clamp(430px,43vw,560px); overflow:hidden; }
+  .players-hero-art{
+    position:absolute; z-index:-2; inset:0 0 0 auto; width:min(64%,900px); height:100%;
+    object-fit:cover; object-position:center; transform:scale(1.025); filter:saturate(.94) contrast(1.04);
+    -webkit-mask-image:
+      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
+      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
+    -webkit-mask-composite:source-in;
+    mask-image:
+      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
+      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
+    mask-composite:intersect;
+  }
+  .players-hero::before{
+    content:''; position:absolute; z-index:-1; inset:0; pointer-events:none;
+    background:linear-gradient(90deg,#0a1929 0%,rgba(10,25,41,.94) 30%,rgba(10,25,41,.48) 52%,rgba(10,25,41,.08) 78%);
+  }
+  .players-hero-inner{ min-height:inherit; display:flex; align-items:center; padding-block:clamp(76px,9vw,118px); }
+  .players-hero-copy{ width:min(570px,51%); }
+  .players-hero-copy h1{ font-size:clamp(48px,5.5vw,78px); line-height:1; letter-spacing:-.035em; }
+  .players-hero-note{
+    display:inline-flex; align-items:center; gap:9px; margin-top:28px; padding:9px 13px;
+    border:1px solid rgba(116,207,210,.23); border-radius:999px; background:rgba(8,26,45,.44);
+    color:var(--chalk-dim); font-family:var(--font-mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  }
+  .players-hero-note::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--spin); box-shadow:0 0 12px rgba(255,107,53,.56); }
+  .players-list-section{ padding-top:4px; }
+  @media (max-width:820px){
+    .players-hero{ min-height:640px; }
+    .players-hero-art{
+      inset:auto 0 0; width:100%; height:58%; object-position:center; transform:scale(1.035);
+      -webkit-mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
+      mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
+    }
+    .players-hero::before{ background:linear-gradient(180deg,#0a1929 0%,rgba(10,25,41,.96) 38%,rgba(10,25,41,.42) 65%,rgba(10,25,41,.06) 100%); }
+    .players-hero-inner{ align-items:flex-start; padding-block:76px 0; }
+    .players-hero-copy{ width:100%; }
+    .players-hero-copy h1{ font-size:clamp(44px,13vw,64px); }
+  }
+
+  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:28px 0; }
+  .filters input, .filters select{
+    padding:11px 14px; border-radius:9px; border:1px solid var(--border-hi); background:var(--surface); color:var(--chalk); font-family:var(--font-body); font-size:16px;
+    min-height:44px;
+  }
+  .filters input{ flex:1; min-width:200px; }
+  @media (max-width:460px){
+    .filters input{ min-width:100%; }
+    .filters select{ width:100%; }
+  }
+  .filters input:focus, .filters select:focus{ outline:2px solid var(--rally); border-color:var(--rally); }
+  .player-row{ display:grid; grid-template-columns:28px 40px 1fr auto auto auto; align-items:center; gap:14px; padding:10px 16px; border-radius:10px; }
+  .player-row:hover{ background:var(--surface); }
+  .player-row .p-rank{ font-family:var(--font-mono); color:var(--muted); font-size:13px; }
+  .p-avatar{ width:40px; height:40px; border-radius:50%; overflow:hidden; background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--chalk-dim); flex:0 0 auto; }
+  .player-row .p-name{ font-weight:700; }
+  .player-row .p-city{ font-size:12.5px; color:var(--muted); }
+  .player-row .p-rating{ font-family:var(--font-mono); font-weight:700; font-size:17px; color:var(--spin-hi); text-align:right; }
+  .player-row .p-record{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); text-align:right; white-space:nowrap; }
+  @media (max-width:700px){
+    .player-row{ grid-template-columns:20px 34px 1fr auto; }
+    .p-avatar{ width:34px; height:34px; }
+    .p-record{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="loadScreen" aria-hidden="true">
+  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
+    <g class="lm-ball-group">
+      <circle class="lm-ball" cx="88" cy="70" r="20"/>
+      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
+    </g>
+    <g class="lm-paddle-group">
+      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
+      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
+      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
+      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
+      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
+      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
+      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
+      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
+      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
+    </g>
+  </svg>
+</div>
+
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
+    <nav class="nav-links">
+      <a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html" class="active">Игроки</a>
+      <a href="ru/tournaments.html">Турниры</a><a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a>
+      <a href="ru/fairplay.html">Фейр-плей</a><a href="ru/contact.html">Контакты</a>
+    </nav>
+    <div class="lang-switch"><a href="players.html" hreflang="ro" lang="ro">RO</a><a href="ru/players.html" hreflang="ru" lang="ru" class="active">RU</a><a href="en/players.html" hreflang="en" lang="en">EN</a></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Открыть меню"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+  </div>
+</header>
+<div id="mobileNav">
+  <div class="mobile-head"><span class="brand-word">ATTP</span><button class="nav-toggle" id="navClose" aria-label="Закрыть меню"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg></button></div>
+  <a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html">Игроки</a><a href="ru/tournaments.html">Турниры</a>
+  <a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/contact.html">Контакты</a>
+</div>
+
+<main>
+  <div class="players-flow">
+  <section class="photo-hero" aria-labelledby="playersTitle">
+    <img class="photo-hero-img" src="images/heroes/players-1800.webp" srcset="images/heroes/players-900.webp 900w, images/heroes/players-1800.webp 1800w" sizes="(max-width:760px) 100vw, 64vw" alt="Владислав Урсу, игрок ATTP, во время матча" width="1800" height="1273" style="--focus:50% 30%" fetchpriority="high">
+    <div class="container photo-hero-inner">
+      <div class="photo-hero-copy">
+      <div class="breadcrumb"><a href="ru/index.html">Главная</a> / Игроки</div>
+      <div class="eyebrow">Рейтинг</div>
+      <h1 id="playersTitle">Игроки ATTP</h1>
+      <p class="lede mt-16">Официальный рейтинг Федерации настольного тенниса, автоматически загружаемый с ligas.io каждые 15 минут.</p>
+      <span class="photo-hero-note">Готовы к каждому матчу</span>
+    
+      </div>
+    </div>
+  </section>
+
+  <section class="container section-tight players-list-section">
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Поиск по имени…">
+      <select id="listSelect" aria-label="Рейтинг">
+        <option value="masculin">Мужской рейтинг</option>
+        <option value="feminin">Женский рейтинг</option>
+        <option value="all">Все игроки</option>
+      </select>
+      <select id="sortSelect" aria-label="Сортировка">
+        <option value="rating">Сортировка: рейтинг</option>
+        <option value="matches">Сортировка: сыграно матчей</option>
+        <option value="name">Сортировка: имя А–Я</option>
+      </select>
+    </div>
+    <div id="playerList">
+      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
+      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
+      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
+    </div>
+  </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">Национальная ассоциация профессиональных игроков в настольный теннис Республики Молдова.</p></div>
+      <div><h4>Навигация</h4><a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html">Игроки</a><a href="ru/tournaments.html">Турниры</a></div>
+      <div><h4>Материалы</h4><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/gallery.html">Медиа</a></div>
+      <div><h4>Ассоциация</h4><a href="ru/contact.html">Контакты</a><a href="ru/privacy.html">Конфиденциальность</a><a href="ru/terms.html">Условия использования</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг: ligas.io · Результаты: Setka Cup</span></div>
+  </div>
+</footer>
+
+<script src="js/supabase-init.js?v=20260918-photos"></script>
+<script>
+let ALL_PLAYERS = [];
+function render(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const listName = document.getElementById('listSelect').value;
+  const sort = document.getElementById('sortSelect').value;
+  let list = ALL_PLAYERS.filter(p => {
+    if (q && !`${p.first_name} ${p.last_name}`.toLowerCase().includes(q)) return false;
+    return listName === 'all' || playerRanking(p)?.list === listName;
+  });
+  list.sort((a,b) => {
+    const sa = playerStats(a), sb = playerStats(b);
+    if (sort === 'rating') {
+      // Ranked players by their official position; everyone unranked after them.
+      const pa = sa?.position ?? Infinity, pb = sb?.position ?? Infinity;
+      if (listName !== 'all' && pa !== pb) return pa - pb;
+      return (sb?.rating ?? -1) - (sa?.rating ?? -1) || `${a.last_name}`.localeCompare(`${b.last_name}`,'ro');
+    }
+    if (sort === 'matches') return (sb?.matches||0) - (sa?.matches||0);
+    return `${a.last_name}`.localeCompare(`${b.last_name}`,'ro');
+  });
+  const el = document.getElementById('playerList');
+  if (!list.length) { el.innerHTML = `<div class="empty-state"><p>${t('Niciun jucător găsit.')}</p></div>`; return; }
+  el.innerHTML = list.map(p => {
+    const s = playerStats(p);
+    const pos = s?.position != null ? (listName === 'all' ? `${s.position}${s.list === 'feminin' ? ' F' : ' M'}` : s.position) : '—';
+    return `<a href="ru/player.html?id=${p.id}" class="player-row">
+      <span class="p-rank">${pos}</span>
+      <span class="p-avatar">${avatarHtml(p)}</span>
+      <span><span class="p-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</span><br><span class="p-city">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.category ? ' · ' + escapeHtml(t(p.category)) : ''}</span></span>
+      <span class="p-record">${s?.matches != null ? `<span style="color:var(--win)">${s.wins}${t('V')}</span> — <span style="color:var(--loss)">${s.losses}${t('Î')}</span>` : '—'}</span>
+      <span class="p-record">${s?.matches != null ? `${s.matches} ${t('meciuri')}` : ''}</span>
+      <span class="p-rating">${s?.rating != null ? s.rating.toFixed(1) : '—'}</span>
+    </a>`;
+  }).join('');
+}
+(async function(){
+  ALL_PLAYERS = await fetchAllPlayers();
+  render();
+  document.getElementById('searchInput').addEventListener('input', render);
+  document.getElementById('sortSelect').addEventListener('change', render);
+  document.getElementById('listSelect').addEventListener('change', render);
+})();
+</script>
+<script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/load-screen.js?v=20260729-rare"></script>
+</body>
+</html>
