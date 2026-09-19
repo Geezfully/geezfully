@@ -173,11 +173,3 @@ async function fetchSiteSettings(){
   return data || {};
 }
 
-// Mobile nav toggle — shared across every page.
-document.addEventListener('DOMContentLoaded', () => {
-  const openBtn = document.getElementById('navToggle');
-  const closeBtn = document.getElementById('navClose');
-  const panel = document.getElementById('mobileNav');
-  if (openBtn && panel) openBtn.addEventListener('click', () => panel.classList.add('show'));
-  if (closeBtn && panel) closeBtn.addEventListener('click', () => panel.classList.remove('show'));
-});

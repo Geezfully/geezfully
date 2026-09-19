@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<link rel="stylesheet" href="css/style.css?v=20260919-mnav">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=b0e9293d"></script>
+<script src="js/i18n-en.js?v=a7777f99"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -135,7 +135,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260919-hide"></script>
+<script src="js/supabase-init.js?v=20260919-mnav"></script>
 <script>
 (async function(){
   const { data, error } = await db.from('tournament_results').select('*').eq('status','finished').order('start_date', { ascending:false }).limit(300);
@@ -179,6 +179,7 @@
     </div>`).join('');
 })();
 </script>
+<script src="js/nav.js?v=20260919-sheet"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>

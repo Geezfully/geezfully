@@ -13,9 +13,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-legal">
+<link rel="stylesheet" href="css/style.css?v=20260919-mnav">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=1d4e8e44"></script>
+<script src="js/i18n-ru.js?v=7a353345"></script>
 <script src="js/news-ru.js?v=6445b9f4"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
@@ -203,33 +203,49 @@
     content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
     background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
   }
-  .homepage-flow-player{
-    position:absolute; z-index:1; top:230px; right:clamp(26px,4vw,70px); width:clamp(500px,42vw,650px);
-    height:auto; opacity:.88; pointer-events:none; user-select:none;
-    transform:scaleX(-1); transform-origin:center;
-    filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
+  /* The player and the ball he has just tossed share one box, so the ball is placed
+     against the player's hand (in % of the drawing) rather than against the viewport.
+     The box hangs from the top of the tournaments section, with the hand in the
+     gap under the ranking cards: --hand is where the palm sits below the section top. */
+  .flow-tourn{ --art-w:clamp(500px,42vw,640px); --hand:64px; --toss:58px; }
+  .flow-art{
+    position:absolute; z-index:0; pointer-events:none; user-select:none;
+    width:var(--art-w); right:clamp(0px,2vw,40px);
+    /* palm = 9.4% of the drawing's height; height = width × 1654/951 */
+    top:calc(var(--hand) - var(--art-w) * 1.7392 * .094);
   }
-  .homepage-flow-ball{
-    position:absolute; z-index:3; top:94px; right:clamp(474px,calc(31vw + 14px),634px); width:clamp(24px,1.8vw,30px);
-    height:auto; pointer-events:none; user-select:none;
+  .flow-art-player{
+    display:block; width:100%; height:auto; opacity:.88;
+    transform:scaleX(-1); filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
+  }
+  /* the hand is at 21% from the left once the drawing is mirrored */
+  .flow-art-ball{
+    position:absolute; width:clamp(24px,1.8vw,30px); height:auto;
+    left:calc(21.5% - clamp(12px,.9vw,15px)); top:calc(9.4% - var(--toss));
     filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
   }
   .homepage-flow > .section-tight{ position:relative; z-index:2; }
   .homepage-flow + .section-tight{ position:relative; z-index:2; }
   .homepage-flow .rank-strip,
   .homepage-flow #tournGrid{ position:relative; z-index:2; }
+  .flow-tourn > :not(.flow-art){ position:relative; z-index:1; }
   .homepage-flow .rank-card,
   .homepage-flow .tourn-mini{
     background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
   @media (max-width:900px){
     html,body{ overflow-x:clip; }
-    .homepage-flow-player{ top:300px; right:-96px; width:500px; opacity:.5; }
-    .homepage-flow-ball{ top:63px; right:33px; width:28px; opacity:.82; }
+    .flow-tourn{ --art-w:440px; }
+    .flow-art{ right:-90px; }
+    .flow-art-player{ opacity:.5; }
   }
   @media (max-width:600px){
-    .homepage-flow-player{ top:360px; right:-112px; width:420px; opacity:.28; }
-    .homepage-flow-ball{ top:87px; right:25px; width:24px; opacity:.72; }
+    /* phones have no gap above the tournaments heading for the toss, so only the
+       faint figure stays, arm raised behind the heading */
+    .flow-tourn{ --art-w:360px; --hand:60px; }
+    .flow-art{ right:-110px; }
+    .flow-art-player{ opacity:.3; }
+    .flow-art-ball{ display:none; }
   }
 
   .principle-col h3{ font-size:16px; margin-bottom:8px; }
@@ -240,36 +256,35 @@
     overflow:visible;
   }
   .principles-stage > :not(.principles-map-art){ position:relative; z-index:2; }
+  /* The Moldova paddle sits in the empty space right of the heading, clear of the text. */
   .principles-map-art{
-    position:absolute;
-    z-index:1;
-    top:clamp(-82px,-5vw,-62px);
-    left:clamp(-20px,0vw,8px);
-    width:clamp(330px,29vw,440px);
-    height:auto;
-    opacity:.88;
-    pointer-events:none;
-    user-select:none;
+    position:absolute; z-index:1;
+    top:-26px; right:24px; left:auto;
+    width:clamp(230px,19vw,290px); height:auto;
+    pointer-events:none; user-select:none;
     filter:drop-shadow(0 24px 34px rgba(1,8,16,.3));
   }
   @media (max-width:900px){
-    .principles-map-art{ top:-68px; left:-14px; width:320px; opacity:.58; }
+    .principles-map-art{ top:-14px; width:210px; }
   }
   @media (max-width:600px){
-    .principles-map-art{ top:-42px; left:-28px; width:250px; opacity:.34; }
+    .principles-map-art{ top:10px; right:6px; width:118px; }
   }
 
   .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
-  .partner-track{ display:flex; gap:72px; width:max-content; padding-block:8px; animation:scroll 36s linear infinite; align-items:center; }
-  .partner{ display:flex; align-items:center; gap:18px; font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--muted); white-space:nowrap; }
-  .partner-logo{ height:96px; width:96px; border-radius:50%; object-fit:cover; opacity:.9; filter:grayscale(.15); flex:0 0 auto; transition:opacity .2s ease, filter .2s ease, transform .2s ease; }
+  .partner-track{ display:flex; width:max-content; padding-block:8px; animation:scroll 36s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
+  .partner{ display:flex; align-items:center; gap:18px; margin-right:72px; font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--muted); white-space:nowrap; }
+  .partner-logo{ height:96px; width:96px; border-radius:50%; object-fit:cover; opacity:.9; flex:0 0 auto; transition:opacity .2s ease, transform .2s ease; }
   a.partner:hover, a.partner:focus-visible{ color:var(--chalk); }
-  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ opacity:1; filter:none; transform:scale(1.04); }
-  /* Hold the strip still while someone is aiming at (or tabbing through) a logo. */
-  .partner-marquee:hover .partner-track, .partner-marquee:focus-within .partner-track{ animation-play-state:paused; }
+  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ opacity:1; transform:scale(1.04); }
+  /* Hold the strip still while someone is aiming at (or tabbing through) a logo.
+     Mouse only: on touch screens a tap leaves :hover stuck and the strip would stop for good. */
+  @media (hover:hover) and (pointer:fine){
+    .partner-marquee:hover .partner-track{ animation-play-state:paused; }
+  }
+  .partner-marquee:has(:focus-visible) .partner-track{ animation-play-state:paused; }
   @media (max-width:600px){
-    .partner-track{ gap:48px; }
-    .partner{ gap:12px; font-size:18px; }
+    .partner{ gap:12px; margin-right:48px; font-size:18px; }
     .partner-logo{ height:72px; width:72px; }
   }
 
@@ -452,8 +467,6 @@
   </section>
 
   <div class="homepage-flow">
-    <img class="homepage-flow-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="" aria-hidden="true">
-    <img class="homepage-flow-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="" aria-hidden="true">
 
   <section class="container section-tight">
     <div class="eyebrow">Рейтинг</div>
@@ -468,7 +481,11 @@
     </div>
   </section>
 
-  <section class="container section-tight">
+  <section class="container section-tight flow-tourn">
+    <div class="flow-art" aria-hidden="true">
+      <img class="flow-art-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
+      <img class="flow-art-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="">
+    </div>
     <div class="eyebrow">Турниры</div>
     <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
       <h2>Последние турниры</h2>
@@ -550,7 +567,22 @@
       <div class="eyebrow">Партнёры</div>
     </div>
     <div class="partner-marquee">
-      <div class="partner-track" id="partnerTrack"></div>
+      <div class="partner-track">
+        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">SETKA PRO</a>
+        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FMF</a>
+        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">BuN&amp;Partener</a>
+        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">ULTRA</a>
+        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">WESPORT</a>
+        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">EXTERIOR</a>
+        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FTMM</a>
+        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">SETKA PRO</a>
+        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FMF</a>
+        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">BuN&amp;Partener</a>
+        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">ULTRA</a>
+        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">WESPORT</a>
+        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">EXTERIOR</a>
+        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FTMM</a>
+      </div>
     </div>
   </section>
 </main>
@@ -591,7 +623,7 @@
 
 <script src="data-news.js?v=20260720-fullnews"></script>
 <script src="data-news-archive.js?v=20260720-fullnews"></script>
-<script src="js/supabase-init.js?v=20260919-hide"></script>
+<script src="js/supabase-init.js?v=20260919-mnav"></script>
 <script>
 // Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
 // Skips straight to the final value when the user has asked for reduced motion.
@@ -641,8 +673,8 @@ if (pingPongModel && pingPongModelShell) {
 }
 
 (async function(){
-  const [results, ranked, news, partners, tournRows] = await Promise.all([
-    fetchRecentResults(5), fetchTopRanked(6), fetchNews(3), fetchPartners(),
+  const [results, ranked, news, tournRows] = await Promise.all([
+    fetchRecentResults(5), fetchTopRanked(6), fetchNews(3),
     db.from('tournament_results').select('*').eq('status','finished').order('start_date',{ascending:false}).limit(150).then(r => r.data || []),
   ]);
 
@@ -720,33 +752,9 @@ if (pingPongModel && pingPongModelShell) {
       </a>`).join('');
   }
 
-  // Partners
-  const track = document.getElementById('partnerTrack');
-  // Same destinations as the partner logos on the original attp.md. partners.website_url
-  // is still empty in Supabase; once it's filled in, it takes precedence over this map.
-  const PARTNER_LINKS = {
-    'SETKA PRO': 'https://tabletennis.setkacup.com/en/',
-    'FMF': 'https://www.fmf.md/',
-    'BuN&Partener': 'https://bunpartener.md/',
-    'ULTRA': 'https://ultra.md/',
-    'WESPORT': 'https://fmf.md/home/fmf/we-sport-tv/wesport-tv',
-    'EXTERIOR': 'https://exterior.md/',
-    'FTMM': 'https://mttf.md/',
-  };
-  // The track holds the list twice for a seamless loop; the copy is hidden from
-  // screen readers and the tab order so each partner is announced once.
-  const renderPartner = (p, copy) => {
-    const inner = `${p.logo_url ? `<img class="partner-logo" src="${p.logo_url}?v=20260918-equal" alt="" loading="lazy">` : ''}${escapeHtml(p.name)}`;
-    const href = p.website_url || PARTNER_LINKS[p.name];
-    const hidden = copy ? ' aria-hidden="true"' : '';
-    return href
-      ? `<a class="partner" href="${escapeHtml(href)}" target="_blank" rel="noopener"${hidden}${copy ? ' tabindex="-1"' : ''}>${inner}</a>`
-      : `<span class="partner"${hidden}>${inner}</span>`;
-  };
-  const items = partners.length ? partners : Object.keys(PARTNER_LINKS).map(name => ({ name, logo_url:null }));
-  track.innerHTML = items.map(p => renderPartner(p, false)).join('') + items.map(p => renderPartner(p, true)).join('');
 })();
 </script>
+<script src="js/nav.js?v=20260919-sheet"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>
