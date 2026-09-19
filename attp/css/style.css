@@ -501,7 +501,8 @@ html.show-load-screen #loadScreen{ display:flex; }
    the text. On phones the photo becomes a band above the copy. */
 .photo-hero{ position:relative; isolation:isolate; overflow:hidden; min-height:clamp(440px,42vw,580px); }
 .photo-hero-img{
-  position:absolute; z-index:-1; top:0; right:0; width:64%; height:100%;
+  /* Capped so ultrawide screens don't turn the photo into a thin, upscaled strip. */
+  position:absolute; z-index:-1; top:0; right:0; width:min(64%, 1500px); height:100%;
   object-fit:cover; object-position:var(--focus, 50% 30%);
   -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.45) 16%,#000 42%),linear-gradient(180deg,#000 72%,transparent 100%);
   -webkit-mask-composite:source-in;

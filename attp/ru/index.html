@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-yellow">
+<link rel="stylesheet" href="css/style.css?v=20260919-wide">
 <script>window.__PAGE_LANG__="ru";</script>
 <script src="js/i18n-ru.js?v=e1152f48"></script>
 <script src="js/news-ru.js?v=6445b9f4"></script>
@@ -24,7 +24,10 @@
 <style>
   .hero-stage{
     position:relative; isolation:isolate; overflow:hidden;
-    min-height:calc(100svh - 82px); background:#071421;
+    /* Fill a laptop screen, but never grow past what the copy needs on tall
+       monitors (it used to leave hundreds of px empty); centre what's there. */
+    min-height:min(calc(100svh - 82px), 780px); background:#071421;
+    display:flex; align-items:center;
   }
   .hero-stage::before{
     content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
@@ -41,7 +44,7 @@
       radial-gradient(700px 480px at 12% 30%, rgba(249,202,80,.1), transparent 66%);
   }
   .hero{
-    position:relative; z-index:2;
+    position:relative; z-index:2; width:100%;
     padding:40px 24px 64px; display:grid; grid-template-columns:1.1fr .9fr;
     gap:0 56px; align-items:start; min-height:0;
   }
