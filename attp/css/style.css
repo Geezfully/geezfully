@@ -226,7 +226,10 @@ p{ margin:0; color:var(--chalk-dim); }
   #mobileNav.show > a:nth-of-type(7){ transition-delay:.28s; }
   #mobileNav.show > a:nth-of-type(8){ transition-delay:.31s; }
   #mobileNav.show > a:nth-of-type(9){ transition-delay:.34s; }
-  html.nav-open, html.nav-open body{ overflow:hidden; overscroll-behavior:none; }
+  /* Lock the viewport only. overflow on body would make body its own scroller, and the
+     sticky header would then pin to the top of the page, not the screen: scrolled down,
+     it vanished along with the button that closes the sheet. */
+  html.nav-open{ overflow:hidden; overscroll-behavior:none; }
 }
 @media (prefers-reduced-motion:reduce){
   .nav-scrim, #mobileNav, #mobileNav > a, #mobileNav.show > a{ transition:none !important; }

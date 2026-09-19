@@ -240,12 +240,11 @@
     .flow-art-player{ opacity:.5; }
   }
   @media (max-width:600px){
-    /* phones have no gap above the tournaments heading for the toss, so only the
-       faint figure stays, arm raised behind the heading */
-    .flow-tourn{ --art-w:360px; --hand:60px; }
-    .flow-art{ right:-110px; }
-    .flow-art-player{ opacity:.3; }
-    .flow-art-ball{ display:none; }
+    /* phones get their own gap above the tournaments heading, so the hand and the
+       tossed ball sit clear of the ranking cards and the heading, as on desktop */
+    .flow-tourn{ --art-w:340px; --hand:92px; --toss:46px; padding-top:118px; }
+    .flow-art{ right:-96px; }
+    .flow-art-player{ opacity:.45; }
   }
 
   .principle-col h3{ font-size:16px; margin-bottom:8px; }
@@ -283,6 +282,13 @@
     .partner-marquee:hover .partner-track{ animation-play-state:paused; }
   }
   .partner-marquee:has(:focus-visible) .partner-track{ animation-play-state:paused; }
+  /* Touch screens: the strip is a real scroller people can swipe; js drifts it along
+     instead of the CSS animation, and stops while a finger is on it. */
+  @media (hover:none), (pointer:coarse){
+    .partner-marquee{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+    .partner-marquee::-webkit-scrollbar{ display:none; }
+    .partner-track{ animation:none; will-change:auto; }
+  }
   @media (max-width:600px){
     .partner{ gap:12px; margin-right:48px; font-size:18px; }
     .partner-logo{ height:72px; width:72px; }
@@ -752,6 +758,42 @@ if (pingPongModel && pingPongModelShell) {
       </a>`).join('');
   }
 
+})();
+</script>
+<script>
+// Partner strip on touch screens: native swipe, plus a slow drift when left alone.
+// The track holds the list twice, so the scroll position wraps by half its width.
+(function(){
+  const strip = document.querySelector('.partner-marquee');
+  if (!strip || !matchMedia('(hover:none), (pointer:coarse)').matches) return;
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const track = strip.querySelector('.partner-track');
+  let pos = 0, last = 0, touching = false, idleUntil = 0, visible = true;
+  const half = () => track.scrollWidth / 2;
+  const wrap = () => {
+    const h = half();
+    if (strip.scrollLeft >= h) strip.scrollLeft -= h;
+    else if (strip.scrollLeft <= 0) strip.scrollLeft += h;
+  };
+  const hold = ms => { idleUntil = performance.now() + ms; };
+  strip.addEventListener('touchstart', () => { touching = true; }, { passive:true });
+  strip.addEventListener('touchend', () => { touching = false; hold(1600); }, { passive:true });
+  strip.addEventListener('touchcancel', () => { touching = false; hold(1600); }, { passive:true });
+  // any scroll we did not cause (a swipe, momentum after it) postpones the drift
+  strip.addEventListener('scroll', () => {
+    if (Math.abs(strip.scrollLeft - pos) > 2) { hold(1200); wrap(); pos = strip.scrollLeft; }
+  }, { passive:true });
+  new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(strip);
+  const tick = now => {
+    const dt = Math.min(64, now - (last || now)); last = now;
+    if (visible && !touching && now > idleUntil) {
+      pos += half() / 36000 * dt;               // one full loop every 36s, like the desktop marquee
+      if (pos >= half()) pos -= half();
+      strip.scrollLeft = pos;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 })();
 </script>
 <script src="js/nav.js?v=20260919-sheet"></script>
