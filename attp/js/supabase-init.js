@@ -98,8 +98,9 @@ async function fetchFeaturedPlayers(){
   if (error) { console.error(error); return []; }
   return data || [];
 }
+// Only professionals are listed: a player needs a Setka Cup account (staff without one stay on About only).
 async function fetchAllPlayers(){
-  const { data, error } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').contains('roles', ['player']).order('last_name');
+  const { data, error } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').contains('roles', ['player']).not('setka_cup_player_id', 'is', null).order('last_name');
   if (error) { console.error(error); return []; }
   return data || [];
 }
