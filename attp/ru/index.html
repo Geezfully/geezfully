@@ -703,15 +703,14 @@ if (pingPongModel && pingPongModelShell) {
       </div>`).join('');
   }
 
-  // Hero stat counters
-  const totalMatches = results.length ? null : null;
-  const { count: playerCount } = await db.from('players').select('id', { count:'exact', head:true }).contains('roles', ['player']).not('setka_cup_player_id', 'is', null);
-  const { data: statRows } = await db.from('players').select('setka_cup_cache(total_tournaments,total_matches), attp_total_tournaments, attp_total_matches').contains('roles', ['player']).not('setka_cup_player_id', 'is', null);
-  const sumT = (statRows||[]).reduce((s,p)=>s+(playerStats(p)?.tournaments||0),0);
-  const sumM = (statRows||[]).reduce((s,p)=>s+(playerStats(p)?.matches||0),0);
-  countUp(document.getElementById('statPlayers'), playerCount);
-  countUp(document.getElementById('statTournaments'), sumT);
-  countUp(document.getElementById('statMatches'), sumM);
+  // Hero stat counters: distinct tournaments and matches involving an ATTP
+  // (Setka-linked) player, counted once each in the database (site_stats).
+  const { data: stats } = await db.rpc('site_stats');
+  if (stats) {
+    countUp(document.getElementById('statPlayers'), stats.players);
+    countUp(document.getElementById('statTournaments'), stats.tournaments);
+    countUp(document.getElementById('statMatches'), stats.matches);
+  }
 
   // Ranking strip
   const rankStrip = document.getElementById('rankStrip');
