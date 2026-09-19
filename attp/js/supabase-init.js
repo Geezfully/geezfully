@@ -41,7 +41,7 @@ function avatarHtml(p, size, context = 'player'){
   // for every part of the site.
   let local;
   if (context === 'team') {
-    local = `images/team/${personImageSlug(p)}.webp`;
+    local = `images/team/${personImageSlug(p)}.webp?v=hd1`;
   } else if (p.photo_url && p.photo_url.startsWith('images/players/')) {
     // Transparent portraits made by tools/player_photos.py (Setka original, background removed).
     local = p.photo_url;

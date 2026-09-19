@@ -176,18 +176,23 @@ p{ margin:0; color:var(--chalk-dim); }
 @media (max-width:980px){
   .nav-links{ display:none; }
   .nav-toggle{
-    display:grid; place-items:center; align-content:center; flex:0 0 auto; width:44px; height:44px; padding:0;
+    display:grid; place-items:center; flex:0 0 auto; width:44px; height:44px; padding:0; position:relative;
     border-radius:10px; border:1px solid var(--border-hi); background:rgba(242,245,244,.03); color:var(--chalk); cursor:pointer;
   }
+  /* All three bars share one centre point and are offset only by transform, so
+     the two diagonals of the X cross exactly in the middle with equal arms. */
   .nav-toggle span{
-    display:block; width:18px; height:2px; border-radius:2px; background:currentColor; margin:2.5px 0;
+    position:absolute; left:50%; top:50%; width:18px; height:2px; margin:-1px 0 0 -9px;
+    border-radius:2px; background:currentColor;
     transition:transform .26s cubic-bezier(.22,.61,.36,1), opacity .26s ease;
   }
+  .nav-toggle span:nth-child(1){ transform:translateY(-6px) rotate(0); }
+  .nav-toggle span:nth-child(3){ transform:translateY(6px) rotate(0); }
   /* the middle bar gets out of the way at once, so the X forms cleanly */
   .nav-toggle span:nth-child(2){ transition:transform .1s ease, opacity .08s linear; }
-  .nav-toggle.is-open span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
+  .nav-toggle.is-open span:nth-child(1){ transform:translateY(0) rotate(45deg); }
   .nav-toggle.is-open span:nth-child(2){ opacity:0; transform:scaleX(0); }
-  .nav-toggle.is-open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
+  .nav-toggle.is-open span:nth-child(3){ transform:translateY(0) rotate(-45deg); }
 
   /* Side sheet: slides in from the right under the header, over a scrim. */
   .nav-scrim{

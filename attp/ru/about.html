@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-smooth">
+<link rel="stylesheet" href="css/style.css?v=20260919-xfix">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=7a353345"></script>
+<script src="js/i18n-ru.js?v=e1152f48"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -87,252 +87,6 @@
   }
   .about-hero-note::before{ content:""; width:28px; height:1px; background:currentColor; }
   .about-intro-section{ position:relative; z-index:1; padding-top:clamp(70px,8vw,112px); }
-
-  /* ── Values / paddle anatomy ──
-     The three values are told through the three parts of a paddle: as you
-     scroll the blade separates and the matching value lights up. No framing
-     panel — the layers sit straight on the page over a soft backlight, so the
-     scene belongs to the site instead of reading as a stray product shot. */
-  .anatomy{
-    position:relative;
-    height:340vh;
-    background:
-      radial-gradient(circle at 72% 38%,rgba(41,197,194,.1),transparent 32%),
-      linear-gradient(180deg,transparent 0,rgba(10,29,49,.9) 11%,rgba(10,29,49,.9) 89%,transparent 100%);
-  }
-  .anatomy-sticky{
-    position:sticky;
-    top:74px;
-    height:calc(100svh - 74px);
-    min-height:560px;
-    display:flex;
-    align-items:center;
-    overflow:hidden;
-  }
-  .anatomy-grid{
-    display:grid;
-    grid-template-columns:minmax(300px,1.02fr) minmax(360px,1fr);
-    align-items:center;
-    gap:clamp(40px,6vw,88px);
-  }
-  .anatomy-copy{ position:relative; z-index:2; }
-  .anatomy-copy h2{ max-width:480px; font-size:clamp(32px,3.9vw,52px); line-height:1.02; letter-spacing:-.035em; }
-  .anatomy-lede{ max-width:460px; margin-top:14px; font-size:15px; }
-
-  .anatomy-steps-wrap{ position:relative; margin-top:clamp(22px,3vw,34px); }
-  .anatomy-steps{
-    margin:0;
-    padding:0 0 0 26px;
-    list-style:none;
-  }
-  .anatomy-rail{
-    position:absolute;
-    left:0;
-    top:8px;
-    bottom:8px;
-    width:2px;
-    border-radius:2px;
-    overflow:hidden;
-    background:rgba(242,245,244,.1);
-  }
-  .anatomy-rail-fill{
-    display:block;
-    width:100%;
-    height:100%;
-    border-radius:inherit;
-    background:linear-gradient(180deg,var(--rally),var(--spin));
-    transform:scaleY(0);
-    transform-origin:top center;
-    will-change:transform;
-  }
-  .anatomy-step{ position:relative; }
-  .anatomy-step::before{
-    content:"";
-    position:absolute;
-    left:-30px;
-    top:20px;
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    background:var(--ink);
-    box-shadow:0 0 0 2px rgba(242,245,244,.2);
-    transition:background .35s ease,box-shadow .35s ease;
-  }
-  .anatomy-step.is-active::before{
-    background:var(--rally);
-    box-shadow:0 0 0 3px rgba(41,197,194,.26);
-  }
-  .anatomy-step-btn{
-    display:block;
-    width:100%;
-    margin:0;
-    padding:11px 14px 11px 0;
-    border:0;
-    background:none;
-    color:inherit;
-    font:inherit;
-    text-align:left;
-    cursor:pointer;
-    opacity:.4;
-    transition:opacity .45s ease;
-  }
-  .anatomy-step.is-active .anatomy-step-btn,
-  .anatomy.is-static .anatomy-step-btn{ opacity:1; }
-  /* Before the first value takes over, nothing is singled out yet — keep the
-     whole list readable rather than presenting three faded blocks. */
-  .anatomy.is-intro .anatomy-step-btn{ opacity:.78; }
-  .anatomy-step-btn:hover{ opacity:.85; }
-  .anatomy-step.is-active .anatomy-step-btn:hover{ opacity:1; }
-  .anatomy-step-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap:10px; }
-  .anatomy-step-title{
-    font-family:var(--font-display);
-    font-weight:600;
-    font-size:19px;
-    letter-spacing:-.01em;
-    color:var(--spin-hi);
-  }
-  .anatomy-step-tag{
-    font:600 10px/1 var(--font-mono);
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--rally);
-  }
-  .anatomy-step-text{
-    display:block;
-    max-width:430px;
-    margin-top:6px;
-    color:var(--chalk-dim);
-    font-size:13.5px;
-    line-height:1.55;
-  }
-  .anatomy-hint{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    margin-top:18px;
-    color:var(--muted);
-    font:500 10px/1.3 var(--font-mono);
-    letter-spacing:.1em;
-    text-transform:uppercase;
-  }
-  .anatomy-hint::before{
-    content:"";
-    width:7px;
-    height:7px;
-    border-right:1px solid var(--rally);
-    border-bottom:1px solid var(--rally);
-    transform:rotate(45deg) translateY(-2px);
-  }
-
-  .anatomy-visual{
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-width:0;
-  }
-  /* Backlight: the black rubber would otherwise dissolve into the navy. */
-  .anatomy-visual::before{
-    content:"";
-    position:absolute;
-    z-index:0;
-    inset:2% 0 8%;
-    border-radius:50%;
-    background:radial-gradient(circle at 50% 46%,rgba(41,197,194,.22),rgba(41,197,194,.07) 46%,transparent 70%);
-    filter:blur(46px);
-  }
-  /* Contact shadow, so the parts read as objects standing in space. */
-  .anatomy-visual::after{
-    content:"";
-    position:absolute;
-    z-index:0;
-    left:14%;
-    right:14%;
-    bottom:5%;
-    height:30px;
-    border-radius:50%;
-    background:radial-gradient(ellipse at center,rgba(2,8,16,.6),transparent 70%);
-    filter:blur(11px);
-  }
-  .anatomy-stage{
-    position:relative;
-    z-index:1;
-    width:min(100%,660px,calc(66svh * 1.1636));
-    aspect-ratio:1024/880;
-  }
-  .anatomy-layer{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    pointer-events:none;
-    user-select:none;
-    filter:drop-shadow(0 26px 22px rgba(2,8,16,.55));
-    /* `scale` is its own property, so the highlight can transition without
-       fighting the per-frame `transform` the scroll writes. */
-    scale:1;
-    transition:opacity .5s ease,filter .5s ease,scale .5s ease;
-  }
-  .anatomy-layer.is-dim{ opacity:.24; scale:.95; filter:drop-shadow(0 26px 22px rgba(2,8,16,.55)) saturate(.5); }
-  .anatomy-layer--black{
-    z-index:1;
-    transform:translate3d(var(--shift-black,33%),0,0);
-    /* Faint rim so the black face keeps a silhouette on a dark page. */
-    filter:drop-shadow(0 26px 22px rgba(2,8,16,.55)) drop-shadow(0 0 1.5px rgba(180,210,230,.7));
-  }
-  /* Black has almost no luminance to lose — dimming it as hard as the others
-     would delete it from the page rather than push it back. */
-  .anatomy-layer--black.is-dim{
-    opacity:.5;
-    filter:drop-shadow(0 26px 22px rgba(2,8,16,.55)) drop-shadow(0 0 1.5px rgba(180,210,230,.35));
-  }
-  .anatomy-layer--wood{ z-index:2; }
-  .anatomy-layer--red{
-    z-index:3;
-    transform:translate3d(var(--shift-red,-33%),0,0);
-  }
-
-  /* Only promote the layers where they actually move — on the static
-     (mobile / reduced-motion) path this would just pin three big textures
-     into their own compositor layers for nothing. */
-  @media (min-width:881px) and (prefers-reduced-motion:no-preference){
-    .anatomy-layer{ will-change:transform; }
-  }
-
-  /* The sticky panel is clipped to the viewport, so on short windows the copy
-     column has to give ground before it can be cut off. */
-  @media (min-width:881px) and (max-height:820px){
-    .anatomy-copy h2{ font-size:clamp(28px,3vw,38px); }
-    .anatomy-lede{ margin-top:10px; font-size:14px; }
-    .anatomy-steps-wrap{ margin-top:18px; }
-    .anatomy-step-btn{ padding:8px 14px 8px 0; }
-    .anatomy-step::before{ top:15px; }
-    .anatomy-step-text{ margin-top:4px; font-size:13px; }
-    .anatomy-hint{ margin-top:12px; }
-  }
-  @media (min-width:881px) and (max-height:700px){
-    .anatomy-lede,
-    .anatomy-hint{ display:none; }
-  }
-
-  @media (max-width:880px){
-    /* Below this width the sticky scene turns into a plain exploded diagram —
-       a long sticky scroll is worse than useless on a phone. */
-    .anatomy{ height:auto; }
-    .anatomy-sticky{ position:static; height:auto; min-height:0; padding:64px 0; overflow:visible; }
-    .anatomy-grid{ grid-template-columns:1fr; gap:34px; }
-    .anatomy-visual{ order:-1; }
-    .anatomy-stage{ width:min(94%,460px); }
-    .anatomy-copy h2{ font-size:clamp(30px,7.4vw,42px); max-width:620px; }
-    .anatomy-lede{ max-width:620px; }
-    .anatomy-hint{ display:none; }
-  }
-  @media (max-width:520px){
-    .anatomy-sticky{ padding:48px 0; }
-    .anatomy-steps{ padding-left:22px; }
-    .anatomy-step::before{ left:-26px; }
-  }
 
   .pillars{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:32px; }
   .pillar{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:26px; }
@@ -474,55 +228,13 @@
   </section>
   </div>
 
-  <section class="anatomy" id="valuesAnatomy" aria-labelledby="valuesAnatomyTitle" data-no-reveal>
-    <div class="anatomy-sticky">
-      <div class="container anatomy-grid">
-        <div class="anatomy-copy">
-          <div class="eyebrow">Ценности</div>
-          <h2 id="valuesAnatomyTitle">Три слоя — одна игра</h2>
-          <p class="anatomy-lede">Ракетка — это не просто кусок дерева: это основание и две накладки, работающие вместе. Ассоциация устроена так же — на трёх ценностях, которые не работают по отдельности.</p>
-          <div class="anatomy-steps-wrap">
-          <span class="anatomy-rail" aria-hidden="true"><span class="anatomy-rail-fill"></span></span>
-          <ol class="anatomy-steps" id="anatomySteps">
-            <li class="anatomy-step" data-layer="wood">
-              <button type="button" class="anatomy-step-btn">
-                <span class="anatomy-step-head">
-                  <span class="anatomy-step-title">Уважение</span>
-                  <span class="anatomy-step-tag">Деревянное основание</span>
-                </span>
-                <span class="anatomy-step-text">В спорте это называют фейр-плей — неписаный кодекс, который определяет нас за столом и вне его.</span>
-              </button>
-            </li>
-            <li class="anatomy-step" data-layer="red">
-              <button type="button" class="anatomy-step-btn">
-                <span class="anatomy-step-head">
-                  <span class="anatomy-step-title">Мастерство</span>
-                  <span class="anatomy-step-tag">Атакующая накладка</span>
-                </span>
-                <span class="anatomy-step-text">Преодолевать собственные пределы, как бы трудно ни было, — с упорством, дисциплиной и неизменной смелостью.</span>
-              </button>
-            </li>
-            <li class="anatomy-step" data-layer="black">
-              <button type="button" class="anatomy-step-btn">
-                <span class="anatomy-step-head">
-                  <span class="anatomy-step-title">Команда</span>
-                  <span class="anatomy-step-tag">Контролирующая накладка</span>
-                </span>
-                <span class="anatomy-step-text">Спорт учит относиться ко всем на равных и находить общие цели — именно это делает нас ассоциацией, а не просто списком игроков.</span>
-              </button>
-            </li>
-          </ol>
-          </div>
-          <span class="anatomy-hint">Прокрутите, чтобы разобрать ракетку</span>
-        </div>
-        <div class="anatomy-visual">
-          <div class="anatomy-stage" id="anatomyStage">
-            <img class="anatomy-layer anatomy-layer--black" src="images/scroll/paddle-v2/black.webp" width="1024" height="880" alt="" decoding="async" loading="lazy">
-            <img class="anatomy-layer anatomy-layer--wood" src="images/scroll/paddle-v2/wood.webp" width="1024" height="880" alt="Ракетка для настольного тенниса, разобранная на деревянное основание и две резиновые накладки" decoding="async" loading="lazy">
-            <img class="anatomy-layer anatomy-layer--red" src="images/scroll/paddle-v2/red.webp" width="1024" height="880" alt="" decoding="async" loading="lazy">
-          </div>
-        </div>
-      </div>
+  <section class="container section-tight">
+    <div class="eyebrow">Ценности</div>
+    <h2 class="mb-24">Фундамент, на котором стоит ассоциация</h2>
+    <div class="pillars">
+      <div class="pillar"><div class="pillar-no">01</div><h3>Уважение</h3><p class="dim mt-16">В спорте это называют фейр-плей — неписаный кодекс, который определяет нас за столом и вне его.</p></div>
+      <div class="pillar"><div class="pillar-no">02</div><h3>Мастерство</h3><p class="dim mt-16">Преодолевать собственные пределы, как бы трудно ни было, — с упорством, дисциплиной и неизменной смелостью.</p></div>
+      <div class="pillar"><div class="pillar-no">03</div><h3>Команда</h3><p class="dim mt-16">Спорт учит относиться ко всем на равных и находить общие цели — именно это делает нас ассоциацией, а не просто списком игроков.</p></div>
     </div>
   </section>
 
@@ -581,7 +293,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260919-mnav"></script>
+<script src="js/supabase-init.js?v=20260919-hd"></script>
 <script>
 (async function(){
   const STAFF_ROLES = ['founder','president','management','coach','referee'];
@@ -624,109 +336,6 @@
   document.getElementById('managementGrid').innerHTML = renderGrid(management);
   document.getElementById('coachesGrid').innerHTML = renderGrid(coaches);
   document.getElementById('refereesGrid').innerHTML = renderGrid(referees);
-})();
-</script>
-<script>
-/* Values scene: scroll separates the paddle, and each band highlights one
-   value together with the layer it stands for. Every step's text is in the
-   static markup, so with JS off (or on a phone, or under reduced motion) the
-   section degrades to a readable exploded diagram + list — nothing is hidden
-   behind the animation. */
-(() => {
-  const section = document.getElementById('valuesAnatomy');
-  const stage = document.getElementById('anatomyStage');
-  const railFill = section?.querySelector('.anatomy-rail-fill');
-  const steps = section ? [...section.querySelectorAll('.anatomy-step')] : [];
-  if (!section || !stage || !railFill || steps.length !== 3) return;
-
-  const LAYERS = ['wood','red','black'];
-  const layerEls = LAYERS.map(k => section.querySelector(`.anatomy-layer--${k}`));
-  if (layerEls.some(el => !el)) return;
-
-  // Scroll fractions where each value takes over. Below BANDS[0] the paddle is
-  // still coming apart and no single value is highlighted.
-  const BANDS = [0.26, 0.52, 0.78];
-  const SEP_START = 0.04, SEP_END = 0.3;
-
-  // A tall sticky scene is only worth it on a wide screen with motion allowed.
-  const staticMode = window.matchMedia('(max-width:880px), (prefers-reduced-motion: reduce)');
-  let phase = null;
-  let scheduled = false;
-
-  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
-
-  function setSeparation(sep){
-    const shift = (1 - sep) * 33;
-    stage.style.setProperty('--shift-black', `${shift.toFixed(2)}%`);
-    stage.style.setProperty('--shift-red', `${(-shift).toFixed(2)}%`);
-  }
-
-  function setPhase(next){
-    if (next === phase) return;
-    phase = next;
-    steps.forEach((step, i) => {
-      const on = i === next;
-      step.classList.toggle('is-active', on);
-      if (on) step.setAttribute('aria-current', 'true');
-      else step.removeAttribute('aria-current');
-    });
-    layerEls.forEach((el, i) => el.classList.toggle('is-dim', next !== -1 && i !== next));
-  }
-
-  function applyStatic(){
-    setSeparation(1);
-    setPhase(-1);
-    section.classList.add('is-static');
-    section.classList.remove('is-intro');
-    steps.forEach(step => step.removeAttribute('aria-current'));
-    railFill.style.transform = 'scaleY(1)';
-  }
-
-  function update(){
-    scheduled = false;
-    if (staticMode.matches){ applyStatic(); return; }
-    section.classList.remove('is-static');
-
-    const rect = section.getBoundingClientRect();
-    const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-    const amount = clamp01(-rect.top / distance);
-
-    const raw = clamp01((amount - SEP_START) / (SEP_END - SEP_START));
-    setSeparation(raw * raw * (3 - 2 * raw));
-
-    let next = -1;
-    for (let i = 0; i < BANDS.length; i++) if (amount >= BANDS[i]) next = i;
-    setPhase(next);
-    section.classList.toggle('is-intro', next === -1);
-
-    railFill.style.transform = `scaleY(${amount.toFixed(4)})`;
-  }
-
-  function requestUpdate(){
-    if (scheduled) return;
-    scheduled = true;
-    requestAnimationFrame(update);
-  }
-
-  // Clicking a value jumps to its band — the only way to reach a specific
-  // value by keyboard inside a scroll-driven scene.
-  steps.forEach((step, i) => {
-    step.querySelector('.anatomy-step-btn')?.addEventListener('click', () => {
-      if (staticMode.matches) return;
-      const distance = Math.max(1, section.offsetHeight - window.innerHeight);
-      const top = section.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({
-        top: top + distance * (BANDS[i] + 0.05),
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-      });
-    });
-  });
-
-  addEventListener('scroll', requestUpdate, { passive:true });
-  addEventListener('resize', requestUpdate, { passive:true });
-  staticMode.addEventListener?.('change', requestUpdate);
-  addEventListener('load', requestUpdate, { once:true });
-  update();
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
