@@ -135,7 +135,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260918-photos"></script>
+<script src="js/supabase-init.js?v=20260919-hide"></script>
 <script>
 (async function(){
   const { data, error } = await db.from('tournament_results').select('*').eq('status','finished').order('start_date', { ascending:false }).limit(300);

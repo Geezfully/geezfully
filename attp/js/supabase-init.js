@@ -114,6 +114,8 @@ async function fetchTopRanked(limit = 10, list = 'masculin'){
     .filter(r => r.players)
     .map(r => ({ ...r.players, ligas_ranking: [{ ranking: r.ranking, position: r.position, rating: r.rating }] }));
 }
+// Rows still in the database that should no longer be published.
+const HIDDEN_NEWS = new Set(['noul-site-attp-este-live']);
 async function fetchNews(limit = 20){
   const localNews = [
     ...(window.ATTP_NEWS || []),
@@ -128,15 +130,13 @@ async function fetchNews(limit = 20){
   if (error) console.error(error);
 
   const bySlug = new Map(localNews.map(n => [n.slug, n]));
-  (data || []).forEach(n => {
+  (data || []).filter(n => !HIDDEN_NEWS.has(n.slug)).forEach(n => {
     const local = bySlug.get(n.slug) || {};
     bySlug.set(n.slug, {
       ...local,
       ...n,
-      image: n.cover_image_url || local.image ||
-        (n.slug === 'noul-site-attp-este-live' ? 'images/news/noul-site-attp-este-live.webp' : null),
-      cover_image_url: n.cover_image_url || local.cover_image_url ||
-        (n.slug === 'noul-site-attp-este-live' ? 'images/news/noul-site-attp-este-live.webp' : null),
+      image: n.cover_image_url || local.image || null,
+      cover_image_url: n.cover_image_url || local.cover_image_url || null,
       date: n.published_at || local.date,
     });
   });
