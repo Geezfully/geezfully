@@ -28,8 +28,10 @@
   }
   .hero-stage::before{
     content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-    background:url('images/masters-team-hero.webp') center top / 100% auto no-repeat;
-    opacity:.94; transform:scale(1.015); transform-origin:center top;
+    /* Notorium Brand Awards 2025 winner graphic: square, so it fills the hero's
+       height on the right and the headline keeps the dark left side. The file
+       fades to transparent on its left and bottom edges to blend into the page. */
+    background:url('images/heroes/award-hero-1500.webp') right center / auto 100% no-repeat;
   }
   .hero-stage::after{
     content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
@@ -123,24 +125,19 @@
   }
   .scoreboard-stage .scoreboard-head{ background:rgba(23,46,72,.72); }
   @media (max-width:980px){
-    .hero-stage::before{ background-position:58% 12%; }
+    /* Narrow screens: the award sits whole at the top and the copy starts under it. */
+    .hero-stage{ --award:min(100vw, 620px); min-height:0; }
+    .hero-stage::before{ background:url('images/heroes/award-hero-900.webp') center top / var(--award) auto no-repeat; }
     .hero-stage::after{
-      background:
-        linear-gradient(90deg, rgba(5,15,26,.9), rgba(5,15,26,.42)),
-        linear-gradient(180deg, rgba(5,15,26,.06) 0%, rgba(5,15,26,.48) 40%, #071421 74%);
+      background:linear-gradient(180deg, transparent 0, transparent calc(var(--award) * .62), #071421 calc(var(--award) * .94));
     }
-    .hero{ grid-template-columns:1fr; padding:44px 24px 52px; }
+    .hero{ grid-template-columns:1fr; padding:calc(var(--award) * .86) 24px 52px; }
     .scoreboard-layout{ grid-template-columns:1fr; gap:32px; }
     .scoreboard-visual{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr); align-items:center; }
     .pingpong-model-shell{ margin-top:0; }
   }
   @media (max-width:600px){
-    .hero-stage{ min-height:0; }
-    .hero-stage::before{ background-position:54% top; background-size:auto 370px; opacity:.72; }
-    .hero-stage::after{
-      background:linear-gradient(180deg, rgba(5,15,26,.08) 0%, rgba(5,15,26,.28) 18%, #071421 365px);
-    }
-    .hero{ padding:36px 18px 40px; }
+    .hero{ padding:calc(var(--award) * .86) 18px 40px; }
     .scoreboard-layout{ padding:40px 18px 44px; gap:24px; }
     .scoreboard-intro{ padding-top:0; }
     .scoreboard-visual{ display:block; }
