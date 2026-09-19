@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-xfix">
+<link rel="stylesheet" href="css/style.css?v=20260919-yellow">
 <script>window.__PAGE_LANG__="en";</script>
 <script src="js/i18n-en.js?v=e9013be1"></script>
 <script src="js/news-en.js?v=7dbf42ab"></script>
@@ -28,17 +28,17 @@
   }
   .hero-stage::before{
     content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-    /* Notorium Brand Awards 2025 winner graphic: square, so it fills the hero's
-       height on the right and the headline keeps the dark left side. The file
-       fades to transparent on its left and bottom edges to blend into the page. */
-    background:url('images/heroes/award-hero-1500.webp') right center / auto 100% no-repeat;
+    /* Notorium Brand Awards 2025 winner graphic, widened with a blurred extension
+       of its own background so it can fade in slowly from far left; it fills the
+       hero's height on the right and the headline keeps the darker left side. */
+    background:url('images/heroes/award-hero-wide.webp?v=2') right center / auto 100% no-repeat;
   }
   .hero-stage::after{
     content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
     background:
-      linear-gradient(90deg, rgba(5,15,26,.92) 0%, rgba(5,15,26,.66) 35%, rgba(5,15,26,.1) 68%, rgba(5,15,26,.16) 100%),
+      linear-gradient(90deg, rgba(5,15,26,.86) 0%, rgba(5,15,26,.7) 22%, rgba(5,15,26,.44) 40%, rgba(5,15,26,.18) 58%, rgba(5,15,26,.05) 78%, rgba(5,15,26,.08) 100%),
       linear-gradient(180deg, rgba(5,15,26,.04) 0%, rgba(5,15,26,.08) 34%, rgba(5,15,26,.62) 80%, #071421 100%),
-      radial-gradient(700px 480px at 12% 30%, rgba(255,107,53,.13), transparent 66%);
+      radial-gradient(700px 480px at 12% 30%, rgba(249,202,80,.1), transparent 66%);
   }
   .hero{
     position:relative; z-index:2;
@@ -98,7 +98,7 @@
     position:relative; min-height:280px; margin-top:-8px; overflow:hidden;
     border-radius:var(--radius-lg);
     background:
-      radial-gradient(circle at 54% 48%,rgba(255,107,53,.18),transparent 22%),
+      radial-gradient(circle at 54% 48%,rgba(249,202,80,.18),transparent 22%),
       radial-gradient(circle at 55% 54%,rgba(41,197,194,.13),transparent 48%);
   }
   .pingpong-model{
@@ -127,7 +127,7 @@
   @media (max-width:980px){
     /* Narrow screens: the award sits whole at the top and the copy starts under it. */
     .hero-stage{ --award:min(100vw, 620px); min-height:0; }
-    .hero-stage::before{ background:url('images/heroes/award-hero-900.webp') center top / var(--award) auto no-repeat; }
+    .hero-stage::before{ background:url('images/heroes/award-hero-900.webp?v=2') center top / var(--award) auto no-repeat; }
     .hero-stage::after{
       background:linear-gradient(180deg, transparent 0, transparent calc(var(--award) * .62), #071421 calc(var(--award) * .94));
     }
