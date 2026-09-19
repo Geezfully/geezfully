@@ -181,10 +181,12 @@ p{ margin:0; color:var(--chalk-dim); }
   }
   .nav-toggle span{
     display:block; width:18px; height:2px; border-radius:2px; background:currentColor; margin:2.5px 0;
-    transition:transform .22s ease, opacity .22s ease;
+    transition:transform .26s cubic-bezier(.22,.61,.36,1), opacity .26s ease;
   }
+  /* the middle bar gets out of the way at once, so the X forms cleanly */
+  .nav-toggle span:nth-child(2){ transition:transform .1s ease, opacity .08s linear; }
   .nav-toggle.is-open span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
-  .nav-toggle.is-open span:nth-child(2){ opacity:0; }
+  .nav-toggle.is-open span:nth-child(2){ opacity:0; transform:scaleX(0); }
   .nav-toggle.is-open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
 
   /* Side sheet: slides in from the right under the header, over a scrim. */
@@ -230,10 +232,42 @@ p{ margin:0; color:var(--chalk-dim); }
      sticky header would then pin to the top of the page, not the screen: scrolled down,
      it vanished along with the button that closes the sheet. */
   html.nav-open{ overflow:hidden; overscroll-behavior:none; }
+  /* social links, pinned to the foot of the sheet and arriving after the rows */
+  #mobileNav .mobile-social{
+    margin-top:auto; padding-top:28px;
+    opacity:0; transform:translateX(18px); transition:opacity .01s linear, transform .01s linear;
+  }
+  #mobileNav.show .mobile-social{ opacity:1; transform:none; transition:opacity .26s ease .38s, transform .3s cubic-bezier(.22,.61,.36,1) .38s; }
+  .mobile-social-title{ font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 12px; }
+  .mobile-social-row{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+  .mobile-social-row span{ white-space:nowrap; }
+  /* narrow phones: the names do not fit four across, so icons alone (each link keeps its aria-label) */
+  @media (max-width:380px){
+    .mobile-social-row span{ display:none; }
+    .mobile-social-row svg{ width:24px !important; height:24px !important; }
+    #mobileNav .mobile-social-row a{ min-height:52px; }
+  }
+  #mobileNav .mobile-social-row a{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    min-height:68px; padding:10px 4px; border:1px solid var(--border); border-radius:12px; background:var(--surface);
+    font-family:var(--font-body); font-size:10.5px; font-weight:600; color:var(--chalk-dim);
+    transition:border-color .2s ease, color .2s ease, background .2s ease;
+  }
+  #mobileNav .mobile-social-row a:last-child{ border-bottom:1px solid var(--border); }
+  .mobile-social-row svg{ width:22px; height:22px; color:var(--brand); }
+  /* short phones (SE and the like): tighter rows so the social links stay on screen */
+  @media (max-height:760px){
+    #mobileNav{ padding-top:6px; }
+    #mobileNav > a{ min-height:44px; font-size:18px; }
+    #mobileNav .mobile-social{ padding-top:14px; }
+    .mobile-social-title{ margin-bottom:8px; }
+    #mobileNav .mobile-social-row a{ min-height:52px; padding:6px 4px; gap:4px; }
+  }
+  #mobileNav .mobile-social-row a:hover, #mobileNav .mobile-social-row a:focus-visible{ border-color:var(--brand); color:var(--chalk); }
 }
 @media (prefers-reduced-motion:reduce){
-  .nav-scrim, #mobileNav, #mobileNav > a, #mobileNav.show > a{ transition:none !important; }
-  #mobileNav > a{ opacity:1; transform:none; }
+  .nav-scrim, #mobileNav, #mobileNav > a, #mobileNav.show > a, #mobileNav .mobile-social{ transition:none !important; }
+  #mobileNav > a, #mobileNav .mobile-social{ opacity:1; transform:none; }
 }
 /* Phones: logo, language pills and menu button have to share ~350px without squeezing. */
 @media (max-width:480px){

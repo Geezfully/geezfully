@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-mnav">
+<link rel="stylesheet" href="css/style.css?v=20260919-smooth">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -97,8 +97,9 @@
   }
   .pingpong-model{
     position:relative; z-index:2; display:block; width:100%; height:280px;
-    background:transparent; --poster-color:transparent; pointer-events:none;
+    background:transparent; --poster-color:transparent; cursor:grab; outline:none;
   }
+  .pingpong-model:active{ cursor:grabbing; }
   .pingpong-model-fallback{
     position:absolute; z-index:1; left:50%; top:52%; width:80px; aspect-ratio:1;
     border-radius:50%; transform:translate(-50%,-50%);
@@ -283,7 +284,7 @@
   @media (hover:none), (pointer:coarse){
     .partner-marquee{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
     .partner-marquee::-webkit-scrollbar{ display:none; }
-    .partner-track{ animation:none; will-change:auto; }
+    .partner-track{ animation:none; will-change:transform; }
   }
   @media (max-width:600px){
     .partner{ gap:12px; margin-right:48px; font-size:18px; }
@@ -441,7 +442,11 @@
             src="models/pingpong.glb?v=20260918-sparkle-orbit"
             alt="Minge albă DHS RS40+, cu o stea portocalie pe o orbită înclinată"
             tabindex="-1"
-            auto-rotate-delay="0"
+            auto-rotate-delay="2500"
+            camera-controls
+            disable-zoom
+            disable-pan
+            touch-action="pan-y"
             rotation-per-second="10deg"
             camera-orbit="0deg 90deg 0.14m"
             camera-target="0m 0m 0m"
@@ -758,41 +763,55 @@ if (pingPongModel && pingPongModelShell) {
 </script>
 <script>
 // Partner strip on touch screens: native swipe, plus a slow drift when left alone.
-// The track holds the list twice, so the scroll position wraps by half its width.
+// The drift moves the track with a transform (sub-pixel, on the compositor);
+// scrollLeft only moves in whole pixels on iOS, which read as ~15fps stutter.
+// The track holds the list twice, so positions wrap by half its width.
 (function(){
   const strip = document.querySelector('.partner-marquee');
   if (!strip || !matchMedia('(hover:none), (pointer:coarse)').matches) return;
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   const track = strip.querySelector('.partner-track');
-  let pos = 0, last = 0, touching = false, idleUntil = 0, visible = true;
+  let offset = 0, last = 0, touching = false, idleUntil = 0, visible = true, drifting = false, quiet = false;
   const half = () => track.scrollWidth / 2;
-  const wrap = () => {
-    const h = half();
-    if (strip.scrollLeft >= h) strip.scrollLeft -= h;
-    else if (strip.scrollLeft <= 0) strip.scrollLeft += h;
+  const paint = () => { track.style.transform = `translate3d(${-offset}px,0,0)`; };
+  const setScroll = x => { quiet = true; strip.scrollLeft = x; requestAnimationFrame(() => { quiet = false; }); };
+  // hand the current position to the scroller, so a swipe starts exactly where the drift was
+  const toScroll = () => {
+    if (!drifting) return;
+    drifting = false;
+    const x = strip.scrollLeft + offset;
+    offset = 0; paint(); setScroll(Math.round(x));
+  };
+  // and back: park the scroller at 0 and carry on from the same spot with the transform
+  const toDrift = () => {
+    offset = strip.scrollLeft % half(); drifting = true; paint(); setScroll(0);
   };
   const hold = ms => { idleUntil = performance.now() + ms; };
-  strip.addEventListener('touchstart', () => { touching = true; }, { passive:true });
+  strip.addEventListener('touchstart', () => { touching = true; toScroll(); }, { passive:true });
   strip.addEventListener('touchend', () => { touching = false; hold(1600); }, { passive:true });
   strip.addEventListener('touchcancel', () => { touching = false; hold(1600); }, { passive:true });
-  // any scroll we did not cause (a swipe, momentum after it) postpones the drift
   strip.addEventListener('scroll', () => {
-    if (Math.abs(strip.scrollLeft - pos) > 2) { hold(1200); wrap(); pos = strip.scrollLeft; }
+    if (quiet) return;
+    hold(1200);                                   // momentum after a swipe postpones the drift
+    const h = half();
+    if (strip.scrollLeft >= h) setScroll(strip.scrollLeft - h);
+    else if (strip.scrollLeft <= 0) setScroll(strip.scrollLeft + h);
   }, { passive:true });
   new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(strip);
   const tick = now => {
     const dt = Math.min(64, now - (last || now)); last = now;
     if (visible && !touching && now > idleUntil) {
-      pos += half() / 36000 * dt;               // one full loop every 36s, like the desktop marquee
-      if (pos >= half()) pos -= half();
-      strip.scrollLeft = pos;
+      if (!drifting) toDrift();
+      offset += half() / 36000 * dt;              // one full loop every 36s, like the desktop marquee
+      if (offset >= half()) offset -= half();
+      paint();
     }
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
 })();
 </script>
-<script src="js/nav.js?v=20260919-sheet"></script>
+<script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
 </body>
