@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260919-wide">
+<link rel="stylesheet" href="css/style.css?v=20260923-rankpill">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=64da7e99"></script>
+<script src="js/i18n-ru.js?v=0cd8fb10"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -108,7 +108,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260919-setka"></script>
+<script src="js/supabase-init.js?v=20260923-rankpill"></script>
 <script>
 (async function(){
   const id = new URLSearchParams(location.search).get('id');
@@ -123,8 +123,8 @@
   document.getElementById('profileHead').innerHTML = `
     <div class="profile-avatar">${avatarHtml(p, 'lg')}</div>
     <div>
-      <h1>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</h1>
-      <p class="dim mt-8">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.category ? ' · ' + escapeHtml(t(p.category)) : ''}${p.birth_year ? ' · ' + t('n. {an}').replace('{an}', p.birth_year) : ''}</p>
+      <h1>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}${rankPill(p)}</h1>
+      <p class="dim mt-8">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}${p.birth_year ? ' · ' + t('n. {an}').replace('{an}', p.birth_year) : ''}</p>
     </div>`;
 
   const LIST_LABELS = { masculin:t('în clasamentul masculin'), feminin:t('în clasamentul feminin') };
@@ -135,13 +135,13 @@
     <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses ?? '—'}</b><span>${t('Înfrângeri · Setka Cup')}</span></div>
   ` : `<p class="muted">${t('Acest jucător nu apare încă în clasamentul oficial și nu are meciuri înregistrate.')}</p>`;
 
-  const RANK_LABELS = { rank_1:t('Categoria I'), rank_2:t('Categoria II'), rank_3:t('Categoria III'), candidate:t('Candidat de maestru'), master:t('Maestru al sportului') };
+  const RANK_LABELS = Object.fromEntries(Object.entries(RANK_PILL).map(([k, v]) => [k, t(v[1])]));
   const GRIP_LABELS = { european:t('Europeană'), asian:t('Asiatică') };
   const STYLE_LABELS = { attacking:t('Atacant'), defensive:t('Defensiv') };
   const HAND_LABELS = { right_hand:t('Dreapta'), left_hand:t('Stânga') };
   const gearItems = [
     p.game_style && [t('Stil de joc'), STYLE_LABELS[p.game_style] || p.game_style],
-    p.sport_rank && [t('Categorie'), RANK_LABELS[p.sport_rank] || p.sport_rank],
+    p.sport_rank && [t('Titlu sportiv'), RANK_LABELS[p.sport_rank] || p.sport_rank],
     p.player_grip && [t('Priză'), GRIP_LABELS[p.player_grip] || p.player_grip],
     p.playing_hand && [t('Mâna de joc'), HAND_LABELS[p.playing_hand] || p.playing_hand],
     p.blade && [t('Paletă (lemn)'), p.blade],

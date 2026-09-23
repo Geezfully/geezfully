@@ -79,6 +79,21 @@ function playerStats(p){
   if (!r && !games) return null;
   return { rating: r ? r.rating : null, position: r ? r.position : null, list: r ? r.list : null, ...(games || { tournaments:null, matches:null, wins:null, losses:null }) };
 }
+// Sport titles and categories, shown as a small pill beside the name. The code
+// stays the same in every language (as on mttf.md); the full title is the tooltip.
+const RANK_PILL = {
+  master_int: ['MSI', 'Maestru al Sportului Internațional'],
+  master:     ['MS',  'Maestru al Sportului'],
+  candidate:  ['CMS', 'Candidat în Maestru al Sportului'],
+  rank_1:     ['Cat. I',   'Categoria I'],
+  rank_2:     ['Cat. II',  'Categoria II'],
+  rank_3:     ['Cat. III', 'Categoria III'],
+};
+function rankPill(p){
+  const r = RANK_PILL[p && p.sport_rank];
+  if (!r) return '';
+  return `<span class="rank-pill" data-rank="${p.sport_rank}" title="${escapeHtml(t(r[1]))}">${escapeHtml(t(r[0]))}</span>`;
+}
 function roleLabel(role){
   const label = { founder:'Fondator', president:'Președinte', management:'Management', coach:'Antrenor', referee:'Arbitru', player:'Jucător' }[role];
   return label ? t(label) : role;

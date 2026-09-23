@@ -285,9 +285,9 @@
  "Victorii · Setka Cup": "Победы · Setka Cup",
  "Înfrângeri · Setka Cup": "Поражения · Setka Cup",
  "Acest jucător nu apare încă în clasamentul oficial și nu are meciuri înregistrate.": "Этого игрока пока нет в официальном рейтинге, и у него нет сыгранных матчей.",
- "Categoria I": "I разряд",
- "Categoria II": "II разряд",
- "Categoria III": "III разряд",
+ "Categoria I": "Категория I",
+ "Categoria II": "Категория II",
+ "Categoria III": "Категория III",
  "Categoria 1": "1-й разряд",
  "Categoria 2": "2-й разряд",
  "Categoria 3": "3-й разряд",
@@ -466,5 +466,14 @@
  "Despre noi": "О нас",
  "<a href=\"index.html\">Acasă</a> / Despre noi": "<a href=\"index.html\">Главная</a> / О нас",
  "Despre noi →": "О нас →",
- "Despre noi — Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”": "О нас — Национальная ассоциация профессиональных спортсменов Республики Молдова «ATTP»"
+ "Despre noi — Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”": "О нас — Национальная ассоциация профессиональных спортсменов Республики Молдова «ATTP»",
+ "MSI": "MSI",
+ "MS": "MS",
+ "CMS": "CMS",
+ "Cat. I": "Кат. I",
+ "Cat. II": "Кат. II",
+ "Cat. III": "Кат. III",
+ "Maestru al Sportului Internațional": "Мастер спорта международного класса",
+ "Candidat în Maestru al Sportului": "Кандидат в мастера спорта",
+ "Titlu sportiv": "Спортивное звание"
 }

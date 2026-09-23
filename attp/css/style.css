@@ -285,6 +285,22 @@ p{ margin:0; color:var(--chalk-dim); }
   .nav-toggle{ width:42px; height:42px; }
 }
 
+/* Sport title / category pill beside a player's name. Most players have none, so it is
+   a mark next to the name rather than a column: the two master titles take the accent
+   inks, the rest stay quiet. */
+.rank-pill{
+  display:inline-block; margin-left:8px; padding:1px 6px; vertical-align:2px;
+  font-family:var(--font-mono); font-size:9.5px; font-weight:700; letter-spacing:.06em; line-height:1.6;
+  white-space:nowrap; border:1px solid var(--border-hi); border-radius:4px; color:var(--muted);
+}
+.rank-pill[data-rank="master"]{ border-color:rgba(41,197,194,.5); color:var(--rally-hi); }
+.rank-pill[data-rank="master_int"]{ border-color:rgba(255,107,53,.55); color:var(--spin-hi); }
+h1 .rank-pill{ font-size:12px; vertical-align:8px; margin-left:12px; }
+@media (max-width:600px){
+  .rank-pill{ margin-left:6px; padding:1px 4px; font-size:9px; }
+  h1 .rank-pill{ font-size:11px; vertical-align:5px; margin-left:8px; }
+}
+
 /* ── Scoreboard (signature element) ── */
 .scoreboard{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
