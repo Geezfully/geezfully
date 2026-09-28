@@ -55,7 +55,11 @@ body{
   margin:0; background:var(--ink); color:var(--chalk);
   font-family:var(--font-body); font-size:16px; line-height:1.55;
   -webkit-font-smoothing:antialiased;
+  /* Short pages on tall monitors: the page is at least one screen tall and the
+     footer sits at the bottom instead of ending half-way down. */
+  min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
 }
+main{ flex:1 0 auto; }
 body{
   background-image:
     radial-gradient(1200px 600px at 85% -10%, rgba(41,197,194,.10), transparent 60%),
@@ -575,7 +579,7 @@ html.show-load-screen #loadScreen{ display:flex; }
 .sport-choice-hero .lede{ max-width:640px; }
 .sport-choice{
   display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:clamp(16px,2vw,28px);
-  padding-bottom:clamp(64px,8vw,112px);
+  padding-bottom:clamp(40px,5vw,72px);
 }
 .sport-card{
   --c:var(--spin); --glow:rgba(249,202,80,.2);
@@ -630,8 +634,23 @@ html.show-load-screen #loadScreen{ display:flex; }
   .sport-card-art{ width:74%; }
 }
 
+/* Basketball pages have no photo yet: a large court drawing balances the header
+   the way the player photo does on the table-tennis pages. */
+.sport-choice-hero--art{ position:relative; isolation:isolate; overflow-x:clip; }
+.sport-hero-art{
+  position:absolute; z-index:-1; top:clamp(24px,4vw,56px); right:clamp(0px,2vw,24px);
+  width:min(46%,560px); height:auto; stroke:var(--spin); stroke-width:2; opacity:.34;
+  transform:rotate(-8deg);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%), linear-gradient(180deg,#000 55%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 30%), linear-gradient(180deg,#000 55%,transparent 100%);
+  mask-composite:intersect;
+}
+.sport-hero-art .ball{ fill:var(--spin); stroke:none; opacity:.9; }
+@media (max-width:980px){ .sport-hero-art{ width:min(78%,520px); top:8px; right:-12%; opacity:.16; } }
+
 /* Per-sport page while its data source isn't connected yet */
-.sport-soon-section{ padding-bottom:clamp(64px,8vw,112px); }
+.sport-soon-section{ padding-bottom:clamp(40px,5vw,72px); }
 .sport-soon{
   display:grid; justify-items:start; gap:10px; padding:32px; max-width:640px;
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
