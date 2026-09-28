@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260923-rankpill">
+<link rel="stylesheet" href="css/style.css?v=20260928-mobile2">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -76,6 +76,15 @@
   .hero-stats{ display:flex; gap:32px; margin-top:44px; flex-wrap:wrap; }
   .hero-stat b{ display:block; font-family:var(--font-display); font-size:28px; }
   .hero-stat span{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--font-mono); }
+  /* Phones: keep the three numbers on one row instead of wrapping 2 + 1. */
+  @media (max-width:600px){
+    /* both ranking buttons full width, so neither sport looks secondary */
+    .hero-actions{ display:grid; grid-template-columns:1fr; gap:10px; }
+    .hero-actions .btn{ width:100%; }
+    .hero-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:36px; }
+    .hero-stat b{ font-size:clamp(20px,6.4vw,26px); }
+    .hero-stat span{ display:block; margin-top:4px; font-size:10.5px; line-height:1.35; letter-spacing:.04em; }
+  }
   .scoreboard-stage{
     position:relative;
     /* Top layer feathers this band into the hero above and the ink below, so it
@@ -96,9 +105,19 @@
   .pingpong-model-shell{
     position:relative; min-height:280px; margin-top:-8px; overflow:hidden;
     border-radius:var(--radius-lg);
+  }
+  /* Table-tennis and basketball side by side, one sport per half. */
+  .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ball-slot{ position:relative; min-width:0; }
+  .ball-slot--tt{
     background:
-      radial-gradient(circle at 54% 48%,rgba(249,202,80,.18),transparent 22%),
-      radial-gradient(circle at 55% 54%,rgba(41,197,194,.13),transparent 48%);
+      radial-gradient(circle at 50% 48%,rgba(249,202,80,.18),transparent 34%),
+      radial-gradient(circle at 50% 54%,rgba(41,197,194,.1),transparent 62%);
+  }
+  .ball-slot--bb{
+    background:
+      radial-gradient(circle at 50% 48%,rgba(41,197,194,.2),transparent 34%),
+      radial-gradient(circle at 50% 54%,rgba(249,202,80,.08),transparent 62%);
   }
   .pingpong-model{
     position:relative; z-index:2; display:block; width:100%; height:280px;
@@ -112,7 +131,11 @@
     box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
     transition:opacity .25s ease;
   }
-  .pingpong-model-shell.is-loaded .pingpong-model-fallback{ opacity:0; }
+  .ball-slot--bb .pingpong-model-fallback{
+    background:radial-gradient(circle at 34% 28%,#ffe27a 0%,#f2b62f 46%,#6b3fa0 100%);
+    box-shadow:inset -18px -22px 30px rgba(20,10,40,.28);
+  }
+  .ball-slot.is-loaded .pingpong-model-fallback{ opacity:0; }
   @media (prefers-reduced-motion:reduce){
     .pingpong-model-fallback{ transition:none; }
   }
@@ -411,14 +434,14 @@
           <path d="M715 119L713 133" class="hero-ball-seam" stroke-width="7" stroke-linecap="round"/>
         </g>
       </svg>
-      <h1>Tenisul de masă profesionist din Moldova, <span class="accent">într-un singur loc</span>.</h1>
-      <p class="lede">ATTP reunește jucătorii, arbitrii și antrenorii de tenis de masă din Republica Moldova sub principiile Fair-Play, integrității și performanței — cu turnee naționale derulate constant și clasamente actualizate automat.</p>
+      <h1>Sportul profesionist din Republica Moldova, <span class="accent">într-un singur loc</span>.</h1>
+      <p class="lede">ATTP reunește jucători, arbitri și antrenori ai mai multor discipline sportive din Republica Moldova sub principiile Fair-Play, integrității și performanței — cu turnee naționale derulate constant și clasamente actualizate automat.</p>
       <div class="hero-actions">
-        <a href="players.html" class="btn btn-primary">Vezi clasamentul</a>
-        <a href="about.html" class="btn btn-ghost">Despre noi</a>
+        <a href="players-table-tennis.html" class="btn btn-primary">Vezi clasamentul FTMM</a>
+        <a href="players-basketball.html" class="btn btn-ghost">Vezi clasamentul Bskt Cup</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><b class="num" id="statPlayers">—</b><span>Jucători înregistrați</span></div>
+        <div class="hero-stat"><b class="num" id="statPlayers">—</b><span>Sportivi înregistrați</span></div>
         <div class="hero-stat"><b class="num" id="statTournaments">—</b><span>Turnee jucate</span></div>
         <div class="hero-stat"><b class="num" id="statMatches">—</b><span>Meciuri disputate</span></div>
       </div>
@@ -435,30 +458,57 @@
           <h2 id="recent-results-title">Cele mai recente meciuri</h2>
           <p>Scorurile turneelor ATTP, sincronizate automat din Setka Cup.</p>
         </div>
-        <div class="pingpong-model-shell" id="pingpongModelShell">
-          <model-viewer
-            id="pingpongModel"
-            class="pingpong-model"
-            src="models/pingpong.glb?v=20260918-sparkle-orbit"
-            alt="Minge albă DHS RS40+, cu o stea portocalie pe o orbită înclinată"
-            tabindex="-1"
-            auto-rotate-delay="2500"
-            camera-controls
-            disable-zoom
-            disable-pan
-            touch-action="pan-y"
-            rotation-per-second="10deg"
-            camera-orbit="0deg 90deg 0.14m"
-            camera-target="0m 0m 0m"
-            animation-name="Inclined sparkle orbit"
-            field-of-view="28deg"
-            environment-image="neutral"
-            tone-mapping="neutral"
-            shadow-intensity="0"
-            exposure="1.15"
-            interaction-prompt="none"
-            loading="lazy"></model-viewer>
-          <div class="pingpong-model-fallback" aria-hidden="true"></div>
+        <div class="pingpong-model-shell ball-pair" id="pingpongModelShell">
+          <div class="ball-slot ball-slot--tt">
+            <model-viewer
+              id="pingpongModel"
+              class="pingpong-model"
+              src="models/pingpong.glb?v=20260918-sparkle-orbit"
+              alt="Minge albă DHS RS40+, cu o stea portocalie pe o orbită înclinată"
+              tabindex="-1"
+              auto-rotate-delay="2500"
+              camera-controls
+              disable-zoom
+              disable-pan
+              touch-action="pan-y"
+              rotation-per-second="10deg"
+              camera-orbit="0deg 90deg 0.14m"
+              camera-target="0m 0m 0m"
+              animation-name="Inclined sparkle orbit"
+              field-of-view="28deg"
+              environment-image="neutral"
+              tone-mapping="neutral"
+              shadow-intensity="0"
+              exposure="1.15"
+              interaction-prompt="none"
+              loading="lazy"></model-viewer>
+            <div class="pingpong-model-fallback" aria-hidden="true"></div>
+          </div>
+          <div class="ball-slot ball-slot--bb">
+            <model-viewer
+              id="basketballModel"
+              class="pingpong-model"
+              src="models/basketball.glb?v=20260928-cyan"
+              alt="Minge de baschet galben-violet, cu o stea cyan pe o orbită înclinată"
+              tabindex="-1"
+              auto-rotate-delay="2500"
+              camera-controls
+              disable-zoom
+              disable-pan
+              touch-action="pan-y"
+              rotation-per-second="10deg"
+              camera-orbit="0deg 82deg 0.14m"
+              camera-target="0m 0m 0m"
+              animation-name="Inclined sparkle orbit"
+              field-of-view="28deg"
+              environment-image="neutral"
+              tone-mapping="neutral"
+              shadow-intensity="0"
+              exposure="1"
+              interaction-prompt="none"
+              loading="lazy"></model-viewer>
+            <div class="pingpong-model-fallback" aria-hidden="true"></div>
+          </div>
         </div>
       </div>
       <div class="scoreboard">
@@ -479,7 +529,7 @@
     <div class="eyebrow">Clasament</div>
     <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
       <h2>Liderii clasamentului</h2>
-      <a href="players.html" class="btn btn-sm btn-rally">Toți jucătorii →</a>
+      <a href="players-table-tennis.html" class="btn btn-sm btn-rally">Toți jucătorii →</a>
     </div>
     <div class="rank-strip" id="rankStrip">
       <div class="rank-card skeleton" style="height:150px"></div>
@@ -496,7 +546,7 @@
     <div class="eyebrow">Turnee</div>
     <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
       <h2>Ultimele turnee</h2>
-      <a href="tournaments.html" class="btn btn-sm btn-ghost">Toate turneele →</a>
+      <a href="tournaments-table-tennis.html" class="btn btn-sm btn-ghost">Toate turneele →</a>
     </div>
     <div class="grid grid-3" id="tournGrid">
       <div class="card skeleton" style="height:210px"></div>
@@ -647,30 +697,35 @@ function countUp(el, target, {duration = 1400, format = n => n.toLocaleString(DA
   requestAnimationFrame(tick);
 }
 
-const pingPongModel = document.getElementById('pingpongModel');
-const pingPongModelShell = document.getElementById('pingpongModelShell');
-if (pingPongModel && pingPongModelShell) {
-  pingPongModel.addEventListener('load', () => {
-    pingPongModelShell.classList.add('is-loaded');
-    syncModelMotion();
-  }, { once:true });
-  pingPongModel.addEventListener('error', () => pingPongModelShell.classList.add('has-error'), { once:true });
+const ballModelShell = document.getElementById('pingpongModelShell');
+const ballModels = ballModelShell ? [...ballModelShell.querySelectorAll('model-viewer')] : [];
+if (ballModels.length) {
   // Start motion only when visible, and respond to preference changes live.
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let modelVisible = false;
   const syncModelMotion = () => {
     const moving = modelVisible && !document.hidden && !reducedMotion.matches;
-    pingPongModel.toggleAttribute('auto-rotate', moving);
-    if (pingPongModel.loaded) {
-      if (moving) pingPongModel.play();
-      else pingPongModel.pause();
-    }
+    ballModels.forEach(model => {
+      model.toggleAttribute('auto-rotate', moving);
+      if (model.loaded) {
+        if (moving) model.play();
+        else model.pause();
+      }
+    });
   };
+  ballModels.forEach(model => {
+    const slot = model.closest('.ball-slot');
+    model.addEventListener('load', () => {
+      slot.classList.add('is-loaded');
+      syncModelMotion();
+    }, { once:true });
+    model.addEventListener('error', () => slot.classList.add('has-error'), { once:true });
+  });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => {
       modelVisible = entry.isIntersecting;
       syncModelMotion();
-    }).observe(pingPongModelShell);
+    }).observe(ballModelShell);
   } else {
     modelVisible = true;
     syncModelMotion();

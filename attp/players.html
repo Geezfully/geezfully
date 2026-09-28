@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jucători — ATTP</title>
-<meta name="description" content="Clasamentul oficial și profilurile jucătorilor de tenis de masă din Republica Moldova, actualizate automat de pe ligas.io.">
+<meta name="description" content="Clasamentele oficiale ale sportivilor ATTP din Republica Moldova, pe discipline: tenis de masă și baschet.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230B1A2B%22/><circle cx=%2216%22 cy=%2216%22 r=%228%22 fill=%22%23FF6B35%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260923-rankpill">
+<link rel="stylesheet" href="css/style.css?v=20260928-mobile2">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260729-rare"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -138,42 +138,30 @@
 </div>
 
 <main>
-  <div class="players-flow">
-  <section class="photo-hero" aria-labelledby="playersTitle">
-    <img class="photo-hero-img" src="images/heroes/players-1800.webp" srcset="images/heroes/players-900.webp 900w, images/heroes/players-1800.webp 1800w" sizes="(max-width:760px) 100vw, 64vw" alt="Vladislav Ursu, jucător ATTP, în timpul unui meci" width="1800" height="1273" style="--focus:50% 30%" fetchpriority="high">
-    <div class="container photo-hero-inner">
-      <div class="photo-hero-copy">
-      <div class="breadcrumb"><a href="index.html">Acasă</a> / Jucători</div>
-      <div class="eyebrow">Clasament</div>
-      <h1 id="playersTitle">Jucători ATTP</h1>
-      <p class="lede mt-16">Clasamentul oficial al Federației de Tenis de Masă, preluat automat de pe ligas.io la fiecare 15 minute.</p>
-      <span class="photo-hero-note">Pregătiți pentru fiecare meci</span>
-    
-      </div>
-    </div>
+  <section class="container sport-choice-hero" aria-labelledby="playersTitle">
+    <div class="breadcrumb"><a href="index.html">Acasă</a> / Jucători</div>
+    <div class="eyebrow">Clasament</div>
+    <h1 id="playersTitle">Jucători ATTP</h1>
+    <p class="lede mt-16">Clasamentele oficiale ale federațiilor naționale sportive și organizațiilor acreditate. Alege disciplina.</p>
   </section>
-
-  <section class="container section-tight players-list-section">
-    <div class="filters">
-      <input type="text" id="searchInput" placeholder="Caută după nume…">
-      <select id="listSelect" aria-label="Clasament">
-        <option value="masculin">Clasament masculin</option>
-        <option value="feminin">Clasament feminin</option>
-        <option value="all">Toți jucătorii</option>
-      </select>
-      <select id="sortSelect" aria-label="Sortare">
-        <option value="rating">Sortează: rating</option>
-        <option value="matches">Sortează: meciuri jucate</option>
-        <option value="name">Sortează: nume A–Z</option>
-      </select>
-    </div>
-    <div id="playerList">
-      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
-      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
-      <div class="card skeleton" style="height:60px;margin-bottom:10px"></div>
-    </div>
+  <section class="container sport-choice" aria-label="Discipline sportive">
+      <a class="sport-card sport-card--tt" href="players-table-tennis.html">
+        <svg class="sport-card-art" viewBox="0 0 400 260" fill="none" aria-hidden="true"><rect x="40" y="30" width="320" height="200" rx="6"/><path d="M200 22v216" class="net"/><path d="M40 130h320"/><circle cx="292" cy="78" r="9" class="ball"/></svg>
+        <span class="sport-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="9" r="7" fill="currentColor" fill-opacity=".22"/><path d="M9.5 15.8v4.7a1.5 1.5 0 0 0 3 0v-4.7"/><circle cx="20.5" cy="3.8" r="1.7" fill="currentColor" stroke="none"/></svg></span>
+        <span class="sport-card-kicker">Clasament oficial FTMM</span>
+        <h2 class="sport-card-title">Tenis de masă</h2>
+        <p class="sport-card-text">Clasamentul Federației de Tenis de Masă, preluat automat de pe ligas.io la fiecare 15 minute.</p>
+        <span class="sport-card-cta">Vezi clasamentul <span aria-hidden="true">→</span></span>
+      </a>
+      <a class="sport-card sport-card--bb" href="players-basketball.html">
+        <svg class="sport-card-art" viewBox="0 0 400 260" fill="none" aria-hidden="true"><rect x="30" y="20" width="340" height="220" rx="6"/><path d="M150 20v92h100V20"/><circle cx="200" cy="112" r="34"/><path d="M60 20v40a140 140 0 0 0 280 0V20"/><circle cx="200" cy="42" r="10" class="ball"/></svg>
+        <span class="sport-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.4 3.4 3.4 9.4 0 12.8M18.4 5.6c-3.4 3.4-3.4 9.4 0 12.8"/></svg></span>
+        <span class="sport-card-kicker">Bskt Cup</span>
+        <h2 class="sport-card-title">Baschet</h2>
+        <p class="sport-card-text">Clasamentul jucătorilor de baschet afiliați ATTP, sincronizat din Bskt Cup.</p>
+        <span class="sport-card-cta">Vezi clasamentul <span aria-hidden="true">→</span></span>
+      </a>
   </section>
-  </div>
 </main>
 
 <footer>
@@ -189,50 +177,6 @@
 </footer>
 
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
-<script>
-let ALL_PLAYERS = [];
-function render(){
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const listName = document.getElementById('listSelect').value;
-  const sort = document.getElementById('sortSelect').value;
-  let list = ALL_PLAYERS.filter(p => {
-    if (q && !`${p.first_name} ${p.last_name}`.toLowerCase().includes(q)) return false;
-    return listName === 'all' || playerRanking(p)?.list === listName;
-  });
-  list.sort((a,b) => {
-    const sa = playerStats(a), sb = playerStats(b);
-    if (sort === 'rating') {
-      // Ranked players by their official position; everyone unranked after them.
-      const pa = sa?.position ?? Infinity, pb = sb?.position ?? Infinity;
-      if (listName !== 'all' && pa !== pb) return pa - pb;
-      return (sb?.rating ?? -1) - (sa?.rating ?? -1) || `${a.last_name}`.localeCompare(`${b.last_name}`,'ro');
-    }
-    if (sort === 'matches') return (sb?.matches||0) - (sa?.matches||0);
-    return `${a.last_name}`.localeCompare(`${b.last_name}`,'ro');
-  });
-  const el = document.getElementById('playerList');
-  if (!list.length) { el.innerHTML = `<div class="empty-state"><p>${t('Niciun jucător găsit.')}</p></div>`; return; }
-  el.innerHTML = list.map(p => {
-    const s = playerStats(p);
-    const pos = s?.position != null ? (listName === 'all' ? `${s.position}${s.list === 'feminin' ? ' F' : ' M'}` : s.position) : '—';
-    return `<a href="player.html?id=${p.id}" class="player-row">
-      <span class="p-rank">${pos}</span>
-      <span class="p-avatar">${avatarHtml(p)}</span>
-      <span><span class="p-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</span>${rankPill(p)}<br><span class="p-city">${escapeHtml(p.city||'Moldova')} · ${escapeHtml(p.roles.map(roleLabel).join(', '))}</span></span>
-      <span class="p-record">${s?.matches != null ? `<span style="color:var(--win)">${s.wins}${t('V')}</span> — <span style="color:var(--loss)">${s.losses}${t('Î')}</span>` : '—'}</span>
-      <span class="p-record">${s?.matches != null ? `${s.matches} ${t('meciuri')}` : ''}</span>
-      <span class="p-rating">${s?.rating != null ? s.rating.toFixed(1) : '—'}</span>
-    </a>`;
-  }).join('');
-}
-(async function(){
-  ALL_PLAYERS = await fetchAllPlayers();
-  render();
-  document.getElementById('searchInput').addEventListener('input', render);
-  document.getElementById('sortSelect').addEventListener('change', render);
-  document.getElementById('listSelect').addEventListener('change', render);
-})();
-</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260729-rare"></script>
