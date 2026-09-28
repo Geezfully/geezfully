@@ -423,6 +423,64 @@
   .mini-row span:last-child { color: var(--muted); }
   .mini-empty { font-size: 12px; color: var(--muted); padding: 6px 2px; }
 
+  /* statistici jucători (Setka Cup rating) */
+  .setka-sync { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: -10px 0 20px; }
+  .setka-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+  .setka-sync.stale { color: var(--red); background: rgba(248,81,73,.08); border: 1px solid rgba(248,81,73,.35); border-radius: 8px; padding: 10px 14px; margin-top: 0; }
+  .setka-sync.stale { flex-wrap: nowrap; align-items: flex-start; line-height: 1.45; }
+  .setka-sync.stale .setka-sync-dot { margin-top: 6px; }
+  .setka-sync.stale .setka-sync-dot { background: var(--red); box-shadow: 0 0 0 3px rgba(248,81,73,.18); }
+  .stats-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .stats-toolbar .search-bar { margin-bottom: 0; flex: 1 1 220px; }
+  .stats-toolbar select { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 8px 10px; font: inherit; font-size: 13px; }
+  .player-cell { display: flex; align-items: center; gap: 10px; }
+  .player-ava { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: var(--surface2); border: 1px solid var(--border); flex: none; display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--muted); overflow: hidden; }
+  .player-ava.lg { width: 56px; height: 56px; font-size: 18px; }
+  .player-sub { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .rank-cell { color: var(--muted); font-variant-numeric: tabular-nums; width: 36px; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+  th.num { text-align: right; }
+  .delta { font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+  .delta.up { color: var(--green); } .delta.down { color: var(--red); } .delta.flat { color: var(--muted); font-weight: 400; }
+  .spark { display: block; width: 120px; height: 30px; }
+  .spark path { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+  .spark circle { fill: var(--gold); }
+  .setka-link-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 24px; }
+  .setka-link-panel > summary { list-style: none; cursor: pointer; padding: 13px 18px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .setka-link-panel > summary::-webkit-details-marker { display: none; }
+  .setka-link-panel > summary::after { content: '▾'; margin-left: auto; color: var(--muted); transition: transform .15s; }
+  .setka-link-panel[open] > summary::after { transform: rotate(180deg); }
+  .setka-link-help { color: var(--muted); font-size: 12px; padding: 0 18px 12px; line-height: 1.5; }
+  .setka-link-row { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(220px, 1.4fr) auto auto; gap: 8px; align-items: center; padding: 9px 18px; border-top: 1px solid var(--surface2); font-size: 13px; }
+  @media (max-width: 680px) { .setka-link-row { grid-template-columns: 1fr; } }
+
+  .rating-chart-wrap { position: relative; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; padding: 10px 6px 4px; }
+  .rating-chart { display: block; width: 100%; height: auto; touch-action: pan-y; }
+  .rating-chart .grid { stroke: var(--surface2); stroke-width: 1; }
+  .rating-chart .axis-label { fill: var(--muted); font-size: 11px; font-family: 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; }
+  .rating-chart .line { fill: none; stroke: var(--gold); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .rating-chart .area { fill: url(#ratingArea); }
+  .rating-chart .last-dot { fill: var(--gold); stroke: var(--bg); stroke-width: 2; }
+  .rating-chart .last-label { fill: var(--text); font-size: 12px; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+  .rating-chart .cross { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; visibility: hidden; }
+  .rating-chart .hover-dot { fill: var(--gold); stroke: var(--bg); stroke-width: 2; visibility: hidden; }
+  .chart-tip { position: absolute; top: 8px; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 6px 10px; font-size: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.35); display: none; white-space: nowrap; }
+  .chart-tip strong { display: block; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .chart-tip span { color: var(--muted); }
+  .chart-empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 13px; }
+  .range-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+  .range-row .spacer { flex: 1; }
+  .stats-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .stat-value.dec { font-family: 'DM Sans', sans-serif; font-size: 28px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  .stats-head .big { font-family: 'DM Sans', sans-serif; font-size: 34px; font-weight: 600; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+  .stats-kv { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+  .stats-kv > div { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .stats-kv .k { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+  .stats-kv .v { font-size: 15px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  @media (max-width: 680px) { .stats-kv { grid-template-columns: repeat(2, minmax(0,1fr)); } .spark { width: 84px; } }
+  .alert-type.setka { color: var(--red); border-color: rgba(248,81,73,.35); background: rgba(248,81,73,.08); }
+  .profile-section.wide { grid-column: 1 / -1; }
+
   .report-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 16px; }
   .report-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--surface2); font-size: 13.5px; }
   .report-row:last-child { border-bottom: none; }
@@ -565,6 +623,17 @@
       </div>
     </div>
     <div class="modal-body" id="profile-modal-body"></div>
+  </div>
+</div>
+
+<!-- ══ SETKA PLAYER MODAL ══ -->
+<div class="modal-overlay" id="setka-modal">
+  <div class="modal-box profile-modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="setka-modal-title"></div>
+      <div class="modal-head-actions"><button class="modal-close" onclick="closeModal('setka-modal')">✕</button></div>
+    </div>
+    <div class="modal-body" id="setka-modal-body"></div>
   </div>
 </div>
 
@@ -966,6 +1035,26 @@ ro: {
   al_openTask:(desc)=>`Sarcina „${desc}” este în așteptare.`,
   al_typeMedical:'Medical', al_typeInventory:'Inventar', al_typeTask:'Sarcină',
   al_frequentLate:(name,count)=>`Sportivul ${name} a întârziat de ${count} ori în ultimele 30 de zile.`,
+  nav_statistici:'Statistici jucători',
+  st_title:'Statistici jucători', st_sub:'Evoluția ratingului Setka Cup al participanților. Se actualizează automat în fiecare dimineață.',
+  st_syncOk:(d,at)=>`Rating la zi: ${d} · actualizat ${at}`, st_syncNever:'Ratingul Setka nu a fost încă sincronizat.',
+  st_syncLive:(at,d)=>`Rating actualizat azi la ${at} (provizoriu până se încheie ziua) · ultima zi încheiată: ${d}`,
+  st_syncStale:(d)=>`Ratingul Setka nu s-a actualizat — ultimele date sunt din ${d}.`, st_syncLastErr:'Ultima eroare',
+  st_players:'Jucători urmăriți', st_playersSub:(n)=>`${n} participanți activi fără profil Setka`,
+  st_avg:'Rating mediu', st_best30:'Cea mai mare creștere', st_worst30:'Cea mai mare scădere', st_30d:'30 de zile',
+  st_searchPh:'Caută jucător…', st_sortRating:'Rating', st_sort7:'Schimbare 7 zile', st_sort30:'Schimbare 30 zile', st_sortNume:'Nume',
+  st_showInactive:'Include inactivi',
+  st_th_player:'Jucător', st_th_rating:'Rating', st_th_7:'7 zile', st_th_30:'30 zile', st_th_trend:'Ultimele 90 de zile', st_th_turnee:'Turnee', st_th_vi:'V – Î',
+  st_none:'Niciun jucător cu rating încă.', st_loading:'Se încarcă ratingul…', st_loadErr:'Nu s-a putut încărca ratingul Setka.',
+  st_linkTitle:(n)=>`Participanți fără profil Setka (${n})`,
+  st_linkHelp:'Legătura se face automat după nume. Dacă numele diferă pe Setka (ex. Vitalie / Vitaliy), alegeți jucătorul manual. „Nu e pe Setka” oprește căutarea automată.',
+  st_linkBtn:'Leagă', st_notOnSetka:'Nu e pe Setka', st_markedNone:'marcat: nu e pe Setka', st_undo:'Anulează', st_unlink:'Dezleagă de Setka',
+  st_linkPick:'Alegeți un jucător Setka din listă.', st_linkTaken:'Acest profil Setka este deja legat de alt participant.',
+  st_range1m:'1 lună', st_range3m:'3 luni', st_range1y:'1 an', st_rangeAll:'Tot',
+  st_change:'Schimbare', st_min:'Minim', st_max:'Maxim', st_winrate:'Victorii', st_since:(d)=>`din ${d}`,
+  st_openSetka:'Profil Setka', st_notLinked:'Nu este legat de un profil Setka Cup.', st_noHistory:'Încă nu există puncte de rating.',
+  st_profileTitle:'Rating Setka Cup', al_typeSetka:'Setka', st_retry:'Reîncearcă',
+  al_setkaStale:(d)=>`Ratingul Setka Cup nu s-a actualizat automat (ultimele date: ${d}). Verificați Statistici jucători.`,
 },
 ru: {
   au_sub:'Электронный журнал · Локация ATTP', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
@@ -1249,6 +1338,26 @@ ru: {
   al_openTask:(desc)=>`Задача «${desc}» ожидает выполнения.`,
   al_typeMedical:'Медицина', al_typeInventory:'Инвентарь', al_typeTask:'Задача',
   al_frequentLate:(name,count)=>`Спортсмен ${name} опаздывал ${count} раз(а) за последние 30 дней.`,
+  nav_statistici:'Статистика игроков',
+  st_title:'Статистика игроков', st_sub:'Динамика рейтинга Setka Cup участников. Обновляется автоматически каждое утро.',
+  st_syncOk:(d,at)=>`Рейтинг на ${d} · обновлено ${at}`, st_syncNever:'Рейтинг Setka ещё не синхронизирован.',
+  st_syncLive:(at,d)=>`Рейтинг обновлён сегодня в ${at} (предварительно до конца дня) · последний завершённый день: ${d}`,
+  st_syncStale:(d)=>`Рейтинг Setka не обновился — последние данные за ${d}.`, st_syncLastErr:'Последняя ошибка',
+  st_players:'Отслеживаемые игроки', st_playersSub:(n)=>`${n} активных участников без профиля Setka`,
+  st_avg:'Средний рейтинг', st_best30:'Наибольший рост', st_worst30:'Наибольшее падение', st_30d:'30 дней',
+  st_searchPh:'Поиск игрока…', st_sortRating:'Рейтинг', st_sort7:'Изменение за 7 дней', st_sort30:'Изменение за 30 дней', st_sortNume:'Имя',
+  st_showInactive:'Включая неактивных',
+  st_th_player:'Игрок', st_th_rating:'Рейтинг', st_th_7:'7 дней', st_th_30:'30 дней', st_th_trend:'Последние 90 дней', st_th_turnee:'Турниры', st_th_vi:'П – П',
+  st_none:'Пока нет игроков с рейтингом.', st_loading:'Загрузка рейтинга…', st_loadErr:'Не удалось загрузить рейтинг Setka.',
+  st_linkTitle:(n)=>`Участники без профиля Setka (${n})`,
+  st_linkHelp:'Связь создаётся автоматически по имени. Если имя на Setka пишется иначе (напр. Vitalie / Vitaliy), выберите игрока вручную. «Нет на Setka» отключает автоматический поиск.',
+  st_linkBtn:'Связать', st_notOnSetka:'Нет на Setka', st_markedNone:'отмечено: нет на Setka', st_undo:'Отменить', st_unlink:'Отвязать от Setka',
+  st_linkPick:'Выберите игрока Setka из списка.', st_linkTaken:'Этот профиль Setka уже связан с другим участником.',
+  st_range1m:'1 месяц', st_range3m:'3 месяца', st_range1y:'1 год', st_rangeAll:'Всё',
+  st_change:'Изменение', st_min:'Минимум', st_max:'Максимум', st_winrate:'Победы', st_since:(d)=>`с ${d}`,
+  st_openSetka:'Профиль Setka', st_notLinked:'Не связан с профилем Setka Cup.', st_noHistory:'Пока нет точек рейтинга.',
+  st_profileTitle:'Рейтинг Setka Cup', al_typeSetka:'Setka', st_retry:'Повторить',
+  al_setkaStale:(d)=>`Рейтинг Setka Cup не обновился автоматически (последние данные: ${d}). Проверьте «Статистика игроков».`,
 },
 };
 
@@ -1432,7 +1541,7 @@ function realAdmins(){ return DB.administratori.filter(a=>!a.ascuns && a.rol==='
 async function fetchAll(){
   const [
     administratoriR, serviciuAdministratoriR, participantiR, arbitriR, intarzieriR, vestimentatieR, serviciuR, spalatorieR,
-    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR
+    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR, setkaSyncR
   ] = await Promise.all([
     sb.from('administratori').select('*'),
     sb.from('serviciu_administratori').select('*').eq('activ', true).order('nume'),
@@ -1456,6 +1565,7 @@ async function fetchAll(){
     sb.from('treninguri').select('*').order('data', {ascending:false}),
     sb.from('sesiuni_schimb').select('*').eq('cont_id', currentAdminId).is('ended_at', null).order('started_at', {ascending:false}).limit(1),
     sb.from('acte_schimb').select('*').order('created_at', {ascending:false}).limit(60),
+    sb.from('setka_sync_log').select('*').order('pornit_la', {ascending:false}).limit(30),
   ]);
 
   const administratori = administratoriR.data || [];
@@ -1470,7 +1580,7 @@ async function fetchAll(){
       id:p.id, nrDulap:p.nr_dulap, nume:p.nume, prenume:p.prenume, dataNasterii:p.data_nasterii,
       adresa:p.adresa, telefon:p.telefon, email:p.email, dataAvizMedical:p.data_aviz_medical,
       marime:p.marime, categorieSportiva:p.categorie_sportiva, statut:p.statut, dataInregistrarii:p.data_inregistrarii,
-      eligibilAntrenament:p.eligibil_antrenament,
+      eligibilAntrenament:p.eligibil_antrenament, setkaId:p.setka_id ?? null, setkaLegatManual:!!p.setka_legat_manual,
     })),
     arbitri: (arbitriR.data||[]).map(a=>({
       id:a.id, nrDulap:a.nr_dulap, nume:a.nume, prenume:a.prenume, dataNasterii:a.data_nasterii,
@@ -1512,6 +1622,8 @@ async function fetchAll(){
       inceputPerioada:r.inceput_perioada, sfarsitPerioada:r.sfarsit_perioada, continut:r.continut,
     })),
   };
+  // null while the Setka tables don't exist yet: the rating features then stay quiet
+  DB.setkaSync = setkaSyncR.error ? null : (setkaSyncR.data||[]);
   // Older versions could insert more than one snapshot for the same shift. Keep those rows in
   // Supabase for audit purposes, but show only the newest canonical report in the interface.
   const reportShiftIds = new Set();
@@ -1684,6 +1796,7 @@ const ICONS = {
   pause:'<circle cx="12" cy="12" r="9"/><path d="M9 8v8M15 8v8"/>',
   reports:'<path d="M6 2h9l4 4v16H6z"/><path d="M14 2v5h5M9 17v-4M12 17V9M15 17v-2"/>',
   settings:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h7M15 18h5"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="13" cy="18" r="2"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m7 15 4-5 3 3 5-7"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6"/>',
   edit:'<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
@@ -1767,6 +1880,7 @@ function enhanceIcons(root=document){
 const NAV = [
   {id:'dashboard', key:'nav_dashboard', icon:'dashboard'},
   {id:'participanti', key:'nav_participanti', icon:'participants'},
+  {id:'statistici', key:'nav_statistici', icon:'chart'},
   {id:'intarzieri', key:'nav_intarzieri', icon:'clock'},
   {id:'vestimentatie', key:'nav_vestimentatie', icon:'shirt'},
   {id:'serviciu', key:'nav_serviciu', icon:'calendar'},
@@ -1786,12 +1900,14 @@ const NAV = [
   {id:'setari', key:'nav_setari', icon:'settings'},
 ];
 const LOCATION_HIDDEN_VIEWS = new Set(['setari']);
+// read-only views a location account can open before starting a shift
+const NO_SHIFT_VIEWS = new Set(['dashboard','rapoarte','statistici']);
 
 function buildSidebar(){
   const nav = document.getElementById('sb-nav');
   nav.innerHTML = NAV.filter(item => {
     if(isFullAdmin()) return true;
-    if(!currentShift) return item.id==='dashboard' || item.id==='rapoarte';
+    if(!currentShift) return NO_SHIFT_VIEWS.has(item.id);
     return !LOCATION_HIDDEN_VIEWS.has(item.id);
   }).map(item => {
     const badge = navBadge(item.id);
@@ -1811,12 +1927,13 @@ function navBadge(id){
 
 function navigate(view){
   if(!isFullAdmin() && LOCATION_HIDDEN_VIEWS.has(view)) view = 'dashboard';
-  if(!isFullAdmin() && !currentShift && view!=='dashboard' && view!=='rapoarte') view = 'dashboard';
+  if(!isFullAdmin() && !currentShift && !NO_SHIFT_VIEWS.has(view)) view = 'dashboard';
   currentView = view;
   document.querySelectorAll('.sb-item').forEach(el => el.classList.toggle('active', el.dataset.view===view));
   const navItem = NAV.find(n=>n.id===view);
   document.getElementById('header-title').textContent = navItem ? t(navItem.key) : '';
   toggleSidebar(false);
+  if(view==='statistici') loadSetkaStats();
   render();
 }
 function toggleSidebar(force){
@@ -1885,6 +2002,8 @@ function buildAlerts(){
   lowStockItems().forEach(i=>{
     alerts.push({ type:'inventory', level:'yellow', text: t('al_lowStock')(`${trEnum(i.denumire)}${i.marime!=='—'?' '+i.marime:''}`, inventoryCurrent(i), i.um, i.cantitateMinima) });
   });
+  const setkaStale = setkaSyncStale();
+  if(setkaStale) alerts.push({ type:'setka', level:'red', text: t('al_setkaStale')(setkaStale.lastDay ? fmtDate(setkaStale.lastDay) : '—') });
   DB.sarcini.filter(s=>s.status!=='soluționat').forEach(t2=>{
     const isStale = daysDiff(t2.dataInreg) <= -2;
     alerts.push({ type:'task', level:isStale?'red':'yellow', text: isStale
@@ -1904,7 +2023,7 @@ function render(){
     vestimentatie: renderVestimentatie, serviciu: renderServiciu, spalatorie: renderSpalatorie,
     hostel: renderHostel, lenjerie: renderLenjerie, medical: renderMedical, daune: renderDaune, fairplay: renderFairPlay,
     arbitraj: renderArbitraj, antrenamente: renderAntrenamente, inventar: renderInventar, sarcini: renderSarcini, observatii: renderObservatii,
-    pauzatehnica: renderPauzaTehnica,
+    pauzatehnica: renderPauzaTehnica, statistici: renderStatistici,
     rapoarte: renderRapoarte, setari: renderSetari,
   };
   main.innerHTML = fns[currentView] ? fns[currentView]() : '';
@@ -1931,7 +2050,7 @@ function autocompleteField(id, options, opts){
   const selectedValue = opts.selectedValue !== undefined ? opts.selectedValue : '';
   const sel = options.find(o=>o.value===selectedValue);
   return `<div class="ac-wrap">
-    <input type="text" id="${id}-q" autocomplete="off" placeholder="${esc(t('ac_participantPh'))}" value="${esc(sel?sel.label:'')}" oninput="acFilter('${id}')" onfocus="acFilter('${id}')" onblur="acBlur('${id}')" onkeydown="acKey(event,'${id}')">
+    <input type="text" id="${id}-q" autocomplete="off" placeholder="${esc(opts.placeholder || t('ac_participantPh'))}" value="${esc(sel?sel.label:'')}" oninput="acFilter('${id}')" onfocus="acFilter('${id}')" onblur="acBlur('${id}')" onkeydown="acKey(event,'${id}')">
     <input type="hidden" id="${id}" value="${esc(selectedValue)}">
     <div class="ac-list" id="${id}-list" style="display:none"></div>
   </div>`;
@@ -3076,6 +3195,7 @@ function renderProfile(editing = false){
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_antrenamente')}</div>
         ${list(DB.treninguri.filter(x=>x.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${esc(r.antrenor)}${r.ora?' · '+String(r.ora).slice(0,5):''}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
+      ${setkaProfileSection(p)}
     </div>
   `;
 }
@@ -3129,6 +3249,424 @@ async function deleteParticipant(){
 }
 function openModal(id){ document.getElementById(id).classList.add('visible'); }
 function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
+
+/* ══════════════════════ STATISTICI JUCĂTORI (rating Setka Cup) ══════════════════════ */
+// Points are written every morning by the setka-rating-sync edge function (one per
+// player per Moldova day); this view only reads them.
+const SETKA_SITE = 'https://tabletennis.setkacup.com';
+const SETKA_RANGES = [
+  {id:'1m', key:'st_range1m', days:30}, {id:'3m', key:'st_range3m', days:91},
+  {id:'1y', key:'st_range1y', days:365}, {id:'all', key:'st_rangeAll', days:null},
+];
+let SETKA = { status:'idle', rezumat:new Map(), jucatori:new Map(), series:new Map(), seriesLoading:new Set() };
+let setkaSearchQuery = '';
+let setkaSort = 'rating';
+let setkaIncludeInactive = false;
+const setkaRanges = {};   // chart container id -> range id
+const setkaCharts = {};   // chart container id -> {points, xs, ys}
+
+function moldovaYesterday(){
+  const d = new Date(moldovaClock().dateKey+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()-1);
+  return d.toISOString().slice(0,10);
+}
+function isoMinusDays(iso, days){ const d = new Date(iso+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()-days); return d.toISOString().slice(0,10); }
+// newest day with its final value; 'live' rows are today's provisional refreshes
+function setkaLastDay(){
+  return (DB.setkaSync||[]).filter(r=>r.status==='ok' && r.tip!=='live').reduce((m,r)=>!m||r.data_rating>m?r.data_rating:m, null);
+}
+function setkaLastLive(){
+  return (DB.setkaSync||[]).find(r=>r.status==='ok' && r.tip==='live' && r.data_rating===moldovaClock().dateKey) || null;
+}
+// Stale = the day before yesterday or older is the newest stored day, or yesterday is
+// still missing after the morning retries (they run until ~08:45; the watchdog mails at ~09:15).
+function setkaSyncStale(){
+  if(!DB.setkaSync || !DB.setkaSync.length) return null;   // not set up yet
+  const lastDay = setkaLastDay(), expected = moldovaYesterday();
+  if(lastDay && lastDay >= expected) return null;
+  if(lastDay === isoMinusDays(expected,1) && moldovaClock().minuteOfDay < 9*60+30) return null;
+  const lastErr = DB.setkaSync.find(r=>r.status==='eroare');
+  return { lastDay, lastErr: lastErr?.eroare || null };
+}
+
+async function loadSetkaStats(force){
+  if(!force && (SETKA.status==='loading' || SETKA.status==='ready')) return;
+  SETKA.status = 'loading';
+  const [rez, juc] = await Promise.all([
+    sb.rpc('setka_rating_rezumat'),
+    sb.from('setka_jucatori').select('*').range(0, 4999),
+  ]);
+  if(rez.error || juc.error){
+    console.error('setka stats', rez.error || juc.error);
+    SETKA.status = 'error';
+  } else {
+    SETKA.rezumat = new Map((rez.data||[]).map(r=>[r.setka_id, {
+      rating:Number(r.rating), data:r.data,
+      r7:r.rating_7z==null?null:Number(r.rating_7z), r30:r.rating_30z==null?null:Number(r.rating_30z),
+      serie:(r.serie||[]).map(Number),
+    }]));
+    SETKA.jucatori = new Map((juc.data||[]).map(j=>[j.setka_id, j]));
+    SETKA.series.clear();
+    SETKA.status = 'ready';
+  }
+  if(currentView==='statistici') render();
+  refreshSetkaBlocks();
+}
+async function loadSetkaSeries(setkaId){
+  if(SETKA.series.has(setkaId) || SETKA.seriesLoading.has(setkaId)) return;
+  SETKA.seriesLoading.add(setkaId);
+  const points = [];
+  for(let from=0;;from+=1000){
+    const { data, error } = await sb.from('setka_rating_istoric').select('data,rating')
+      .eq('setka_id', setkaId).order('data').range(from, from+999);
+    if(error){ console.error('setka series', error); break; }
+    points.push(...data.map(r=>({d:r.data, r:Number(r.rating)})));
+    if(data.length < 1000) break;
+  }
+  SETKA.seriesLoading.delete(setkaId);
+  SETKA.series.set(setkaId, points);
+  refreshSetkaBlocks(setkaId);
+}
+
+function setkaPhotoUrl(token){ return token ? `${SETKA_SITE}/api/Image/setka/180x180/${encodeURIComponent(token)}.jpeg` : ''; }
+function setkaAvatar(p, j, large){
+  const initials = esc(((p?.nume||j?.nume||'')[0]||'') + ((p?.prenume||j?.prenume||'')[0]||''));
+  const img = j?.foto ? `<img src="${esc(setkaPhotoUrl(j.foto))}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">` : '';
+  return `<span class="player-ava${large?' lg':''}" style="position:relative"><span style="position:absolute">${initials}</span>${img?`<span style="position:absolute;inset:0">${img}</span>`:''}</span>`;
+}
+function fmtRating(v){ return v==null || !Number.isFinite(v) ? '—' : v.toFixed(1); }
+function fmtDelta(cur, prev){
+  if(cur==null || prev==null) return `<span class="delta flat">—</span>`;
+  const d = Math.round((cur-prev)*10)/10;
+  if(d > 0) return `<span class="delta up">▲ +${d.toFixed(1)}</span>`;
+  if(d < 0) return `<span class="delta down">▼ −${Math.abs(d).toFixed(1)}</span>`;
+  return `<span class="delta flat">0.0</span>`;
+}
+function sparkline(values){
+  if(!values || values.length < 2) return '<span class="td-muted">—</span>';
+  const w=120, h=30, pad=3;
+  const min=Math.min(...values), max=Math.max(...values), span=(max-min)||1;
+  const pts = values.map((v,i)=>[pad+i*(w-2*pad)/(values.length-1), h-pad-(v-min)/span*(h-2*pad)]);
+  const [lx,ly] = pts[pts.length-1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="M${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L')}"/><circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.5"/></svg>`;
+}
+
+function setkaRows(){
+  const q = setkaSearchQuery.toLowerCase().trim();
+  return DB.participanti
+    .filter(p=>p.setkaId && SETKA.rezumat.has(p.setkaId))
+    .filter(p=>setkaIncludeInactive || p.statut==='activ')
+    .filter(p=>!q || `${p.nume} ${p.prenume}`.toLowerCase().includes(q))
+    .map(p=>({ p, j:SETKA.jucatori.get(p.setkaId), s:SETKA.rezumat.get(p.setkaId) }));
+}
+function setkaSorted(rows){
+  const d = (a,b)=> a==null||b==null ? null : a-b;
+  const byNume = (a,b)=>a.p.nume.localeCompare(b.p.nume,'ro')||a.p.prenume.localeCompare(b.p.prenume,'ro');
+  const byDelta = key => (a,b)=>{
+    const x=d(a.s.rating,a.s[key]), y=d(b.s.rating,b.s[key]);
+    if(x==null && y==null) return byNume(a,b); if(x==null) return 1; if(y==null) return -1;
+    return y-x || byNume(a,b);
+  };
+  const cmp = setkaSort==='nume' ? byNume : setkaSort==='7' ? byDelta('r7') : setkaSort==='30' ? byDelta('r30') : (a,b)=>b.s.rating-a.s.rating || byNume(a,b);
+  return rows.slice().sort(cmp);
+}
+
+function setkaSyncLine(){
+  if(!DB.setkaSync) return '';
+  const stale = setkaSyncStale();
+  const lastDay = setkaLastDay();
+  if(!lastDay) return `<div class="setka-sync ${stale?'stale':''}"><span class="setka-sync-dot"></span>${esc(t('st_syncNever'))}</div>`;
+  const lastOk = DB.setkaSync.find(r=>r.status==='ok' && r.tip!=='live' && r.data_rating===lastDay);
+  const at = lastOk?.terminat_la ? fmtDateTime(lastOk.terminat_la) : '';
+  const live = setkaLastLive();
+  if(stale) return `<div class="setka-sync stale"><span class="setka-sync-dot"></span><span>${esc(t('st_syncStale')(fmtDate(lastDay)))}${stale.lastErr?` ${esc(t('st_syncLastErr'))}: ${esc(stale.lastErr)}`:''}</span></div>`;
+  if(live) return `<div class="setka-sync"><span class="setka-sync-dot"></span>${esc(t('st_syncLive')(fmtTime(live.terminat_la), fmtDate(lastDay)))}</div>`;
+  return `<div class="setka-sync"><span class="setka-sync-dot"></span>${esc(t('st_syncOk')(fmtDate(lastDay), at))}</div>`;
+}
+
+function renderStatistici(){
+  const head = `<div class="view-head"><div class="view-title">${t('st_title')}</div></div>
+    <div class="view-sub">${t('st_sub')}</div>${setkaSyncLine()}`;
+  if(SETKA.status==='error') return head + `<div class="empty-state">${esc(t('st_loadErr'))} <button class="btn-ghost btn-sm" onclick="loadSetkaStats(true)">${t('st_retry')}</button></div>`;
+  if(SETKA.status!=='ready') return head + `<div class="empty-state">${esc(t('st_loading'))}</div>`;
+
+  const all = setkaRows();
+  const rows = setkaSorted(all);
+  const byRating = all.slice().sort((a,b)=>b.s.rating-a.s.rating);
+  const rank = new Map(byRating.map((r,i)=>[r.p.id, i+1]));
+  const avg = all.length ? all.reduce((s,r)=>s+r.s.rating,0)/all.length : null;
+  const with30 = all.filter(r=>r.s.r30!=null).map(r=>({...r, d:r.s.rating-r.s.r30}));
+  const best = with30.length ? with30.reduce((m,r)=>r.d>m.d?r:m) : null;
+  const worst = with30.length ? with30.reduce((m,r)=>r.d<m.d?r:m) : null;
+  const unlinked = DB.participanti.filter(p=>p.statut==='activ' && !p.setkaId);
+
+  return head + `
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">${t('st_players')}</div><div class="stat-value">${all.length}</div><div class="stat-sub">${esc(t('st_playersSub')(unlinked.filter(p=>!p.setkaLegatManual).length))}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('st_avg')}</div><div class="stat-value dec">${fmtRating(avg)}</div><div class="stat-sub">Setka Cup</div></div>
+    <div class="stat-card"><div class="stat-label">${t('st_best30')}</div><div class="stat-value dec c-green">${best && best.d>0 ? '+'+best.d.toFixed(1) : '—'}</div><div class="stat-sub">${[best && best.d>0 ? esc(best.p.nume+' '+best.p.prenume.split(' ')[0]) : '', t('st_30d')].filter(Boolean).join(' · ')}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('st_worst30')}</div><div class="stat-value dec c-red">${worst && worst.d<0 ? '−'+Math.abs(worst.d).toFixed(1) : '—'}</div><div class="stat-sub">${[worst && worst.d<0 ? esc(worst.p.nume+' '+worst.p.prenume.split(' ')[0]) : '', t('st_30d')].filter(Boolean).join(' · ')}</div></div>
+  </div>
+
+  <div class="stats-toolbar">
+    <div class="search-bar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="st-search" placeholder="${esc(t('st_searchPh'))}" value="${esc(setkaSearchQuery)}" oninput="setkaSearchQuery=this.value; refreshSetkaTable();">
+    </div>
+    <select onchange="setkaSort=this.value; refreshSetkaTable();" aria-label="${esc(t('pa_sortare'))}">
+      <option value="rating" ${setkaSort==='rating'?'selected':''}>${t('st_sortRating')}</option>
+      <option value="7" ${setkaSort==='7'?'selected':''}>${t('st_sort7')}</option>
+      <option value="30" ${setkaSort==='30'?'selected':''}>${t('st_sort30')}</option>
+      <option value="nume" ${setkaSort==='nume'?'selected':''}>${t('st_sortNume')}</option>
+    </select>
+    <label class="td-muted" style="display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" ${setkaIncludeInactive?'checked':''} onchange="setkaIncludeInactive=this.checked; render();">${t('st_showInactive')}</label>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll"><table>
+      <thead><tr><th>#</th><th>${t('st_th_player')}</th><th class="num">${t('st_th_rating')}</th><th class="num">${t('st_th_7')}</th><th class="num">${t('st_th_30')}</th><th>${t('st_th_trend')}</th><th class="num">${t('st_th_turnee')}</th><th class="num">${t('st_th_vi')}</th></tr></thead>
+      <tbody id="setka-tbody">${setkaTableRows(rows, rank)}</tbody>
+    </table></div>
+  </div>
+
+  ${isFullAdmin() && unlinked.length ? setkaLinkPanel(unlinked) : ''}`;
+}
+function setkaTableRows(rows, rank){
+  if(!rows.length) return `<tr><td class="td-empty" colspan="8">${t('st_none')}</td></tr>`;
+  return rows.map(({p,j,s})=>`
+    <tr class="clickable" onclick="openSetkaPlayer('${p.id}')">
+      <td class="rank-cell">${rank.get(p.id)}</td>
+      <td><div class="player-cell">${setkaAvatar(p,j)}<span class="td-name">${esc(p.nume)} ${esc(p.prenume.split(' ')[0])}${p.statut!=='activ'?` <span class="badge muted">${trEnum(p.statut)}</span>`:''}</span></div></td>
+      <td class="num td-gold">${fmtRating(s.rating)}</td>
+      <td class="num">${fmtDelta(s.rating, s.r7)}</td>
+      <td class="num">${fmtDelta(s.rating, s.r30)}</td>
+      <td>${sparkline(s.serie)}</td>
+      <td class="num td-muted">${j?.turnee ?? '—'}</td>
+      <td class="num td-muted">${j ? `${j.victorii ?? 0} – ${j.infrangeri ?? 0}` : '—'}</td>
+    </tr>`).join('');
+}
+function refreshSetkaTable(){
+  const tbody = document.getElementById('setka-tbody');
+  if(!tbody) return;
+  const all = setkaRows();
+  const rank = new Map(all.slice().sort((a,b)=>b.s.rating-a.s.rating).map((r,i)=>[r.p.id, i+1]));
+  tbody.innerHTML = setkaTableRows(setkaSorted(all), rank);
+}
+
+/* linking a participant to a Setka player (admin) */
+function setkaLinkOptions(){
+  const taken = new Set(DB.participanti.map(p=>p.setkaId).filter(Boolean));
+  return [...SETKA.jucatori.values()].filter(j=>!taken.has(j.setka_id))
+    .sort((a,b)=>a.nume.localeCompare(b.nume,'ro')||a.prenume.localeCompare(b.prenume,'ro'))
+    .map(j=>({ value:String(j.setka_id), label:`${j.nume} ${j.prenume}${j.oras?' · '+j.oras:''}${j.an_nastere?' · '+j.an_nastere:''} · ${fmtRating(SETKA.rezumat.get(j.setka_id)?.rating)}` }));
+}
+function setkaLinkPanel(unlinked){
+  const options = setkaLinkOptions();
+  const sorted = unlinked.slice().sort((a,b)=>(a.setkaLegatManual-b.setkaLegatManual)||a.nume.localeCompare(b.nume,'ro'));
+  return `<details class="setka-link-panel">
+    <summary>${icon('participants','ui-icon section-icon')}${esc(t('st_linkTitle')(unlinked.filter(p=>!p.setkaLegatManual).length))}</summary>
+    <div class="setka-link-help">${esc(t('st_linkHelp'))}</div>
+    ${sorted.map(p=>`<div class="setka-link-row">
+      <span>${esc(p.nume)} ${esc(p.prenume)}${p.setkaLegatManual?` <span class="badge muted">${esc(t('st_markedNone'))}</span>`:''}</span>
+      ${p.setkaLegatManual ? '<span></span>' : `<div class="field">${autocompleteField(`stl-${p.id}`, options, {placeholder:t('st_searchPh')})}</div>`}
+      ${p.setkaLegatManual
+        ? `<button class="btn-ghost btn-sm" onclick="setkaSetLink('${p.id}', null, false)">${t('st_undo')}</button><span></span>`
+        : `<button class="btn-primary btn-sm" onclick="setkaLinkFromPicker('${p.id}')">${t('st_linkBtn')}</button>
+           <button class="btn-ghost btn-sm" onclick="setkaSetLink('${p.id}', null, true)">${t('st_notOnSetka')}</button>`}
+    </div>`).join('')}
+  </details>`;
+}
+function setkaLinkFromPicker(participantId){
+  const v = document.getElementById(`stl-${participantId}`)?.value;
+  if(!v){ alert(t('st_linkPick')); return; }
+  setkaSetLink(participantId, Number(v), true);
+}
+async function setkaSetLink(participantId, setkaId, manual){
+  if(!isFullAdmin()) return;
+  const p = participant(participantId); if(!p) return;
+  if(setkaId && DB.participanti.some(x=>x.setkaId===setkaId && x.id!==participantId)){ alert(t('st_linkTaken')); return; }
+  const { data, error } = await sb.from('participanti').update({ setka_id:setkaId, setka_legat_manual:manual }).eq('id', participantId).select('setka_id, setka_legat_manual');
+  if(error || !data?.length){ alert('Salvarea a eșuat: '+(error?.message||'fără permisiune')); return; }
+  p.setkaId = data[0].setka_id; p.setkaLegatManual = data[0].setka_legat_manual;
+  const j = setkaId ? SETKA.jucatori.get(setkaId) : null;
+  await logAction(setkaId
+    ? `A legat participantul ${p.nume} ${p.prenume} de profilul Setka ${j ? j.nume+' '+j.prenume : setkaId}`
+    : manual ? `A marcat participantul ${p.nume} ${p.prenume}: nu e pe Setka` : `A anulat legătura Setka pentru ${p.nume} ${p.prenume}`);
+  render();
+  if(document.getElementById('profile-modal').classList.contains('visible') && currentProfileId===participantId) renderProfile(false);
+}
+
+/* player detail: modal from the list, section in the participant profile */
+function openSetkaPlayer(participantId){
+  const p = participant(participantId); if(!p?.setkaId) return;
+  document.getElementById('setka-modal-title').textContent = `${p.nume} ${p.prenume}`;
+  document.getElementById('setka-modal-body').innerHTML = setkaBlock('setka-modal-chart', p.setkaId, p, true);
+  openModal('setka-modal');
+  loadSetkaSeries(p.setkaId);
+}
+function setkaProfileSection(p){
+  if(!DB.setkaSync) return '';   // Setka tables not installed yet
+  let body;
+  if(p.setkaId){
+    if(SETKA.status!=='ready') loadSetkaStats();
+    else loadSetkaSeries(p.setkaId);
+    body = setkaBlock('setka-profile-chart', p.setkaId, p, false)
+      + (isFullAdmin() ? `<div style="margin-top:12px;text-align:right"><button class="btn-ghost btn-sm" onclick="setkaSetLink('${p.id}', null, true)">${t('st_unlink')}</button></div>` : '');
+  } else {
+    body = `<div class="mini-empty">${esc(t('st_notLinked'))}${p.setkaLegatManual?` <span class="badge muted">${esc(t('st_markedNone'))}</span>`:''}</div>`;
+    if(isFullAdmin()){
+      if(SETKA.status!=='ready') loadSetkaStats();
+      else body += `<div class="setka-link-row" style="padding:10px 0 0;border:none">
+        <div class="field">${autocompleteField(`stl-${p.id}`, setkaLinkOptions(), {placeholder:t('st_searchPh')})}</div>
+        <button class="btn-primary btn-sm" onclick="setkaLinkFromPicker('${p.id}')">${t('st_linkBtn')}</button>
+        ${p.setkaLegatManual ? `<button class="btn-ghost btn-sm" onclick="setkaSetLink('${p.id}', null, false)">${t('st_undo')}</button>` : `<button class="btn-ghost btn-sm" onclick="setkaSetLink('${p.id}', null, true)">${t('st_notOnSetka')}</button>`}
+      </div>`;
+    }
+  }
+  return `<section class="profile-section wide" id="setka-profile-section"><div class="profile-section-title">${t('st_profileTitle')}</div>${body}</section>`;
+}
+function setkaBlock(containerId, setkaId, p, withHead){
+  return `<div data-setka-block="${setkaId}" data-chart-id="${containerId}" data-participant="${p.id}" data-head="${withHead?1:0}">${setkaBlockInner(containerId, setkaId, p, withHead)}</div>`;
+}
+function refreshSetkaBlocks(onlySetkaId){
+  document.querySelectorAll('[data-setka-block]').forEach(el=>{
+    const id = Number(el.dataset.setkaBlock);
+    if(onlySetkaId && id!==onlySetkaId) return;
+    el.innerHTML = setkaBlockInner(el.dataset.chartId, id, participant(el.dataset.participant), el.dataset.head==='1');
+    if(!SETKA.series.has(id) && SETKA.status==='ready') loadSetkaSeries(id);
+  });
+  // a profile opened before the Setka list loaded can now offer the link picker
+  const section = document.getElementById('setka-profile-section');
+  if(section && !section.querySelector('[data-setka-block]') && isFullAdmin() && SETKA.status==='ready' && !section.querySelector('.ac-wrap')){
+    const p = participant(currentProfileId);
+    if(p && !p.setkaId) section.outerHTML = setkaProfileSection(p);
+  }
+}
+function setkaBlockInner(containerId, setkaId, p, withHead){
+  const j = SETKA.jucatori.get(setkaId), s = SETKA.rezumat.get(setkaId);
+  const all = SETKA.series.get(setkaId);
+  const rangeId = setkaRanges[containerId] || (all && all.length && daysBetween(all[0].d, all[all.length-1].d) > 100 ? '3m' : 'all');
+  const range = SETKA_RANGES.find(r=>r.id===rangeId);
+  const points = !all ? null : (range.days && all.length ? all.filter(x=>x.d > isoMinusDays(all[all.length-1].d, range.days)) : all);
+  const first = points?.[0], last = points?.[points.length-1];
+  const vals = points?.map(x=>x.r) || [];
+  const totalMatches = (j?.victorii||0)+(j?.infrangeri||0);
+
+  const headHtml = !withHead ? '' : `<div class="stats-head">
+      ${setkaAvatar(p, j, true)}
+      <div style="flex:1;min-width:180px">
+        <div style="font-size:16px;font-weight:600">${esc(j ? `${j.prenume} ${j.nume}` : `${p.nume} ${p.prenume}`)}</div>
+        <div class="td-muted">${esc([j?.oras, j?.an_nastere].filter(Boolean).join(' · '))}
+          · <a href="${SETKA_SITE}/en/participants/${setkaId}" target="_blank" rel="noopener" style="color:var(--gold)">${t('st_openSetka')} ↗</a></div>
+      </div>
+      <div style="text-align:right"><div class="big">${fmtRating(s?.rating)}</div><div>${fmtDelta(last?.r, first?.r)}</div></div>
+    </div>`;
+  const rangeHtml = `<div class="range-row">
+      ${SETKA_RANGES.map(r=>`<button class="category-filter-chip ${r.id===rangeId?'active':''}" onclick="setSetkaRange('${containerId}','${r.id}')">${t(r.key)}</button>`).join('')}
+      <span class="spacer"></span>
+      ${!withHead && s ? `<span class="td-gold" style="font-size:18px">${fmtRating(s.rating)}</span> ${fmtDelta(last?.r, first?.r)}` : ''}
+    </div>`;
+  let chartHtml;
+  if(!all) chartHtml = `<div class="rating-chart-wrap"><div class="chart-empty">${esc(t('st_loading'))}</div></div>`;
+  else if(!points.length) chartHtml = `<div class="rating-chart-wrap"><div class="chart-empty">${esc(t('st_noHistory'))}</div></div>`;
+  else chartHtml = ratingChart(containerId, points);
+  const kv = !points?.length ? '' : `<div class="stats-kv">
+      <div><div class="k">${t('st_change')}</div><div class="v">${fmtDelta(last.r, first.r)}</div><div class="td-muted" style="font-size:11px;margin-top:2px">${esc(t('st_since')(fmtDate(first.d)))}</div></div>
+      <div><div class="k">${t('st_min')} / ${t('st_max')}</div><div class="v">${fmtRating(Math.min(...vals))} / ${fmtRating(Math.max(...vals))}</div></div>
+      <div><div class="k">${t('st_th_turnee')}</div><div class="v">${j?.turnee ?? '—'}</div></div>
+      <div><div class="k">${t('st_winrate')}</div><div class="v">${totalMatches ? Math.round(j.victorii/totalMatches*100)+'%' : '—'}</div><div class="td-muted" style="font-size:11px;margin-top:2px">${j ? `${j.victorii ?? 0} – ${j.infrangeri ?? 0}` : ''}</div></div>
+    </div>`;
+  return headHtml + rangeHtml + chartHtml + kv;
+}
+function daysBetween(a, b){ return Math.round((new Date(b+'T12:00:00Z') - new Date(a+'T12:00:00Z'))/86400000); }
+function setSetkaRange(containerId, rangeId){
+  setkaRanges[containerId] = rangeId;
+  const el = document.querySelector(`[data-chart-id="${containerId}"]`);
+  if(el) el.innerHTML = setkaBlockInner(containerId, Number(el.dataset.setkaBlock), participant(el.dataset.participant), el.dataset.head==='1');
+}
+
+/* the line chart: one series, time on x, hover crosshair + tooltip, arrow keys */
+function niceTicks(min, max, count){
+  if(min===max){ min-=1; max+=1; }
+  const raw = (max-min)/count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1,2,2.5,5,10].map(m=>m*mag).find(s=>s>=raw);
+  const lo = Math.floor(min/step)*step, hi = Math.ceil(max/step)*step;
+  const ticks = []; for(let v=lo; v<=hi+step/2; v+=step) ticks.push(Math.round(v*100)/100);
+  return ticks;
+}
+function ratingChart(id, points){
+  const W=760, H=260, L=44, R=58, T=14, B=28;
+  const t0 = Date.parse(points[0].d), t1 = Date.parse(points[points.length-1].d);
+  const vals = points.map(p=>p.r);
+  const ticks = niceTicks(Math.min(...vals), Math.max(...vals), 4);
+  const y0 = ticks[0], y1 = ticks[ticks.length-1];
+  const x = d => t1===t0 ? L+(W-L-R)/2 : L + (Date.parse(d)-t0)/(t1-t0)*(W-L-R);
+  const y = v => T + (1-(v-y0)/(y1-y0))*(H-T-B);
+  const xs = points.map(p=>x(p.d)), ys = points.map(p=>y(p.r));
+  setkaCharts[id] = { points, xs, ys, W };
+
+  const line = xs.map((px,i)=>`${i?'L':'M'}${px.toFixed(1)},${ys[i].toFixed(1)}`).join('');
+  const area = `${line}L${xs[xs.length-1].toFixed(1)},${H-B}L${xs[0].toFixed(1)},${H-B}Z`;
+  // date labels evenly spaced in time (days can be missing), never more than one per day
+  const spanDays = Math.round((t1-t0)/86400000);
+  const stepDays = Math.max(1, Math.ceil(spanDays/5));
+  const xTicks = [];
+  for(let k=0; k*stepDays<=spanDays; k++) xTicks.push(new Date(t0+k*stepDays*86400000).toISOString().slice(0,10));
+  if(spanDays - (xTicks.length-1)*stepDays > stepDays/2) xTicks.push(points[points.length-1].d);
+  const lastI = points.length-1;
+  return `<div class="rating-chart-wrap" id="${id}">
+    <svg class="rating-chart" viewBox="0 0 ${W} ${H}" tabindex="0" role="img"
+      aria-label="${esc(`${t('st_th_rating')}: ${fmtDate(points[0].d)} ${fmtRating(points[0].r)} → ${fmtDate(points[lastI].d)} ${fmtRating(points[lastI].r)}`)}"
+      onpointermove="setkaChartHover(event,'${id}')" onpointerleave="setkaChartHide('${id}')" onkeydown="setkaChartKey(event,'${id}')" onblur="setkaChartHide('${id}')">
+      <defs><linearGradient id="ratingArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8A96E" stop-opacity=".18"/><stop offset="1" stop-color="#C8A96E" stop-opacity="0"/></linearGradient></defs>
+      ${ticks.map(v=>`<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="axis-label" x="${L-8}" y="${(y(v)+4).toFixed(1)}" text-anchor="end">${v.toFixed(Number.isInteger(v)?0:1)}</text>`).join('')}
+      ${xTicks.map((d,k)=>`<text class="axis-label" x="${x(d).toFixed(1)}" y="${H-8}" text-anchor="${xTicks.length>1 && k===0?'start':k===xTicks.length-1 && xTicks.length>1?'end':'middle'}">${fmtDate(d).slice(0,5)}</text>`).join('')}
+      <path class="area" d="${area}"/>
+      <path class="line" d="${line}"/>
+      <circle class="last-dot" cx="${xs[lastI].toFixed(1)}" cy="${ys[lastI].toFixed(1)}" r="4.5"/>
+      <text class="last-label" x="${(xs[lastI]+9).toFixed(1)}" y="${(ys[lastI]+4).toFixed(1)}">${fmtRating(points[lastI].r)}</text>
+      <line class="cross" x1="0" x2="0" y1="${T}" y2="${H-B}"/>
+      <circle class="hover-dot" r="5"/>
+    </svg>
+    <div class="chart-tip"><strong></strong><span></span></div>
+  </div>`;
+}
+function setkaChartShow(id, i){
+  const c = setkaCharts[id], wrap = document.getElementById(id); if(!c || !wrap) return;
+  i = Math.max(0, Math.min(c.points.length-1, i)); c.active = i;
+  const svg = wrap.querySelector('svg'), cross = svg.querySelector('.cross'), dot = svg.querySelector('.hover-dot'), tip = wrap.querySelector('.chart-tip');
+  cross.setAttribute('x1', c.xs[i]); cross.setAttribute('x2', c.xs[i]); cross.style.visibility = 'visible';
+  dot.setAttribute('cx', c.xs[i]); dot.setAttribute('cy', c.ys[i]); dot.style.visibility = 'visible';
+  const prev = i>0 ? c.points[i-1].r : null, d = prev==null ? null : Math.round((c.points[i].r-prev)*10)/10;
+  tip.querySelector('strong').textContent = fmtRating(c.points[i].r);
+  tip.querySelector('span').textContent = fmtDate(c.points[i].d) + (d ? ` · ${d>0?'+':'−'}${Math.abs(d).toFixed(1)}` : '');
+  tip.style.display = 'block';
+  const sr = svg.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+  const px = c.xs[i]/c.W * sr.width + (sr.left - wr.left);
+  const w = tip.offsetWidth;
+  tip.style.left = Math.max(4, Math.min(wrap.clientWidth - w - 4, px + 12 + w > wrap.clientWidth ? px - w - 12 : px + 12)) + 'px';
+}
+function setkaChartHover(e, id){
+  const c = setkaCharts[id]; if(!c) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const vx = (e.clientX-rect.left)/rect.width*c.W;
+  let best = 0; c.xs.forEach((px,i)=>{ if(Math.abs(px-vx) < Math.abs(c.xs[best]-vx)) best = i; });
+  setkaChartShow(id, best);
+}
+function setkaChartKey(e, id){
+  const c = setkaCharts[id]; if(!c) return;
+  const cur = c.active ?? c.points.length-1;
+  if(e.key==='ArrowLeft'){ e.preventDefault(); setkaChartShow(id, cur-1); }
+  else if(e.key==='ArrowRight'){ e.preventDefault(); setkaChartShow(id, cur+1); }
+  else if(e.key==='Home'){ e.preventDefault(); setkaChartShow(id, 0); }
+  else if(e.key==='End'){ e.preventDefault(); setkaChartShow(id, c.points.length-1); }
+}
+function setkaChartHide(id){
+  const wrap = document.getElementById(id); if(!wrap) return;
+  wrap.querySelector('.cross').style.visibility = 'hidden';
+  wrap.querySelector('.hover-dot').style.visibility = 'hidden';
+  wrap.querySelector('.chart-tip').style.display = 'none';
+  if(setkaCharts[id]) setkaCharts[id].active = null;
+}
 
 /* ══════════════════════ ÎNTÂRZIERI ══════════════════════ */
 function renderIntarzieri(){
