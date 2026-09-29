@@ -513,11 +513,19 @@ html.show-load-screen #loadScreen{ display:flex; }
   content:''; display:block; width:min(82vw,420px); aspect-ratio:1;
   background:url('../images/ui/attp-pingpong-loader.gif?v=20260729-edgefix') center/contain no-repeat;
 }
+html[data-load-sport="basketball"] #loadScreen::before{
+  background-image:url('../images/ui/attp-basketball-loader.webp?v=20260929');
+  /* This cutout has much less empty space than the ping pong source. */
+  background-size:auto 55%;
+}
 #loadScreen .load-mark{ display:none; }
 @media (max-width:600px){ #loadScreen::before{ width:min(92vw,320px); } }
 @media (prefers-reduced-motion:reduce){
   #loadScreen{ transition:none; }
   #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png?v=20260729-edgefix'); }
+  html[data-load-sport="basketball"] #loadScreen::before{
+    background-image:url('../images/ui/attp-basketball-loader-still.webp?v=20260929');
+  }
 }
 
 /* ── Section heroes: studio action photo of an ATTP player ──

@@ -1,6 +1,8 @@
 // ATTP — shared brief load-screen, gated before paint by load-screen-gate.js.
 (function(){
   const navigationKey = 'attp-internal-navigation';
+  // Resolve from the shared script, not the page's language subdirectory.
+  const sitePath = new URL('../', document.currentScript.src).pathname;
 
   // Mark same-site HTML link clicks so the destination can use the 10% rule.
   document.addEventListener('click', (event) => {
@@ -11,7 +13,6 @@
 
     let destination;
     try { destination = new URL(link.href, location.href); } catch (_) { return; }
-    const sitePath = location.pathname.slice(0, location.pathname.lastIndexOf('/') + 1);
     if (destination.origin !== location.origin || destination.protocol === 'file:' && location.protocol !== 'file:') return;
     if (!destination.pathname.startsWith(sitePath)) return;
     if (destination.pathname === location.pathname && destination.search === location.search) return;
