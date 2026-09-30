@@ -1748,6 +1748,8 @@
     'Nu s-a putut anula notificarea: ': 'Не удалось отменить уведомление: ',
     'Nu s-a putut accepta propunerea: ': 'Не удалось принять предложение: ',
     'Nu s-a putut respinge propunerea: ': 'Не удалось отклонить предложение: ',
+    'Se pregătește…': 'Подготовка…',
+    'Fișierul Excel nu a putut fi creat — s-a descărcat CSV-ul simplu, fără culori.': 'Не удалось создать файл Excel — скачан простой CSV, без цветов.',
   };
   // ── RU_DICT_END ──
   // Auto-derived inverse (Russian -> Romanian) so the toggle can switch back
@@ -2191,7 +2193,18 @@
   document.getElementById('cancelExportMonth').addEventListener('click', closeExportConfirmation);
   document.getElementById('confirmExportMonth').addEventListener('click', () => {
     closeExportConfirmation();
-    downloadMonthCsv();
+    // Snapshot the month before any await, so switching months while the
+    // Excel writer loads can't mix two months into one file.
+    const table = monthExportTable();
+    withBusyButton(document.getElementById('exportMonthBtn'), t('Se pregătește…'), async () => {
+      try {
+        await downloadMonthXlsx(table);
+      } catch (err) {
+        console.error('Excel export failed', err);
+        downloadMonthCsv(table);
+        alert(t('Fișierul Excel nu a putut fi creat — s-a descărcat CSV-ul simplu, fără culori.'));
+      }
+    });
   });
   document.getElementById('clearFilters').addEventListener('click', () => {
     searchTerm = '';
@@ -2218,7 +2231,32 @@
     return String(Math.round(number * 100) / 100).replace('.', ',');
   }
 
-  function downloadMonthCsv(){
+  // Columns summed into the TOTAL row. Km and the tax rate are per-person
+  // settings, so adding them up across people would mean nothing.
+  const MONTH_EXPORT_SUM_COLUMNS = new Set([
+    'Turneu zi','Turneu noapte','Meciuri zi','Meciuri noapte',
+    'Locul I zi','Locul I noapte','Locul III zi','Locul III noapte',
+    'Arbitraj zi','Arbitraj noapte','Total transport (MDL)',
+    'Alte compensări (MDL)','Onorariu (MDL)','Impozit (MDL)'
+  ]);
+  // A negative onorariu (deductions bigger than the month's earnings) is shown
+  // as it is, but nobody pays it back — so it counts as 0 towards what has to
+  // leave the account. Same rule as the app's "Total onorarii", and impozit
+  // follows the onorariu it is calculated on.
+  const MONTH_EXPORT_PAYABLE_COLUMNS = new Set(['Onorariu (MDL)','Impozit (MDL)']);
+  const MONTH_EXPORT_MONEY_COLUMNS = new Set([
+    'Km','Total transport (MDL)','Alte compensări (MDL)','Onorariu (MDL)','Impozit (MDL)'
+  ]);
+
+  function roundMoney(value){
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.round(number * 100) / 100 : 0;
+  }
+
+  // One source for both export formats: numbers stay numbers here, and each
+  // writer formats them its own way. The TOTAL row adds up the rounded values
+  // actually shown per person, so it always equals the sum of the column.
+  function monthExportTable(){
     const headers = [
       'Luna','Nume','Prenume','Categorie','Vizibilitate','Activitate în lună',
       'Cod fiscal','IBAN','Bancă','Nr. contract','Data contract',
@@ -2241,23 +2279,125 @@
           entry.contract_number || ref.contract_number || '', localizeRomanianDate(entry.contract_date || ref.contract_date || ''),
           entry.tournament_day || 0, entry.tournament_night || 0, entry.matches_day || 0, entry.matches_night || 0,
           entry.place1_day || 0, entry.place1_night || 0, entry.place3_day || 0, entry.place3_night || 0,
-          entry.arbitraj_day || 0, entry.arbitraj_night || 0, entry.region || '', exportNumber(ref.km || 0),
-          ref.taxi_covered ? 'Da' : 'Nu', exportNumber(computeTransportAuto(ref, entry)),
-          exportNumber(-(entry.alte_compensari || 0)),
-          exportNumber(fee), exportNumber((globalRates.tax_rate || 0) * 100), exportNumber(tax),
+          entry.arbitraj_day || 0, entry.arbitraj_night || 0, entry.region || '', roundMoney(ref.km || 0),
+          ref.taxi_covered ? 'Da' : 'Nu', roundMoney(computeTransportAuto(ref, entry)),
+          roundMoney(-(entry.alte_compensari || 0)),
+          roundMoney(fee), roundMoney((globalRates.tax_rate || 0) * 100), roundMoney(tax),
           entry.notes || '', entry.updated_at || ''
         ];
       });
-    const csv = '\uFEFF' + [headers, ...rows].map(row => row.map(csvCell).join(';')).join('\r\n');
-    const blob = new Blob([csv], { type:'text/csv;charset=utf-8' });
+    return { headers, totals:monthExportTotals(headers, rows), rows };
+  }
+
+  function monthExportTotals(headers, rows){
+    return headers.map((header, i) => {
+      if (i === 0) return 'TOTAL';
+      if (!MONTH_EXPORT_SUM_COLUMNS.has(header)) return '';
+      const payable = MONTH_EXPORT_PAYABLE_COLUMNS.has(header);
+      return roundMoney(rows.reduce((sum, row) => {
+        const value = Number(row[i]) || 0;
+        return sum + (payable ? Math.max(0, value) : value);
+      }, 0));
+    });
+  }
+
+  function downloadBlob(blob, filename){
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `pontaj-setka-${periodKey(currentPeriod).slice(0, 7)}.csv`;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // Plain-text fallback. CSV cannot carry colours, so this is only used when
+  // the Excel writer can't load — the month's data is never out of reach.
+  function downloadMonthCsv(table){
+    const { headers, totals, rows } = table;
+    const cell = value => csvCell(typeof value === 'number' ? exportNumber(value) : value);
+    const csv = '﻿' + [headers, totals, ...rows].map(row => row.map(cell).join(';')).join('\r\n');
+    downloadBlob(new Blob([csv], { type:'text/csv;charset=utf-8' }), `pontaj-setka-${periodKey(currentPeriod).slice(0, 7)}.csv`);
+  }
+
+  // ExcelJS is ~1 MB and only this export needs it, so it's fetched on first
+  // use instead of on every page load. Pinned and SRI-checked like the other
+  // CDN scripts in <head>.
+  const EXCELJS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
+  const EXCELJS_SRI = 'sha384-Pqp51FUN2/qzfxZxBCtF0stpc9ONI6MYZpVqmo8m20SoaQCzf+arZvACkLkirlPz';
+  let excelJsLoading = null;
+  function loadExcelJs(){
+    if (window.ExcelJS) return Promise.resolve(window.ExcelJS);
+    if (!excelJsLoading) {
+      excelJsLoading = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = EXCELJS_SRC;
+        script.integrity = EXCELJS_SRI;
+        script.crossOrigin = 'anonymous';
+        script.onload = () => window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error('ExcelJS indisponibil'));
+        script.onerror = () => reject(new Error('ExcelJS nu s-a putut încărca'));
+        document.head.appendChild(script);
+      }).catch(err => { excelJsLoading = null; throw err; });
+    }
+    return excelJsLoading;
+  }
+
+  const XLSX_TOTAL_FILL = 'FFA9D08E';     // green — the TOTAL row
+  const XLSX_ONORARIU_FILL = 'FFBDD7EE';  // blue — what the contabil pays
+  const XLSX_TRANSPORT_FILL = 'FFFFE699'; // yellow — transport, paid separately
+  const XLSX_MONEY_FORMAT = '#,##0.00;[Red]-#,##0.00';
+
+  async function downloadMonthXlsx(table){
+    const ExcelJS = await loadExcelJs();
+    const { headers, totals, rows } = table;
+    const monthKey = periodKey(currentPeriod).slice(0, 7);
+    const workbook = new ExcelJS.Workbook();
+    // Header and TOTAL stay pinned while scrolling through ~100 people.
+    const sheet = workbook.addWorksheet(`Pontaj ${monthKey}`, { views:[{ state:'frozen', ySplit:2 }] });
+
+    const headerRow = sheet.addRow(headers);
+    const totalRow = sheet.addRow(totals);
+    rows.forEach(row => sheet.addRow(row));
+    const firstDataRow = 3;
+    const lastDataRow = rows.length + 2;
+    const fill = argb => ({ type:'pattern', pattern:'solid', fgColor:{ argb } });
+
+    headerRow.font = { bold:true };
+    headerRow.alignment = { vertical:'middle', wrapText:true };
+
+    headers.forEach((header, i) => {
+      const column = sheet.getColumn(i + 1);
+      column.width = Math.max(10, Math.min(28, header.length + 2));
+      if (MONTH_EXPORT_MONEY_COLUMNS.has(header)) column.numFmt = XLSX_MONEY_FORMAT;
+      // A real SUM formula, so the total stays right if the contabil edits a
+      // figure; the precomputed result shows even before Excel recalculates.
+      if (MONTH_EXPORT_SUM_COLUMNS.has(header) && rows.length) {
+        const range = `${column.letter}${firstDataRow}:${column.letter}${lastDataRow}`;
+        const formula = MONTH_EXPORT_PAYABLE_COLUMNS.has(header) ? `SUMIF(${range},">0")` : `SUM(${range})`;
+        totalRow.getCell(i + 1).value = { formula, result:totals[i] };
+      }
+    });
+    sheet.getColumn(headers.indexOf('Nume') + 1).width = 18;
+    sheet.getColumn(headers.indexOf('Prenume') + 1).width = 18;
+    sheet.getColumn(headers.indexOf('IBAN') + 1).width = 28;
+    sheet.getColumn(headers.indexOf('Notițe') + 1).width = 30;
+
+    totalRow.font = { bold:true };
+    for (let c = 1; c <= headers.length; c++) totalRow.getCell(c).fill = fill(XLSX_TOTAL_FILL);
+
+    const shadeBelowTotal = (header, argb) => {
+      const c = headers.indexOf(header) + 1;
+      for (let r = firstDataRow; r <= lastDataRow; r++) sheet.getRow(r).getCell(c).fill = fill(argb);
+    };
+    shadeBelowTotal('Onorariu (MDL)', XLSX_ONORARIU_FILL);
+    shadeBelowTotal('Total transport (MDL)', XLSX_TRANSPORT_FILL);
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    downloadBlob(
+      new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+      `pontaj-setka-${monthKey}.xlsx`
+    );
   }
 
   // ══ TRANSPORT PREVIEW — owner-only ledger, entirely separate from onorariu ══
@@ -2519,11 +2659,19 @@
     document.getElementById('emptyState').style.display = list.length ? 'none' : 'block';
 
     rowsBody.innerHTML = '';
-    let sumFee = 0, activeCount = 0;
+    // A negative onorariu is shown on its row but counts as 0 here — it is
+    // never paid back, so it doesn't reduce what has to leave the account.
+    // Impozit is summed per person, rounded as it appears on each act, so the
+    // chip always equals the TOTAL row of the monthly export.
+    let sumFee = 0, sumTax = 0, activeCount = 0;
     list.forEach(ref => {
       const entry = entries[ref.id] || emptyEntry(ref.id);
       const fee = computeFee(ref, entry);
-      if (hasActivity(entry)) { sumFee += fee; activeCount++; }
+      if (hasActivity(entry)) {
+        sumFee += Math.max(0, fee);
+        sumTax += roundMoney(Math.max(0, fee) * globalRates.tax_rate);
+        activeCount++;
+      }
 
       const tr = document.createElement('tr');
       if (!hasActivity(entry)) tr.className = 'inactive-row';
@@ -2599,7 +2747,7 @@
 
     document.getElementById('sumActive').textContent = activeCount;
     document.getElementById('sumFee').textContent = fmtMoney(sumFee);
-    document.getElementById('sumTax').textContent = fmtMoney(sumFee * globalRates.tax_rate);
+    document.getElementById('sumTax').textContent = fmtMoney(sumTax);
   }
 
   function onCellInput(e){
@@ -2616,13 +2764,17 @@
     // recompute summary chips from real numbers, not by re-parsing formatted text
     // (a fmtMoney() string uses '.' as a thousands separator and ',' for decimals —
     // stripping non-digits from it would mangle any fee that isn't a whole number)
-    let sumFee = 0, activeCount = 0;
+    let sumFee = 0, sumTax = 0, activeCount = 0;
     referees.forEach(r => {
-      if (hasActivity(entries[r.id])) { sumFee += computeFee(r, entries[r.id]); activeCount++; }
+      if (!hasActivity(entries[r.id])) return;
+      const payable = Math.max(0, computeFee(r, entries[r.id]));
+      sumFee += payable;
+      sumTax += roundMoney(payable * globalRates.tax_rate);
+      activeCount++;
     });
     document.getElementById('sumActive').textContent = activeCount;
     document.getElementById('sumFee').textContent = fmtMoney(sumFee);
-    document.getElementById('sumTax').textContent = fmtMoney(sumFee * globalRates.tax_rate);
+    document.getElementById('sumTax').textContent = fmtMoney(sumTax);
 
     const tr = input.closest('tr');
     if (tr) tr.classList.toggle('inactive-row', !hasActivity(entry));
