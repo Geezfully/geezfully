@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contractor site template — four demo builds</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg:#0C0D10; --panel:#141519; --line:rgba(255,255,255,.10); --ink:#F2F1EE; --ink-2:#A5A39E; --ink-3:#6E6C68; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: Archivo, system-ui, sans-serif; line-height: 1.6;
+    padding: clamp(32px, 6vw, 80px) clamp(20px, 5vw, 64px) 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin-inline: auto; }
+  .eyebrow { font-family: "DM Mono", monospace; font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.04; letter-spacing: -.02em; margin: 18px 0 20px; max-width: 20ch; }
+  .lede { color: var(--ink-2); max-width: 62ch; font-size: clamp(1rem, .5vw + .9rem, 1.14rem); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 20px; margin-top: clamp(36px, 5vw, 64px); }
+  .card {
+    display: grid; grid-template-columns: 150px minmax(0, 1fr);
+    border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    background: var(--panel); color: inherit; text-decoration: none;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), border-color .3s, box-shadow .3s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: var(--card-accent); box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+  .card__swatch {
+    background: var(--card-bg); color: var(--card-ink);
+    display: grid; align-content: space-between; gap: 12px; padding: 20px;
+    border-right: 1px solid var(--line);
+  }
+  .card__mark {
+    display: grid; place-items: center; width: 46px; height: 46px;
+    background: var(--card-accent); color: var(--card-bg);
+    border-radius: 8px; font-weight: 700; font-size: .95rem;
+  }
+  .card__look { font-family: "DM Mono", monospace; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
+  .card__body { padding: clamp(20px, 2.6vw, 28px); display: grid; gap: 10px; align-content: start; }
+  .card__name { font-size: 1.3rem; font-weight: 700; letter-spacing: -.01em; }
+  .card__label { font-family: "DM Mono", monospace; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--card-accent); }
+  .card__blurb { color: var(--ink-2); font-size: .95rem; }
+  .card__list { display: grid; gap: 6px; margin-top: 6px; list-style: none; }
+  .card__list li { position: relative; padding-left: 16px; font-size: .88rem; color: var(--ink-2); }
+  .card__list li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 1px; background: var(--card-accent); }
+  .card__go { margin-top: 10px; font-family: "DM Mono", monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--card-accent); }
+  .foot { margin-top: clamp(40px, 5vw, 64px); padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: .86rem; max-width: 70ch; }
+  .foot code { font-family: "DM Mono", monospace; color: var(--ink-2); }
+  @media (max-width: 560px) {
+    .card { grid-template-columns: 1fr; }
+    .card__swatch { flex-direction: row; display: flex; align-items: center; justify-content: space-between; border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Contractor site template</p>
+    <h1>Four finished sites, one codebase</h1>
+    <p class="lede">
+      Each of these is a complete, working site for a different kind of contractor — different trade,
+      different copy, different section mix and a different page layout. They all come out of the same
+      template: one JSON config per client, swap the photos, build.
+    </p>
+
+    <div class="grid">
+    <a class="card" href="preview-hardline.html" style="--card-accent:#FF4A0F; --card-bg:#E9E7E1; --card-ink:#16150F">
+      <span class="card__swatch" aria-hidden="true">
+        <span class="card__mark">HL</span>
+        <span class="card__look">Brutalist</span>
+      </span>
+      <span class="card__body">
+        <span class="card__name">Hardline Concrete</span>
+        <span class="card__label">Commercial concrete & demolition</span>
+        <span class="card__blurb">Loud and industrial. Concrete grey, safety orange, 2px black rules, hard offset shadows, zero radius.</span>
+        <ul class="card__list"><li>Full-width stacked headline</li><li>Service cards in a hard grid</li><li>Job log index with hover preview</li><li>Equipment fleet table</li><li>Crew portraits</li></ul>
+        <span class="card__go">Open this site <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+
+    <a class="card" href="preview-hearth.html" style="--card-accent:#B4623A; --card-bg:#FAF7F1; --card-ink:#2B2119">
+      <span class="card__swatch" aria-hidden="true">
+        <span class="card__mark">H&H</span>
+        <span class="card__look">Warm</span>
+      </span>
+      <span class="card__body">
+        <span class="card__name">Hearth & Hollow</span>
+        <span class="card__label">Design-led home renovation</span>
+        <span class="card__blurb">Editorial and unhurried. Sand and clay, Fraunces serif, centred headings, generous whitespace.</span>
+        <ul class="card__list"><li>Centred hero over a wide image</li><li>Alternating zigzag services</li><li>Material palette swatches</li><li>Investment tiers</li><li>Journal posts</li></ul>
+        <span class="card__go">Open this site <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+
+    <a class="card" href="preview-northbeam.html" style="--card-accent:#4DA3FF; --card-bg:#0B0F14; --card-ink:#EEF4FA">
+      <span class="card__swatch" aria-hidden="true">
+        <span class="card__mark">NB</span>
+        <span class="card__look">Blueprint</span>
+      </span>
+      <span class="card__body">
+        <span class="card__name">Northbeam Construction</span>
+        <span class="card__label">Design-build general contractor</span>
+        <span class="card__blurb">Technical and precise. Drafting grid, corner ticks, numbered sheets, condensed uppercase type.</span>
+        <ul class="card__list"><li>Split hero with a spec strip</li><li>Numbered service rows</li><li>Vertical process timeline</li><li>Spec-sheet data section</li><li>Before / after sliders</li></ul>
+        <span class="card__go">Open this site <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+
+    <a class="card" href="preview-vantage.html" style="--card-accent:#E8B33C; --card-bg:#0A0B0D; --card-ink:#F2F0EC">
+      <span class="card__swatch" aria-hidden="true">
+        <span class="card__mark">VB</span>
+        <span class="card__look">Cinematic</span>
+      </span>
+      <span class="card__body">
+        <span class="card__name">Vantage Builders</span>
+        <span class="card__label">Custom homes & estates</span>
+        <span class="card__blurb">Filmic and dark. Charcoal glass panels, amber light, full-bleed panels that run edge to edge.</span>
+        <ul class="card__list"><li>Full-bleed hero with overlay</li><li>Showreel panel</li><li>Horizontal service rail</li><li>Edge-to-edge project showcase</li><li>Awards ledger + review carousel</li></ul>
+        <span class="card__go">Open this site <span aria-hidden="true">→</span></span>
+      </span>
+    </a>
+    </div>
+
+    <p class="foot">
+      Everything here is placeholder artwork and invented companies. Real photography drops into
+      <code>images/</code> and the words live in one <code>site.config.json</code> per client.
+      Each demo is a single self-contained HTML file — no server needed.
+    </p>
+  </div>
+</body>
+</html>

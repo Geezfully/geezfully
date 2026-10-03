@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verso Atlas — Design Research Practice</title>
+<meta name="description" content="A design research practice working on public infrastructure, mapped as a single canvas of projects, notes and findings.">
+<link rel="canonical" href="https://versoatlas.example.com">
+<meta name="theme-color" content="#F0F3F0">
+<meta property="og:title" content="Verso Atlas — Design Research Practice">
+<meta property="og:description" content="A design research practice working on public infrastructure, mapped as a single canvas of projects, notes and findings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@400;600&display=swap">
+<style>
+/* Shared reset — the only CSS these four sites have in common. */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; background: none; border: 0; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+[hidden] { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   ATLAS — a canvas, not a page.
+
+   Every piece of content sits at a coordinate in a 2,600 × 2,000 world. The
+   world is translated and scaled; the viewport never scrolls. A minimap shows
+   where you are. Below 900px the whole conceit is dropped and the same content
+   renders as an ordinary vertical list, which is also what you get with no JS.
+   ========================================================================== */
+
+:root {
+  --paper:   #F0F3F0;
+  --card:    #FFFFFF;
+  --ink:     #0B1F1C;
+  --ink-2:   #4A5F59;
+  --ink-3:   #839892;
+  --muted:   #7C918B;
+  --line:    rgba(11, 31, 28, .14);
+  --green:   #0F8B6C;
+  --rust:    #C8622F;
+  --blue:    #2F62C8;
+
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --serif: "IBM Plex Serif", Georgia, serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px; line-height: 1.55;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--green); color: #fff; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
+.skip { position: fixed; top: -80px; left: 16px; z-index: 90; background: var(--ink); color: var(--paper); padding: 10px 16px; }
+.skip:focus { top: 12px; }
+
+/* ---------------------------------------------------------------- bar ---- */
+
+.bar {
+  position: fixed; inset: 0 0 auto; z-index: 30;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  padding-inline: 20px;
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.bar__brand { display: flex; align-items: center; gap: 12px; }
+.bar__mark {
+  display: grid; place-items: center; width: 32px; height: 32px;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--mono); font-size: .72rem;
+}
+.bar__brand strong { display: block; font-size: .95rem; letter-spacing: -.01em; }
+.bar__brand em { display: block; font-style: normal; font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+.bar__tools { display: flex; align-items: center; gap: 8px; }
+.zoom { font-family: var(--mono); font-size: .74rem; color: var(--muted); margin-right: 6px; }
+.tool {
+  width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 4px;
+  background: var(--card); font-size: .9rem; line-height: 1;
+  transition: border-color .2s, background .2s;
+}
+.tool:hover { border-color: var(--ink); }
+.tool--wide { width: auto; padding-inline: 12px; font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px; }
+kbd { font-family: var(--mono); font-size: .62rem; border: 1px solid var(--line); border-radius: 3px; padding: 1px 4px; color: var(--muted); }
+
+/* ------------------------------------------------------------- canvas ---- */
+
+.canvas {
+  position: fixed; inset: 0;
+  cursor: grab;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(11, 31, 28, .13) 1px, transparent 0);
+  background-size: 28px 28px;
+  touch-action: none;
+}
+.canvas.is-panning { cursor: grabbing; }
+
+.world {
+  position: absolute; top: 0; left: 0;
+  width: 2600px; height: 2000px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.wires path { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 4 5; }
+
+/* --------------------------------------------------------------- card ---- */
+
+.card {
+  position: absolute;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 2px 0 rgba(11, 31, 28, .04), 0 12px 30px rgba(11, 31, 28, .06);
+  transition: box-shadow .3s var(--ease), transform .3s var(--ease), border-color .2s;
+}
+.card:hover { border-color: var(--ink); box-shadow: 0 2px 0 rgba(11,31,28,.06), 0 20px 44px rgba(11, 31, 28, .12); }
+.card--intro { width: 520px; background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.card--intro .card__body { color: rgba(240, 243, 240, .74); }
+
+.card__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.card__kind {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .16em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px; color: #fff;
+}
+.card--project .card__kind { background: var(--green); }
+.card--note    .card__kind { background: var(--blue); }
+.card--finding .card__kind { background: var(--rust); }
+.card--studio  .card__kind { background: var(--ink); }
+
+.card__meta { font-family: var(--mono); font-size: .62rem; color: var(--muted); text-align: right; }
+.card__title { font-family: var(--serif); font-size: 1.34rem; line-height: 1.16; letter-spacing: -.01em; margin-bottom: 10px; }
+.card__title--big { font-size: clamp(1.6rem, 2.4vw, 2.2rem); line-height: 1.05; }
+.card__title--big span { display: block; }
+.card__img { width: 100%; aspect-ratio: 10 / 6; object-fit: cover; border-radius: 4px; margin-bottom: 12px; border: 1px solid var(--line); }
+.card__body { color: var(--ink-2); font-size: .92rem; }
+.card__hint { margin-top: 16px; font-family: var(--mono); font-size: .66rem; letter-spacing: .08em; color: rgba(240, 243, 240, .5); }
+
+.card__open {
+  margin-top: 14px; font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--green);
+  border-bottom: 1px solid currentColor; padding-bottom: 2px;
+}
+.card__open:hover { color: var(--ink); }
+
+/* --------------------------------------------------------------- list ---- */
+
+.list {
+  position: fixed; left: 20px; top: 76px; z-index: 20;
+  width: 250px; max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: 14px;
+}
+.list__label { font-family: var(--mono); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.list__items { display: grid; gap: 1px; }
+.list__items button {
+  width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: 9px; align-items: center; text-align: left;
+  padding: 7px 6px; border-radius: 4px; font-size: .82rem;
+  transition: background .2s;
+}
+.list__items button:hover { background: rgba(11, 31, 28, .06); }
+.list__items button.is-on { background: var(--ink); color: var(--paper); }
+.list__dot { width: 8px; height: 8px; border-radius: 50%; }
+.list__dot--project { background: var(--green); }
+.list__dot--note { background: var(--blue); }
+.list__dot--finding { background: var(--rust); }
+.list__dot--studio { background: var(--ink); }
+.list__items button.is-on .list__dot--studio { background: var(--paper); }
+.list__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.list__kind { font-family: var(--mono); font-size: .56rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.list__items button.is-on .list__kind { color: rgba(240,243,240,.6); }
+
+.legend { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.legend__row { display: grid; grid-template-columns: 10px auto minmax(0, 1fr); gap: 8px; align-items: baseline; font-size: .72rem; margin-bottom: 6px; }
+.legend__row strong { font-weight: 600; }
+.legend__row span:last-child { color: var(--muted); }
+
+/* ------------------------------------------------------------ minimap ---- */
+
+.minimap {
+  position: fixed; right: 20px; bottom: 20px; z-index: 20;
+  width: 190px; height: 146px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  border: 1px solid var(--line); border-radius: 6px;
+  overflow: hidden; cursor: crosshair;
+}
+.minimap__world { position: absolute; inset: 6px; }
+.minimap__node { position: absolute; border-radius: 2px; background: var(--muted); opacity: .55; }
+.minimap__node--project { background: var(--green); }
+.minimap__node--note { background: var(--blue); }
+.minimap__node--finding { background: var(--rust); }
+.minimap__node--studio { background: var(--ink); }
+.minimap__view { position: absolute; border: 1.5px solid var(--ink); background: rgba(11, 31, 28, .07); pointer-events: none; }
+
+/* -------------------------------------------------------------- sheet ---- */
+
+.sheet {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(11, 31, 28, .34);
+  backdrop-filter: blur(3px);
+  display: grid; place-items: center; padding: 20px;
+  opacity: 0; transition: opacity .25s var(--ease);
+}
+.sheet.is-open { opacity: 1; }
+.sheet__panel {
+  position: relative; width: min(680px, 100%); max-height: 84vh; overflow-y: auto;
+  background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  padding: clamp(24px, 4vw, 44px);
+  transform: translateY(10px); transition: transform .3s var(--ease);
+}
+.sheet.is-open .sheet__panel { transform: none; }
+.sheet__close { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border: 1px solid var(--line); border-radius: 50%; }
+.sheet__close:hover { background: var(--ink); color: var(--paper); }
+.sheet__kind { font-family: var(--mono); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--green); }
+.sheet__title { font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.1; margin: 10px 0 6px; }
+.sheet__meta { font-family: var(--mono); font-size: .68rem; color: var(--muted); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.sheet__body p { margin-bottom: 1em; color: var(--ink-2); }
+.sheet__body p:first-child { font-size: 1.05rem; color: var(--ink); }
+
+/* The no-JS / print copy of everything */
+.details { display: none; }
+
+/* ------------------------------------------------- small screens & noJS --- */
+
+@media (max-width: 900px) {
+  body { overflow: auto; }
+  .canvas, .minimap { display: none; }
+  .details { display: block; padding: 84px 20px 60px; max-width: 640px; margin-inline: auto; }
+  .detail { padding-bottom: 34px; margin-bottom: 34px; border-bottom: 1px solid var(--line); }
+  .detail h2 { font-family: var(--serif); font-size: 1.5rem; line-height: 1.15; margin-bottom: 8px; }
+  .detail__meta { font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .detail p { margin-bottom: .9em; color: var(--ink-2); }
+  .detail--foot { border-bottom: 0; font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+  .list {
+    position: static; width: auto; max-height: none; margin: 76px 20px 0;
+    max-width: 640px; margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+
+
+.rt-bar {
+  position: fixed; z-index: 9999; left: 50%; bottom: 16px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 2px; padding: 5px;
+  background: rgba(18,18,18,.88); color: #EDEDEA;
+  border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+  backdrop-filter: blur(14px); box-shadow: 0 16px 44px rgba(0,0,0,.4);
+  font: 500 11px/1 ui-monospace, "SF Mono", monospace;
+  letter-spacing: .12em; text-transform: uppercase;
+  max-width: calc(100vw - 20px); overflow-x: auto; scrollbar-width: none;
+}
+.rt-bar::-webkit-scrollbar { display: none; }
+.rt-bar span { padding: 0 10px; opacity: .45; white-space: nowrap; }
+.rt-bar a { padding: 8px 12px; border-radius: 999px; color: #EDEDEA; text-decoration: none; white-space: nowrap; opacity: .7; }
+.rt-bar a:hover { opacity: 1; background: rgba(255,255,255,.1); }
+.rt-bar a[aria-current] { opacity: 1; background: #EDEDEA; color: #121212; }
+@media print { .rt-bar { display: none; } }
+
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Verso Atlas",
+  "url": "https://versoatlas.example.com",
+  "description": "A design research practice working on public infrastructure."
+}</script>
+</head>
+<body>
+<a class="skip" href="#list">Skip to the list view</a>
+
+<!-- Fixed chrome over the canvas -->
+<header class="bar">
+  <div class="bar__brand">
+    <span class="bar__mark">VA</span>
+    <span>
+      <strong>Verso Atlas</strong>
+      <em>Design research practice</em>
+    </span>
+  </div>
+
+  <div class="bar__tools">
+    <span class="zoom" aria-live="polite"><span data-zoom>100</span>%</span>
+    <button class="tool" type="button" data-zoom-out aria-label="Zoom out">−</button>
+    <button class="tool" type="button" data-zoom-in aria-label="Zoom in">+</button>
+    <button class="tool tool--wide" type="button" data-fit>Fit <kbd>F</kbd></button>
+  </div>
+</header>
+
+<!-- The canvas. Cards live at real coordinates; the world is transformed. -->
+<main class="canvas" data-canvas>
+  <div class="world" data-world>
+    <svg class="wires" data-wires aria-hidden="true"></svg>
+
+    <article class="card card--intro" style="left:300px; top:120px">
+      <h1 class="card__title card__title--big">
+        <span>This is not a page.</span><span>It is a map.</span>
+      </h1>
+      <p class="card__body">Verso Atlas is a five-person research practice. Everything we have published sits on this canvas — drag to move, scroll to zoom, or use the list on the left.</p>
+      <p class="card__hint">Drag anywhere · Scroll to zoom · Press F to fit</p>
+    </article>
+
+    
+    <article class="card card--studio" id="n-start" data-node="n-start"
+             style="left:300px; top:320px; width:460px">
+      <header class="card__head">
+        <span class="card__kind">studio</span>
+        <span class="card__meta">The practice</span>
+      </header>
+
+      <h2 class="card__title">Start here</h2>
+      
+      <p class="card__body">Five people — two designers, an ethnographer, a statistician and a policy lead. We take three commissions a year, all of them about how public systems are actually used rather than how they were specified.</p>
+
+      <button class="card__open" type="button" data-open="n-start">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--project" id="n-tickets" data-node="n-tickets"
+             style="left:980px; top:180px; width:520px">
+      <header class="card__head">
+        <span class="card__kind">project</span>
+        <span class="card__meta">Transport authority · 2025 · 7 months</span>
+      </header>
+
+      <h2 class="card__title">Why the queue got longer</h2>
+      <img class="card__img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDcwMCIgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkZpZ3VyZSI+PHJlY3Qgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiBmaWxsPSIjRjBGNEYxIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0MCIgeTE9IjAiIHgyPSI0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4MCIgeTE9IjAiIHgyPSI4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIxMjAiIHkxPSIwIiB4Mj0iMTIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjE2MCIgeTE9IjAiIHgyPSIxNjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMjAwIiB5MT0iMCIgeDI9IjIwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIyNDAiIHkxPSIwIiB4Mj0iMjQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjI4MCIgeTE9IjAiIHgyPSIyODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMzIwIiB5MT0iMCIgeDI9IjMyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIzNjAiIHkxPSIwIiB4Mj0iMzYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjQwMCIgeTE9IjAiIHgyPSI0MDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNDQwIiB5MT0iMCIgeDI9IjQ0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0ODAiIHkxPSIwIiB4Mj0iNDgwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjUyMCIgeTE9IjAiIHgyPSI1MjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNTYwIiB5MT0iMCIgeDI9IjU2MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI2MDAiIHkxPSIwIiB4Mj0iNjAwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjY0MCIgeTE9IjAiIHgyPSI2NDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNjgwIiB5MT0iMCIgeDI9IjY4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI3MjAiIHkxPSIwIiB4Mj0iNzIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijc2MCIgeTE9IjAiIHgyPSI3NjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iODAwIiB5MT0iMCIgeDI9IjgwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4NDAiIHkxPSIwIiB4Mj0iODQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijg4MCIgeTE9IjAiIHgyPSI4ODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iOTIwIiB5MT0iMCIgeDI9IjkyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI5NjAiIHkxPSIwIiB4Mj0iOTYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjEwMDAiIHkxPSIwIiB4Mj0iMTAwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEwMDAiIHkyPSIwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjAiIHkxPSI0MCIgeDI9IjEwMDAiIHkyPSI0MCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iODAiIHgyPSIxMDAwIiB5Mj0iODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjEyMCIgeDI9IjEwMDAiIHkyPSIxMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjE2MCIgeDI9IjEwMDAiIHkyPSIxNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjIwMCIgeDI9IjEwMDAiIHkyPSIyMDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI0MCIgeDI9IjEwMDAiIHkyPSIyNDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI4MCIgeDI9IjEwMDAiIHkyPSIyODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjMyMCIgeDI9IjEwMDAiIHkyPSIzMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjM2MCIgeDI9IjEwMDAiIHkyPSIzNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQwMCIgeDI9IjEwMDAiIHkyPSI0MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ0MCIgeDI9IjEwMDAiIHkyPSI0NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ4MCIgeDI9IjEwMDAiIHkyPSI0ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjUyMCIgeDI9IjEwMDAiIHkyPSI1MjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjU2MCIgeDI9IjEwMDAiIHkyPSI1NjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjYwMCIgeDI9IjEwMDAiIHkyPSI2MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY0MCIgeDI9IjEwMDAiIHkyPSI2NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY4MCIgeDI9IjEwMDAiIHkyPSI2ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48cGF0aCBkPSJNODc4IDU0OCBMODc4IDQ1NSBMMjYxIDQ1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMjYxIDQ1NSBMMjYxIDEwNiBMMzMxIDEwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMzMxIDEwNiBMMzMxIDI4MiBMMjc0IDI4MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMjc0IDI4MiBMMjc0IDI5OSBMODMyIDI5OSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNODMyIDI5OSBMODMyIDQzMyBMNzM5IDQzMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSI4NzgiIGN5PSI1NDgiIHI9IjkiIGZpbGw9IiMwRjhCNkMiLz48Y2lyY2xlIGN4PSI4NzgiIGN5PSI1NDgiIHI9IjMwLjczNDkzOTkwNzIxMTgxIiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iMjYxIiBjeT0iNDU1IiByPSI1IiBmaWxsPSIjMEIxRjFDIi8+PGNpcmNsZSBjeD0iMjYxIiBjeT0iNDU1IiByPSIyMy4xNTQwMDMzNTg0NDYwNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjMzMSIgY3k9IjEwNiIgcj0iNSIgZmlsbD0iIzBCMUYxQyIvPjxjaXJjbGUgY3g9IjMzMSIgY3k9IjEwNiIgcj0iMjYuNzQ1MTY5MDUwNTI1ODc0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iMjc0IiBjeT0iMjgyIiByPSI5IiBmaWxsPSIjMEY4QjZDIi8+PGNpcmNsZSBjeD0iMjc0IiBjeT0iMjgyIiByPSIzMS44MTg3NzgyMDAwNzUwMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjgzMiIgY3k9IjI5OSIgcj0iNSIgZmlsbD0iIzBCMUYxQyIvPjxjaXJjbGUgY3g9IjgzMiIgY3k9IjI5OSIgcj0iMzEuMDg4NDMxNTA5Njc3MzIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMjUiLz48Y2lyY2xlIGN4PSI3MzkiIGN5PSI0MzMiIHI9IjUiIGZpbGw9IiMwQjFGMUMiLz48Y2lyY2xlIGN4PSI3MzkiIGN5PSI0MzMiIHI9IjI2Ljc2MzU5NzI2MjA5MTkzNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjwvc3ZnPgo=" alt="" width="1000" height="700" loading="lazy">
+      <p class="card__body">A ticketing redesign that tested beautifully and failed in the concourse. We watched 4,100 transactions and found the problem was not the interface at all.</p>
+
+      <button class="card__open" type="button" data-open="n-tickets">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--project" id="n-forms" data-node="n-forms"
+             style="left:1620px; top:460px; width:500px">
+      <header class="card__head">
+        <span class="card__kind">project</span>
+        <span class="card__meta">Housing department · 2024 · 11 months</span>
+      </header>
+
+      <h2 class="card__title">The form nobody finished</h2>
+      <img class="card__img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDcwMCIgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkZpZ3VyZSI+PHJlY3Qgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiBmaWxsPSIjRUFGMEVDIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0MCIgeTE9IjAiIHgyPSI0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4MCIgeTE9IjAiIHgyPSI4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIxMjAiIHkxPSIwIiB4Mj0iMTIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjE2MCIgeTE9IjAiIHgyPSIxNjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMjAwIiB5MT0iMCIgeDI9IjIwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIyNDAiIHkxPSIwIiB4Mj0iMjQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjI4MCIgeTE9IjAiIHgyPSIyODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMzIwIiB5MT0iMCIgeDI9IjMyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIzNjAiIHkxPSIwIiB4Mj0iMzYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjQwMCIgeTE9IjAiIHgyPSI0MDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNDQwIiB5MT0iMCIgeDI9IjQ0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0ODAiIHkxPSIwIiB4Mj0iNDgwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjUyMCIgeTE9IjAiIHgyPSI1MjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNTYwIiB5MT0iMCIgeDI9IjU2MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI2MDAiIHkxPSIwIiB4Mj0iNjAwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjY0MCIgeTE9IjAiIHgyPSI2NDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNjgwIiB5MT0iMCIgeDI9IjY4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI3MjAiIHkxPSIwIiB4Mj0iNzIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijc2MCIgeTE9IjAiIHgyPSI3NjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iODAwIiB5MT0iMCIgeDI9IjgwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4NDAiIHkxPSIwIiB4Mj0iODQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijg4MCIgeTE9IjAiIHgyPSI4ODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iOTIwIiB5MT0iMCIgeDI9IjkyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI5NjAiIHkxPSIwIiB4Mj0iOTYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjEwMDAiIHkxPSIwIiB4Mj0iMTAwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEwMDAiIHkyPSIwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjAiIHkxPSI0MCIgeDI9IjEwMDAiIHkyPSI0MCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iODAiIHgyPSIxMDAwIiB5Mj0iODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjEyMCIgeDI9IjEwMDAiIHkyPSIxMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjE2MCIgeDI9IjEwMDAiIHkyPSIxNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjIwMCIgeDI9IjEwMDAiIHkyPSIyMDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI0MCIgeDI9IjEwMDAiIHkyPSIyNDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI4MCIgeDI9IjEwMDAiIHkyPSIyODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjMyMCIgeDI9IjEwMDAiIHkyPSIzMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjM2MCIgeDI9IjEwMDAiIHkyPSIzNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQwMCIgeDI9IjEwMDAiIHkyPSI0MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ0MCIgeDI9IjEwMDAiIHkyPSI0NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ4MCIgeDI9IjEwMDAiIHkyPSI0ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjUyMCIgeDI9IjEwMDAiIHkyPSI1MjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjU2MCIgeDI9IjEwMDAiIHkyPSI1NjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjYwMCIgeDI9IjEwMDAiIHkyPSI2MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY0MCIgeDI9IjEwMDAiIHkyPSI2NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY4MCIgeDI9IjEwMDAiIHkyPSI2ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48cGF0aCBkPSJNMTg3IDM4OSBMMTg3IDI4NyBMMjg5IDI4NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMjg5IDI4NyBMMjg5IDMyMyBMMTQwIDMyMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMTQwIDMyMyBMMTQwIDUzOCBMMjEwIDUzOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMjEwIDUzOCBMMjEwIDUyOCBMODc2IDUyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNODc2IDUyOCBMODc2IDQyMiBMNTAwIDQyMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSIxODciIGN5PSIzODkiIHI9IjkiIGZpbGw9IiMwRjhCNkMiLz48Y2lyY2xlIGN4PSIxODciIGN5PSIzODkiIHI9IjMwLjA2MDM4NjYyNDE4NzIzIiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iMjg5IiBjeT0iMjg3IiByPSI1IiBmaWxsPSIjMEIxRjFDIi8+PGNpcmNsZSBjeD0iMjg5IiBjeT0iMjg3IiByPSIyNi4zNTA1NzY4NzA2MDkwNzUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMjUiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSIzMjMiIHI9IjUiIGZpbGw9IiMwQjFGMUMiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSIzMjMiIHI9IjE5LjI3MDUwMjE5MDEwNTYxNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjIxMCIgY3k9IjUzOCIgcj0iOSIgZmlsbD0iIzBGOEI2QyIvPjxjaXJjbGUgY3g9IjIxMCIgY3k9IjUzOCIgcj0iMTkuOTYyOTM3MTcyMDM2NjE4IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iODc2IiBjeT0iNTI4IiByPSI1IiBmaWxsPSIjMEIxRjFDIi8+PGNpcmNsZSBjeD0iODc2IiBjeT0iNTI4IiByPSIzMS4zMDEyMzU4NzEzODk1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjQyMiIgcj0iNSIgZmlsbD0iIzBCMUYxQyIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjQyMiIgcj0iMzAuOTQzNzc2MjQxMDM3OTk1IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PC9zdmc+Cg==" alt="" width="1000" height="700" loading="lazy">
+      <p class="card__body">A benefits application with a 62% abandonment rate. Rebuilt around what applicants actually had to hand, rather than what the department wanted to know first.</p>
+
+      <button class="card__open" type="button" data-open="n-forms">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--finding" id="n-six" data-node="n-six"
+             style="left:900px; top:760px; width:440px">
+      <header class="card__head">
+        <span class="card__kind">finding</span>
+        <span class="card__meta">Finding · across four studies</span>
+      </header>
+
+      <h2 class="card__title">Six minutes is the cliff</h2>
+      
+      <p class="card__body">Across four unrelated public services, completion collapses somewhere between five and seven minutes of continuous attention. Below six, most people finish. Above it, most do not.</p>
+
+      <button class="card__open" type="button" data-open="n-six">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--project" id="n-signs" data-node="n-signs"
+             style="left:380px; top:980px; width:480px">
+      <header class="card__head">
+        <span class="card__kind">project</span>
+        <span class="card__meta">NHS trust · 2024 · 9 months</span>
+      </header>
+
+      <h2 class="card__title">Reading a hospital at 3am</h2>
+      <img class="card__img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDcwMCIgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkZpZ3VyZSI+PHJlY3Qgd2lkdGg9IjEwMDAiIGhlaWdodD0iNzAwIiBmaWxsPSIjRjBGNEYxIi8+PGxpbmUgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0MCIgeTE9IjAiIHgyPSI0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4MCIgeTE9IjAiIHgyPSI4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIxMjAiIHkxPSIwIiB4Mj0iMTIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjE2MCIgeTE9IjAiIHgyPSIxNjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMjAwIiB5MT0iMCIgeDI9IjIwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIyNDAiIHkxPSIwIiB4Mj0iMjQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjI4MCIgeTE9IjAiIHgyPSIyODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMzIwIiB5MT0iMCIgeDI9IjMyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIzNjAiIHkxPSIwIiB4Mj0iMzYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjQwMCIgeTE9IjAiIHgyPSI0MDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNDQwIiB5MT0iMCIgeDI9IjQ0MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI0ODAiIHkxPSIwIiB4Mj0iNDgwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjUyMCIgeTE9IjAiIHgyPSI1MjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNTYwIiB5MT0iMCIgeDI9IjU2MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI2MDAiIHkxPSIwIiB4Mj0iNjAwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjY0MCIgeTE9IjAiIHgyPSI2NDAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iNjgwIiB5MT0iMCIgeDI9IjY4MCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI3MjAiIHkxPSIwIiB4Mj0iNzIwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijc2MCIgeTE9IjAiIHgyPSI3NjAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iODAwIiB5MT0iMCIgeDI9IjgwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI4NDAiIHkxPSIwIiB4Mj0iODQwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9Ijg4MCIgeTE9IjAiIHgyPSI4ODAiIHkyPSI3MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iOTIwIiB5MT0iMCIgeDI9IjkyMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSI5NjAiIHkxPSIwIiB4Mj0iOTYwIiB5Mj0iNzAwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjEwMDAiIHkxPSIwIiB4Mj0iMTAwMCIgeTI9IjcwMCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEwMDAiIHkyPSIwIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjA4Ii8+PGxpbmUgeDE9IjAiIHkxPSI0MCIgeDI9IjEwMDAiIHkyPSI0MCIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4wOCIvPjxsaW5lIHgxPSIwIiB5MT0iODAiIHgyPSIxMDAwIiB5Mj0iODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjEyMCIgeDI9IjEwMDAiIHkyPSIxMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjE2MCIgeDI9IjEwMDAiIHkyPSIxNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjIwMCIgeDI9IjEwMDAiIHkyPSIyMDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI0MCIgeDI9IjEwMDAiIHkyPSIyNDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjI4MCIgeDI9IjEwMDAiIHkyPSIyODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjMyMCIgeDI9IjEwMDAiIHkyPSIzMjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjM2MCIgeDI9IjEwMDAiIHkyPSIzNjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQwMCIgeDI9IjEwMDAiIHkyPSI0MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ0MCIgeDI9IjEwMDAiIHkyPSI0NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjQ4MCIgeDI9IjEwMDAiIHkyPSI0ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjUyMCIgeDI9IjEwMDAiIHkyPSI1MjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjU2MCIgeDI9IjEwMDAiIHkyPSI1NjAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjYwMCIgeDI9IjEwMDAiIHkyPSI2MDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY0MCIgeDI9IjEwMDAiIHkyPSI2NDAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48bGluZSB4MT0iMCIgeTE9IjY4MCIgeDI9IjEwMDAiIHkyPSI2ODAiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMDgiLz48cGF0aCBkPSJNMjU2IDIzMCBMMjU2IDExOSBMMzE3IDExOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMzE3IDExOSBMMzE3IDU0MSBMNzA4IDU0MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNNzA4IDU0MSBMNzA4IDI5MSBMMTQ2IDI5MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMTQ2IDI5MSBMMTQ2IDI1MyBMMTYwIDI1MyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cGF0aCBkPSJNMTYwIDI1MyBMMTYwIDQxMCBMMjYwIDQxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzAiIHI9IjkiIGZpbGw9IiNDODYyMkYiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyMzAiIHI9IjI5LjM4NTgzMzM0MTE2MjY1MiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjMxNyIgY3k9IjExOSIgcj0iNSIgZmlsbD0iIzBCMUYxQyIvPjxjaXJjbGUgY3g9IjMxNyIgY3k9IjExOSIgcj0iMjkuNTQ3MTUwMzgyNzcyMDg4IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iNzA4IiBjeT0iNTQxIiByPSI1IiBmaWxsPSIjMEIxRjFDIi8+PGNpcmNsZSBjeD0iNzA4IiBjeT0iNTQxIiByPSIyNS43OTU4MzUzMjk2ODUzNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjxjaXJjbGUgY3g9IjE0NiIgY3k9IjI5MSIgcj0iOSIgZmlsbD0iI0M4NjIyRiIvPjxjaXJjbGUgY3g9IjE0NiIgY3k9IjI5MSIgcj0iMjIuMTA3MDk2MTQzOTk4MjA2IiBmaWxsPSJub25lIiBzdHJva2U9IiMwQjFGMUMiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iLjI1Ii8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMjUzIiByPSI1IiBmaWxsPSIjMEIxRjFDIi8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMjUzIiByPSIzMS41MTQwNDAyMzMxMDE2OTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBCMUYxQyIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMjUiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSI0MTAiIHI9IjUiIGZpbGw9IiMwQjFGMUMiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSI0MTAiIHI9IjIxLjEyMzk1NTIxOTk4NDA1NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMEIxRjFDIiBzdHJva2Utd2lkdGg9IjEiIG9wYWNpdHk9Ii4yNSIvPjwvc3ZnPgo=" alt="" width="1000" height="700" loading="lazy">
+      <p class="card__body">Wayfinding for people who are frightened, in pain, or arriving in the dark. Tested with people who had actually done it.</p>
+
+      <button class="card__open" type="button" data-open="n-signs">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--note" id="n-note1" data-node="n-note1"
+             style="left:1500px; top:1000px; width:400px">
+      <header class="card__head">
+        <span class="card__kind">note</span>
+        <span class="card__meta">Field note · March 2026</span>
+      </header>
+
+      <h2 class="card__title">On watching instead of asking</h2>
+      
+      <p class="card__body">People are reliable narrators of what they want and unreliable narrators of what they do. Both matter, but only one can be observed.</p>
+
+      <button class="card__open" type="button" data-open="n-note1">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--note" id="n-note2" data-node="n-note2"
+             style="left:1980px; top:900px; width:400px">
+      <header class="card__head">
+        <span class="card__kind">note</span>
+        <span class="card__meta">Field note · January 2026</span>
+      </header>
+
+      <h2 class="card__title">The pilot that never ends</h2>
+      
+      <p class="card__body">A pilot with no defined end is a way of avoiding the decision to roll out or to stop. We now write the end condition into the first week of every engagement.</p>
+
+      <button class="card__open" type="button" data-open="n-note2">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--finding" id="n-method" data-node="n-method"
+             style="left:1300px; top:1420px; width:470px">
+      <header class="card__head">
+        <span class="card__kind">finding</span>
+        <span class="card__meta">Method</span>
+      </header>
+
+      <h2 class="card__title">What we will not do</h2>
+      
+      <p class="card__body">No unmoderated remote testing as primary evidence. No surveys as a substitute for observation. No recommendations we have not watched someone try.</p>
+
+      <button class="card__open" type="button" data-open="n-method">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+    <article class="card card--studio" id="n-contact" data-node="n-contact"
+             style="left:620px; top:1560px; width:460px">
+      <header class="card__head">
+        <span class="card__kind">studio</span>
+        <span class="card__meta">Three commissions a year</span>
+      </header>
+
+      <h2 class="card__title">Work with us</h2>
+      
+      <p class="card__body">We take on three pieces of work a year and we are usually booked two quarters out. Tell us what is going wrong and we will tell you honestly whether we are the right people.</p>
+
+      <button class="card__open" type="button" data-open="n-contact">Open <span aria-hidden="true">↗</span></button>
+    </article>
+    
+  </div>
+</main>
+
+<!-- List view: the accessible, printable, no-JS version of the same content -->
+<aside class="list" id="list">
+  <p class="list__label">Contents</p>
+  <ol class="list__items">
+    
+    <li>
+      <button type="button" data-goto="n-start">
+        <span class="list__dot list__dot--studio" aria-hidden="true"></span>
+        <span class="list__title">Start here</span>
+        <span class="list__kind">studio</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-tickets">
+        <span class="list__dot list__dot--project" aria-hidden="true"></span>
+        <span class="list__title">Why the queue got longer</span>
+        <span class="list__kind">project</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-forms">
+        <span class="list__dot list__dot--project" aria-hidden="true"></span>
+        <span class="list__title">The form nobody finished</span>
+        <span class="list__kind">project</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-six">
+        <span class="list__dot list__dot--finding" aria-hidden="true"></span>
+        <span class="list__title">Six minutes is the cliff</span>
+        <span class="list__kind">finding</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-signs">
+        <span class="list__dot list__dot--project" aria-hidden="true"></span>
+        <span class="list__title">Reading a hospital at 3am</span>
+        <span class="list__kind">project</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-note1">
+        <span class="list__dot list__dot--note" aria-hidden="true"></span>
+        <span class="list__title">On watching instead of asking</span>
+        <span class="list__kind">note</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-note2">
+        <span class="list__dot list__dot--note" aria-hidden="true"></span>
+        <span class="list__title">The pilot that never ends</span>
+        <span class="list__kind">note</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-method">
+        <span class="list__dot list__dot--finding" aria-hidden="true"></span>
+        <span class="list__title">What we will not do</span>
+        <span class="list__kind">finding</span>
+      </button>
+    </li>
+    
+    <li>
+      <button type="button" data-goto="n-contact">
+        <span class="list__dot list__dot--studio" aria-hidden="true"></span>
+        <span class="list__title">Work with us</span>
+        <span class="list__kind">studio</span>
+      </button>
+    </li>
+    
+  </ol>
+
+  <div class="legend">
+    <p class="list__label">Legend</p>
+    
+    <p class="legend__row">
+      <span class="list__dot list__dot--project" aria-hidden="true"></span>
+      <strong>Project</strong><span>Commissioned work, 6–18 months</span>
+    </p>
+    
+    <p class="legend__row">
+      <span class="list__dot list__dot--note" aria-hidden="true"></span>
+      <strong>Field note</strong><span>Short, published as we go</span>
+    </p>
+    
+    <p class="legend__row">
+      <span class="list__dot list__dot--finding" aria-hidden="true"></span>
+      <strong>Finding</strong><span>A result we would defend</span>
+    </p>
+    
+    <p class="legend__row">
+      <span class="list__dot list__dot--studio" aria-hidden="true"></span>
+      <strong>Studio</strong><span>Who we are, how to reach us</span>
+    </p>
+    
+  </div>
+</aside>
+
+<!-- Minimap -->
+<div class="minimap" data-minimap aria-hidden="true">
+  <div class="minimap__world" data-minimap-world></div>
+  <div class="minimap__view" data-minimap-view></div>
+</div>
+
+<!-- Detail overlay -->
+<div class="sheet" data-sheet hidden>
+  <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <button class="sheet__close" type="button" data-sheet-close aria-label="Close">✕</button>
+    <p class="sheet__kind" data-sheet-kind></p>
+    <h2 class="sheet__title" id="sheet-title" data-sheet-title></h2>
+    <p class="sheet__meta" data-sheet-meta></p>
+    <div class="sheet__body" data-sheet-body></div>
+  </div>
+</div>
+
+<!-- Content for the overlay, and the whole site without JS -->
+<div class="details" data-details>
+  
+  <section class="detail" data-detail="n-start">
+    <h2>Start here</h2>
+    <p class="detail__meta">studio · The practice</p>
+    <p>We were founded in 2018 after a transport authority asked us why a redesigned ticketing system had made queues longer. The answer took four months and involved standing in stations at six in the morning. That is still roughly the method.</p><p>We publish everything we can. Where a client will not let us publish the work, we publish the method.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-tickets">
+    <h2>Why the queue got longer</h2>
+    <p class="detail__meta">project · Transport authority · 2025 · 7 months</p>
+    <p>The new machines were faster per transaction and slower per passenger. People arrived in groups, and the old machines allowed one person to buy for four. The new flow did not, so a group of four became four queue positions.</p><p>We recommended a group-purchase path and a physical reorganisation of the concourse. Queue length fell 38% within a month of the change, before any software was rewritten.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-forms">
+    <h2>The form nobody finished</h2>
+    <p class="detail__meta">project · Housing department · 2024 · 11 months</p>
+    <p>The original form asked for a National Insurance number on page one. Roughly a third of applicants did not have it in front of them, left to find it, and never returned.</p><p>We moved identity verification to the end, made every field saveable, and cut the form from 44 questions to 19 by taking the rest from records the department already held. Completion rose to 81%.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-six">
+    <h2>Six minutes is the cliff</h2>
+    <p class="detail__meta">finding · Finding · across four studies</p>
+    <p>This holds for a benefits form, a vehicle registration, a school application and a clinical questionnaire. It appears to be about the length of an uninterrupted moment in an ordinary day, not about the difficulty of the task.</p><p>The practical version: if your service takes longer than six minutes, it must survive being abandoned and resumed. Most cannot.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-signs">
+    <h2>Reading a hospital at 3am</h2>
+    <p class="detail__meta">project · NHS trust · 2024 · 9 months</p>
+    <p>We interviewed 60 people within a week of an unplanned hospital visit. Almost none remembered reading a sign. They remembered following someone, asking someone, or a colour.</p><p>The redesign leant on colour and floor markings rather than text, and put one staffed point in the entrance rather than four unstaffed signboards. Time from door to correct department fell by a third.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-note1">
+    <h2>On watching instead of asking</h2>
+    <p class="detail__meta">note · Field note · March 2026</p>
+    <p>We ask afterwards, never instead. The pattern of a study is: watch for a week without talking to anyone, then interview using what you saw as the prompt. </p><p>It is slower and it embarrasses everyone slightly, and it is the only reason our recommendations survive contact with a real building.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-note2">
+    <h2>The pilot that never ends</h2>
+    <p class="detail__meta">note · Field note · January 2026</p>
+    <p>Three of our early projects ended as permanent pilots — running, funded, unloved and unscaled. The fix was procedural, not analytical: we agree in advance what result would justify rolling out, and what result would justify stopping.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-method">
+    <h2>What we will not do</h2>
+    <p class="detail__meta">finding · Method</p>
+    <p>Each of these is a way of getting a number quickly that will not survive the building it is meant to describe. We will use all three as supporting evidence and none of them as the argument.</p><p>This costs us about one commission a year, which we consider a reasonable price.</p>
+  </section>
+  
+  <section class="detail" data-detail="n-contact">
+    <h2>Work with us</h2>
+    <p class="detail__meta">studio · Three commissions a year</p>
+    <p>Write to studio@versoatlas.example.com with what is happening, what you have already tried, and who inside your organisation cares about the answer. That last one matters more than the budget.</p><p>We reply to everything within a week, including the ones we turn down.</p>
+  </section>
+  
+  <footer class="detail detail--foot">
+    <p>Unit 4, Bevin Court, London WC1X · <a href="mailto:studio@versoatlas.example.com">studio@versoatlas.example.com</a> · <a href="tel:+442079460733">+44 20 7946 0733</a></p>
+    <p>© 2026 Verso Atlas</p>
+  </footer>
+</div>
+
+<nav class="rt-bar" aria-label="Templates"><span>Demo</span><a href="preview-atlas.html" aria-current="page">atlas</a><a href="preview-console.html">console</a><a href="preview-deck.html">deck</a><a href="preview-press.html">press</a><a href="preview.html">All four</a></nav>
+<script>/* ATLAS — panning, zooming, and a minimap.
+   Without JS the canvas is hidden by CSS and the same content reads as a
+   vertical list, so nothing here is load-bearing for access to the words. */
+(function () {
+  'use strict';
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const clamp = (v, a, b) => Math.max(a, Math.min(v, b));
+  const spatial = () => matchMedia('(min-width: 901px)').matches;
+
+  const canvas = $('[data-canvas]');
+  const world = $('[data-world]');
+  const cards = $$('.card[data-node]');
+  if (!canvas || !world) return;
+
+  const WORLD = { w: 2600, h: 2000 };
+  const MIN = 0.35, MAX = 1.8;
+  let x = 0, y = 0, z = 1;
+
+  /* ---- transform ---- */
+  function apply() {
+    world.style.transform = `translate(${x}px, ${y}px) scale(${z})`;
+    const label = $('[data-zoom]');
+    if (label) label.textContent = Math.round(z * 100);
+    drawMinimapView();
+  }
+
+  function fit() {
+    const pad = 90;
+    const zx = (canvas.clientWidth - pad * 2) / WORLD.w;
+    const zy = (canvas.clientHeight - pad * 2) / WORLD.h;
+    z = clamp(Math.min(zx, zy), MIN, MAX);
+    x = (canvas.clientWidth - WORLD.w * z) / 2;
+    y = (canvas.clientHeight - WORLD.h * z) / 2;
+    apply();
+  }
+
+  function centreOn(node, zoom) {
+    const nx = node.offsetLeft + node.offsetWidth / 2;
+    const ny = node.offsetTop + node.offsetHeight / 2;
+    z = clamp(zoom || 1, MIN, MAX);
+    x = canvas.clientWidth / 2 - nx * z;
+    y = canvas.clientHeight / 2 - ny * z;
+    world.style.transition = 'transform .55s cubic-bezier(.16,1,.3,1)';
+    apply();
+    setTimeout(() => { world.style.transition = ''; }, 600);
+  }
+
+  /* ---- drag to pan ---- */
+  let panning = false, sx = 0, sy = 0, ox = 0, oy = 0, moved = 0;
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button, a')) return;
+    panning = true; moved = 0;
+    sx = e.clientX; sy = e.clientY; ox = x; oy = y;
+    canvas.classList.add('is-panning');
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!panning) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    moved = Math.abs(dx) + Math.abs(dy);
+    x = ox + dx; y = oy + dy;
+    apply();
+  });
+  const endPan = () => { panning = false; canvas.classList.remove('is-panning'); };
+  canvas.addEventListener('pointerup', endPan);
+  canvas.addEventListener('pointercancel', endPan);
+
+  /* ---- wheel: zoom toward the cursor, or pan with a trackpad ---- */
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) > 40) {
+      const prev = z;
+      z = clamp(z * (e.deltaY > 0 ? 0.9 : 1.1), MIN, MAX);
+      // keep the point under the cursor stationary
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+      x = cx - ((cx - x) / prev) * z;
+      y = cy - ((cy - y) / prev) * z;
+    } else {
+      x -= e.deltaX; y -= e.deltaY;
+    }
+    apply();
+  }, { passive: false });
+
+  $('[data-zoom-in]').addEventListener('click', () => { z = clamp(z * 1.2, MIN, MAX); apply(); });
+  $('[data-zoom-out]').addEventListener('click', () => { z = clamp(z / 1.2, MIN, MAX); apply(); });
+  $('[data-fit]').addEventListener('click', fit);
+
+  /* ---- wires between related cards, drawn behind them ---- */
+  const wires = $('[data-wires]');
+  if (wires) {
+    const pairs = [[0, 1], [1, 2], [0, 4], [1, 3], [3, 7], [2, 5], [5, 6], [4, 8], [7, 8]];
+    const d = pairs.map(([a, b]) => {
+      const A = cards[a], B = cards[b];
+      if (!A || !B) return '';
+      const ax = A.offsetLeft + A.offsetWidth / 2, ay = A.offsetTop + A.offsetHeight / 2;
+      const bx = B.offsetLeft + B.offsetWidth / 2, by = B.offsetTop + B.offsetHeight / 2;
+      return `<path d="M${ax} ${ay} C ${ax} ${(ay + by) / 2}, ${bx} ${(ay + by) / 2}, ${bx} ${by}"/>`;
+    }).join('');
+    wires.innerHTML = d;
+  }
+
+  /* ---- minimap ---- */
+  const map = $('[data-minimap]');
+  const mapWorld = $('[data-minimap-world]');
+  const mapView = $('[data-minimap-view]');
+  const mapScale = () => (mapWorld ? mapWorld.clientWidth / WORLD.w : 0);
+
+  if (mapWorld) {
+    cards.forEach((c) => {
+      const dot = document.createElement('span');
+      const kind = (c.className.match(/card--(\w+)/) || [])[1] || 'note';
+      dot.className = `minimap__node minimap__node--${kind}`;
+      dot.style.left = (c.offsetLeft * mapScale()) + 'px';
+      dot.style.top = (c.offsetTop * (mapWorld.clientHeight / WORLD.h)) + 'px';
+      dot.style.width = Math.max(4, c.offsetWidth * mapScale()) + 'px';
+      dot.style.height = Math.max(3, c.offsetHeight * (mapWorld.clientHeight / WORLD.h)) + 'px';
+      mapWorld.appendChild(dot);
+    });
+  }
+
+  function drawMinimapView() {
+    if (!mapView || !mapWorld) return;
+    const s = mapScale(), sy2 = mapWorld.clientHeight / WORLD.h;
+    mapView.style.left = (-x / z) * s + 6 + 'px';
+    mapView.style.top = (-y / z) * sy2 + 6 + 'px';
+    mapView.style.width = (canvas.clientWidth / z) * s + 'px';
+    mapView.style.height = (canvas.clientHeight / z) * sy2 + 'px';
+  }
+
+  if (map) {
+    map.addEventListener('click', (e) => {
+      const r = mapWorld.getBoundingClientRect();
+      const wx = ((e.clientX - r.left) / r.width) * WORLD.w;
+      const wy = ((e.clientY - r.top) / r.height) * WORLD.h;
+      x = canvas.clientWidth / 2 - wx * z;
+      y = canvas.clientHeight / 2 - wy * z;
+      apply();
+    });
+  }
+
+  /* ---- list ---- */
+  const listButtons = $$('[data-goto]');
+  listButtons.forEach((b) => {
+    b.addEventListener('click', () => {
+      const node = document.getElementById(b.dataset.goto);
+      if (!node) return;
+      if (spatial()) centreOn(node, 1);
+      else node.scrollIntoView({ behavior: 'smooth' });
+      listButtons.forEach((o) => o.classList.toggle('is-on', o === b));
+    });
+  });
+
+  /* ---- detail sheet, filled from the no-JS content ---- */
+  const sheet = $('[data-sheet]');
+  function openSheet(id) {
+    const src = $(`[data-detail="${id}"]`);
+    const card = document.getElementById(id);
+    if (!src || !sheet) return;
+    $('[data-sheet-kind]').textContent = (card.className.match(/card--(\w+)/) || [, ''])[1];
+    $('[data-sheet-title]').textContent = src.querySelector('h2').textContent;
+    $('[data-sheet-meta]').textContent = src.querySelector('.detail__meta').textContent;
+    $('[data-sheet-body]').innerHTML = Array.from(src.querySelectorAll('p'))
+      .filter((p) => !p.classList.contains('detail__meta'))
+      .map((p) => `<p>${p.textContent}</p>`).join('');
+    sheet.hidden = false;
+    requestAnimationFrame(() => sheet.classList.add('is-open'));
+  }
+  function closeSheet() {
+    if (!sheet || sheet.hidden) return;
+    sheet.classList.remove('is-open');
+    setTimeout(() => { sheet.hidden = true; }, 250);
+  }
+  $$('[data-open]').forEach((b) => b.addEventListener('click', () => openSheet(b.dataset.open)));
+  if (sheet) {
+    $('[data-sheet-close]').addEventListener('click', closeSheet);
+    sheet.addEventListener('click', (e) => { if (e.target === sheet) closeSheet(); });
+  }
+
+  /* ---- keyboard ---- */
+  addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    const step = 90;
+    if (e.key === 'Escape') closeSheet();
+    if (e.key.toLowerCase() === 'f') { e.preventDefault(); fit(); }
+    if (e.key === 'ArrowLeft')  { x += step; apply(); }
+    if (e.key === 'ArrowRight') { x -= step; apply(); }
+    if (e.key === 'ArrowUp')    { y += step; apply(); }
+    if (e.key === 'ArrowDown')  { y -= step; apply(); }
+  });
+
+  /* ---- start on the intro card, not at 0,0 ---- */
+  addEventListener('resize', () => { if (spatial()) apply(); });
+  if (spatial()) {
+    z = 0.85;
+    const intro = $('.card--intro');
+    // Bias right of centre so the fixed contents panel never covers the card
+    const nx = intro.offsetLeft + intro.offsetWidth / 2;
+    const ny = intro.offsetTop + intro.offsetHeight / 2;
+    x = canvas.clientWidth / 2 - nx * z + 150;
+    y = canvas.clientHeight / 2 - ny * z;
+    apply();
+  }
+})();
+</script>
+</body>
+</html>

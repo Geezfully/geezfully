@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Four page architectures</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=DM+Mono:wght@400&display=swap">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0F0F0E; color: #EFEDE8;
+    font-family: Archivo, system-ui, sans-serif; line-height: 1.6;
+    padding: clamp(34px, 6vw, 80px) clamp(20px, 5vw, 64px) 90px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin-inline: auto; }
+  .eyebrow { font-family: "DM Mono", monospace; font-size: .7rem; letter-spacing: .24em; text-transform: uppercase; color: #7C7A73; }
+  h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.02; letter-spacing: -.03em; margin: 18px 0 20px; max-width: 18ch; }
+  .lede { color: #A8A59D; max-width: 64ch; font-size: clamp(1rem, .5vw + .9rem, 1.12rem); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 18px; margin-top: clamp(36px, 5vw, 60px); }
+  .card {
+    display: grid; gap: 10px; align-content: start;
+    padding: clamp(22px, 3vw, 32px);
+    background: var(--paper); color: var(--ink);
+    border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
+    text-decoration: none;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 26px 60px rgba(0,0,0,.5); }
+  .card__chip { font-family: "DM Mono", monospace; font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+  .card__idea { font-size: clamp(1.3rem, 2.4vw, 1.75rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.12; }
+  .card__name { font-family: "DM Mono", monospace; font-size: .74rem; opacity: .6; }
+  .card__blurb { font-size: .92rem; opacity: .78; margin-top: 4px; }
+  .card__list { display: grid; gap: 5px; margin-top: 8px; list-style: none; }
+  .card__list li { position: relative; padding-left: 15px; font-size: .82rem; opacity: .7; }
+  .card__list li::before { content: ""; position: absolute; left: 0; top: .6em; width: 7px; height: 1px; background: var(--accent); }
+  .card__go { margin-top: 10px; font-family: "DM Mono", monospace; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+  .foot { margin-top: clamp(40px, 5vw, 64px); padding-top: 24px; border-top: 1px solid rgba(255,255,255,.12); color: #7C7A73; font-size: .86rem; max-width: 72ch; }
+  code { font-family: "DM Mono", monospace; color: #A8A59D; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Four page architectures</p>
+    <h1>Sites that are not a column of sections</h1>
+    <p class="lede">
+      Each of these throws out the standard page and replaces it with a different way of moving through
+      content — sideways, spatially, by typing, or by reading. They share a build script and nothing else:
+      no shared layout, no shared stylesheet, no shared components. Every one degrades to a plain, readable
+      document on a phone or with JavaScript off.
+    </p>
+
+    <div class="grid">
+    <a class="card" href="preview-atlas.html" style="--ink:#0B1F1C; --paper:#F0F3F0; --accent:#0F8B6C">
+      <span class="card__chip">Research practice</span>
+      <span class="card__idea">A map you pan and zoom</span>
+      <span class="card__name">Verso Atlas</span>
+      <span class="card__blurb">No scroll at all. Content sits at coordinates in a 2,600 × 2,000 world you drag around, with a minimap, a zoom that tracks the cursor, connecting wires and a detail sheet. Below 900px, and with JS off, the same content is a plain list.</span>
+      <ul class="card__list"><li>Drag to pan, wheel to zoom at cursor</li><li>Minimap with live viewport rect</li><li>Contents rail flies you to a node</li><li>Full no-JS document underneath</li></ul>
+      <span class="card__go">Open →</span>
+    </a>
+    <a class="card" href="preview-console.html" style="--ink:#07090A; --paper:#0C1012; --accent:#46E08B">
+      <span class="card__chip">Developer tool</span>
+      <span class="card__idea">The navigation is a command line</span>
+      <span class="card__name">nullstack</span>
+      <span class="card__blurb">A boot sequence, a prompt with tab completion and history, clickable command chips for people who would rather not type, a ⌘K palette, and a simulated deploy that streams. Every output already exists in the DOM, so it is a normal document without JS.</span>
+      <ul class="card__list"><li>Tab completion, ↑/↓ history, ctrl-L</li><li>⌘K command palette</li><li>Streaming simulated deploy</li><li>Whole site readable with JS off</li></ul>
+      <span class="card__go">Open →</span>
+    </a>
+    <a class="card" href="preview-deck.html" style="--ink:#0E0E0C; --paper:#F2F0EA; --accent:#D6410F">
+      <span class="card__chip">Furniture studio</span>
+      <span class="card__idea">The page scrolls sideways</span>
+      <span class="card__name">Meridian Objects</span>
+      <span class="card__blurb">Eight full-viewport panels in a horizontal track. The wheel is remapped, arrow keys and drag work, a progress rail doubles as the scrollbar, and an index overlay jumps between panels. On a phone it becomes an ordinary vertical page.</span>
+      <ul class="card__list"><li>Wheel → horizontal motion</li><li>Snap, drag, arrow keys, Home/End</li><li>Progress rail + index overlay</li><li>Falls back to vertical below 900px</li></ul>
+      <span class="card__go">Open →</span>
+    </a>
+    <a class="card" href="preview-press.html" style="--ink:#14110C; --paper:#F5F2EA; --accent:#7A2E1E">
+      <span class="card__chip">Quarterly journal</span>
+      <span class="card__idea">A printed page, set properly</span>
+      <span class="card__name">The Long Field</span>
+      <span class="card__blurb">A three-column measure: running contents in the left margin, a 62-character text column, and a right margin holding sidenotes and plates level with the sentence they belong to. Drop cap, pull quotes, old-style figures, hanging punctuation, print stylesheet.</span>
+      <ul class="card__list"><li>True margin notes, not popups</li><li>Drop cap, oldstyle numerals, indents</li><li>Reading progress + live contents</li><li>Margin folds inline below 1100px</li></ul>
+      <span class="card__go">Open →</span>
+    </a>
+    </div>
+
+    <p class="foot">
+      Invented companies, generated placeholder art. Content for each lives in one
+      <code>config.json</code>; the layout, stylesheet and behaviour live beside it in
+      <code>sites/&lt;name&gt;/</code>. Each demo below is a single self-contained HTML file.
+    </p>
+  </div>
+</body>
+</html>

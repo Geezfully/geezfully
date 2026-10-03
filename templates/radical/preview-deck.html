@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Objects — Editioned Furniture</title>
+<meta name="description" content="A small studio producing editioned furniture in oak, aluminium and glass. Eight objects a year, made in Copenhagen.">
+<link rel="canonical" href="https://meridianobjects.example.com">
+<meta name="theme-color" content="#0E0E0C">
+<meta property="og:title" content="Meridian Objects — Editioned Furniture">
+<meta property="og:description" content="A small studio producing editioned furniture in oak, aluminium and glass. Eight objects a year, made in Copenhagen.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Shared reset — the only CSS these four sites have in common. */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+img, svg, video { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; background: none; border: 0; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+[hidden] { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==========================================================================
+   DECK — a horizontal exhibition.
+
+   The page does not scroll down. A track of full-viewport panels sits in a row
+   and the wheel, keyboard, drag and rail all move it sideways. Below 900px the
+   track becomes a column and everything reverts to ordinary vertical scroll,
+   because sideways scrolling on a phone is a bad idea.
+   ========================================================================== */
+
+:root {
+  --ink:      #0E0E0C;
+  --paper:    #F2F0EA;
+  --paper-2:  #E6E3DA;
+  --grey:     #6B6A63;
+  --line:     rgba(14, 14, 12, .16);
+  --accent:   #D6410F;
+
+  --sans: "Archivo", system-ui, -apple-system, sans-serif;
+  --mono: "DM Mono", ui-monospace, monospace;
+  --serif: "Instrument Serif", Georgia, serif;
+
+  --pad: clamp(24px, 5vw, 88px);
+  --chrome-h: 68px;
+  --rail-h: 62px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: clamp(15px, .4vw + 14px, 17px);
+  line-height: 1.55;
+  overflow: hidden;                 /* the track scrolls, not the body */
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--accent); color: var(--paper); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.skip {
+  position: fixed; top: -80px; left: 16px; z-index: 60;
+  background: var(--ink); color: var(--paper); padding: 10px 16px;
+}
+.skip:focus { top: 12px; }
+
+/* ------------------------------------------------------------- chrome ---- */
+
+.chrome {
+  position: fixed; inset: 0 0 auto; z-index: 40;
+  height: var(--chrome-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding-inline: var(--pad);
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: blur(10px);
+}
+.chrome__brand { display: flex; align-items: center; gap: 12px; }
+.chrome__mark {
+  display: grid; place-items: center; width: 30px; height: 30px;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .04em;
+}
+.chrome__name { font-weight: 600; letter-spacing: -.01em; }
+.chrome__right { display: flex; align-items: center; gap: 22px; }
+
+.counter { font-family: var(--mono); font-size: .78rem; letter-spacing: .06em; }
+.counter__sep { color: var(--grey); margin-inline: 4px; }
+
+.chrome__index {
+  font-family: var(--mono); font-size: .72rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+}
+.chrome__index:hover { color: var(--accent); border-color: var(--accent); }
+
+/* --------------------------------------------------------------- deck ---- */
+
+.deck {
+  position: fixed; inset: var(--chrome-h) 0 var(--rail-h);
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+}
+.deck::-webkit-scrollbar { display: none; }
+.deck.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+
+.track { display: flex; height: 100%; width: max-content; }
+
+.panel {
+  scroll-snap-align: start;
+  width: 100vw; height: 100%;
+  flex: none;
+  padding: clamp(20px, 4vh, 48px) var(--pad);
+  display: flex; align-items: center;
+  border-right: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+/* -------------------------------------------------------------- cover ---- */
+
+.panel--cover { background: var(--ink); color: var(--paper); border-right-color: transparent; }
+.cover { max-width: 1100px; }
+.cover__eyebrow {
+  font-family: var(--mono); font-size: .72rem;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: clamp(20px, 4vh, 40px);
+}
+.cover__title {
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 7.4vw, 6.4rem);
+  line-height: .96; letter-spacing: -.02em; font-weight: 400;
+}
+.cover__line { display: block; overflow: hidden; }
+.cover__line > span {
+  display: block; transform: translateY(102%);
+  transition: transform 1s var(--ease);
+}
+.is-live .cover__line > span { transform: none; }
+.is-live .cover__line:nth-child(2) > span { transition-delay: .07s; }
+.is-live .cover__line:nth-child(3) > span { transition-delay: .14s; }
+.is-live .cover__line:nth-child(4) > span { transition-delay: .21s; }
+
+.cover__lede {
+  max-width: 46ch; margin-top: clamp(20px, 3vh, 32px);
+  color: rgba(242, 240, 234, .72);
+  font-size: clamp(1rem, .4vw + .95rem, 1.15rem);
+}
+.cover__meta {
+  display: flex; flex-wrap: wrap; gap: clamp(20px, 4vw, 56px);
+  margin-top: clamp(26px, 5vh, 48px);
+  padding-top: 20px; border-top: 1px solid rgba(242, 240, 234, .2);
+}
+.cover__meta dt {
+  font-family: var(--mono); font-size: .64rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(242, 240, 234, .45); margin-bottom: 5px;
+}
+.cover__meta dd { font-size: 1.02rem; }
+.cover__hint {
+  position: absolute; right: var(--pad); bottom: clamp(20px, 4vh, 44px);
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: .68rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(242, 240, 234, .5);
+}
+.cover__hint-line { width: 54px; height: 1px; background: var(--accent); animation: slide 2.4s var(--ease) infinite; }
+@keyframes slide { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(12px); } }
+
+/* ---------------------------------------------------------- statement ---- */
+
+.panel--statement { background: var(--paper-2); }
+.statement { max-width: 62ch; }
+.statement__eyebrow {
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: clamp(24px, 4vh, 40px);
+}
+.statement__line {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.3vw, 2.1rem);
+  line-height: 1.28; letter-spacing: -.01em;
+  margin-bottom: .7em;
+}
+.statement__line:nth-child(3) { color: var(--grey); font-size: clamp(1.1rem, 1.6vw, 1.4rem); }
+.statement__line:last-of-type { font-family: var(--sans); font-size: 1rem; line-height: 1.6; color: var(--grey); max-width: 54ch; }
+.statement__sig {
+  margin-top: clamp(24px, 4vh, 40px); padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; color: var(--grey);
+}
+
+/* ------------------------------------------------------------- object ---- */
+
+.object {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  gap: clamp(28px, 5vw, 88px);
+  align-items: center; width: 100%; max-width: 1500px; margin-inline: auto;
+}
+.object__media { position: relative; height: min(72vh, 640px); }
+.object__media img { width: 100%; height: 100%; object-fit: cover; }
+.object__ghost {
+  position: absolute; left: -.06em; top: 50%; transform: translateY(-50%);
+  font-family: var(--serif); font-size: clamp(9rem, 22vw, 20rem);
+  color: var(--ink); opacity: .06; line-height: 1; pointer-events: none;
+}
+.object__code {
+  font-family: var(--mono); font-size: .72rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+}
+.object__name {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  line-height: 1; letter-spacing: -.02em;
+  margin: 12px 0 18px;
+}
+.object__note { max-width: 44ch; color: var(--grey); }
+
+.spec { margin-top: clamp(20px, 3vh, 32px); display: grid; gap: 11px; }
+.spec__row { display: flex; align-items: baseline; gap: 10px; }
+.spec__row dt { font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; color: var(--grey); white-space: nowrap; }
+.spec__dots { flex: 1; border-bottom: 1px dotted var(--line); transform: translateY(-3px); }
+.spec__row dd { font-family: var(--mono); font-size: .8rem; white-space: nowrap; }
+
+.object__cta {
+  display: inline-flex; gap: 10px; margin-top: clamp(22px, 3vh, 34px);
+  font-family: var(--mono); font-size: .74rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  border-bottom: 1px solid var(--ink); padding-bottom: 3px;
+}
+.object__cta:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ----------------------------------------------------------- workshop ---- */
+
+.workshop {
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: clamp(28px, 5vw, 76px); align-items: center;
+  width: 100%; max-width: 1500px; margin-inline: auto;
+}
+.workshop__media { height: min(66vh, 560px); }
+.workshop__media img { width: 100%; height: 100%; object-fit: cover; }
+.workshop__eyebrow {
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .24em; text-transform: uppercase; color: var(--accent);
+}
+.workshop__title {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(1.7rem, 3.4vw, 2.9rem); line-height: 1.02;
+  letter-spacing: -.02em; margin: 14px 0 clamp(24px, 4vh, 40px);
+  max-width: 18ch;
+}
+.steps { display: grid; gap: clamp(16px, 2.6vh, 26px); }
+.step { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 18px; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line); }
+.step__n { font-family: var(--mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.step__t { font-size: 1.04rem; font-weight: 600; margin-bottom: 5px; }
+.step__b { color: var(--grey); font-size: .93rem; max-width: 52ch; }
+
+/* ------------------------------------------------------------ contact ---- */
+
+.panel--contact { background: var(--ink); color: var(--paper); }
+.contact {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  gap: clamp(30px, 6vw, 90px); align-items: end;
+  width: 100%; max-width: 1400px; margin-inline: auto;
+}
+.contact__eyebrow {
+  font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .24em; text-transform: uppercase; color: var(--accent);
+}
+.contact__title {
+  font-family: var(--serif); font-weight: 400;
+  font-size: clamp(2.2rem, 5.4vw, 4.4rem); line-height: .98;
+  letter-spacing: -.02em; margin: 14px 0 18px;
+}
+.contact__lede { max-width: 44ch; color: rgba(242, 240, 234, .7); }
+.contact__lines { margin-top: clamp(24px, 4vh, 40px); display: grid; gap: 1px; background: rgba(242, 240, 234, .18); border-block: 1px solid rgba(242, 240, 234, .18); }
+.contact__lines li { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 14px 0; background: var(--ink); }
+.contact__lines span:first-child { font-family: var(--mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(242, 240, 234, .45); }
+.contact__lines a:hover { color: var(--accent); }
+
+.contact__aside-label { font-family: var(--mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(242, 240, 234, .45); margin-bottom: 14px; }
+.stockists { display: grid; gap: 9px; }
+.stockists li { font-size: .95rem; color: rgba(242, 240, 234, .8); }
+.contact__colophon { margin-top: clamp(24px, 5vh, 44px); font-family: var(--mono); font-size: .66rem; color: rgba(242, 240, 234, .4); }
+
+/* --------------------------------------------------------------- rail ---- */
+
+.rail {
+  position: fixed; inset: auto 0 0; z-index: 40;
+  height: var(--rail-h);
+  display: flex; align-items: center; gap: 14px;
+  padding-inline: var(--pad);
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+}
+.rail__arrow {
+  width: 34px; height: 34px; flex: none;
+  border: 1px solid var(--line); border-radius: 50%;
+  font-size: .9rem; line-height: 1;
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.rail__arrow:hover:not(:disabled) { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.rail__arrow:disabled { opacity: .3; cursor: default; }
+
+.rail__ticks { flex: 1; display: flex; align-items: center; gap: 2px; }
+.rail__tick {
+  flex: 1; position: relative; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .08em;
+  color: var(--grey);
+}
+.rail__tick::after {
+  content: ""; position: absolute; inset: auto 3px 8px;
+  height: 2px; background: var(--line);
+  transition: background-color .3s, transform .3s;
+}
+.rail__tick:hover { color: var(--ink); }
+.rail__tick:hover::after { background: var(--grey); }
+.rail__tick.is-on { color: var(--ink); }
+.rail__tick.is-on::after { background: var(--accent); transform: scaleY(2); }
+.rail__tick-label {
+  position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -6px);
+  padding: 5px 9px; background: var(--ink); color: var(--paper);
+  font-size: .64rem; letter-spacing: .06em; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.rail__tick:hover .rail__tick-label { opacity: 1; }
+
+/* -------------------------------------------------------------- index ---- */
+
+.index {
+  position: fixed; inset: 0; z-index: 50;
+  background: var(--ink); color: var(--paper);
+  display: grid; place-items: center;
+  opacity: 0; transition: opacity .3s var(--ease);
+}
+.index.is-open { opacity: 1; }
+.index__inner { width: min(900px, 88vw); }
+.index__label { font-family: var(--mono); font-size: .7rem; letter-spacing: .24em; text-transform: uppercase; color: var(--accent); margin-bottom: 26px; }
+.index__list { display: grid; }
+.index__list button {
+  width: 100%; display: grid; grid-template-columns: 60px minmax(0, 1fr) auto;
+  gap: 18px; align-items: baseline; text-align: left;
+  padding: clamp(10px, 1.6vh, 18px) 0;
+  border-bottom: 1px solid rgba(242, 240, 234, .16);
+  font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 2rem);
+  transition: padding-left .3s var(--ease), color .2s;
+}
+.index__list button:hover { padding-left: 12px; color: var(--accent); }
+.index__list .n { font-family: var(--mono); font-size: .7rem; color: rgba(242, 240, 234, .5); }
+.index__list .kind { font-family: var(--mono); font-size: .64rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(242, 240, 234, .4); }
+.index__hint { margin-top: 26px; font-family: var(--mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(242, 240, 234, .4); }
+
+/* --------------------------------------------------------------- small --- */
+
+@media (max-width: 900px) {
+  /* Sideways scrolling is wrong on a phone — become an ordinary page */
+  body { overflow: auto; }
+  .deck { position: static; inset: auto; overflow: visible; scroll-snap-type: none; cursor: auto; padding-top: var(--chrome-h); }
+  .track { flex-direction: column; width: auto; height: auto; }
+  .panel { width: auto; height: auto; min-height: 88vh; border-right: 0; border-bottom: 1px solid var(--line); padding-block: clamp(48px, 12vh, 90px); }
+  .rail { display: none; }
+  .object, .workshop, .contact { grid-template-columns: 1fr; }
+  .object__media, .workshop__media { height: min(52vh, 420px); }
+  .contact__lines li { grid-template-columns: 1fr; gap: 4px; }
+  .chrome__index { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover__line > span { transform: none; }
+  .cover__hint-line { animation: none; }
+  * { transition-duration: .01ms !important; }
+}
+
+
+.rt-bar {
+  position: fixed; z-index: 9999; left: 50%; bottom: 16px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 2px; padding: 5px;
+  background: rgba(18,18,18,.88); color: #EDEDEA;
+  border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
+  backdrop-filter: blur(14px); box-shadow: 0 16px 44px rgba(0,0,0,.4);
+  font: 500 11px/1 ui-monospace, "SF Mono", monospace;
+  letter-spacing: .12em; text-transform: uppercase;
+  max-width: calc(100vw - 20px); overflow-x: auto; scrollbar-width: none;
+}
+.rt-bar::-webkit-scrollbar { display: none; }
+.rt-bar span { padding: 0 10px; opacity: .45; white-space: nowrap; }
+.rt-bar a { padding: 8px 12px; border-radius: 999px; color: #EDEDEA; text-decoration: none; white-space: nowrap; opacity: .7; }
+.rt-bar a:hover { opacity: 1; background: rgba(255,255,255,.1); }
+.rt-bar a[aria-current] { opacity: 1; background: #EDEDEA; color: #121212; }
+@media print { .rt-bar { display: none; } }
+
+</style>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Meridian Objects",
+  "url": "https://meridianobjects.example.com",
+  "description": "A studio producing editioned furniture in oak, aluminium and glass."
+}</script>
+</head>
+<body>
+<a class="skip" href="#p-1">Skip to content</a>
+
+<!-- Fixed chrome. The page itself moves sideways underneath this. -->
+<header class="chrome">
+  <a class="chrome__brand" href="#p-0">
+    <span class="chrome__mark">MO</span>
+    <span class="chrome__name">Meridian Objects</span>
+  </a>
+
+  <div class="chrome__right">
+    <span class="counter" aria-live="polite">
+      <span data-current>01</span><span class="counter__sep">/</span><span data-total>00</span>
+    </span>
+    <button class="chrome__index" type="button" data-index-open aria-expanded="false" aria-controls="index">
+      Index
+    </button>
+  </div>
+</header>
+
+<!-- The deck: one horizontal track of full-viewport panels -->
+<main class="deck" data-deck tabindex="-1">
+  <div class="track" data-track>
+
+    <section class="panel panel--cover" id="p-0" data-label="Cover" aria-label="Cover">
+  <div class="cover">
+    <p class="cover__eyebrow">Copenhagen · Edition 09</p>
+
+    <h1 class="cover__title">
+      <span class="cover__line"><span>Objects made</span></span><span class="cover__line"><span>to outlive</span></span><span class="cover__line"><span>the reason</span></span><span class="cover__line"><span>you bought them</span></span>
+    </h1>
+
+    <p class="cover__lede">A studio of four, producing eight editioned objects a year in oak, anodised aluminium and low-iron glass.</p>
+
+    <dl class="cover__meta">
+      
+      <div><dt>Edition</dt><dd>09 / 2026</dd></div>
+      
+      <div><dt>Objects</dt><dd>Eight</dd></div>
+      
+      <div><dt>Made in</dt><dd>Copenhagen</dd></div>
+      
+    </dl>
+
+    <p class="cover__hint"><span class="cover__hint-line" aria-hidden="true"></span>Scroll sideways</p>
+  </div>
+</section>
+
+    <section class="panel panel--statement" id="p-s" data-label="Position" aria-label="Position">
+  <div class="statement">
+    <p class="statement__eyebrow">Position</p>
+    
+    <p class="statement__line">We make eight objects a year.</p>
+    
+    <p class="statement__line">Each is produced in an edition of forty, numbered, and then never made again.</p>
+    
+    <p class="statement__line">Nothing is designed for a catalogue photograph. Every piece is drawn at full size, built in the workshop, and lived with for a season before it is offered.</p>
+    
+    <p class="statement__sig">Ida Bruun &amp; Anders Holm, founders</p>
+  </div>
+</section>
+
+
+    
+    <section class="panel panel--object" id="p-01" data-label="Kant Bench" aria-label="Kant Bench">
+      <div class="object">
+        <div class="object__media">
+          <span class="object__ghost" aria-hidden="true">01</span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEyMDAiIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iYmVuY2giPjxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNFREVBRTEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNEOEQ0QzgiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InBvb2wiIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMDAiIHN0b3Atb3BhY2l0eT0iLjI2Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDAwIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9InVybCgjYmcpIi8+PGVsbGlwc2UgY3g9IjUwMCIgY3k9Ijk1NCIgcng9IjM2MCIgcnk9IjU0IiBmaWxsPSJ1cmwoI3Bvb2wpIi8+PHJlY3QgeD0iMCIgeT0iOTM2IiB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIyNjQiIGZpbGw9IiNDRkNBQkMiLz48bGluZSB4MT0iMCIgeTE9IjkzNiIgeDI9IjEwMDAiIHkyPSI5MzYiIHN0cm9rZT0iIzlDOTc4QSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9Ii41Ii8+PHBhdGggZD0iTTE5MCA5MzYgTDE5MCA3NDQgTDgxMCA3NDQgTDgxMCA5MzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhFOTI5NiIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxyZWN0IHg9IjIwMiIgeT0iNzI4IiB3aWR0aD0iNTk2IiBoZWlnaHQ9IjE4IiByeD0iMyIgZmlsbD0iI0IwOEE1NyIvPjxyZWN0IHg9IjIwMiIgeT0iNzI4IiB3aWR0aD0iNTk2IiBoZWlnaHQ9IjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii4yMiIvPjwvc3ZnPgo=" alt="Kant Bench" width="1000" height="1200" loading="lazy" decoding="async">
+        </div>
+
+        <div class="object__body">
+          <p class="object__code">MO-41 · 2026</p>
+          <h2 class="object__name">Kant Bench</h2>
+          <p class="object__note">A single folded aluminium sheet, 4mm, with an oak seat that is not fixed — it sits in a rebate and can be lifted out with two hands.</p>
+
+          <dl class="spec">
+            
+            <div class="spec__row">
+              <dt>Materials</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>Anodised aluminium, oiled oak</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Dimensions</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>1600 × 420 × 440mm</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Edition</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>40, numbered</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Price</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>DKK 24,000</dd>
+            </div>
+            
+          </dl>
+
+          <a class="object__cta" href="#p-4">Enquire about Kant Bench <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="panel panel--object" id="p-02" data-label="Sund Table" aria-label="Sund Table">
+      <div class="object">
+        <div class="object__media">
+          <span class="object__ghost" aria-hidden="true">02</span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEyMDAiIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0idGFibGUiPjxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNFNEU2RTYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNDRkQzRDMiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InBvb2wiIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMDAiIHN0b3Atb3BhY2l0eT0iLjI2Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDAwIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9InVybCgjYmcpIi8+PGVsbGlwc2UgY3g9IjUwMCIgY3k9Ijk1NCIgcng9IjM2MCIgcnk9IjU0IiBmaWxsPSJ1cmwoI3Bvb2wpIi8+PHJlY3QgeD0iMCIgeT0iOTM2IiB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIyNjQiIGZpbGw9IiNDNEM4QzgiLz48bGluZSB4MT0iMCIgeTE9IjkzNiIgeDI9IjEwMDAiIHkyPSI5MzYiIHN0cm9rZT0iIzkzOTk5QSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9Ii41Ii8+PHJlY3QgeD0iMTYwIiB5PSI2MjQiIHdpZHRoPSI2ODAiIGhlaWdodD0iMTAiIGZpbGw9IiNEOUU3RUEiIG9wYWNpdHk9Ii44MiIvPjxyZWN0IHg9IjE2MCIgeT0iNjI0IiB3aWR0aD0iNjgwIiBoZWlnaHQ9IjMiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii41Ii8+PHJlY3QgeD0iMjQ4LjIwMDAwMDAwMDAwMDAyIiB5PSI2MzQiIHdpZHRoPSIxNCIgaGVpZ2h0PSIzMDIiIGZpbGw9IiM3RTg0ODgiLz48cmVjdCB4PSIyMjEuMjAwMDAwMDAwMDAwMDIiIHk9IjYzNCIgd2lkdGg9IjY4IiBoZWlnaHQ9IjEwIiByeD0iMyIgZmlsbD0iIzdFODQ4OCIvPjxyZWN0IHg9IjczNy44IiB5PSI2MzQiIHdpZHRoPSIxNCIgaGVpZ2h0PSIzMDIiIGZpbGw9IiM3RTg0ODgiLz48cmVjdCB4PSI3MTAuOCIgeT0iNjM0IiB3aWR0aD0iNjgiIGhlaWdodD0iMTAiIHJ4PSIzIiBmaWxsPSIjN0U4NDg4Ii8+PC9zdmc+Cg==" alt="Sund Table" width="1000" height="1200" loading="lazy" decoding="async">
+        </div>
+
+        <div class="object__body">
+          <p class="object__code">MO-42 · 2026</p>
+          <h2 class="object__name">Sund Table</h2>
+          <p class="object__note">Low-iron glass on a machined aluminium cradle. No fixings visible from above; the glass rests on four silicone pads and is held by its own weight.</p>
+
+          <dl class="spec">
+            
+            <div class="spec__row">
+              <dt>Materials</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>Low-iron glass, aluminium</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Dimensions</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>2200 × 900 × 720mm</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Edition</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>40, numbered</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Price</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>DKK 61,000</dd>
+            </div>
+            
+          </dl>
+
+          <a class="object__cta" href="#p-4">Enquire about Sund Table <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="panel panel--object" id="p-03" data-label="Hylde Shelf" aria-label="Hylde Shelf">
+      <div class="object">
+        <div class="object__media">
+          <span class="object__ghost" aria-hidden="true">03</span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEyMDAiIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ic2hlbGYiPjxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNFREVBRTEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNEOEQ0QzgiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9InBvb2wiIGN4PSI1MCUiIGN5PSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwMDAiIHN0b3Atb3BhY2l0eT0iLjI2Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDAwIiBzdG9wLW9wYWNpdHk9IjAiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgPC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9InVybCgjYmcpIi8+PGVsbGlwc2UgY3g9IjUwMCIgY3k9Ijk1NCIgcng9IjM2MCIgcnk9IjU0IiBmaWxsPSJ1cmwoI3Bvb2wpIi8+PHJlY3QgeD0iMCIgeT0iOTM2IiB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIyNjQiIGZpbGw9IiNDRkNBQkMiLz48bGluZSB4MT0iMCIgeTE9IjkzNiIgeDI9IjEwMDAiIHkyPSI5MzYiIHN0cm9rZT0iIzlDOTc4QSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9Ii41Ii8+PHJlY3QgeD0iMjUwIiB5PSI0MDgiIHdpZHRoPSI1MDAiIGhlaWdodD0iMTMiIHJ4PSIyIiBmaWxsPSIjQjA4QTU3Ii8+PHJlY3QgeD0iMjUwIiB5PSI0MDgiIHdpZHRoPSI1MDAiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjE4Ii8+PHJlY3QgeD0iMjUwIiB5PSI1NzYiIHdpZHRoPSI1MDAiIGhlaWdodD0iMTMiIHJ4PSIyIiBmaWxsPSIjQjA4QTU3Ii8+PHJlY3QgeD0iMjUwIiB5PSI1NzYiIHdpZHRoPSI1MDAiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjE4Ii8+PHJlY3QgeD0iMjUwIiB5PSI3NDQiIHdpZHRoPSI1MDAiIGhlaWdodD0iMTMiIHJ4PSIyIiBmaWxsPSIjQjA4QTU3Ii8+PHJlY3QgeD0iMjUwIiB5PSI3NDQiIHdpZHRoPSI1MDAiIGhlaWdodD0iNCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjE4Ii8+PHJlY3QgeD0iMjgwIiB5PSI0MDQiIHdpZHRoPSI2IiBoZWlnaHQ9IjM2MCIgZmlsbD0iIzhFOTI5NiIvPjxyZWN0IHg9IjcwMCIgeT0iNDA0IiB3aWR0aD0iNiIgaGVpZ2h0PSIzNjAiIGZpbGw9IiM4RTkyOTYiLz48L3N2Zz4K" alt="Hylde Shelf" width="1000" height="1200" loading="lazy" decoding="async">
+        </div>
+
+        <div class="object__body">
+          <p class="object__code">MO-43 · 2025</p>
+          <h2 class="object__name">Hylde Shelf</h2>
+          <p class="object__note">Three shelves and a rail, tensioned against the wall rather than bolted to it. Comes with the drill bit you need and nothing else.</p>
+
+          <dl class="spec">
+            
+            <div class="spec__row">
+              <dt>Materials</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>Oak, stainless rail</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Dimensions</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>1200 × 280 × 900mm</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Edition</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>40, numbered</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Price</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>DKK 18,500</dd>
+            </div>
+            
+          </dl>
+
+          <a class="object__cta" href="#p-4">Enquire about Hylde Shelf <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="panel panel--object" id="p-04" data-label="Lys Lamp" aria-label="Lys Lamp">
+      <div class="object">
+        <div class="object__media">
+          <span class="object__ghost" aria-hidden="true">04</span>
+          <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAwIDEyMDAiIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0ibGFtcCI+PGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI0U0RTZFNiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0NGRDNEMyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0icG9vbCIgY3g9IjUwJSIgY3k9IjUwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzAwMCIgc3RvcC1vcGFjaXR5PSIuMjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwMDAiIHN0b3Atb3BhY2l0eT0iMCIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMDAiIGhlaWdodD0iMTIwMCIgZmlsbD0idXJsKCNiZykiLz48ZWxsaXBzZSBjeD0iNTAwIiBjeT0iOTU0IiByeD0iMzYwIiByeT0iNTQiIGZpbGw9InVybCgjcG9vbCkiLz48cmVjdCB4PSIwIiB5PSI5MzYiIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjI2NCIgZmlsbD0iI0M0QzhDOCIvPjxsaW5lIHgxPSIwIiB5MT0iOTM2IiB4Mj0iMTAwMCIgeTI9IjkzNiIgc3Ryb2tlPSIjOTM5OTlBIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iLjUiLz48cmVjdCB4PSI0OTUiIHk9IjMxMiIgd2lkdGg9IjEwIiBoZWlnaHQ9IjYyNCIgZmlsbD0iIzdFODQ4OCIvPjxlbGxpcHNlIGN4PSI1MDAiIGN5PSI5MzYiIHJ4PSI1MiIgcnk9IjkiIGZpbGw9IiM3RTg0ODgiLz48Y2lyY2xlIGN4PSI1MDAiIGN5PSIzMTgiIHI9IjQ2IiBmaWxsPSIjRDlFN0VBIiBvcGFjaXR5PSIuOSIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjMxOCIgcj0iNzYiIGZpbGw9IiNGQkU2QkIiIG9wYWNpdHk9Ii4yMiIvPjxjaXJjbGUgY3g9IjQ4NiIgY3k9IjMwNCIgcj0iMTQiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii4zNSIvPjwvc3ZnPgo=" alt="Lys Lamp" width="1000" height="1200" loading="lazy" decoding="async">
+        </div>
+
+        <div class="object__body">
+          <p class="object__code">MO-44 · 2025</p>
+          <h2 class="object__name">Lys Lamp</h2>
+          <p class="object__note">An aluminium tube, a glass diffuser and a weight. The switch is the weight — you slide it up the cord and the light comes on.</p>
+
+          <dl class="spec">
+            
+            <div class="spec__row">
+              <dt>Materials</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>Aluminium, opal glass</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Dimensions</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>Ø120 × 1800mm</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Edition</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>40, numbered</dd>
+            </div>
+            
+            <div class="spec__row">
+              <dt>Price</dt>
+              <span class="spec__dots" aria-hidden="true"></span>
+              <dd>DKK 9,400</dd>
+            </div>
+            
+          </dl>
+
+          <a class="object__cta" href="#p-4">Enquire about Lys Lamp <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+    
+
+    <section class="panel panel--workshop" id="p-w" data-label="Workshop" aria-label="Workshop">
+  <div class="workshop">
+    <figure class="workshop__media">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAwIDkwMCIgd2lkdGg9IjEyMDAiIGhlaWdodD0iOTAwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IldvcmtzaG9wIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9IndzYmciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI0RGRENEMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0M5QzVCOSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjkwMCIgZmlsbD0idXJsKCN3c2JnKSIvPjxyZWN0IHg9Ijk2IiB5PSI3MiIgd2lkdGg9IjI0MCIgaGVpZ2h0PSIzNjAiIGZpbGw9IiNGNkY0RUUiLz48cmVjdCB4PSI5NiIgeT0iNzIiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM5RTlBOEUiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyMTYiIHkxPSI3MiIgeDI9IjIxNiIgeTI9IjQzMiIgc3Ryb2tlPSIjOUU5QThFIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI0NjgiIHk9IjcyIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y2RjRFRSIvPjxyZWN0IHg9IjQ2OCIgeT0iNzIiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM5RTlBOEUiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI1ODgiIHkxPSI3MiIgeDI9IjU4OCIgeTI9IjQzMiIgc3Ryb2tlPSIjOUU5QThFIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSI4NDAiIHk9IjcyIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0iI0Y2RjRFRSIvPjxyZWN0IHg9Ijg0MCIgeT0iNzIiIHdpZHRoPSIyNDAiIGhlaWdodD0iMzYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM5RTlBOEUiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI5NjAiIHkxPSI3MiIgeDI9Ijk2MCIgeTI9IjQzMiIgc3Ryb2tlPSIjOUU5QThFIiBzdHJva2Utd2lkdGg9IjIiLz48cmVjdCB4PSIwIiB5PSI1OTQiIHdpZHRoPSIxMjAwIiBoZWlnaHQ9IjMwNiIgZmlsbD0iI0I2QjFBNCIvPjxyZWN0IHg9IjE0NCIgeT0iNTQwIiB3aWR0aD0iOTEyIiBoZWlnaHQ9IjQ5LjUiIGZpbGw9IiM4QTdBNUYiLz48cmVjdCB4PSIxNDQiIHk9IjU0MCIgd2lkdGg9IjkxMiIgaGVpZ2h0PSIxMCIgZmlsbD0iI0EwOEQ2QyIvPjxyZWN0IHg9IjE5MiIgeT0iMzg1LjIxOTI2NzUyMTA1MzU1IiB3aWR0aD0iNCIgaGVpZ2h0PSI2NC43ODA3MzI0Nzg5NDY0NSIgZmlsbD0iIzZFNkE2MCIvPjxjaXJjbGUgY3g9IjE5NCIgY3k9IjM4NS4yMTkyNjc1MjEwNTM1NSIgcj0iNSIgZmlsbD0iIzZFNkE2MCIvPjxyZWN0IHg9IjMxMiIgeT0iMzkwLjE0ODk3NTg2NDI4NTYiIHdpZHRoPSI0IiBoZWlnaHQ9IjU5Ljg1MTAyNDEzNTcxNDQiIGZpbGw9IiM2RTZBNjAiLz48Y2lyY2xlIGN4PSIzMTQiIGN5PSIzOTAuMTQ4OTc1ODY0Mjg1NiIgcj0iNSIgZmlsbD0iIzZFNkE2MCIvPjxyZWN0IHg9IjQzMiIgeT0iMzg4LjkyODk5NDE5MzIwNzUiIHdpZHRoPSI0IiBoZWlnaHQ9IjYxLjA3MTAwNTgwNjc5MjUzIiBmaWxsPSIjNkU2QTYwIi8+PGNpcmNsZSBjeD0iNDM0IiBjeT0iMzg4LjkyODk5NDE5MzIwNzUiIHI9IjUiIGZpbGw9IiM2RTZBNjAiLz48cmVjdCB4PSI1NTIuMDAwMDAwMDAwMDAwMSIgeT0iMzY4LjkzNzk0Mjg2Nzg2NTgiIHdpZHRoPSI0IiBoZWlnaHQ9IjgxLjA2MjA1NzEzMjEzNDIxIiBmaWxsPSIjNkU2QTYwIi8+PGNpcmNsZSBjeD0iNTU0LjAwMDAwMDAwMDAwMDEiIGN5PSIzNjguOTM3OTQyODY3ODY1OCIgcj0iNSIgZmlsbD0iIzZFNkE2MCIvPjxyZWN0IHg9IjY3Mi4wMDAwMDAwMDAwMDAxIiB5PSIzNzQuMjMwNjI4NDk2OTY3MjYiIHdpZHRoPSI0IiBoZWlnaHQ9Ijc1Ljc2OTM3MTUwMzAzMjc0IiBmaWxsPSIjNkU2QTYwIi8+PGNpcmNsZSBjeD0iNjc0LjAwMDAwMDAwMDAwMDEiIGN5PSIzNzQuMjMwNjI4NDk2OTY3MjYiIHI9IjUiIGZpbGw9IiM2RTZBNjAiLz48cmVjdCB4PSI3OTIiIHk9IjM3OC43Nzc0MDg2MjE1MDY3NyIgd2lkdGg9IjQiIGhlaWdodD0iNzEuMjIyNTkxMzc4NDkzMjMiIGZpbGw9IiM2RTZBNjAiLz48Y2lyY2xlIGN4PSI3OTQiIGN5PSIzNzguNzc3NDA4NjIxNTA2NzciIHI9IjUiIGZpbGw9IiM2RTZBNjAiLz48cmVjdCB4PSI5MTIuMDAwMDAwMDAwMDAwMSIgeT0iMzcyLjk2NDIwNzc0ODQxNjgiIHdpZHRoPSI0IiBoZWlnaHQ9Ijc3LjAzNTc5MjI1MTU4MzE5IiBmaWxsPSIjNkU2QTYwIi8+PGNpcmNsZSBjeD0iOTE0LjAwMDAwMDAwMDAwMDEiIGN5PSIzNzIuOTY0MjA3NzQ4NDE2OCIgcj0iNSIgZmlsbD0iIzZFNkE2MCIvPjxyZWN0IHg9IjI0MCIgeT0iNTk0IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjE0NCIgZmlsbD0iI0Q2NDEwRiIgb3BhY2l0eT0iLjg1Ii8+PHJlY3QgeD0iNjcyLjAwMDAwMDAwMDAwMDEiIHk9IjYxMiIgd2lkdGg9IjIxNiIgaGVpZ2h0PSIxMjYuMDAwMDAwMDAwMDAwMDEiIGZpbGw9IiM1RTVBNTAiLz48L3N2Zz4K" alt="The Meridian workshop" width="1200" height="900" loading="lazy" decoding="async">
+    </figure>
+
+    <div class="workshop__body">
+      <p class="workshop__eyebrow">How they are made</p>
+      <h2 class="workshop__title">Four people, one room, no catalogue</h2>
+
+      <ol class="steps">
+        
+        <li class="step">
+          <span class="step__n">Drawn</span>
+          <h3 class="step__t">Full size, on paper, on the wall</h3>
+          <p class="step__b">Nothing is designed on a screen at 40% scale. If it does not work drawn at 1:1 on the workshop wall it does not get made.</p>
+        </li>
+        
+        <li class="step">
+          <span class="step__n">Built</span>
+          <h3 class="step__t">One prototype, lived with</h3>
+          <p class="step__b">The first of every edition stays in the studio for a season. Two objects have been abandoned at this stage.</p>
+        </li>
+        
+        <li class="step">
+          <span class="step__n">Editioned</span>
+          <h3 class="step__t">Forty, then never again</h3>
+          <p class="step__b">Each is stamped with its number and the year. When the fortieth ships, the tooling is retired.</p>
+        </li>
+        
+      </ol>
+    </div>
+  </div>
+</section>
+
+    <section class="panel panel--contact" id="p-c" data-label="Enquiries" aria-label="Enquiries">
+  <div class="contact">
+    <div class="contact__main">
+      <p class="contact__eyebrow">Enquiries</p>
+      <h2 class="contact__title">Come to the workshop</h2>
+      <p class="contact__lede">Open on Thursdays, 13:00–17:00, or by appointment. Objects can be seen and sat on before you commit to one.</p>
+
+      <ul class="contact__lines">
+        <li><span>Email</span><a href="mailto:studio@meridianobjects.example.com">studio@meridianobjects.example.com</a></li>
+        <li><span>Telephone</span><a href="tel:+4532145508">+45 32 14 55 08</a></li>
+        <li><span>Workshop</span><span>Refshalevej 163A, 1432 København K</span></li>
+      </ul>
+    </div>
+
+    <div class="contact__aside">
+      <p class="contact__aside-label">Seen at</p>
+      <ul class="stockists">
+        <li>Copenhagen — the workshop</li><li>Stockholm — Fält</li><li>London — Ordinary Objects</li><li>Tokyo — Kōgei</li>
+      </ul>
+      <p class="contact__colophon">© 2026 Meridian Objects · Furniture, editioned</p>
+    </div>
+  </div>
+</section>
+
+  </div>
+</main>
+
+<!-- Progress rail: the only navigation, and it doubles as a scrollbar -->
+<nav class="rail" aria-label="Panels">
+  <button class="rail__arrow" type="button" data-prev aria-label="Previous panel">←</button>
+  <ol class="rail__ticks" data-ticks></ol>
+  <button class="rail__arrow" type="button" data-next aria-label="Next panel">→</button>
+</nav>
+
+<!-- Full-screen index -->
+<div class="index" id="index" data-index hidden>
+  <div class="index__inner">
+    <p class="index__label">Index</p>
+    <ol class="index__list" data-index-list></ol>
+    <p class="index__hint">← → to move · Esc to close</p>
+  </div>
+</div>
+
+<nav class="rt-bar" aria-label="Templates"><span>Demo</span><a href="preview-atlas.html">atlas</a><a href="preview-console.html">console</a><a href="preview-deck.html" aria-current="page">deck</a><a href="preview-press.html">press</a><a href="preview.html">All four</a></nav>
+<script>/* DECK — sideways navigation.
+   The only unusual thing here: vertical wheel input is translated into
+   horizontal scroll, because nobody has a horizontal trackpad gesture in
+   muscle memory. Everything degrades to a normal page without JS. */
+(function () {
+  'use strict';
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isDeck = () => matchMedia('(min-width: 901px)').matches;
+
+  const deck = $('[data-deck]');
+  const panels = $$('.panel');
+  const ticks = $('[data-ticks]');
+  const current = $('[data-current]');
+  const total = $('[data-total]');
+  const pad = (n) => String(n + 1).padStart(2, '0');
+
+  document.body.classList.add('is-live');
+  if (total) total.textContent = pad(panels.length - 1);
+
+  /* ---- rail ticks, built from the panels themselves ---- */
+  panels.forEach((p, i) => {
+    const li = document.createElement('li');
+    li.className = 'rail__tick';
+    li.innerHTML = `<span>${pad(i)}</span><span class="rail__tick-label"></span>`;
+    li.querySelector('.rail__tick-label').textContent = p.dataset.label || `Panel ${i + 1}`;
+    li.addEventListener('click', () => go(i));
+    ticks.appendChild(li);
+  });
+  const tickEls = $$('.rail__tick');
+
+  /* ---- index overlay ---- */
+  const index = $('[data-index]');
+  const indexList = $('[data-index-list]');
+  const indexBtn = $('[data-index-open]');
+
+  panels.forEach((p, i) => {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = `<span class="n">${pad(i)}</span><span>${p.dataset.label || ''}</span><span class="kind">${p.classList.contains('panel--object') ? 'Object' : 'Page'}</span>`;
+    b.addEventListener('click', () => { setIndex(false); go(i); });
+    li.appendChild(b);
+    indexList.appendChild(li);
+  });
+
+  function setIndex(open) {
+    index.hidden = !open;
+    indexBtn.setAttribute('aria-expanded', String(open));
+    requestAnimationFrame(() => index.classList.toggle('is-open', open));
+  }
+  indexBtn.addEventListener('click', () => setIndex(index.hidden));
+  index.addEventListener('click', (e) => { if (e.target === index) setIndex(false); });
+
+  /* ---- movement ---- */
+  let active = 0;
+
+  function go(i) {
+    active = Math.max(0, Math.min(i, panels.length - 1));
+    if (isDeck()) {
+      deck.scrollTo({ left: panels[active].offsetLeft, behavior: reduce ? 'auto' : 'smooth' });
+    } else {
+      panels[active].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }
+
+  function sync() {
+    const i = isDeck()
+      ? Math.round(deck.scrollLeft / deck.clientWidth)
+      : panels.findIndex((p) => p.getBoundingClientRect().bottom > innerHeight * 0.4);
+    active = Math.max(0, Math.min(i, panels.length - 1));
+    if (current) current.textContent = pad(active);
+    tickEls.forEach((t, n) => t.classList.toggle('is-on', n === active));
+    const prev = $('[data-prev]'), next = $('[data-next]');
+    if (prev) prev.disabled = active === 0;
+    if (next) next.disabled = active === panels.length - 1;
+  }
+
+  deck.addEventListener('scroll', sync, { passive: true });
+  addEventListener('scroll', sync, { passive: true });
+  addEventListener('resize', sync);
+  sync();
+
+  $('[data-prev]').addEventListener('click', () => go(active - 1));
+  $('[data-next]').addEventListener('click', () => go(active + 1));
+
+  /* ---- wheel: vertical intent becomes horizontal motion ---- */
+  deck.addEventListener('wheel', (e) => {
+    if (!isDeck()) return;
+    // Leave real horizontal gestures (trackpad swipe) to the browser
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    deck.scrollLeft += e.deltaY;
+  }, { passive: false });
+
+  /* ---- click and drag to pan ---- */
+  let down = false, startX = 0, startLeft = 0, moved = 0;
+  deck.addEventListener('pointerdown', (e) => {
+    if (!isDeck() || e.pointerType !== 'mouse') return;
+    down = true; moved = 0; startX = e.clientX; startLeft = deck.scrollLeft;
+    deck.classList.add('is-dragging');
+  });
+  addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - startX;
+    moved = Math.abs(dx);
+    deck.scrollLeft = startLeft - dx;
+  });
+  addEventListener('pointerup', () => {
+    if (!down) return;
+    down = false;
+    deck.classList.remove('is-dragging');
+    if (moved > 4) go(Math.round(deck.scrollLeft / deck.clientWidth));
+  });
+  // A drag that ends on a link should not also follow it
+  deck.addEventListener('click', (e) => { if (moved > 4) e.preventDefault(); }, true);
+
+  /* ---- keyboard ---- */
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') return setIndex(false);
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); go(active + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(active - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(panels.length - 1); }
+    if (e.key.toLowerCase() === 'i') setIndex(index.hidden);
+  });
+
+  /* ---- in-page anchors move the deck instead of scrolling the document ---- */
+  $$('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const target = document.getElementById(a.getAttribute('href').slice(1));
+      if (!target) return;
+      const i = panels.indexOf(target);
+      if (i === -1) return;
+      e.preventDefault();
+      go(i);
+    });
+  });
+})();
+</script>
+</body>
+</html>
