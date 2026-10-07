@@ -840,3 +840,13 @@ body.role-asistent .te-row button,
 body.role-asistent .upload-btn{display:none !important}
 .asistent-link{cursor:pointer;text-align:left;font:inherit;color:inherit;border:1px solid var(--border);transition:border-color .15s}
 .asistent-link:hover{border-color:var(--gold)}
+
+.alert-row.clickable{cursor:pointer;transition:background .12s}
+.alert-row.clickable:hover{background:var(--surface2)}
+.alert-row .alert-go{margin-left:auto;color:var(--muted);font-size:16px;line-height:1}
+.alert-type.lineup{color:var(--red);border-color:rgba(240,82,74,.35);background:rgba(240,82,74,.08)}
+.alert-type.match,.alert-type.sync{color:var(--gold);border-color:rgba(245,130,42,.35);background:var(--gold-dim)}
+.alert-type.referee,.alert-type.late{color:var(--yellow);border-color:rgba(232,181,58,.35);background:rgba(232,181,58,.08)}
+.alert-type.team{color:var(--green);border-color:rgba(47,191,113,.35);background:var(--court-dim)}
+.alert-type.fairplay{color:#E58CA0;border-color:rgba(229,140,160,.35);background:var(--maroon-dim)}
+.alert-type.kit{color:var(--muted);border-color:var(--border);background:var(--surface2)}

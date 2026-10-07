@@ -388,6 +388,27 @@ ro: {
   st_title:'Setări', st_sub:'Administratori, praguri de alertă și jurnal complet de activitate.',
   st_admins:'Administratori', st_rol:'Rol', st_rolValue:'Administrator locație', st_activAcum:'activ acum',
   st_rolLocatieCont:'Cont comun de locație',
+  as_cDeRezolvat:'De rezolvat', as_urgente:'urgente', as_nimicUrgent:'nimic urgent', as_cFaraLot:'Meciuri fără lot', as_cFaraLotSub:'ultimele 60 de zile · jucători neplătiți', as_cBrutSapt:'Brut necesar săptămâna aceasta', as_dinLuni:'de luni', as_faraLotScurt:'fără lot',
+  as_deRezolvatTitlu:'De rezolvat', as_seIncarca:'se încarcă…', as_totInRegula:'Totul este în regulă — nimic de rezolvat.',
+  as_t_lineup:'Lot', as_t_match:'Meci', as_t_sync:'Rezultate', as_t_referee:'Arbitraj', as_t_medical:'Medical', as_t_team:'Echipă', as_t_fairplay:'Fair play', as_t_late:'Întârzieri', as_t_kit:'Returnare', as_t_inventory:'Inventar', as_t_task:'Sarcină',
+  as_pLot:(d,n)=>`${d}: ${n} ${plural(n,'mt_meciuriSuffix','ro')} jucate fără lot — jucătorii nu sunt plătiți până la completare.`,
+  as_pFaraScor:(n,d)=>`${n} ${plural(n,'mt_meciuriSuffix','ro')} din zilele trecute nu au scor (ultimul: ${d}).`,
+  as_pSyncEroare:(w,e)=>`Ultima sincronizare a rezultatelor (${w}) a eșuat${e?': '+e:''}.`,
+  as_pSyncVechi:(w)=>`Rezultatele nu s-au mai sincronizat de la ${w} — verificați dacă sincronizarea automată funcționează.`,
+  as_pSyncIgnorate:(n)=>`Ultima sincronizare a ignorat ${n} ${plural(n,'mt_meciuriSuffix','ro')}: echipe de pe site nelegate de o echipă din registru.`,
+  as_pSyncNiciodata:'Rezultatele nu au fost sincronizate niciodată.',
+  as_pPeste2:(d,n)=>`${d}: peste doi arbitri (${n}).`,
+  as_pOreLipsa:(d,n)=>`${d}: doi arbitri (${n}) fără ore completate — se plătesc 0 până la completare.`,
+  as_pAvizExpirat:(n,l)=>`${n} ${n===1?'aviz medical expirat':'avize medicale expirate'}: ${l}.`,
+  as_pAvizCurand:(n,l)=>`${n} ${n===1?'aviz medical expiră':'avize medicale expiră'} în 30 de zile: ${l}.`,
+  as_pEchipaMica:(e,n)=>`${e}: doar ${n} ${n===1?'jucător activ':'jucători activi'} în echipă (minim 3 pe teren).`,
+  as_pFaraEchipa:(n,l)=>`${n} ${n===1?'jucător activ':'jucători activi'} fără echipă: ${l}.`,
+  as_pFairPlay:(p,tip,d)=>`${p}: ${tip} (${d}).`,
+  as_pIntarzieri:(p,n)=>`${p}: ${n} întârzieri în ultimele 30 de zile.`,
+  as_pVestimentatie:(n,l)=>`${n} ${n===1?'articol de vestimentație nereturnat':'articole de vestimentație nereturnate'}: ${l}.`,
+  as_pSpalatorie:(n)=>`${n} ${n===1?'predare la spălătorie nereturnată':'predări la spălătorie nereturnate'} de peste 2 zile.`,
+  as_pLenjerie:(n)=>`${n} ${n===1?'set de lenjerie nereturnat':'seturi de lenjerie nereturnate'} de peste 7 zile.`,
+  as_pSarciniDeschise:(n)=>`${n} ${n===1?'sarcină deschisă':'sarcini deschise'}.`,
   as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
   as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
@@ -677,6 +698,27 @@ ru: {
   st_title:'Настройки', st_sub:'Администраторы, пороги уведомлений и полный журнал активности.',
   st_admins:'Администраторы', st_rol:'Роль', st_rolValue:'Администратор локации', st_activAcum:'сейчас в сети',
   st_rolLocatieCont:'Общая учётная запись локации',
+  as_cDeRezolvat:'Требует внимания', as_urgente:'срочных', as_nimicUrgent:'ничего срочного', as_cFaraLot:'Матчи без состава', as_cFaraLotSub:'последние 60 дней · игрокам не начислено', as_cBrutSapt:'Брутто на этой неделе', as_dinLuni:'с понедельника', as_faraLotScurt:'без состава',
+  as_deRezolvatTitlu:'Требует внимания', as_seIncarca:'загрузка…', as_totInRegula:'Всё в порядке — ничего не требует внимания.',
+  as_t_lineup:'Состав', as_t_match:'Матч', as_t_sync:'Результаты', as_t_referee:'Арбитраж', as_t_medical:'Медицина', as_t_team:'Команда', as_t_fairplay:'Фэйр-плей', as_t_late:'Опоздания', as_t_kit:'Возврат', as_t_inventory:'Инвентарь', as_t_task:'Задача',
+  as_pLot:(d,n)=>`${d}: ${n} ${plural(n,'mt_meciuriSuffix','ru')} сыграно без состава — игрокам не начислено, пока состав не заполнен.`,
+  as_pFaraScor:(n,d)=>`${n} ${plural(n,'mt_meciuriSuffix','ru')} прошлых дней без счёта (последний: ${d}).`,
+  as_pSyncEroare:(w,e)=>`Последняя синхронизация результатов (${w}) завершилась ошибкой${e?': '+e:''}.`,
+  as_pSyncVechi:(w)=>`Результаты не синхронизировались с ${w} — проверьте автоматическую синхронизацию.`,
+  as_pSyncIgnorate:(n)=>`Последняя синхронизация пропустила ${n} ${plural(n,'mt_meciuriSuffix','ru')}: команды сайта не связаны с командами реестра.`,
+  as_pSyncNiciodata:'Результаты ещё ни разу не синхронизировались.',
+  as_pPeste2:(d,n)=>`${d}: больше двух арбитров (${n}).`,
+  as_pOreLipsa:(d,n)=>`${d}: два арбитра (${n}) без указанных часов — оплата 0 до заполнения.`,
+  as_pAvizExpirat:(n,l)=>`Просроченные медсправки (${n}): ${l}.`,
+  as_pAvizCurand:(n,l)=>`Медсправки истекают в течение 30 дней (${n}): ${l}.`,
+  as_pEchipaMica:(e,n)=>`${e}: в команде только ${n} ${plural(n,'pa_countSuffix','ru')} (на площадке нужно минимум 3).`,
+  as_pFaraEchipa:(n,l)=>`Активные игроки без команды (${n}): ${l}.`,
+  as_pFairPlay:(p,tip,d)=>`${p}: ${tip} (${d}).`,
+  as_pIntarzieri:(p,n)=>`${p}: ${n} опозданий за последние 30 дней.`,
+  as_pVestimentatie:(n,l)=>`Не возвращена экипировка (${n}): ${l}.`,
+  as_pSpalatorie:(n)=>`Не возвращено из прачечной более 2 дней: ${n}.`,
+  as_pLenjerie:(n)=>`Не возвращено бельё более 7 дней: ${n}.`,
+  as_pSarciniDeschise:(n)=>`Открытых задач: ${n}.`,
   as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
   as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
@@ -1259,6 +1301,7 @@ async function logout(){
   locationRefreshChannel = null;
   liveRefreshEvents = [];
   hideRefreshReminder();
+  asDash = null;
   currentAdmin = null; currentAdminId = null; currentRole = null; currentShift = null; adminDemoShiftActive = false; shiftStartPrompt = false; DB = null;
   document.body.classList.remove('role-locatie', 'role-asistent');
   document.getElementById('app-shell').classList.remove('visible');
@@ -1442,6 +1485,7 @@ function navBadge(id){
 }
 
 function navigate(view){
+  if(view==='dashboard' && !asDash?.loading) asDash = null;   // helper dashboard: fresh problem list on every visit
   if(isAsistent()){ if(!ASISTENT_VIEWS.has(view)) view = 'dashboard'; }
   else {
     if(!isFullAdmin() && LOCATION_HIDDEN_VIEWS.has(view)) view = 'dashboard';
@@ -2421,21 +2465,120 @@ function renderShiftWorkflow(){
   </section>`;
 }
 
+/* ── Helper dashboard: everything that needs attention, grouped by urgency, each row links to the page
+   where it can be seen. Data that needs extra queries (line-ups, pay this week, results sync) loads once
+   in the background and redraws the dashboard when it arrives. ── */
+let asDash = null;   // { loading, rosterIds:Set, week:{brut,meciuri}, sync }
+async function loadAsistentDashboard(){
+  if(asDash) return;
+  asDash = { loading:true };
+  const today = todayISO(), from = addDays(today, -60), wk = weekStart(today);
+  const [rosterIds, week, sync] = await Promise.all([
+    ICON_PREVIEW_MODE ? Promise.resolve(new Set([...rosterByMatch].filter(([,r])=>r.length).map(([id])=>id))) : loadStatsRosterIds(from, today).catch(e=>{ console.error(e); return null; }),
+    loadStats(wk, today).then(st=>({ brut: st.jucatori.reduce((x,j)=>x+(j.totalBrut||0),0), jucatori: st.jucatori.length })).catch(e=>{ console.error(e); return null; }),
+    ICON_PREVIEW_MODE ? Promise.resolve({ rulat_la:new Date().toISOString(), ok:true }) : sb.from('sync_rezultate').select('rulat_la,ok,eroare,ignorate').order('id',{ascending:false}).limit(1).then(r=>r.data?.[0]||null),
+  ]);
+  asDash = { loading:false, rosterIds, week, sync, from };
+  if(currentView==='dashboard') render();
+}
+function asistentProblems(){
+  const today = todayISO(), out = [];
+  const add = (level, type, text, go)=>out.push({ level, type, text, go });
+  const names = (list, max=4)=>list.slice(0,max).join(', ') + (list.length>max ? ` +${list.length-max}` : '');
+  // pay: scored matches without a line-up → those players are not paid
+  if(asDash?.rosterIds){
+    const missing = DB.meciuri.filter(m=>winnerOf(m) && m.data>=asDash.from && !asDash.rosterIds.has(m.id));
+    [...new Set(missing.map(m=>m.data))].sort().reverse().forEach(d=>{
+      const n = missing.filter(m=>m.data===d).length;
+      add('red', 'lineup', t('as_pLot')(fmtDate(d), n), `goToMatchDay('${d}')`);
+    });
+  }
+  // past matches still without a score
+  const noScore = DB.meciuri.filter(m=>m.data<today && !winnerOf(m));
+  if(noScore.length) add('yellow', 'match', t('as_pFaraScor')(noScore.length, fmtDate(noScore.map(m=>m.data).sort().pop())), `goToMatchDay('${noScore.map(m=>m.data).sort().pop()}')`);
+  // results feed health
+  if(asDash?.sync){
+    const hrs = (Date.now() - new Date(asDash.sync.rulat_la).getTime())/3600000;
+    if(!asDash.sync.ok) add('red', 'sync', t('as_pSyncEroare')(fmtDateTime(asDash.sync.rulat_la), asDash.sync.eroare||''), `navigate('meciuri')`);
+    else if(hrs > 3) add('yellow', 'sync', t('as_pSyncVechi')(fmtDateTime(asDash.sync.rulat_la)), `navigate('meciuri')`);
+    if(asDash.sync.ignorate > 0) add('yellow', 'sync', t('as_pSyncIgnorate')(asDash.sync.ignorate), `navigate('meciuri')`);
+  } else if(asDash && !asDash.loading) add('yellow', 'sync', t('as_pSyncNiciodata'), `navigate('meciuri')`);
+  // referees: two on a day without hours (paid 0 until filled), or more than two
+  const refDays = {};
+  DB.arbitraj.filter(a=>a.data>=addDays(today,-45)).forEach(a=>{ (refDays[a.data] ||= []).push(a); });
+  Object.entries(refDays).sort().reverse().forEach(([d, rows])=>{
+    const people = [...new Set(rows.map(r=>r.arbitru))];
+    if(people.length > 2) add('yellow', 'referee', t('as_pPeste2')(fmtDate(d), names(people)), `navigate('arbitraj')`);
+    else if(people.length === 2 && rows.some(r=>refereeHours(r)==null)) add('red', 'referee', t('as_pOreLipsa')(fmtDate(d), names(people)), `navigate('arbitraj')`);
+  });
+  // medical certificates
+  const med = medicalRows();
+  const expired = med.filter(r=>r.status==='expirat').map(r=>r.nume), soon = med.filter(r=>r.status==='expiră curând').map(r=>r.nume);
+  if(expired.length) add('red', 'medical', t('as_pAvizExpirat')(expired.length, names(expired)), `navigate('medical')`);
+  if(soon.length) add('yellow', 'medical', t('as_pAvizCurand')(soon.length, names(soon)), `navigate('medical')`);
+  // teams: too few active players / active players with no team
+  echipeActive().forEach(e=>{
+    const n = DB.participanti.filter(p=>p.echipaId===e.id && p.statut==='activ' && p.rolEchipa!=='arbitru').length;
+    if(n < 3) add('yellow', 'team', t('as_pEchipaMica')(e.nume, n), `navigate('echipe')`);
+  });
+  const noTeam = DB.participanti.filter(p=>p.statut==='activ' && !p.echipaId).map(p=>`${p.nume} ${p.prenume}`);
+  if(noTeam.length) add('info', 'team', t('as_pFaraEchipa')(noTeam.length, names(noTeam)), `participantTeamFilter='__none__'; navigate('participanti')`);
+  // discipline (last 7 days) and repeated lateness (30 days)
+  DB.fairPlay.filter(f=>f.data>=addDays(today,-7) && (f.tipCartonas==='descalificare' || f.tipCartonas==='fault antisportiv')).forEach(f=>
+    add(f.tipCartonas==='descalificare'?'red':'yellow', 'fairplay', t('as_pFairPlay')(participantName(f.participantId), trEnum(f.tipCartonas), fmtDate(f.data)), `navigate('fairplay')`));
+  frequentLate().forEach(x=>add('yellow', 'late', t('as_pIntarzieri')(x.arbitru || participantName(x.participantId), x.count), `navigate('intarzieri')`));
+  // items out and not back
+  const kitOut = DB.vestimentatie.filter(v=>!v.dataReturnare && v.data<addDays(today,-1));
+  if(kitOut.length) add('yellow', 'kit', t('as_pVestimentatie')(kitOut.length, names([...new Set(kitOut.map(v=>v.arbitru||participantName(v.participantId)))])), `navigate('vestimentatie')`);
+  const laundryOut = DB.spalatorie.filter(r=>!r.dataReturnare && r.data<addDays(today,-2));
+  if(laundryOut.length) add('yellow', 'kit', t('as_pSpalatorie')(laundryOut.length), `navigate('spalatorie')`);
+  const linenOut = DB.lenjerie.filter(l=>!l.dataReturnare && l.dataEliberare<addDays(today,-7));
+  if(linenOut.length) add('info', 'kit', t('as_pLenjerie')(linenOut.length), `navigate('lenjerie')`);
+  // stock and tasks
+  lowStockItems().forEach(i=>add('yellow', 'inventory', t('al_lowStock')(`${trEnum(i.denumire)}${i.marime!=='—'?' '+i.marime:''}`, inventoryCurrent(i), i.um, i.cantitateMinima), `navigate('inventar')`));
+  const stale = staleTasks(), open = DB.sarcini.filter(x=>x.status!=='soluționat' && !stale.includes(x));
+  stale.forEach(x=>add('red', 'task', t('al_staleTask')(x.descriere), `navigate('sarcini')`));
+  if(open.length) add('info', 'task', t('as_pSarciniDeschise')(open.length), `navigate('sarcini')`);
+  const rank = { red:0, yellow:1, info:2 };
+  return out.sort((x,y)=>rank[x.level]-rank[y.level]);
+}
 function renderAsistentDashboard(){
+  loadAsistentDashboard();
   const today = todayISO(), wk = weekStart(today);
+  const problems = asistentProblems();
+  const reds = problems.filter(p=>p.level==='red').length;
+  const med = medicalRows();
+  const medExp = med.filter(r=>r.status==='expirat').length, medSoon = med.filter(r=>r.status==='expiră curând').length;
   const lastDay = DB.meciuri.filter(m=>m.data<=today && winnerOf(m)).map(m=>m.data).sort().pop();
-  const link = (view, key, sub)=>`<button class="stat-card asistent-link" onclick="navigate('${view}')"><div class="stat-label">${t(key)}</div><div class="stat-sub">${sub}</div></button>`;
+  const lastDayMatches = lastDay ? DB.meciuri.filter(m=>m.data===lastDay) : [];
+  const lastDayNoLot = asDash?.rosterIds ? lastDayMatches.filter(m=>winnerOf(m) && !asDash.rosterIds.has(m.id)).length : null;
+  const missingList = asDash?.rosterIds ? DB.meciuri.filter(m=>winnerOf(m) && m.data>=asDash.from && !asDash.rosterIds.has(m.id)) : null;
+  const missingAll = missingList ? missingList.length : null;
+  const missingLatest = missingList?.map(m=>m.data).sort().pop();
+  const card = (label, value, sub, cls='', go='')=>`<div class="stat-card ${cls} ${go?'asistent-link':''}" ${go?`onclick="${go}"`:''}><div class="stat-label">${label}</div><div class="stat-value ${cls==='crit'?'c-red':cls==='warn'?'c-yellow':''}">${value}</div><div class="stat-sub">${sub}</div></div>`;
+  const loadingTxt = '…';
   return `
   <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
   <div class="view-sub">${fmtDate(today)} · ${t('as_dashSub')}</div>
+
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">${t('da_stat_activi')}</div><div class="stat-value">${DB.participanti.filter(p=>p.statut==='activ').length}</div><div class="stat-sub">${DB.participanti.length} ${t('da_total_inreg')}</div></div>
-    <div class="stat-card"><div class="stat-label">${t('nav_echipe')}</div><div class="stat-value">${echipeActive().length}</div><div class="stat-sub">${t('as_echipeActive')}</div></div>
-    <div class="stat-card"><div class="stat-label">${t('da_stat_meciuri')}</div><div class="stat-value">${DB.meciuri.filter(m=>m.data===today).length}</div><div class="stat-sub">${t('da_stat_meciuriSub')}: ${DB.meciuri.filter(m=>m.data>=wk).length}</div></div>
-    <div class="stat-card"><div class="stat-label">${t('as_ultimaZi')}</div><div class="stat-value" style="font-size:22px">${lastDay?fmtDate(lastDay):'—'}</div><div class="stat-sub">${lastDay?`${DB.meciuri.filter(m=>m.data===lastDay).length} ${plural(DB.meciuri.filter(m=>m.data===lastDay).length,'mt_meciuriSuffix')}`:''}</div></div>
+    ${card(t('as_cDeRezolvat'), problems.length, reds ? `${reds} ${t('as_urgente')}` : t('as_nimicUrgent'), reds?'crit':problems.length?'warn':'')}
+    ${card(t('as_cFaraLot'), missingAll==null?loadingTxt:missingAll, t('as_cFaraLotSub'), missingAll?'crit':'', missingAll?`goToMatchDay('${missingLatest}')`:'')}
+    ${card(t('as_cBrutSapt'), asDash?.week ? `${money(asDash.week.brut)}` : loadingTxt, asDash?.week ? `MDL · ${asDash.week.jucatori} ${plural(asDash.week.jucatori,'pa_countSuffix')} · ${t('as_dinLuni')}` : '', '', `navigate('plati')`)}
+    ${card(t('as_ultimaZi'), lastDay?fmtDate(lastDay):'—', lastDay ? `${lastDayMatches.length} ${plural(lastDayMatches.length,'mt_meciuriSuffix')}${lastDayNoLot?` · <span class="c-red">${lastDayNoLot} ${t('as_faraLotScurt')}</span>`:''}` : '', '', lastDay?`goToMatchDay('${lastDay}')`:'')}
   </div>
   <div class="stats-row">
-    ${link('plati','nav_plati',t('as_linkPlati'))}${link('statistici','nav_statistici',t('as_linkStats'))}${link('meciuri','nav_meciuri',t('as_linkMeciuri'))}${link('participanti','nav_participanti',t('as_linkJucatori'))}
+    ${card(t('da_stat_activi'), DB.participanti.filter(p=>p.statut==='activ').length, `${DB.participanti.length} ${t('da_total_inreg')} · ${echipeActive().length} ${t('as_echipeActive')}`, '', `navigate('participanti')`)}
+    ${card(t('da_stat_medical'), medExp, `${trEnum('expirat')} · ${medSoon} ${t('da_expira30')} &lt;30${LANG==='ru'?' дн.':' zile'}`, medExp?'crit':medSoon?'warn':'', `navigate('medical')`)}
+    ${card(t('da_stat_stoc'), lowStockItems().length, `${t('da_din')} ${DB.inventar.length} ${plural(DB.inventar.length,'da_categorii')}`, lowStockItems().length?'warn':'', `navigate('inventar')`)}
+    ${card(t('da_stat_sarcini'), staleTasks().length, `${DB.sarcini.filter(x=>x.status!=='soluționat').length} ${t('da_total_lucru')}`, staleTasks().length?'crit':'', `navigate('sarcini')`)}
+    ${card(t('da_stat_meciuri'), DB.meciuri.filter(m=>m.data===today).length, `${t('da_stat_meciuriSub')}: ${DB.meciuri.filter(m=>m.data>=wk).length}`, '', `goToMatchDay('${today}')`)}
+    ${card(t('da_stat_hostel'), DB.hostel.filter(h=>h.dataCazare===today).length, `${t('da_total_inregistrari')}: ${DB.hostel.length}`, '', `navigate('hostel')`)}
+  </div>
+
+  <div class="alerts-panel">
+    <div class="alerts-panel-head">${t('as_deRezolvatTitlu')}${asDash?.loading ? ` <span class="td-muted">· ${t('as_seIncarca')}</span>` : ''}</div>
+    ${problems.length ? problems.map(a=>`<div class="alert-row clickable" onclick="${a.go}"><span class="alert-dot ${a.level==='info'?'':a.level}"></span><span class="alert-type ${a.type}">${esc(t('as_t_'+a.type))}</span><span class="alert-text">${esc(a.text)}</span><span class="alert-go">›</span></div>`).join('') : `<div class="alert-empty">${asDash?.loading ? t('as_seIncarca') : t('as_totInRegula')}</div>`}
   </div>
   <div class="view-sub">${t('as_doarCitire')}</div>`;
 }
