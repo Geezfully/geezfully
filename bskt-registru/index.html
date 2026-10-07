@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
-<link rel="stylesheet" href="app.css?v=20261008-3">
+<link rel="stylesheet" href="app.css?v=20261008-4">
 </head>
 <body>
 
@@ -166,6 +166,17 @@
   </div>
 </div>
 
+<!-- ══ HELPER REVIEW (stacks over the editors) ══ -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title" id="review-modal-title"></div>
+      <div class="modal-head-actions"><button class="modal-close" onclick="closeReview()">✕</button></div>
+    </div>
+    <div class="modal-body" id="review-modal-body"></div>
+  </div>
+</div>
+
 <aside class="refresh-reminder" id="location-refresh-reminder" role="status" aria-live="polite">
   <div class="refresh-reminder-icon"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 8a8 8 0 0 1 13.2-2L20 7M4 17l.7 1A8 8 0 0 0 18 16"/></svg></div>
   <div class="refresh-reminder-content">
@@ -178,6 +189,6 @@
   </div>
 </aside>
 
-<script src="app.js?v=20261008-3"></script>
+<script src="app.js?v=20261008-4"></script>
 </body>
 </html>

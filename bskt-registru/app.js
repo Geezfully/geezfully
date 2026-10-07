@@ -7,7 +7,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Helper ("asistent") accounts are read-only. The database refuses their writes (RLS + a
 // statement trigger that errors instead of silently changing 0 rows); this guard stops any
 // write the UI might still offer before it leaves the browser, and says so on screen.
-const ASISTENT_READ_RPCS = new Set(['statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent']);
+const ASISTENT_READ_RPCS = new Set(['statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent',
+  'asistent_salveaza_meci','asistent_salveaza_echipa','asistent_salveaza_jucator']);
 function readOnlyRefusal(){
   const error = { message: t('as_readOnly'), code: 'asistent_read_only' };
   alert(t('as_readOnly'));
@@ -413,7 +414,17 @@ ro: {
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
   as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
   as_linkPlati:'Plăți pe jucători, echipe și arbitri; export Excel', as_linkStats:'Win rate, +/−, căpitani, clasament echipe', as_linkMeciuri:'Rezultate și loturi pe zile', as_linkJucatori:'Profiluri sportive și istoric',
-  as_doarCitire:'Acest cont poate vedea și exporta datele, dar nu poate modifica nimic. Datele personale ale jucătorilor (fișa personală) nu sunt disponibile.',
+  as_doarCitire:'Acest cont vede și exportă datele. Poate adăuga meciuri și completa loturile (din lunea săptămânii trecute încoace), poate modifica loturile echipelor și statutul, avizul medical și dulapul jucătorilor — fiecare salvare este verificată, înregistrată și poate fi anulată de administrator. Fișa personală nu este disponibilă.',
+  as_fereastra:(a,b)=>`Contul de asistent poate adăuga și modifica meciuri din ${a} până la ${b}.`, as_inafaraFerestrei:(a,b)=>`Data este în afara perioadei permise (${a} – ${b}).`,
+  as_teamNota:'Contul de asistent poate modifica doar lotul echipei (jucători, număr, căpitan/jucător). Denumirea, culoarea și statutul echipei rămân la administrator.',
+  as_teamPlataNota:'Lotul echipei nu schimbă plățile meciurilor deja jucate; contează doar ca propunere pentru loturile meciurilor următoare.',
+  as_profilNota:'Contul de asistent poate modifica statutul, data avizului medical și numărul dulapului.', as_avizInvalid:'Data avizului medical trebuie să fie din ultimul an, nu din viitor.',
+  as_reviewMeciNou:'Verificați meciul nou', as_reviewMeci:'Verificați modificările meciului', as_reviewEchipa:'Verificați modificările lotului', as_reviewJucator:'Verificați modificările jucătorului',
+  as_reviewNota:'Modificarea se salvează imediat, se înregistrează și poate fi anulată de administrator.', as_inapoi:'Înapoi la editare', as_confirma:'Confirm și salvez',
+  as_chData:'Data', as_chEchipe:'Echipe', as_chDetalii:'Detalii (nr., teren, arbitru, observații sau OT)', as_nou:'nou', as_faraSchimbari:'Fără schimbări de lot.',
+  as_faraScorPlata:'Meciul nu are încă scor — plata se calculează automat când apare scorul.', as_impactBrut:'Impact asupra plăților (brut)',
+  as_logTitlu:'Modificările mele (ultimele 3 săptămâni)', as_logTitluAdmin:'Modificări făcute de asistent', as_logGol:'Nicio modificare în ultimele 3 săptămâni.',
+  as_anulat:'anulat', as_anuleaza:'Anulează', as_confirmAnulare:(n)=>`Anulați această modificare a asistentului (${n} ${n===1?'înregistrare':'înregistrări'})? Datele revin la starea de dinainte.`,
   st_praguri:'Praguri de alertă (informativ)', st_p_medAlerta:'Aviz medical — alertă', st_p_medAlertaV:'≤ 7 zile rămase',
   st_p_medVal:'Aviz medical — valabilitate', st_p_medValV:'6 luni', st_p_sarciniRest:'Sarcini restante',
   st_p_sarciniRestV:'> 48 ore', st_p_intarzieri:'Întârzieri frecvente', st_p_intarzieriV:'≥ 3 în 30 zile',
@@ -723,7 +734,17 @@ ru: {
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
   as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
   as_linkPlati:'Выплаты по игрокам, командам и арбитрам; экспорт Excel', as_linkStats:'Винрейт, +/−, капитаны, таблица команд', as_linkMeciuri:'Результаты и составы по дням', as_linkJucatori:'Спортивные профили и история',
-  as_doarCitire:'Эта учётная запись может просматривать и экспортировать данные, но ничего не может изменить. Личные данные игроков (личная карточка) недоступны.',
+  as_doarCitire:'Эта учётная запись просматривает и экспортирует данные. Может добавлять матчи и заполнять составы (с понедельника прошлой недели), менять составы команд, а также статус, медсправку и шкафчик игроков — каждое сохранение проверяется, записывается и может быть отменено администратором. Личная карточка недоступна.',
+  as_fereastra:(a,b)=>`Ассистент может добавлять и изменять матчи с ${a} по ${b}.`, as_inafaraFerestrei:(a,b)=>`Дата вне разрешённого периода (${a} – ${b}).`,
+  as_teamNota:'Ассистент может менять только состав команды (игроки, номер, капитан/игрок). Название, цвет и статус команды меняет администратор.',
+  as_teamPlataNota:'Состав команды не меняет выплаты за уже сыгранные матчи; он служит предложением для составов следующих матчей.',
+  as_profilNota:'Ассистент может менять статус, дату медсправки и номер шкафчика.', as_avizInvalid:'Дата медсправки должна быть за последний год и не в будущем.',
+  as_reviewMeciNou:'Проверьте новый матч', as_reviewMeci:'Проверьте изменения матча', as_reviewEchipa:'Проверьте изменения состава', as_reviewJucator:'Проверьте изменения игрока',
+  as_reviewNota:'Изменение сохраняется сразу, записывается и может быть отменено администратором.', as_inapoi:'Назад к редактированию', as_confirma:'Подтвердить и сохранить',
+  as_chData:'Дата', as_chEchipe:'Команды', as_chDetalii:'Детали (№, площадка, арбитр, примечания или OT)', as_nou:'новый', as_faraSchimbari:'Состав не изменён.',
+  as_faraScorPlata:'У матча ещё нет счёта — выплата посчитается автоматически, когда появится счёт.', as_impactBrut:'Влияние на выплаты (брутто)',
+  as_logTitlu:'Мои изменения (последние 3 недели)', as_logTitluAdmin:'Изменения ассистента', as_logGol:'Нет изменений за последние 3 недели.',
+  as_anulat:'отменено', as_anuleaza:'Отменить', as_confirmAnulare:(n)=>`Отменить это изменение ассистента (${n} ${n===1?'запись':'записей'})? Данные вернутся к прежнему состоянию.`,
   st_praguri:'Пороги уведомлений (справочно)', st_p_medAlerta:'Мед. справка — уведомление', st_p_medAlertaV:'≤ 7 дней осталось',
   st_p_medVal:'Мед. справка — срок действия', st_p_medValV:'6 месяцев', st_p_sarciniRest:'Просроченные задачи',
   st_p_sarciniRestV:'> 48 часов', st_p_intarzieri:'Частые опоздания', st_p_intarzieriV:'≥ 3 за 30 дней',
@@ -917,6 +938,11 @@ function isFullAdmin(){ return currentRole === 'admin'; }
 // helper account: players, teams, matches, statistics and payments — read-only, no personal data
 function isAsistent(){ return currentRole === 'asistent'; }
 function canSeeMoney(){ return isFullAdmin() || isAsistent(); }
+// the helper may add/edit matches from Monday of the previous week up to 30 days ahead (the database enforces the same)
+function asistentWindowStart(){ return addDays(weekStart(todayISO()), -7); }
+function asistentWindowEnd(){ return addDays(todayISO(), 30); }
+function inAsistentWindow(day){ return !!day && day >= asistentWindowStart() && day <= asistentWindowEnd(); }
+function canOpenMatchEditor(m){ return isFullAdmin() || (isAsistent() && inAsistentWindow(m.data)); }
 function hasActiveShift(){ return isFullAdmin() || !!currentShift; }
 function activeShiftName(){
   if(isFullAdmin()) return currentAdmin;
@@ -1301,7 +1327,7 @@ async function logout(){
   locationRefreshChannel = null;
   liveRefreshEvents = [];
   hideRefreshReminder();
-  asDash = null;
+  asDash = null; asLog = null;
   currentAdmin = null; currentAdminId = null; currentRole = null; currentShift = null; adminDemoShiftActive = false; shiftStartPrompt = false; DB = null;
   document.body.classList.remove('role-locatie', 'role-asistent');
   document.getElementById('app-shell').classList.remove('visible');
@@ -1485,7 +1511,8 @@ function navBadge(id){
 }
 
 function navigate(view){
-  if(view==='dashboard' && !asDash?.loading) asDash = null;   // helper dashboard: fresh problem list on every visit
+  if(view==='dashboard' && !asDash?.loading) asDash = null;
+  if(view==='dashboard' && !asLog?.loading) asLog = null;   // helper dashboard: fresh problem list on every visit
   if(isAsistent()){ if(!ASISTENT_VIEWS.has(view)) view = 'dashboard'; }
   else {
     if(!isFullAdmin() && LOCATION_HIDDEN_VIEWS.has(view)) view = 'dashboard';
@@ -2580,6 +2607,7 @@ function renderAsistentDashboard(){
     <div class="alerts-panel-head">${t('as_deRezolvatTitlu')}${asDash?.loading ? ` <span class="td-muted">· ${t('as_seIncarca')}</span>` : ''}</div>
     ${problems.length ? problems.map(a=>`<div class="alert-row clickable" onclick="${a.go}"><span class="alert-dot ${a.level==='info'?'':a.level}"></span><span class="alert-type ${a.type}">${esc(t('as_t_'+a.type))}</span><span class="alert-text">${esc(a.text)}</span><span class="alert-go">›</span></div>`).join('') : `<div class="alert-empty">${asDash?.loading ? t('as_seIncarca') : t('as_totInRegula')}</div>`}
   </div>
+  ${renderAsistentLog()}
   <div class="view-sub">${t('as_doarCitire')}</div>`;
 }
 function renderDashboard(){
@@ -2608,6 +2636,7 @@ function renderDashboard(){
     ${alerts.length ? alerts.map(a=>`<div class="alert-row"><span class="alert-dot ${a.level}"></span><span class="alert-type ${a.type}">${esc(t(`al_type${a.type[0].toUpperCase()+a.type.slice(1)}`))}</span><span class="alert-text">${esc(a.text)}</span></div>`).join('') : `<div class="alert-empty">${t('da_alerts_empty')}</div>`}
   </div>
 
+  ${isFullAdmin() ? renderAsistentLog() : ''}
   ${isFullAdmin() ? `<div class="table-wrap">
     <div class="table-header"><div class="table-title">${t('da_jurnal_title')}</div></div>
     <div class="table-scroll recent-actions-scroll"><table>
@@ -2886,7 +2915,7 @@ function renderEchipe(){
         <div class="team-card-head">
           <div class="team-id">
             ${e.logoUrl ? `<img class="team-badge" src="${esc(e.logoUrl)}" alt="" loading="lazy">` : ''}
-            <div><div class="team-name ${hasActiveShift()?'clickable':''}" ${hasActiveShift()?`onclick="openTeamEditor('${e.id}')"`:''}>${esc(e.nume)}</div>
+            <div><div class="team-name ${canEditTeams()?'clickable':''}" ${canEditTeams()?`onclick="openTeamEditor('${e.id}')"`:''}>${esc(e.nume)}</div>
             <div class="team-record">${s ? `${s.victorii}–${s.infrangeri} · ${pct(s.winRate)} · ${signed(s.diferenta)}/${t('ec_perMeci')}` : t('ec_faraMeciuri')}</div></div>
           </div>
           ${e.activ ? '' : `<span class="badge muted">${trEnum('inactiv')}</span>`}
@@ -2898,7 +2927,7 @@ function renderEchipe(){
             <span>${p.nrEchipa?`<span class="team-nr">${p.nrEchipa}</span>`:''}<span class="mini-name">${esc(p.nume)} ${esc(p.prenume)}</span> ${p.rolEchipa==='căpitan'?`<span class="badge gold">${trEnum('căpitan')}</span>`:''}</span>
             <span class="td-muted">${p.rating!=null?`★ ${p.rating}`:''}</span></div>`).join('') : `<div class="mini-empty">${t('ec_faraJucatori')}</div>`}
         </div>
-        ${hasActiveShift() ? `<div class="team-card-actions">
+        ${canEditTeams() ? `<div class="team-card-actions">
           <button class="btn-primary btn-sm" onclick="openTeamEditor('${e.id}')">${t('ec_edit')}</button>
         </div>` : ''}
       </section>`;
@@ -2921,8 +2950,9 @@ async function addEchipa(){
 /* ── Team editor: name, colour, status and the full roster in one dialog, saved in one go ── */
 const TEAM_COLOR_PRESETS = ['#8E2236','#1F7A4C','#F5822A','#2B5BA8','#6E3FA3','#C9A227','#B23A48','#1E8C93','#4A4A4A','#D9D9D9'];
 let teamEdit = null;
+function canEditTeams(){ return hasActiveShift() || isAsistent(); }
 function openTeamEditor(id){
-  const e = echipa(id); if(!e) return;
+  const e = echipa(id); if(!e || !canEditTeams()) return;
   const roster = DB.participanti.filter(p=>p.echipaId===id)
     .sort((a,b)=>(a.nrEchipa||9)-(b.nrEchipa||9) || (b.rating||0)-(a.rating||0) || a.nume.localeCompare(b.nume,'ro'))
     .map(p=>({ pid:p.id, nr:p.nrEchipa||'', rol:p.rolEchipa||'jucător' }));
@@ -2980,7 +3010,7 @@ function renderTeamEditor(){
       ${te.activ ? '' : `<span class="badge muted">${trEnum('inactiv')}</span>`}
     </div>
 
-    <div class="form-grid" style="grid-template-columns:2fr 1fr;margin-top:16px">
+    ${isAsistent() ? `<div class="view-sub" style="margin:14px 0 0">${t('as_teamNota')}</div>` : `<div class="form-grid" style="grid-template-columns:2fr 1fr;margin-top:16px">
       <div class="field"><label>${t('ec_nume')}</label><input value="${esc(te.nume)}" oninput="teamEdit.nume=this.value; document.getElementById('team-modal-title').textContent=this.value||'—'"></div>
       <div class="field"><label>${t('th_statut')}</label><select onchange="teamEditField('activ', this.value==='1')">
         <option value="1" ${te.activ?'selected':''}>${trEnum('activ')}</option><option value="0" ${!te.activ?'selected':''}>${trEnum('inactiv')}</option></select></div>
@@ -2990,7 +3020,7 @@ function renderTeamEditor(){
         ${TEAM_COLOR_PRESETS.map(c=>`<button type="button" class="te-swatch ${c.toLowerCase()===String(te.culoare).toLowerCase()?'active':''}" style="background:${c}" title="${c}" onclick="teamEditField('culoare','${c}')"></button>`).join('')}
         <input type="color" value="${esc(te.culoare)}" onchange="teamEditField('culoare', this.value)" title="${esc(t('te_altaCuloare'))}">
       </div>
-    </div>
+    </div>`}
 
     <div class="te-roster-head">
       <div class="form-title" style="margin:0">${t('te_lot')} (${te.roster.length})</div>
@@ -3021,6 +3051,7 @@ function renderTeamEditor(){
 }
 async function saveTeamEditor(){
   const te = teamEdit; if(!te || teamEditProblems().length) return;
+  if(isAsistent()) return saveTeamEditorAsistent();
   const e = echipa(te.id);
   const saveBtn = document.querySelector('#team-modal-body .profile-edit-actions .btn-primary');
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = t('btn_saving'); }
@@ -3268,11 +3299,12 @@ function renderMeciuri(){
     ${renderSyncBar()}
   </div>
 
-  ${hasActiveShift() ? `<div class="add-form">
+  ${hasActiveShift() || isAsistent() ? `<div class="add-form">
     <div class="form-title">${t('mt_addTitle')}</div>
+    ${isAsistent() ? `<div class="view-sub" style="margin:0 0 10px">${t('as_fereastra')(fmtDate(asistentWindowStart()), fmtDate(asistentWindowEnd()))}</div>` : ''}
     <div class="form-grid" style="grid-template-columns:0.5fr 0.8fr 0.6fr 1fr">
       <div class="field"><label>${t('mt_nr')}</label><input type="number" min="1" value="${esc(matchDraft.nr)}" oninput="draftField('nr', this.value)"></div>
-      <div class="field"><label>${t('th_data')}</label><input type="date" value="${esc(matchDraft.data)}" oninput="draftField('data', this.value)"></div>
+      <div class="field"><label>${t('th_data')}</label><input type="date" ${isAsistent()?`min="${asistentWindowStart()}" max="${asistentWindowEnd()}"`:''} value="${esc(matchDraft.data)}" oninput="draftField('data', this.value)"></div>
       <div class="field"><label>${t('mt_ora')}</label><input type="time" value="${esc(matchDraft.ora)}" oninput="draftField('ora', this.value)"></div>
       <div class="field"><label>${t('mt_teren')}</label><select onchange="draftField('teren', this.value)">${TERENURI.map(x=>`<option ${x===matchDraft.teren?'selected':''}>${esc(x)}</option>`).join('')}</select></div>
     </div>
@@ -3285,7 +3317,7 @@ function renderMeciuri(){
   </div>` : ''}
 
   ${matchesLoading ? '' : noRosterBanner(scoredWithoutRoster(matches))}
-  ${!matchesLoading && isFullAdmin() && matches.some(m=>sideEmpty(m, m.echipaAId) || sideEmpty(m, m.echipaBId)) ? `<div class="dl-cta"><button class="btn-primary" onclick="openDayLineups('${day}')">${t('dl_btn')}</button><span class="td-muted">${t('dl_btnSub')}</span></div>` : ''}
+  ${!matchesLoading && (isFullAdmin() || (isAsistent() && inAsistentWindow(day))) && matches.some(m=>sideEmpty(m, m.echipaAId) || sideEmpty(m, m.echipaBId)) ? `<div class="dl-cta"><button class="btn-primary" onclick="openDayLineups('${day}')">${t('dl_btn')}</button><span class="td-muted">${t('dl_btnSub')}</span></div>` : ''}
   ${matchesLoading ? `<div class="alert-empty">${t('st_loading2')}</div>` : matches.length ? `<div class="match-list">${matches.map((m,i)=>(isAfterMidnight(m.ora) && !isAfterMidnight(matches[i-1]?.ora) ? `<div class="night-divider"><span>${t('mt_dupaMiezulNoptii')} · ${fmtDate(addDays(day,1))}</span></div>` : '') + renderMatchCard(m)).join('')}</div>` : `<div class="alert-empty">${t('mt_none')}</div>`}`;
 }
 function scoredWithoutRoster(matches){ return matches.filter(m=>winnerOf(m) && !(rosterByMatch.get(m.id)||[]).length); }
@@ -3302,7 +3334,7 @@ async function goToMatchDay(d){ matchDay = d; matchCalOpen = false; navigate('me
 let dayLineups = null;   // { day, teams: { echipaId: { slots:[{pid,rol}], matches:[id] } }, order:[echipaId] }
 function sideEmpty(m, eid){ return !(rosterByMatch.get(m.id)||[]).some(r=>r.echipaId===eid); }
 function openDayLineups(day){
-  if(!isFullAdmin()) return;
+  if(!isFullAdmin() && !(isAsistent() && inAsistentWindow(day))) return;
   const matches = DB.meciuri.filter(m=>m.data===day).sort((a,b)=>matchSortKey(a.data,a.ora).localeCompare(matchSortKey(b.data,b.ora)));
   const teams = {}, order = [];
   matches.forEach(m=>[m.echipaAId, m.echipaBId].forEach(eid=>{
@@ -3368,6 +3400,7 @@ async function saveDayLineups(){
       picked.forEach(s=>rows.push({ meci_id:mid, echipa_id:eid, participant_id:s.pid, rol:s.rol }));
     }
   }
+  if(isAsistent()) return saveDayLineupsAsistent(d, active, rows);
   const btn = document.querySelector('#record-modal-body .profile-edit-actions .btn-primary');
   if(btn){ btn.disabled = true; btn.textContent = t('btn_saving'); }
   const { error } = await sb.from('meci_jucatori').insert(rows);
@@ -3403,10 +3436,10 @@ function renderMatchCard(m){
         <button class="btn-ghost btn-sm" onclick="matchScoreEditId=null; render();">${t('btn_cancel')}</button>` : `
         ${fromSite ? '' : `<button class="btn-ghost btn-sm" onclick="matchScoreEditId='${m.id}'; render();">${t('mt_scorBtn')}</button>`}
         ${isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="openMatchEditor('${m.id}')">${t('ed_edit')}</button>` : ''}
-        <button class="btn-danger btn-sm" onclick="deleteMatch('${m.id}')">${t('btn_delete')}</button>`}</span>` : ''}
+        <button class="btn-danger btn-sm" onclick="deleteMatch('${m.id}')">${t('btn_delete')}</button>`}</span>` : isAsistent() && canOpenMatchEditor(m) ? `<span class="match-actions"><button class="btn-ghost btn-sm" onclick="openMatchEditor('${m.id}')">${t('ed_edit')}</button></span>` : ''}
     </div>
     <div class="match-body">${side(m.echipaAId, m.scorA)}<div class="match-vs">VS</div>${side(m.echipaBId, m.scorB)}</div>
-    ${winnerOf(m) && !(rosterByMatch.get(m.id)||[]).length ? `<div class="match-noroster">${t('mt_faraLotCard')}${isFullAdmin() ? ` <button class="btn-primary btn-sm" onclick="openMatchEditor('${m.id}')">${t('mt_completeazaLot')}</button>` : ''}</div>` : ''}
+    ${winnerOf(m) && !(rosterByMatch.get(m.id)||[]).length ? `<div class="match-noroster">${t('mt_faraLotCard')}${canOpenMatchEditor(m) ? ` <button class="btn-primary btn-sm" onclick="openMatchEditor('${m.id}')">${t('mt_completeazaLot')}</button>` : ''}</div>` : ''}
   </article>`;
 }
 async function saveMatch(){
@@ -3423,6 +3456,7 @@ async function saveMatch(){
   if(new Set(ids).size !== ids.length){ alert(t('mt_dublura')); return; }
   const sa = d.sa==='' ? null : Number(d.sa), sbv = d.sb==='' ? null : Number(d.sb);
   if(sa!=null && sbv!=null && sa===sbv){ alert(t('mt_egal')); return; }
+  if(isAsistent()) return saveMatchAsistent(d, rows, sa, sbv);
   const payload = { nr: d.nr ? Number(d.nr) : null, data:d.data||todayISO(), ora:d.ora||null, teren:d.teren||null,
     echipa_a_id:d.a, echipa_b_id:d.b, scor_a:sa, scor_b:sbv, sesiune_schimb_id: isFullAdmin() ? null : currentShift.id };
   const { data:m, error } = await sb.from('meciuri').insert(payload).select().single();
@@ -3441,7 +3475,7 @@ async function saveMatch(){
 /* ── admin match editor: details, teams, score and both line-ups (pay is re-frozen by the DB trigger on save) ── */
 let matchEdit = null;
 function openMatchEditor(id){
-  const m = DB.meciuri.find(x=>x.id===id); if(!m || !isFullAdmin()) return;
+  const m = DB.meciuri.find(x=>x.id===id); if(!m || !canOpenMatchEditor(m)) return;
   const slotsFor = eid => {
     const rows = rosterOf(m.id, eid).map(r=>({ pid:r.participantId, rol:r.rol }));
     if(!rows.length) return defaultSlots(eid, matchSortKey(m.data, m.ora));
@@ -3477,7 +3511,7 @@ function renderMatchEditor(){
     ${e.locked ? `<div class="alert-note">${t('mt_siteLocked')}</div>` : ''}
     <div class="record-grid">
       <div class="field"><label>${t('mt_nr')}</label><input type="number" min="1" value="${esc(e.nr)}" oninput="meField('nr', this.value)"></div>
-      <div class="field"><label>${t('th_data')}</label><input type="date" ${L} value="${esc(e.data)}" oninput="meField('data', this.value)"></div>
+      <div class="field"><label>${t('th_data')}</label><input type="date" ${L} ${isAsistent()?`min="${asistentWindowStart()}" max="${asistentWindowEnd()}"`:''} value="${esc(e.data)}" oninput="meField('data', this.value)"></div>
       <div class="field"><label>${t('mt_ora')}</label><input type="time" ${L} value="${esc(e.ora)}" oninput="meField('ora', this.value)"></div>
       <div class="field"><label>${t('mt_teren')}</label><select onchange="meField('teren', this.value)">${withCurrent(optsOf(['', ...TERENURI], x=>x||'—'), e.teren).map(o=>`<option value="${esc(o.value)}" ${o.value===e.teren?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ar_th_arbitru')}</label><select onchange="meField('arbitru', this.value)">${withCurrent(optsOf(['', ...arbitriActivi().map(a=>`${a.nume} ${a.prenume}`)], x=>x||'—'), e.arbitru).map(o=>`<option value="${esc(o.value)}" ${o.value===e.arbitru?'selected':''}>${esc(o.label)}</option>`).join('')}</select></div>
@@ -3516,6 +3550,7 @@ async function saveMatchEditor(){
   const payload = { nr: e.nr==='' ? null : Number(e.nr), teren: e.teren || null, prelungiri: !!e.prelungiri,
     arbitru: e.arbitru || null, observatii: String(e.observatii||'').trim() || null };
   if(!e.locked) Object.assign(payload, { data:e.data, ora:e.ora||null, echipa_a_id:e.a, echipa_b_id:e.b, scor_a:sa, scor_b:sbv });
+  if(isAsistent()) return saveMatchEditorAsistent(e, m, payload, rows, rosterChanged || teamsChanged);
 
   const btn = document.querySelector('#record-modal-body .profile-edit-actions .btn-primary');
   if(btn){ btn.disabled = true; btn.textContent = t('btn_saving'); }
@@ -3568,6 +3603,208 @@ async function deleteMatch(id){
   invalidateStats();
   await logAction(`A șters meciul #${m.nr??''} ${echipaName(m.echipaAId)} – ${echipaName(m.echipaBId)}`);
   render();
+}
+
+/* ── Helper (asistent) edits: every save shows a review with the exact changes and the effect on pay,
+   then goes through a checked database function that logs a before/after snapshot (undoable by an admin). ── */
+let reviewAction = null;
+function showReview(title, html, onConfirm){
+  reviewAction = onConfirm;
+  document.getElementById('review-modal-title').textContent = title;
+  document.getElementById('review-modal-body').innerHTML = `${html}
+    <div class="view-sub" style="margin:14px 0 0">${t('as_reviewNota')}</div>
+    <div class="profile-edit-actions">
+      <button type="button" class="btn-ghost" onclick="closeReview()">${t('as_inapoi')}</button>
+      <button type="button" class="btn-primary" id="review-confirm" onclick="confirmReview()">${t('as_confirma')}</button>
+    </div>`;
+  openModal('review-modal');
+}
+function closeReview(){ reviewAction = null; closeModal('review-modal'); }
+async function confirmReview(){
+  const fn = reviewAction; if(!fn) return;
+  const btn = document.getElementById('review-confirm');
+  if(btn){ btn.disabled = true; btn.textContent = t('btn_saving'); }
+  let ok = false;
+  try { ok = await fn(); } catch(e){ alert(t('err_save')+' '+(e.message||e)); }
+  if(ok){ closeReview(); return; }
+  if(btn){ btn.disabled = false; btn.textContent = t('as_confirma'); }
+}
+function grossFor(day, won, rol){ const r = currentRate(rol, won?'victorie':'înfrângere', day); return r ? r.net/(1-r.retinerePct/100) : 0; }
+function payMap(match, rows){
+  const w = match.sa!=null && match.sb!=null && match.sa!==match.sb ? (match.sa>match.sb ? match.a : match.b) : null;
+  const map = new Map();
+  rows.forEach(r=>map.set(r.participant_id, { rol:r.rol, eid:r.echipa_id, gross: w ? grossFor(match.data, r.echipa_id===w, r.rol) : 0 }));
+  return { scored: !!w, map };
+}
+function signedMoney(v){ const r = Math.round(v*100)/100; return `${r>0?'+':r<0?'−':''}${money(Math.abs(r))}`; }
+// before: { match:{data,ora,a,b,sa,sb}, rows } or null for a new match; after: same shape
+function matchChanges(before, after){
+  const lines = []; let total = 0;
+  const label = x=>`${fmtDate(x.data)}${x.ora?' '+x.ora:''} · ${echipaName(x.a)} – ${echipaName(x.b)}${x.sa!=null&&x.sb!=null?` ${x.sa}:${x.sb}`:''}`;
+  if(before){
+    const b = before.match, a = after.match;
+    if(b.data!==a.data || (b.ora||'')!==(a.ora||'')) lines.push({ text:`${t('as_chData')}: ${fmtDate(b.data)} ${b.ora||''} → ${fmtDate(a.data)} ${a.ora||''}` });
+    if(b.a!==a.a || b.b!==a.b) lines.push({ text:`${t('as_chEchipe')}: ${echipaName(b.a)} – ${echipaName(b.b)} → ${echipaName(a.a)} – ${echipaName(a.b)}` });
+    if(b.sa!==a.sa || b.sb!==a.sb) lines.push({ text:`${t('mt_scor')}: ${b.sa??'–'}:${b.sb??'–'} → ${a.sa??'–'}:${a.sb??'–'}` });
+  }
+  const pb = before ? payMap(before.match, before.rows) : { map:new Map() }, pa = payMap(after.match, after.rows);
+  const ids = [...new Set([...pb.map.keys(), ...pa.map.keys()])].sort((x,y)=>participantName(x).localeCompare(participantName(y),'ro'));
+  ids.forEach(id=>{
+    const b = pb.map.get(id), a = pa.map.get(id), delta = (a?.gross||0) - (b?.gross||0);
+    let text = null;
+    if(!b && a) text = `+ ${participantName(id)} (${trEnum(a.rol)}, ${echipaName(a.eid)})`;
+    else if(b && !a) text = `− ${participantName(id)} (${trEnum(b.rol)}, ${echipaName(b.eid)})`;
+    else if(b.rol!==a.rol || b.eid!==a.eid) text = `${participantName(id)}: ${trEnum(b.rol)} → ${trEnum(a.rol)}${b.eid!==a.eid?` (${echipaName(a.eid)})`:''}`;
+    else if(Math.abs(delta) > 0.004) text = participantName(id);
+    if(text){ lines.push({ text, delta }); total += delta; }
+  });
+  return { title:label(after.match), isNew:!before, lines, total, scored:pa.scored };
+}
+function changesHtml(list){
+  const total = list.reduce((x,c)=>x+c.total,0);
+  return `<div class="review-list">${list.map(c=>`<section class="review-item">
+      <div class="review-head">${c.isNew?`<span class="badge green">${t('as_nou')}</span> `:''}${esc(c.title)}</div>
+      ${c.lines.length ? c.lines.map(l=>`<div class="review-line"><span>${esc(l.text)}</span>${l.delta!=null && c.scored ? `<span class="${l.delta>0?'c-green':l.delta<0?'c-red':'td-muted'}">${signedMoney(l.delta)} MDL</span>` : '<span></span>'}</div>`).join('') : `<div class="td-muted">${t('as_faraSchimbari')}</div>`}
+      ${c.scored ? '' : `<div class="td-muted review-note">${t('as_faraScorPlata')}</div>`}
+    </section>`).join('')}</div>
+    <div class="review-total"><span>${t('as_impactBrut')}</span><strong class="${total>0?'c-green':total<0?'c-red':''}">${signedMoney(total)} MDL</strong></div>`;
+}
+function changesSummary(c){
+  const parts = c.lines.map(l=>l.text).slice(0, 12);
+  return `${c.isNew?'Meci nou ':'Meci '}${c.title}: ${parts.join('; ')}${c.lines.length>12?'; …':''}${c.scored?` · Δ brut ${signedMoney(c.total)} MDL`:''}`;
+}
+async function afterMatchSave(days){
+  invalidateStats();
+  for(const d of [...new Set(days)]) await reloadMatchesForDay(d);
+  loadRecentLineups();
+  asLog = null;
+}
+function saveMatchAsistent(d, rows, sa, sbv){
+  const day = d.data || todayISO();
+  if(!inAsistentWindow(day)){ alert(t('as_inafaraFerestrei')(fmtDate(asistentWindowStart()), fmtDate(asistentWindowEnd()))); return; }
+  const after = { match:{ data:day, ora:d.ora||'', a:d.a, b:d.b, sa, sb:sbv }, rows };
+  const c = matchChanges(null, after);
+  showReview(t('as_reviewMeciNou'), changesHtml([c]), async ()=>{
+    const p_meci = { nr:d.nr||'', data:day, ora:d.ora||'', teren:d.teren||'', echipa_a_id:d.a, echipa_b_id:d.b, scor_a:sa??'', scor_b:sbv??'' };
+    const { error } = await sb.rpc('asistent_salveaza_meci', { p_meci_id:null, p_meci, p_lot:rows, p_grup:null, p_rezumat:changesSummary(c) });
+    if(error){ alert(t('err_save')+' '+error.message); return false; }
+    await afterMatchSave([day]);
+    matchDay = day; matchDraft = newMatchDraft(); matchDraft.data = day; matchDraft.teren = d.teren || matchDraft.teren;
+    render(); return true;
+  });
+}
+function saveMatchEditorAsistent(e, m, payload, rows, replaceRoster){
+  const before = { match:{ data:m.data, ora:m.ora, a:m.echipaAId, b:m.echipaBId, sa:m.scorA, sb:m.scorB }, rows:e.original };
+  const after = { match: e.locked ? before.match : { data:payload.data, ora:payload.ora||'', a:payload.echipa_a_id, b:payload.echipa_b_id, sa:payload.scor_a, sb:payload.scor_b },
+                  rows: replaceRoster ? rows : e.original };
+  if(!e.locked && !inAsistentWindow(after.match.data)){ alert(t('as_inafaraFerestrei')(fmtDate(asistentWindowStart()), fmtDate(asistentWindowEnd()))); return; }
+  const c = matchChanges(before, after);
+  const detail = ['nr','teren','arbitru','observatii','prelungiri'].filter(k=>String(payload[k]??'')!==String((k==='prelungiri'?!!m.prelungiri:m[k])??'')).length;
+  if(!c.lines.length && !detail){ closeModal('record-modal'); matchEdit = null; return; }
+  if(detail) c.lines.unshift({ text:t('as_chDetalii') });
+  showReview(t('as_reviewMeci'), changesHtml([c]), async ()=>{
+    const p_meci = { nr:payload.nr??'', teren:payload.teren||'', arbitru:payload.arbitru||'', observatii:payload.observatii||'', prelungiri:!!payload.prelungiri };
+    if(!e.locked) Object.assign(p_meci, { data:payload.data, ora:payload.ora||'', echipa_a_id:payload.echipa_a_id, echipa_b_id:payload.echipa_b_id, scor_a:payload.scor_a??'', scor_b:payload.scor_b??'' });
+    const { error } = await sb.rpc('asistent_salveaza_meci', { p_meci_id:m.id, p_meci, p_lot: replaceRoster ? rows : null, p_grup:null, p_rezumat:changesSummary(c) });
+    if(error){ alert(t('err_update')+' '+error.message); return false; }
+    await afterMatchSave([m.data, after.match.data]);
+    if(after.match.data!==m.data) matchDay = after.match.data;
+    closeModal('record-modal'); matchEdit = null; render(); return true;
+  });
+}
+function saveDayLineupsAsistent(d, active, rows){
+  const byMatch = new Map();
+  rows.forEach(r=>{ if(!byMatch.has(r.meci_id)) byMatch.set(r.meci_id, []); byMatch.get(r.meci_id).push({ echipa_id:r.echipa_id, participant_id:r.participant_id, rol:r.rol }); });
+  const changes = [...byMatch.entries()].map(([mid, added])=>{
+    const m = DB.meciuri.find(x=>x.id===mid);
+    const existing = (rosterByMatch.get(mid)||[]).map(r=>({ echipa_id:r.echipaId, participant_id:r.participantId, rol:r.rol }));
+    const match = { data:m.data, ora:m.ora, a:m.echipaAId, b:m.echipaBId, sa:m.scorA, sb:m.scorB };
+    return { mid, lot:[...existing, ...added], c: matchChanges({ match, rows:existing }, { match, rows:[...existing, ...added] }) };
+  });
+  if(!changes.length){ closeModal('record-modal'); return; }
+  showReview(`${t('dl_title')} · ${fmtDate(d.day)}`, changesHtml(changes.map(x=>x.c)), async ()=>{
+    const grup = crypto.randomUUID();
+    for(const x of changes){
+      const { error } = await sb.rpc('asistent_salveaza_meci', { p_meci_id:x.mid, p_meci:null, p_lot:x.lot, p_grup:grup, p_rezumat:changesSummary(x.c) });
+      if(error){ alert(t('err_save')+' '+error.message); await afterMatchSave([d.day]); render(); return false; }
+    }
+    await afterMatchSave([d.day]);
+    closeModal('record-modal'); dayLineups = null; render(); return true;
+  });
+}
+function saveTeamEditorAsistent(){
+  const te = teamEdit, lines = [];
+  te.roster.forEach(r=>{
+    const p = participant(r.pid); if(!p) return;
+    const nr = r.nr||null;
+    if(p.echipaId!==te.id) lines.push(`+ ${participantName(r.pid)}${p.echipaId?` (${t('te_mutatDin')} ${echipaName(p.echipaId)})`:''} · ${trEnum(r.rol)}${nr?' #'+nr:''}`);
+    else if((p.nrEchipa||null)!==nr || p.rolEchipa!==r.rol) lines.push(`${participantName(r.pid)}: ${trEnum(p.rolEchipa)}${p.nrEchipa?' #'+p.nrEchipa:''} → ${trEnum(r.rol)}${nr?' #'+nr:''}`);
+  });
+  te.removed.forEach(pid=>lines.push(`− ${participantName(pid)}`));
+  if(!lines.length){ closeModal('team-modal'); teamEdit = null; return; }
+  const html = `<div class="review-list"><section class="review-item"><div class="review-head">${esc(te.nume)}</div>${lines.map(l=>`<div class="review-line"><span>${esc(l)}</span><span></span></div>`).join('')}</section></div>
+    <div class="view-sub" style="margin:10px 0 0">${t('as_teamPlataNota')}</div>`;
+  showReview(t('as_reviewEchipa'), html, async ()=>{
+    const lot = te.roster.map(r=>({ participant_id:r.pid, nr_echipa:r.nr||'', rol_echipa:r.rol }));
+    const { error } = await sb.rpc('asistent_salveaza_echipa', { p_echipa_id:te.id, p_lot:lot, p_scosi:te.removed, p_grup:null, p_rezumat:`Echipa ${te.nume}: ${lines.join('; ')}` });
+    if(error){ alert(t('err_update')+' '+error.message); return false; }
+    te.removed.forEach(pid=>{ const p = participant(pid); if(p && p.echipaId===te.id) Object.assign(p, { echipaId:null, nrEchipa:null, rolEchipa: p.rolEchipa==='arbitru'?'arbitru':'jucător' }); });
+    te.roster.forEach(r=>{ const p = participant(r.pid); if(p) Object.assign(p, { echipaId:te.id, nrEchipa:r.nr||null, rolEchipa:r.rol }); });
+    invalidateStats(); asLog = null;
+    closeModal('team-modal'); teamEdit = null; render(); openEchipe(); return true;
+  });
+}
+function saveProfileAsistent(){
+  const p = participant(currentProfileId); if(!p) return;
+  const statut = document.getElementById('ap-statut').value, aviz = document.getElementById('ap-aviz').value || null, dulap = document.getElementById('ap-dulap').value.trim() || null;
+  if(aviz && (aviz > todayISO() || aviz < addDays(todayISO(),-366))){ alert(t('as_avizInvalid')); return; }
+  const lines = [];
+  if(statut!==p.statut) lines.push(`${t('th_statut')}: ${trEnum(p.statut)} → ${trEnum(statut)}`);
+  if((aviz||null)!==(p.dataAvizMedical||null)) lines.push(`${t('pa_aviz')}: ${p.dataAvizMedical?fmtDate(p.dataAvizMedical):'—'} → ${aviz?fmtDate(aviz):'—'}`);
+  if((dulap||null)!==(p.nrDulap||null)) lines.push(`${t('pa_dulap')}: ${p.nrDulap||'—'} → ${dulap||'—'}`);
+  if(!lines.length){ renderProfile(false); return; }
+  const html = `<div class="review-list"><section class="review-item"><div class="review-head">${esc(participantName(p.id))}</div>${lines.map(l=>`<div class="review-line"><span>${esc(l)}</span><span></span></div>`).join('')}</section></div>`;
+  showReview(t('as_reviewJucator'), html, async ()=>{
+    const { error } = await sb.rpc('asistent_salveaza_jucator', { p_id:p.id, p_statut:statut, p_aviz:aviz, p_dulap:dulap||'', p_rezumat:`${participantName(p.id)}: ${lines.join('; ')}` });
+    if(error){ alert(t('err_update')+' '+error.message); return false; }
+    Object.assign(p, { statut, dataAvizMedical:aviz, nrDulap:dulap });
+    asLog = null; renderProfile(false); render(); return true;
+  });
+}
+/* change log: the admin sees every helper save (and can undo it); the helper sees their own */
+let asLog = null;   // { loading, groups:[{grup, creatLa, autor, items:[...], anulat}] }
+async function loadAsistentLog(){
+  if(asLog) return;
+  asLog = { loading:true, groups:[] };
+  if(ICON_PREVIEW_MODE){ asLog = { loading:false, groups:[] }; return; }
+  const { data, error } = await sb.from('modificari_asistent').select('id,grup,creat_la,autor_id,tip,actiune,rezumat,anulat_la').gte('creat_la', addDays(todayISO(),-21)).order('id', {ascending:false}).limit(300);
+  const groups = new Map();
+  (data||[]).forEach(r=>{ if(!groups.has(r.grup)) groups.set(r.grup, { grup:r.grup, creatLa:r.creat_la, autor:r.autor_id, items:[], anulat:true }); const g = groups.get(r.grup); g.items.push(r); if(!r.anulat_la) g.anulat = false; });
+  asLog = { loading:false, error:error?.message, groups:[...groups.values()] };
+  if(currentView==='dashboard') render();
+}
+function renderAsistentLog(){
+  loadAsistentLog();
+  const admin = isFullAdmin();
+  const groups = asLog?.groups || [];
+  if(admin && !groups.length && !asLog?.loading) return '';
+  const who = id=>adminName(DB.administratori.find(a=>a.id===id));
+  return `<div class="alerts-panel">
+    <div class="alerts-panel-head">${t(admin?'as_logTitluAdmin':'as_logTitlu')}${asLog?.loading?` <span class="td-muted">· ${t('as_seIncarca')}</span>`:''}</div>
+    ${groups.length ? groups.slice(0,40).map(g=>`<div class="alert-row as-log-row ${g.anulat?'undone':''}">
+      <span class="td-muted as-log-when">${fmtDateTime(g.creatLa)}${admin?`<br>${esc(who(g.autor))}`:''}</span>
+      <span class="alert-text">${g.items.map(i=>`<div>${esc(i.rezumat||'')}</div>`).join('')}</span>
+      ${g.anulat ? `<span class="badge muted">${t('as_anulat')}</span>` : admin ? `<button class="btn-ghost btn-sm" onclick="undoAsistentGroup('${g.grup}')">${t('as_anuleaza')}</button>` : ''}
+    </div>`).join('') : `<div class="alert-empty">${t('as_logGol')}</div>`}
+  </div>`;
+}
+async function undoAsistentGroup(grup){
+  const g = asLog?.groups.find(x=>x.grup===grup); if(!g) return;
+  if(!confirm(t('as_confirmAnulare')(g.items.length))) return;
+  const { error } = await sb.rpc('anuleaza_modificari_asistent', { p_grup:grup });
+  if(error){ alert(error.message); return; }
+  await fetchAll();
+  asLog = null; render();
 }
 
 /* ══════════════════════ PLĂȚI ══════════════════════ */
@@ -4396,7 +4633,7 @@ function renderProfile(editing = false){
   const p = participant(id); if(!p) return;
   document.getElementById('profile-modal-title').textContent = `${p.nume} ${p.prenume}`;
   const editBtn = document.getElementById('profile-edit-btn');
-  editBtn.style.display = (editing || !hasActiveShift()) ? 'none' : '';
+  editBtn.style.display = (editing || !(hasActiveShift() || isAsistent())) ? 'none' : '';
   editBtn.title = t('pa_editTitle');
   const pdfBtn = document.getElementById('profile-pdf-btn');
   if(pdfBtn) pdfBtn.style.display = (editing || isAsistent()) ? 'none' : '';
@@ -4412,6 +4649,23 @@ function renderProfile(editing = false){
       </div>
     </div>`;
 
+  if(editing && isAsistent()){
+    document.getElementById('profile-modal-body').innerHTML = head + `
+      <div class="view-sub" style="margin:0 0 12px">${t('as_profilNota')}</div>
+      <div class="profile-edit-grid">
+        <div class="field"><label>${t('th_statut')}</label><select id="ap-statut">
+          <option value="activ" ${p.statut==='activ'?'selected':''}>${trEnum('activ')}</option>
+          <option value="inactiv" ${p.statut==='inactiv'?'selected':''}>${trEnum('inactiv')}</option></select></div>
+        <div class="field"><label>${t('pa_aviz')}</label><input id="ap-aviz" type="date" min="${addDays(todayISO(),-366)}" max="${todayISO()}" value="${esc(p.dataAvizMedical||'')}"></div>
+        <div class="field"><label>${t('pa_dulap')}</label><input id="ap-dulap" value="${esc(p.nrDulap||'')}"></div>
+      </div>
+      <div class="profile-edit-actions">
+        <button class="btn-ghost" onclick="renderProfile(false)">${t('btn_cancel')}</button>
+        <button class="btn-primary" onclick="saveProfileAsistent()">${t('btn_save')}</button>
+      </div>`;
+    fillProfilePhoto(p);
+    return;
+  }
   if(editing){
     document.getElementById('profile-modal-body').innerHTML = head + `
       <div class="profile-edit-grid">
