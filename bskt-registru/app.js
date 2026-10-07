@@ -36,8 +36,10 @@ function readOnlyRefusal(){
 
 // Courts and trainers are editable in Setări (stored in app_config); these are the fallbacks.
 const DEFAULT_TERENURI = ['Teren 1'];
-// referee pay: alone that day = fixed day rate; two referees = hourly rate each (no tax split)
-const DEFAULT_TARIF_ARBITRI = { zi:1000, ora:80, oreZi:8 };
+// referee pay: every referee, alone or in a pair, gets `ora` MDL net per hour worked;
+// the company pays the gross amount = net ÷ (1 − retinerePct%), same rule as the players
+const DEFAULT_TARIF_ARBITRI = { ora:80, retinerePct:15 };
+function refereeGross(net){ return Math.round(net/(1-TARIF_ARBITRI.retinerePct/100)*100)/100; }
 let TARIF_ARBITRI = { ...DEFAULT_TARIF_ARBITRI };
 let TERENURI = DEFAULT_TERENURI.slice();
 let TRAINERS = [];
@@ -399,7 +401,7 @@ ro: {
   as_pSyncIgnorate:(n)=>`Ultima sincronizare a ignorat ${n} ${plural(n,'mt_meciuriSuffix','ro')}: echipe de pe site nelegate de o echipă din registru.`,
   as_pSyncNiciodata:'Rezultatele nu au fost sincronizate niciodată.',
   as_pPeste2:(d,n)=>`${d}: peste doi arbitri (${n}).`,
-  as_pOreLipsa:(d,n)=>`${d}: doi arbitri (${n}) fără ore completate — se plătesc 0 până la completare.`,
+  as_pOreLipsa:(d,n)=>`${d}: arbitraj fără ore completate (${n}) — se plătește 0 până la completare.`,
   as_pAvizExpirat:(n,l)=>`${n} ${n===1?'aviz medical expirat':'avize medicale expirate'}: ${l}.`,
   as_pAvizCurand:(n,l)=>`${n} ${n===1?'aviz medical expiră':'avize medicale expiră'} în 30 de zile: ${l}.`,
   as_pEchipaMica:(e,n)=>`${e}: doar ${n} ${n===1?'jucător activ':'jucători activi'} în echipă (minim 3 pe teren).`,
@@ -410,6 +412,11 @@ ro: {
   as_pSpalatorie:(n)=>`${n} ${n===1?'predare la spălătorie nereturnată':'predări la spălătorie nereturnate'} de peste 2 zile.`,
   as_pLenjerie:(n)=>`${n} ${n===1?'set de lenjerie nereturnat':'seturi de lenjerie nereturnate'} de peste 7 zile.`,
   as_pSarciniDeschise:(n)=>`${n} ${n===1?'sarcină deschisă':'sarcini deschise'}.`,
+  ar2_regula:(ora,pct,brut)=>`Fiecare arbitru, singur sau în pereche: ${ora} lei net pe oră arbitrată. Compania plătește brut ${money(brut)} lei/oră (net ÷ (1 − ${pct}%)); arbitrul achită reținerea de ${pct}% și rămâne cu ${ora} lei/oră.`,
+  ar2_net:(ora)=>`Net (${ora}/oră)`, ar2_retinere:(pct)=>`Reținere ${pct}%`, ar2_tOra:'Lei net pe oră (fiecare arbitru)',
+  ar2_obsLipsa:(n)=>`${n} ${n===1?'zi':'zile'} fără ore completate`,
+  ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
+  ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
   as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
   as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
@@ -719,7 +726,7 @@ ru: {
   as_pSyncIgnorate:(n)=>`Последняя синхронизация пропустила ${n} ${plural(n,'mt_meciuriSuffix','ru')}: команды сайта не связаны с командами реестра.`,
   as_pSyncNiciodata:'Результаты ещё ни разу не синхронизировались.',
   as_pPeste2:(d,n)=>`${d}: больше двух арбитров (${n}).`,
-  as_pOreLipsa:(d,n)=>`${d}: два арбитра (${n}) без указанных часов — оплата 0 до заполнения.`,
+  as_pOreLipsa:(d,n)=>`${d}: арбитраж без указанных часов (${n}) — оплата 0 до заполнения.`,
   as_pAvizExpirat:(n,l)=>`Просроченные медсправки (${n}): ${l}.`,
   as_pAvizCurand:(n,l)=>`Медсправки истекают в течение 30 дней (${n}): ${l}.`,
   as_pEchipaMica:(e,n)=>`${e}: в команде только ${n} ${plural(n,'pa_countSuffix','ru')} (на площадке нужно минимум 3).`,
@@ -730,6 +737,11 @@ ru: {
   as_pSpalatorie:(n)=>`Не возвращено из прачечной более 2 дней: ${n}.`,
   as_pLenjerie:(n)=>`Не возвращено бельё более 7 дней: ${n}.`,
   as_pSarciniDeschise:(n)=>`Открытых задач: ${n}.`,
+  ar2_regula:(ora,pct,brut)=>`Каждый арбитр, один или в паре: ${ora} лей нетто за час судейства. Компания платит брутто ${money(brut)} лей/час (нетто ÷ (1 − ${pct}%)); арбитр платит удержание ${pct}% и получает ${ora} лей/час.`,
+  ar2_net:(ora)=>`Нетто (${ora}/час)`, ar2_retinere:(pct)=>`Удержание ${pct}%`, ar2_tOra:'Лей нетто в час (каждому арбитру)',
+  ar2_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} без указанных часов`,
+  ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
+  ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
   as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
   as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
@@ -2534,9 +2546,8 @@ function asistentProblems(){
   const refDays = {};
   DB.arbitraj.filter(a=>a.data>=addDays(today,-45)).forEach(a=>{ (refDays[a.data] ||= []).push(a); });
   Object.entries(refDays).sort().reverse().forEach(([d, rows])=>{
-    const people = [...new Set(rows.map(r=>r.arbitru))];
-    if(people.length > 2) add('yellow', 'referee', t('as_pPeste2')(fmtDate(d), names(people)), `navigate('arbitraj')`);
-    else if(people.length === 2 && rows.some(r=>refereeHours(r)==null)) add('red', 'referee', t('as_pOreLipsa')(fmtDate(d), names(people)), `navigate('arbitraj')`);
+    const noHours = [...new Set(rows.filter(r=>refereeHours(r)==null).map(r=>r.arbitru))];
+    if(noHours.length && d < today) add('red', 'referee', t('as_pOreLipsa')(fmtDate(d), names(noHours)), `navigate('arbitraj')`);
   });
   // medical certificates
   const med = medicalRows();
@@ -2653,8 +2664,6 @@ async function saveDashboardReferee(slot){
   const arbitru = document.getElementById(`shift-ref-${slot}`)?.value;
   const turneu = document.getElementById(`shift-venue-${slot}`)?.value;
   if(!arbitru || !turneu) return;
-  const others = refereesOnDay(todayISO()).filter(n=>n!==arbitru);
-  if(others.length >= 2 && !confirm(t('ar_confirmAlTreilea')(others.join(', ')))) return;
   const payload = { data:todayISO(), arbitru, turneu, cantitate_mingi:0 };
   if(!isFullAdmin()){
     payload.sesiune_schimb_id = currentShift.id;
@@ -4009,56 +4018,57 @@ let payRefOpen = new Set();
 function payRefToggle(name){ payRefOpen.has(name) ? payRefOpen.delete(name) : payRefOpen.add(name); renderPlatiBodyOnly(); }
 function payRefereesHtml(){
   const rows = refereePayRows(payState.from, payState.to);
-  const tot = rows.reduce((s,r)=>({ zile:s.zile+r.zile, solo:s.solo+r.zileSolo, doi:s.doi+r.zileDoi, ore:s.ore+r.oreDoi, suma:s.suma+r.suma, lipsa:s.lipsa+r.lipsa }), { zile:0, solo:0, doi:0, ore:0, suma:0, lipsa:0 });
+  const tot = rows.reduce((s,r)=>({ zile:s.zile+r.zile, ore:s.ore+r.ore, net:s.net+r.net, brut:s.brut+r.brut, lipsa:s.lipsa+r.lipsa }), { zile:0, ore:0, net:0, brut:0, lipsa:0 });
   const cols = 8;
   return `<div class="table-wrap">
     <div class="pay-toolbar" style="grid-template-columns:1fr auto auto">
-      <div class="view-sub" style="margin:0">${t('ar_regulaPlata')(TARIF_ARBITRI.zi, TARIF_ARBITRI.oreZi, TARIF_ARBITRI.ora)}</div>
+      <div class="view-sub" style="margin:0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div>
       <span class="pay-amount-note">${t('pl_sumeMdl')}</span>
       <button class="btn-primary btn-sm" onclick="exportArbitriExcel()">${t('re_excel')}</button>
     </div>
-    ${tot.lipsa ? `<div class="te-problems" style="margin:12px 14px 0">${t('ar_avertOreLipsa')(tot.lipsa)}</div>` : ''}
+    ${tot.lipsa ? `<div class="te-problems" style="margin:12px 14px 0">${t('ar2_avertOreLipsa')(tot.lipsa)}</div>` : ''}
     <div class="table-scroll pay-scroll"><table class="pay-table">
-      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th class="num">${t('ar_zile')}</th><th class="num">${t('ar_zileSingur')}</th><th class="num">${t('ar_zileDoi')}</th><th class="num">${t('ar_oreDoi')}</th><th>${t('pl_th_observatie')}</th><th class="num pay-gross-col pay-gross-end">${t('ar_dePlata')}</th></tr></thead>
+      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th class="num">${t('ar_zile')}</th><th class="num">${t('ar_ore')}</th><th class="num">${t('ar2_net')(TARIF_ARBITRI.ora)}</th><th class="num">${t('ar2_retinere')(TARIF_ARBITRI.retinerePct)}</th><th>${t('pl_th_observatie')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th></tr></thead>
       <tbody>${rows.length ? rows.map(r=>{ const open = payRefOpen.has(r.arbitru);
-        const obs = [r.lipsa ? t('ar_obsLipsa')(r.lipsa) : '', r.peste2 ? t('ar_obsPeste2')(r.peste2) : ''].filter(Boolean).join('; ');
+        const obs = r.lipsa ? t('ar2_obsLipsa')(r.lipsa) : '';
         return `<tr class="pay-row ${open?'open':''}" onclick="payRefToggle(${esc(JSON.stringify(r.arbitru))})">
           <td class="pay-caret-col"><span class="pay-caret">›</span></td><td class="td-name">${esc(r.arbitru)}</td>
-          <td class="num">${r.zile}</td><td class="num">${r.zileSolo}</td><td class="num">${r.zileDoi}</td><td class="num">${hoursText(r.oreDoi)}</td>
-          <td class="pay-obs ${obs?'c-yellow':'td-muted'}">${esc(obs)}</td><td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.suma)}</strong></td></tr>
-          ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match ${it.missing?'lost':'won'}" style="grid-template-columns:96px 1fr 140px 90px">
+          <td class="num">${r.zile}</td><td class="num">${hoursText(r.ore)}</td><td class="num">${money(r.net)}</td><td class="num td-muted">${money(r.brut-r.net)}</td>
+          <td class="pay-obs ${obs?'c-yellow':'td-muted'}">${esc(obs)}</td><td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.brut)}</strong></td></tr>
+          ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match ${it.missing?'lost':'won'}" style="grid-template-columns:96px 1fr 170px 90px">
             <span class="td-muted">${ddmm(it.day)} · ${CAL_WEEKDAYS_LONG[LANG==='ru'?'ru':'ro'][isoWeekday(it.day)].slice(0,3)}</span>
-            <span>${it.solo ? t('ar_singurZi') : `${t('ar_cu')} ${esc(it.partners.join(', '))}`} · ${it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:t('ar_faraOre')).join(', ')}</span>
-            <span class="td-muted">${it.solo ? t('ar_tarifZi')(TARIF_ARBITRI.zi) : (it.missing ? t('ar_faraOre') : `${hoursText(it.hours)} × ${TARIF_ARBITRI.ora}`)}</span>
-            <span class="num td-gold">${money(it.amount)}</span></div>`).join('')}</div></td></tr>` : ''}`; }).join('')
+            <span>${it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:t('ar_faraOre')).join(', ')}</span>
+            <span class="td-muted">${hoursText(it.hours)} × ${TARIF_ARBITRI.ora} = ${money(it.net)} net</span>
+            <span class="num td-gold">${money(it.brut)}</span></div>`).join('')}</div></td></tr>` : ''}`; }).join('')
         : `<tr><td class="td-empty" colspan="${cols}">${t('ar_niciunArbitru')}</td></tr>`}</tbody>
-      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td class="num">${tot.zile}</td><td class="num">${tot.solo}</td><td class="num">${tot.doi}</td><td class="num">${hoursText(tot.ore)}</td><td></td><td class="num pay-gross-col pay-gross-end">${money(tot.suma)}</td></tr></tfoot>` : ''}
+      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td class="num">${tot.zile}</td><td class="num">${hoursText(tot.ore)}</td><td class="num">${money(tot.net)}</td><td class="num">${money(tot.brut-tot.net)}</td><td></td><td class="num pay-gross-col pay-gross-end">${money(tot.brut)}</td></tr></tfoot>` : ''}
     </table></div>
-    <div class="view-sub" style="padding:10px 16px 14px;margin:0">${t('ar_hint')}</div>
+    <div class="view-sub" style="padding:10px 16px 14px;margin:0">${t('ar2_hint')}</div>
   </div>`;
 }
 function exportArbitriExcel(){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
   const rows = refereePayRows(payState.from, payState.to);
-  const head = [t('ar_th_arbitru'), t('ar_zile'), t('ar_zileSingur'), t('ar_zileDoi'), t('ar_oreDoi'), t('ar_dePlata')];
-  const body = rows.map(r=>[r.arbitru, r.zile, r.zileSolo, r.zileDoi, Math.round(r.oreDoi*100)/100, Math.round(r.suma*100)/100]);
-  const detailHead = [t('th_data'), t('ar_th_arbitru'), t('ar_interval'), t('ar_ore'), t('ar_tip'), t('ar_dePlata')];
-  const detail = rows.flatMap(r=>r.items.map(it=>[fmtDate(it.day), r.arbitru, it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:'').join(', '), it.hours==null?'':Math.round(it.hours*100)/100, it.solo?t('ar_singur'):t('ar_inDoi'), it.amount]));
+  const r2 = v=>Math.round(v*100)/100;
+  const head = [t('ar_th_arbitru'), t('ar_zile'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('ar2_retinere')(TARIF_ARBITRI.retinerePct), t('pl_th_dePlataBrut')];
+  const body = rows.map(r=>[r.arbitru, r.zile, r2(r.ore), r2(r.net), r2(r.brut-r.net), r2(r.brut)]);
+  const detailHead = [t('th_data'), t('ar_th_arbitru'), t('ar_interval'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('pl_th_dePlataBrut')];
+  const detail = rows.flatMap(r=>r.items.map(it=>[fmtDate(it.day), r.arbitru, it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:'').join(', '), r2(it.hours), it.net, it.brut]));
   const sum = i => body.reduce((s,r)=>s+Number(r[i]||0),0);
-  const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_tabArbitri')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], head, ...body,
-    [t('pl_total'), sum(1), sum(2), sum(3), Math.round(sum(4)*100)/100, Math.round(sum(5)*100)/100], [], [t('ar_detaliiZile')], detailHead, ...detail]);
-  ws['!cols'] = [{wch:16},{wch:24},{wch:16},{wch:10},{wch:12},{wch:12}];
+  const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_tabArbitri')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))], [], head, ...body,
+    [t('pl_total'), sum(1), r2(sum(2)), r2(sum(3)), r2(sum(4)), r2(sum(5))], [], [t('ar_detaliiZile')], detailHead, ...detail]);
+  ws['!cols'] = [{wch:16},{wch:24},{wch:16},{wch:10},{wch:14},{wch:16}];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, t('pl_tabArbitri').slice(0,30));
   XLSX.writeFile(wb, `bskt-arbitri_${payState.from}_${payState.to}.xlsx`);
 }
 async function saveTarifArbitri(){
-  const zi = Number(document.getElementById('ta-zi').value), ora = Number(document.getElementById('ta-ora').value), oreZi = Number(document.getElementById('ta-orezi').value);
-  if(!(zi>0) || !(ora>0) || !(oreZi>0)){ alert(t('pl_completeazaTot')); return; }
-  const value = JSON.stringify({ zi, ora, oreZi });
+  const ora = Number(document.getElementById('ta-ora').value), retinerePct = Number(document.getElementById('ta-pct').value);
+  if(!(ora>0) || !(retinerePct>=0 && retinerePct<100)){ alert(t('pl_completeazaTot')); return; }
+  const value = JSON.stringify({ ora, retinerePct });
   const { error } = await sb.from('app_config').upsert({ key:'tarif_arbitri', value, updated_at:new Date().toISOString() });
   if(error){ alert(t('err_save')+' '+error.message); return; }
-  TARIF_ARBITRI = { zi, ora, oreZi };
-  await logAction(`A stabilit tarifele arbitrilor: ${zi} lei/zi (singur), ${ora} lei/oră (doi arbitri)`);
+  TARIF_ARBITRI = { ora, retinerePct };
+  await logAction(`A stabilit tariful arbitrilor: ${ora} lei net/oră (brut ${refereeGross(ora)} lei/oră)`);
   renderPlatiBodyOnly();
 }
 function payTeamsHtml(){
@@ -4144,11 +4154,10 @@ function renderPlatiBody(){
 }
 function renderTarifeArbitri(){
   return `<div class="table-wrap">
-    <div class="table-header"><div><div class="table-title">${t('ar_tarifeTitle')}</div><div class="view-sub" style="margin:4px 0 0">${t('ar_regulaPlata')(TARIF_ARBITRI.zi, TARIF_ARBITRI.oreZi, TARIF_ARBITRI.ora)}</div></div></div>
-    ${isFullAdmin() ? `<div class="form-grid" style="grid-template-columns:repeat(3,minmax(0,220px)) auto;padding:14px 16px">
-      <div class="field"><label>${t('ar_tZi')}</label><input id="ta-zi" type="number" min="0" value="${TARIF_ARBITRI.zi}"></div>
-      <div class="field"><label>${t('ar_tOreZi')}</label><input id="ta-orezi" type="number" min="1" max="24" value="${TARIF_ARBITRI.oreZi}"></div>
-      <div class="field"><label>${t('ar_tOra')}</label><input id="ta-ora" type="number" min="0" value="${TARIF_ARBITRI.ora}"></div>
+    <div class="table-header"><div><div class="table-title">${t('ar_tarifeTitle')}</div><div class="view-sub" style="margin:4px 0 0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div></div></div>
+    ${isFullAdmin() ? `<div class="form-grid" style="grid-template-columns:repeat(2,minmax(0,220px)) auto;padding:14px 16px">
+      <div class="field"><label>${t('ar2_tOra')}</label><input id="ta-ora" type="number" min="0" step="0.5" value="${TARIF_ARBITRI.ora}"></div>
+      <div class="field"><label>${t('pl_retinerePct')}</label><input id="ta-pct" type="number" min="0" max="99" step="0.5" value="${TARIF_ARBITRI.retinerePct}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" onclick="saveTarifArbitri()">${t('btn_save')}</button></div>
     </div>` : ''}
   </div>`;
@@ -4857,7 +4866,8 @@ async function exportFisaPdf(){
 function applyAppConfig(rows){
   const get = k => { try { return JSON.parse(rows.find(r=>r.key===k)?.value || 'null'); } catch(_){ return null; } };
   const ter = get('terenuri'), antr = get('antrenori'), ta = get('tarif_arbitri');
-  TARIF_ARBITRI = { ...DEFAULT_TARIF_ARBITRI, ...(ta && typeof ta==='object' ? ta : {}) };
+  TARIF_ARBITRI = { ora: Number(ta?.ora) > 0 ? Number(ta.ora) : DEFAULT_TARIF_ARBITRI.ora,
+                    retinerePct: Number(ta?.retinerePct) >= 0 && ta?.retinerePct != null ? Number(ta.retinerePct) : DEFAULT_TARIF_ARBITRI.retinerePct };
   TERENURI = Array.isArray(ter) && ter.length ? ter : DEFAULT_TERENURI.slice();
   TRAINERS = Array.isArray(antr) ? antr : [];
 }
@@ -5417,9 +5427,9 @@ function yearPicker(value, counts, onPick){
 function countsByMonth(rows){ return rows.reduce((c,r)=>{ const m = r.data.slice(0,7); c[m]=(c[m]||0)+1; return c; }, {}); }
 function refereeHours(a){ return (a.oraStart && a.oraStop) ? pauzaDurata(a.oraStart, a.oraStop)/60 : null; }
 function hoursText(h){ return h==null ? '—' : (Math.round(h*100)/100).toLocaleString('ro-RO',{maximumFractionDigits:2})+' h'; }
-// One row per referee for the period. A day with one referee pays the fixed day rate;
-// a day with two pays each referee hours × hourly rate. Several entries of the same referee
-// on one day (e.g. two shifts) are added together.
+// One row per referee for the period: hours worked × hourly net rate, whether alone or in a pair.
+// Several entries of the same referee on one day (e.g. two shifts) are added together; an entry
+// without start/end time counts 0 until the hours are filled in.
 function refereePayRows(from, to){
   const days = {};
   DB.arbitraj.filter(a=>a.data>=from && a.data<=to).forEach(a=>{
@@ -5428,20 +5438,15 @@ function refereePayRows(from, to){
   });
   const byRef = new Map();
   Object.entries(days).sort().forEach(([day, refs])=>{
-    const names = Object.keys(refs);
-    const solo = names.length === 1;
-    names.forEach(name=>{
-      const entries = refs[name];
+    Object.entries(refs).forEach(([name, entries])=>{
       const hrs = entries.map(refereeHours);
       const missing = hrs.some(h=>h==null);
       const hours = hrs.reduce((s,h)=>s+(h||0),0);
-      const amount = solo ? TARIF_ARBITRI.zi : (missing ? 0 : Math.round(hours*TARIF_ARBITRI.ora*100)/100);
-      const e = byRef.get(name) || { arbitru:name, zile:0, zileSolo:0, zileDoi:0, oreDoi:0, suma:0, lipsa:0, peste2:0, items:[] };
-      e.zile++; if(solo) e.zileSolo++; else { e.zileDoi++; e.oreDoi += hours; }
-      if(!solo && missing) e.lipsa++;
-      if(names.length > 2) e.peste2++;
-      e.suma += amount;
-      e.items.push({ day, solo, hours: missing ? null : hours, amount, missing, partners: names.filter(n=>n!==name), entries });
+      const net = Math.round(hours*TARIF_ARBITRI.ora*100)/100, brut = refereeGross(net);
+      const e = byRef.get(name) || { arbitru:name, zile:0, ore:0, net:0, brut:0, lipsa:0, items:[] };
+      e.zile++; e.ore += hours; e.net += net; e.brut += brut;
+      if(missing) e.lipsa++;
+      e.items.push({ day, hours, net, brut, missing, entries });
       byRef.set(name, e);
     });
   });
@@ -6171,7 +6176,7 @@ function renderArbitraj(){
       <div class="field"><label>${t('ar_mingiNoi')}</label><input id="af-mingi" type="number" min="0" value="0"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addArbitraj()">${t('btn_add')}</button></div>
     </div>
-    <div class="view-sub" style="margin:10px 0 0">${t('ar_regulaPlata')(TARIF_ARBITRI.zi, TARIF_ARBITRI.oreZi, TARIF_ARBITRI.ora)}</div>
+    <div class="view-sub" style="margin:10px 0 0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div>
     <div style="display:none">
     </div>
   </div>
@@ -6180,8 +6185,8 @@ function renderArbitraj(){
     <div class="table-header"><div class="table-title">${DB.arbitraj.length} ${plural(DB.arbitraj.length,'ar_countSuffix')}</div></div>
     <div class="table-scroll recent-actions-scroll"><table>
       <thead><tr><th>${t('th_data')}</th><th>${t('ar_th_arbitru')}</th><th>${t('ar_th_turneu')}</th><th>${t('ar_interval')}</th><th class="num">${t('ar_ore')}</th><th class="num">${t('ar_th_mingiNoi')}</th><th></th></tr></thead>
-      <tbody>${DB.arbitraj.length ? DB.arbitraj.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(a=>{ const editing = arbitrajTimeEditId===a.id; const n = refereesOnDay(a.data).length;
-        return `<tr><td class="td-muted">${fmtDate(a.data)}</td><td>${esc(a.arbitru)} ${n===1?`<span class="badge gold">${t('ar_singur')}</span>`:n>2?`<span class="badge red">${t('ar_peste2')}</span>`:''}</td><td><span class="badge muted">${esc(a.turneu)}</span></td>
+      <tbody>${DB.arbitraj.length ? DB.arbitraj.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(a=>{ const editing = arbitrajTimeEditId===a.id;
+        return `<tr><td class="td-muted">${fmtDate(a.data)}</td><td>${esc(a.arbitru)}</td><td><span class="badge muted">${esc(a.turneu)}</span></td>
         <td>${editing ? `<span class="ar-time-edit"><input id="ae-start-${a.id}" type="time" value="${esc(a.oraStart)}"> — <input id="ae-stop-${a.id}" type="time" value="${esc(a.oraStop)}"></span>`
           : (a.oraStart&&a.oraStop ? `${esc(a.oraStart)} — ${esc(a.oraStop)}` : `<span class="td-muted">${t('ar_faraOre')}</span>`)}</td>
         <td class="num">${hoursText(refereeHours(a))}</td><td class="num td-gold">${a.cantitateMingi}</td>
@@ -6323,8 +6328,6 @@ async function addArbitraj(){
   const arbitru = document.getElementById('af-arbitru').value.trim();
   if(!arbitru){ alert(t('ar_needNume')); return; }
   const dayChk = document.getElementById('af-data').value || todayISO();
-  const others = refereesOnDay(dayChk).filter(n=>n!==arbitru);
-  if(others.length >= 2 && !confirm(t('ar_confirmAlTreilea')(others.join(', ')))) return;
   const ora_start = document.getElementById('af-start').value || null, ora_stop = document.getElementById('af-stop').value || null;
   if((ora_start && !ora_stop) || (!ora_start && ora_stop)){ alert(t('ar_needAmbeleOre')); return; }
   const turneu = document.getElementById('af-turneu').value;
