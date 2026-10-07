@@ -1,0 +1,3 @@
+supabase/seed/*.json
+.DS_Store
+.claude/
