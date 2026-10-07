@@ -833,6 +833,8 @@
 
 /* helper (asistent) account: read-only — no entry forms, no row actions */
 body.role-asistent .add-form:has([onclick^="add"]),
+body.role-asistent .add-form:has([onclick^="adjust"]),
+body.role-asistent .add-form:has(.btn-primary[disabled]),
 body.role-asistent .row-actions,
 body.role-asistent .te-row button,
 body.role-asistent .upload-btn{display:none !important}

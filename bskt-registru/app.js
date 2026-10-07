@@ -1412,7 +1412,7 @@ const NAV = [
 ];
 const LOCATION_HIDDEN_VIEWS = new Set(['setari','plati']);
 // everything a helper account can open (all read-only)
-const ASISTENT_VIEWS = new Set(['dashboard','participanti','echipe','meciuri','plati','statistici','intarzieri','fairplay','daune','spalatorie','antrenamente']);
+const ASISTENT_VIEWS = new Set(['dashboard','participanti','echipe','meciuri','plati','statistici','intarzieri','vestimentatie','serviciu','spalatorie','hostel','lenjerie','medical','daune','fairplay','arbitraj','antrenamente','inventar','sarcini','observatii','pauzatehnica']);
 // read-only views a location account can open before starting a shift
 const NO_SHIFT_VIEWS = new Set(['dashboard','rapoarte','statistici','meciuri','echipe']);
 
@@ -4081,7 +4081,7 @@ function renderParticipanti(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title" id="participanti-count">${participantiFiltered().length} ${plural(participantiFiltered().length,'pa_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th>${isAsistent() ? '' : `<th>${t('pa_telefon')}</th><th>${t('pa_th_avizMed')}</th>`}<th>${t('th_statut')}</th></tr></thead>
+      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th>${isAsistent() ? '' : `<th>${t('pa_telefon')}</th>`}<th>${t('pa_th_avizMed')}</th><th>${t('th_statut')}</th></tr></thead>
       <tbody id="participanti-tbody">${participantiRows()}</tbody>
     </table></div>
   </div>`;
@@ -4121,8 +4121,8 @@ function participantiRows(){
       <td>${p.rolEchipa && p.rolEchipa!=='jucător' ? `<span class="badge gold">${esc(trEnum(p.rolEchipa))}</span>` : `<span class="td-muted">${esc(trEnum(p.rolEchipa||'jucător'))}</span>`}</td>
       <td class="td-gold">${p.rating ?? ''}</td>
       <td>${p.categorieSportiva ? `<span class="badge muted">${esc(p.categorieSportiva)}</span>` : ''}</td>
-      ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>
-      <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>`}
+      ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>`}
+      <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>
       <td><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></td>
     </tr>`).join('');
 }
@@ -4310,7 +4310,8 @@ function renderProfile(editing = false){
 
     <div class="profile-grid">
       <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></div></div>
-      ${isAsistent() ? '' : `<div><div class="k">${t('pa_aviz')} / ${LANG==='ru'?'истекает':'expiră'}</div><div class="v">${medicalInfo}</div></div>
+      <div><div class="k">${t('pa_aviz')} / ${LANG==='ru'?'истекает':'expiră'}</div><div class="v">${medicalInfo}</div></div>
+      ${isAsistent() ? `<div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(p.nrDulap)||'—'}</div></div>` : `
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(p.nrDulap)||'—'}</div></div>
       <div><div class="k">${t('fi_completare')}</div><div class="v">${filled}/${FISA_FIELDS.filter(f=>f.type!=='bool').length}</div></div>`}
       ${isAsistent() && p.categorieSportiva ? `<div><div class="k">${t('pa_th_categorieSp')}</div><div class="v">${esc(p.categorieSportiva)}</div></div>` : ''}
@@ -4334,18 +4335,18 @@ function renderProfile(editing = false){
       <section class="profile-section"><div class="profile-section-title">${t('nav_spalatorie')}</div>
         ${list(DB.spalatorie.filter(s=>s.participantId===id), r=>`<div class="mini-row"><span>${esc(r.tipArticole||'')} · ${money(r.suma)} MDL</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
-      ${isAsistent() ? '' : `<section class="profile-section"><div class="profile-section-title">${t('pa_k_cazari')}</div>
+      <section class="profile-section"><div class="profile-section-title">${t('pa_k_cazari')}</div>
         ${list(DB.hostel.filter(h=>h.participantId===id), r=>`<div class="mini-row"><span>${esc(r.observatii)||t('pa_cazare_word')}</span><span>${fmtDate(r.dataCazare)}</span></div>`)}
       </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_lenjerie')}</div>
         ${list(DB.lenjerie.filter(l=>l.participantId===id), r=>`<div class="mini-row"><span>${t('pa_eliberat_returnat')}</span><span>${fmtDate(r.dataEliberare)} → ${r.dataReturnare?fmtDate(r.dataReturnare):t('pa_nereturnat')}</span></div>`)}
-      </section>`}
+      </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_daune')}</div>
         ${list(DB.daune.filter(d=>d.participantId===id), r=>`<div class="mini-row"><span>${esc(r.inventarAfectat)} — ${esc(r.natura)} · ${money(r.valoareEstimata)} MDL</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
-      ${isAsistent() ? '' : `<section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
+      <section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
         ${list(DB.observatii.filter(o=>o.participantId===id), r=>`<div class="mini-row"><span>${esc(trEnum(r.categorie))}: ${esc(r.descriere)}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>`}
+      </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_antrenamente')}</div>
         ${list(DB.treninguri.filter(x=>x.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${esc(r.antrenor)}${r.ora?' · '+String(r.ora).slice(0,5):''}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
@@ -6275,11 +6276,11 @@ function taskGroupsRows(groups){
         <td class="td-muted">${stale?'<span class="row-flag red"></span>':''}${fmtDate(task.dataInreg)}</td>
         <td class="td-muted">${esc(task.adminInreg)}</td><td>${esc(task.descriere)}</td>
         <td>
-          <select class="task-select s-${group.slug}" onchange="updateTaskStatus('${task.id}', this.value)">
+          ${isAsistent() ? `<span class="badge ${task.status==='soluționat'?'green':task.status==='în lucru'?'yellow':'red'}">${esc(trEnum(task.status))}</span>` : `<select class="task-select s-${group.slug}" onchange="updateTaskStatus('${task.id}', this.value)">
             <option value="nesoluționat" ${task.status==='nesoluționat'?'selected':''}>${trEnum('nesoluționat')}</option>
             <option value="în lucru" ${task.status==='în lucru'?'selected':''}>${trEnum('în lucru')}</option>
             <option value="soluționat" ${task.status==='soluționat'?'selected':''}>${trEnum('soluționat')}</option>
-          </select>
+          </select>`}
         </td>
         <td class="td-muted">${esc(task.adminSolutionare)||'—'}</td>
         <td class="row-actions">${editBtn('sarcini', task.id)}<button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('sarcini','${task.id}')">${t('btn_delete')}</button></td>
@@ -7127,9 +7128,9 @@ function startIconPreview(){
   document.body.classList.toggle('role-asistent', isAsistent());
   if(isAsistent()){
     // same shape the participanti_asistent() RPC returns: sport fields only
-    const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii'];
+    const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii','dataAvizMedical','nrDulap','marime'];
     DB.participanti=DB.participanti.map(p=>Object.fromEntries(keep.map(k=>[k,p[k]])));
-    DB.hostel=[]; DB.lenjerie=[]; DB.observatii=[]; DB.acteSchimb=[]; DB.jurnal=[];
+    DB.acteSchimb=[]; DB.jurnal=[];
   }
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-shell').classList.add('visible');
