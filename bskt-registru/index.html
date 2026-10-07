@@ -441,8 +441,14 @@
   .profile-edit-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
   .mini-list { display: flex; flex-direction: column; gap: 5px; }
   .mini-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 7px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; }
-  .mini-row span:first-child { color: var(--text); }
-  .mini-row span:last-child { color: var(--muted); }
+  .mini-row > span:first-child { color: var(--text); }
+  .mini-row > span:last-child { color: var(--muted); }
+  .mini-row .mini-name { color: var(--text); }
+  /* clickable rows (team cards → player file) read like the name links in tables */
+  .mini-row.clickable { cursor: pointer; transition: background .15s, border-color .15s; }
+  .mini-row.clickable:hover { background: var(--gold-dim); border-color: rgba(245,130,42,.45); }
+  .mini-row.clickable .mini-name { transition: color .15s; }
+  .mini-row.clickable:hover .mini-name { color: var(--gold); text-decoration: underline; text-underline-offset: 2px; }
   .mini-empty { font-size: 12px; color: var(--muted); padding: 6px 2px; }
 
   /* ══ BSKT: echipe, meciuri, plăți, fișa personală ══ */
@@ -1010,14 +1016,12 @@ function monthLabel(yyyyMM){
   const [y,m] = yyyyMM.split('-').map(Number);
   return `${MONTH_NAMES[LANG==='ru'?'ru':'ro'][m-1]} ${y}`;
 }
-// Kit handed out at the venue; `cod` builds the inventory id: inv-<cod>-<size> (returns go to inv-<cod>-<size>-uzat)
+// Kit handed out at the venue; `cod` builds the inventory id: inv-<cod>-<size>.
+// For now BSKT tracks a single jersey type in every size (the real kit list is still to be agreed).
 const CLOTHING_TYPES = [
-  { cod:'mb', tip:'Maiou bordo', culoare:'Bordo' },
-  { cod:'mv', tip:'Maiou verde', culoare:'Verde' },
-  { cod:'sb', tip:'Șort bordo', culoare:'Bordo' },
-  { cod:'sv', tip:'Șort verde', culoare:'Verde' },
+  { cod:'m', tip:'Maiou', culoare:'—' },
 ];
-const CLOTHING_SIZES = ['M','L','XL','XXL','XXXL'];
+const CLOTHING_SIZES = ['S','M','L','XL','XXL','XXXL'];
 const PLAYER_SIZES = ['S','M','L','XL','XXL','XXXL'];
 const SPORT_CATEGORIES = ['MS','CMS','Categoria I','Categoria II','Categoria III','Amator'];
 const TEAM_ROLES = ['căpitan','jucător','arbitru'];
@@ -1085,7 +1089,7 @@ function trEnum(v, lang=LANG){ return (lang==='ru' && ENUM_RU[v]) ? ENUM_RU[v] :
 const I18N = {
 ro: {
   au_sub:'Registru electronic · BSKT Cup 3×3', au_email:'E-mail', au_pass:'Parolă', au_login:'Autentificare',
-  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.',
+  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.',
   au_emailPh:'nume@exemplu.com', au_passPh:'••••••••',
   au_modeAdmin:'Administrator', au_modeLocatie:'Locație', au_pin:'Cod PIN', au_pinPh:'••••••',
   au_pinNeed:'Introduceți codul PIN.', au_pinWrong:'PIN incorect.',
@@ -1368,7 +1372,7 @@ ro: {
 },
 ru: {
   au_sub:'Электронный журнал · BSKT Cup 3×3', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
-  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.',
+  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.',
   au_emailPh:'name@example.com', au_passPh:'••••••••',
   au_modeAdmin:'Администратор', au_modeLocatie:'Локация', au_pin:'PIN-код', au_pinPh:'••••••',
   au_pinNeed:'Введите PIN-код.', au_pinWrong:'Неверный PIN-код.',
@@ -1657,7 +1661,7 @@ Object.assign(ENUM_RU, {
   'căpitan':'капитан', 'jucător':'игрок', 'rezervă':'запасной', 'arbitru':'арбитр',
   'victorie':'победа', 'înfrângere':'поражение',
   'avertisment':'предупреждение', 'fault tehnic':'технический фол', 'fault antisportiv':'неспортивный фол', 'descalificare':'дисквалификация',
-  'Maiou bordo':'Майка бордо', 'Maiou verde':'Зелёная майка', 'Șort bordo':'Шорты бордо', 'Șort verde':'Зелёные шорты',
+  'Maiou':'Майка', 'Maiouri':'Майки', 'Maiou bordo':'Майка бордо', 'Maiou verde':'Зелёная майка', 'Șort bordo':'Шорты бордо', 'Șort verde':'Зелёные шорты',
   'Maiouri bordo':'Майки бордо', 'Maiouri verzi':'Зелёные майки', 'Șorturi bordo':'Шорты бордо', 'Șorturi verzi':'Зелёные шорты',
   'Bordo':'Бордо', 'Verde':'Зелёный', 'Mingi baschet 3×3':'Мячи 3×3',
   'Joc dur':'Грубая игра', 'Fără legitimație':'Без удостоверения', 'Lipsă echipament':'Нет экипировки', 'Comportament nesportiv':'Неспортивное поведение',
@@ -2136,9 +2140,10 @@ async function login(){
     msg.style.color = 'var(--red)';
     return;
   }
-  const { data: profile } = await sb.from('administratori').select('*').eq('id', data.user.id).single();
-  const displayName = profile ? adminName(profile) : (data.user.email || 'Administrator');
-  await enterApp(data.user.id, displayName, profile?.rol || 'admin');
+  const { data: profile } = await sb.from('administratori').select('*').eq('id', data.user.id).maybeSingle();
+  // an auth account without a registry profile gets nothing: sign it out instead of guessing a role
+  if(!profile){ await sb.auth.signOut(); msg.textContent = t('au_noAccess'); msg.style.color = 'var(--red)'; return; }
+  await enterApp(data.user.id, adminName(profile), profile.rol);
 }
 
 async function loginLocatie(){
@@ -2176,9 +2181,9 @@ async function loginLocatie(){
   if(sessErr){ msg.textContent = t('au_pinServerError'); msg.style.color = 'var(--red)'; return; }
   document.getElementById('l-pin').value = '';
   const { data:{ session } } = await sb.auth.getSession();
-  const { data: profile } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
-  const displayName = profile ? adminName(profile) : 'Locație';
-  await enterApp(session.user.id, displayName, profile?.rol || 'locatie');
+  const { data: profile } = await sb.from('administratori').select('*').eq('id', session.user.id).maybeSingle();
+  if(!profile){ await sb.auth.signOut(); msg.textContent = t('au_noAccess'); msg.style.color = 'var(--red)'; return; }
+  await enterApp(session.user.id, adminName(profile), profile.rol);
 }
 
 async function enterApp(userId, displayName, rol){
@@ -2217,9 +2222,9 @@ async function logout(){
 async function resumeSession(){
   const { data:{ session } } = await sb.auth.getSession();
   if(!session) return;
-  const { data: profile } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
-  const displayName = profile ? adminName(profile) : (session.user.email || 'Administrator');
-  await enterApp(session.user.id, displayName, profile?.rol || 'admin');
+  const { data: profile } = await sb.from('administratori').select('*').eq('id', session.user.id).maybeSingle();
+  if(!profile){ await sb.auth.signOut(); return; }
+  await enterApp(session.user.id, adminName(profile), profile.rol);
 }
 applyStaticI18n();
 setAuthMode('admin');
@@ -2439,7 +2444,7 @@ function inventoryStare(curent, minima){
   return 'bună';
 }
 const INVENTAR_TOP_ORDER = { 'Mingi baschet 3×3':0, 'Seturi lenjerie':1 };
-const INVENTAR_SIZE_ORDER = ['M','L','XL','XXL','XXXL'];
+const INVENTAR_SIZE_ORDER = ['S','M','L','XL','XXL','XXXL'];
 function inventarHasVariant(i){ return i.culoare && i.culoare!=='—' && i.marime && i.marime!=='—'; }
 function inventarSorted(list){
   return (list || DB.inventar).slice().sort((a,b)=>{
@@ -3639,7 +3644,7 @@ function renderEchipe(){
           ${s ? `<span class="team-pts" title="${esc(t('ec_puncteTitlu'))}">${s.marcate}<span>:</span>${s.primite}</span>` : ''}</div>` : ''}
         <div class="mini-list">
           ${players.length ? players.map(p=>`<div class="mini-row clickable" onclick="openProfile('${p.id}')">
-            <span>${p.nrEchipa?`<span class="team-nr">${p.nrEchipa}</span>`:''}${esc(p.nume)} ${esc(p.prenume)} ${p.rolEchipa==='căpitan'?`<span class="badge gold">${trEnum('căpitan')}</span>`:''}</span>
+            <span>${p.nrEchipa?`<span class="team-nr">${p.nrEchipa}</span>`:''}<span class="mini-name">${esc(p.nume)} ${esc(p.prenume)}</span> ${p.rolEchipa==='căpitan'?`<span class="badge gold">${trEnum('căpitan')}</span>`:''}</span>
             <span class="td-muted">${p.rating!=null?`★ ${p.rating}`:''}</span></div>`).join('') : `<div class="mini-empty">${t('ec_faraJucatori')}</div>`}
         </div>
         ${hasActiveShift() ? `<div class="team-card-actions">
@@ -6102,6 +6107,8 @@ async function toggleHostelStatus(id){
 function lenjerieStockItem(source){
   return DB.inventar.find(i=>i.id===(source==='uzat'?'inv-lenjerie-uzat':'inv-lenjerie'));
 }
+// linen is stock-tracked only while a linen item exists in the inventory (BSKT currently has none)
+function lenjerieTracked(){ return !!(lenjerieStockItem('nou') || lenjerieStockItem('uzat')); }
 function lenjerieAvailable(source){
   const item = lenjerieStockItem(source);
   return item ? inventoryCurrent(item) : 0;
@@ -6120,7 +6127,7 @@ function renderLenjerie(){
     <div class="form-title">${t('le_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:1.25fr .8fr .8fr auto">
       <div class="field"><label>${t('th_participant')}</label>${autocompleteField('lf-participant', participantAcOptions())}</div>
-      <div class="field"><label>${t('le_stockSource')}</label><select id="lf-sursa"><option value="nou">${t('le_stockNew')} — ${newAvailable} ${t('le_available')}</option><option value="uzat">${t('le_stockUsed')} — ${usedAvailable} ${t('le_available')}</option></select></div>
+      <div class="field"><label>${t('le_stockSource')}</label><select id="lf-sursa"><option value="nou">${t('le_stockNew')}${lenjerieTracked() ? ` — ${newAvailable} ${t('le_available')}` : ''}</option><option value="uzat">${t('le_stockUsed')}${lenjerieTracked() ? ` — ${usedAvailable} ${t('le_available')}` : ''}</option></select></div>
       <div class="field"><label>${t('le_dataElib')}</label><input id="lf-eliberare" type="date" value="${todayISO()}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addLenjerie()">${t('btn_add')}</button></div>
     </div>
@@ -6148,7 +6155,7 @@ async function addLenjerie(){
   const participantId = document.getElementById('lf-participant').value;
   if(!participantId) return;
   const sursaStoc = document.getElementById('lf-sursa').value==='uzat'?'uzat':'nou';
-  if(lenjerieAvailable(sursaStoc)<=0){ alert(lenjerieNoStockMessage(sursaStoc)); return; }
+  if(lenjerieTracked() && lenjerieAvailable(sursaStoc)<=0){ alert(lenjerieNoStockMessage(sursaStoc)); return; }
   const row = { participant_id:participantId, data_eliberare: document.getElementById('lf-eliberare').value||todayISO(), data_returnare:null, sursa_stoc:sursaStoc };
   const { data, error } = await sb.from('lenjerie').insert(row).select().single();
   if(error){
@@ -6908,7 +6915,7 @@ function renderInventar(){
     </table></div>
   </div>
 
-  <div class="view-head"><div class="view-title">${t('iv_uzateTitle')}</div></div>
+  ${DB.inventar.some(i=>i.conditie==='uzat') ? `<div class="view-head"><div class="view-title">${t('iv_uzateTitle')}</div></div>
   <div class="view-sub">${t('iv_uzateSub')}</div>
 
   <div class="table-wrap">
@@ -6917,7 +6924,7 @@ function renderInventar(){
       <thead><tr><th>${t('iv_th_articol')}</th><th>${t('iv_th_culoare')}</th><th>${t('iv_th_marime')}</th><th>${t('iv_th_um')}</th><th>${t('iv_th_initial')}</th><th>${t('iv_th_intrari')}</th><th>${t('iv_th_iesiri')}</th><th>${t('iv_th_curent')}</th>${isFullAdmin()?'<th></th>':''}</tr></thead>
       <tbody>${inventarRows(inventarSorted(DB.inventar.filter(i=>i.conditie==='uzat')), {minim:false})}</tbody>
     </table></div>
-  </div>`;
+  </div>` : ''}`;
 }
 function inventarRows(items, opts){
   const showMinim = !opts || opts.minim !== false;
@@ -7792,7 +7799,7 @@ function startIconPreview(){
     })),
     daune:[], fairPlay:[], arbitraj:[],
     inventar:[
-      {id:'i1',denumire:'Maiouri bordo',culoare:'Bordo',marime:'M',um:'buc',cantitateInitiala:12,intrari:2,iesiri:5,cantitateMinima:5,stare:'bună',observatii:'',conditie:'nou'},
+      {id:'inv-m-m',denumire:'Maiouri',culoare:'—',marime:'M',um:'buc',cantitateInitiala:0,intrari:0,iesiri:0,cantitateMinima:0,stare:'bună',observatii:'',conditie:'nou'},
       {id:'i2',denumire:'Mingi baschet 3×3',culoare:'—',marime:'6',um:'buc',cantitateInitiala:20,intrari:0,iesiri:18,cantitateMinima:5,stare:'bună',observatii:'',conditie:'nou'},
     ],
     sarcini:[

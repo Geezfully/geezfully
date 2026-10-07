@@ -193,10 +193,12 @@ Deno.serve(async (req) => {
     if (eErr) throw eErr;
     const teamIdBySlug = new Map((echipe ?? []).filter(e => e.slug_extern).map(e => [e.slug_extern as string, e.id as string]));
 
-    // keep our logos in step with the site (colour is curated by hand, not touched)
+    // keep our logos in step with the site (colour is curated by hand, not touched). The URL ends up in the
+    // app's markup, so only a plain https image on the site's Webflow CDN is accepted.
+    const safeLogo = (u: string) => /^https:\/\/cdn\.prod\.website-files\.com\/[A-Za-z0-9._~%\/-]+\.(svg|png|jpe?g|webp|avif)$/i.test(u);
     for (const e of echipe ?? []) {
       const st = siteTeams.find(s => s.slug === e.slug_extern);
-      if (st?.logo && st.logo !== e.logo_url) {
+      if (st?.logo && safeLogo(st.logo) && st.logo !== e.logo_url) {
         await admin.from("echipe").update({ logo_url: st.logo }).eq("id", e.id);
         (detalii.logo as string[]).push(e.nume);
       }
