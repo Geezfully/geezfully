@@ -821,3 +821,20 @@
   }
   select::-ms-expand { display: none; }
   select option, select optgroup { background: var(--surface); color: var(--text); }
+  /* line-ups of the day */
+  .dl-cta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 16px; }
+  .dl-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:12px; }
+  .dl-team { background:var(--bg); border:1px solid var(--border); border-top:3px solid var(--team); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .dl-team.skipped { opacity:.5; }
+  .dl-team-head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .dl-team .team-name { font-size:16px; }
+  .dl-matches { font-size:12px; display:flex; flex-direction:column; gap:2px; margin-top:4px; padding-top:8px; border-top:1px dashed var(--border); }
+  #record-modal .modal-box:has(.dl-grid) { max-width:1180px; }
+
+/* helper (asistent) account: read-only — no entry forms, no row actions */
+body.role-asistent .add-form:has([onclick^="add"]),
+body.role-asistent .row-actions,
+body.role-asistent .te-row button,
+body.role-asistent .upload-btn{display:none !important}
+.asistent-link{cursor:pointer;text-align:left;font:inherit;color:inherit;border:1px solid var(--border);transition:border-color .15s}
+.asistent-link:hover{border-color:var(--gold)}

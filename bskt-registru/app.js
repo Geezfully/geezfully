@@ -4,6 +4,35 @@ const SUPABASE_URL = 'https://sbkobwcuywnnmjsbrzqi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable__9ImE3WKaboAnDbsZaCy5A_Kl5Q3_8v';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Helper ("asistent") accounts are read-only. The database refuses their writes (RLS + a
+// statement trigger that errors instead of silently changing 0 rows); this guard stops any
+// write the UI might still offer before it leaves the browser, and says so on screen.
+const ASISTENT_READ_RPCS = new Set(['statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent']);
+function readOnlyRefusal(){
+  const error = { message: t('as_readOnly'), code: 'asistent_read_only' };
+  alert(t('as_readOnly'));
+  const result = { data:null, error };
+  const chain = new Proxy(function(){}, {
+    get(_, prop){ return prop==='then' ? (ok, ko)=>Promise.resolve(result).then(ok, ko) : ()=>chain; },
+    apply(){ return chain; },
+  });
+  return chain;
+}
+{
+  const from = sb.from.bind(sb), rpc = sb.rpc.bind(sb), storageFrom = sb.storage.from.bind(sb.storage);
+  sb.from = table => {
+    const q = from(table);
+    if(isAsistent()) for(const m of ['insert','update','upsert','delete']) q[m] = readOnlyRefusal;
+    return q;
+  };
+  sb.rpc = (fn, args, opts) => isAsistent() && !ASISTENT_READ_RPCS.has(fn) ? readOnlyRefusal() : rpc(fn, args, opts);
+  sb.storage.from = bucket => {
+    const b = storageFrom(bucket);
+    if(isAsistent()) for(const m of ['upload','update','remove','move','copy']) b[m] = readOnlyRefusal;
+    return b;
+  };
+}
+
 // Courts and trainers are editable in Setări (stored in app_config); these are the fallbacks.
 const DEFAULT_TERENURI = ['Teren 1'];
 // referee pay: alone that day = fixed day rate; two referees = hourly rate each (no tax split)
@@ -359,6 +388,11 @@ ro: {
   st_title:'Setări', st_sub:'Administratori, praguri de alertă și jurnal complet de activitate.',
   st_admins:'Administratori', st_rol:'Rol', st_rolValue:'Administrator locație', st_activAcum:'activ acum',
   st_rolLocatieCont:'Cont comun de locație',
+  as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
+  as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
+  as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
+  as_linkPlati:'Plăți pe jucători, echipe și arbitri; export Excel', as_linkStats:'Win rate, +/−, căpitani, clasament echipe', as_linkMeciuri:'Rezultate și loturi pe zile', as_linkJucatori:'Profiluri sportive și istoric',
+  as_doarCitire:'Acest cont poate vedea și exporta datele, dar nu poate modifica nimic. Datele personale ale jucătorilor (fișa personală) nu sunt disponibile.',
   st_praguri:'Praguri de alertă (informativ)', st_p_medAlerta:'Aviz medical — alertă', st_p_medAlertaV:'≤ 7 zile rămase',
   st_p_medVal:'Aviz medical — valabilitate', st_p_medValV:'6 luni', st_p_sarciniRest:'Sarcini restante',
   st_p_sarciniRestV:'> 48 ore', st_p_intarzieri:'Întârzieri frecvente', st_p_intarzieriV:'≥ 3 în 30 zile',
@@ -643,6 +677,11 @@ ru: {
   st_title:'Настройки', st_sub:'Администраторы, пороги уведомлений и полный журнал активности.',
   st_admins:'Администраторы', st_rol:'Роль', st_rolValue:'Администратор локации', st_activAcum:'сейчас в сети',
   st_rolLocatieCont:'Общая учётная запись локации',
+  as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
+  as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
+  as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
+  as_linkPlati:'Выплаты по игрокам, командам и арбитрам; экспорт Excel', as_linkStats:'Винрейт, +/−, капитаны, таблица команд', as_linkMeciuri:'Результаты и составы по дням', as_linkJucatori:'Спортивные профили и история',
+  as_doarCitire:'Эта учётная запись может просматривать и экспортировать данные, но ничего не может изменить. Личные данные игроков (личная карточка) недоступны.',
   st_praguri:'Пороги уведомлений (справочно)', st_p_medAlerta:'Мед. справка — уведомление', st_p_medAlertaV:'≤ 7 дней осталось',
   st_p_medVal:'Мед. справка — срок действия', st_p_medValV:'6 месяцев', st_p_sarciniRest:'Просроченные задачи',
   st_p_sarciniRestV:'> 48 часов', st_p_intarzieri:'Частые опоздания', st_p_intarzieriV:'≥ 3 за 30 дней',
@@ -672,7 +711,7 @@ Object.assign(ENUM_RU, {
   'Joc dur':'Грубая игра', 'Fără legitimație':'Без удостоверения', 'Lipsă echipament':'Нет экипировки', 'Comportament nesportiv':'Неспортивное поведение',
 });
 Object.assign(I18N.ro, {
-  st_rolValue:'Administrator', sx_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Clasamentul echipelor le include, dar statisticile jucătorilor și căpitanilor nu, până nu completați lotul. Zile:`, mt_lotDinUltimul:(d,opp)=>`Lot propus: cel din ultimul meci (${d}, cu ${opp}). Corectați dacă s-a schimbat.`, mt_lotDinEchipa:'Lot propus din componența echipei (nu există un meci anterior cu lot).', sh_faraPersonal:'Nu există personal de serviciu în listă, deci schimbul nu poate fi pornit. Un administrator adaugă numele în Setări → Personal de serviciu.', mt_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Jucătorii din aceste meciuri nu primesc plată până nu completați lotul. Zile:`, mt_faraLotCard:'Meci jucat fără lot: jucătorii nu sunt plătiți până nu se completează lotul.', mt_completeazaLot:'Completează lotul', pl_tabArbitri:'Arbitri', sh_updateBalls:'Actualizează mingi și ore', ar_oraStart:'Început', ar_oraStop:'Sfârșit', ar_interval:'Interval', ar_ore:'Ore', ar_editOre:'Ore', ar_faraOre:'fără ore', ar_singur:'singur', ar_inDoi:'în doi', ar_peste2:'>2 arbitri', ar_needAmbeleOre:'Completați atât ora de început, cât și ora de sfârșit.', ar_confirmAlTreilea:(n)=>`În această zi arbitrează deja ${n}. De regulă sunt cel mult doi arbitri pe zi — adăugați totuși un al treilea?`, ar_regulaPlata:(zi,ore,ora)=>`Un singur arbitru în ziua respectivă: ${zi} lei/zi (${ore} ore). Doi arbitri: fiecare primește ${ora} lei × orele arbitrate (${ore} h = ${ora*ore} lei).`, ar_zile:'Zile', ar_zileSingur:'Zile singur', ar_zileDoi:'Zile în doi', ar_oreDoi:'Ore (în doi)', ar_dePlata:'De plătit', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} în doi fără ore completate`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu peste 2 arbitri`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu doi arbitri nu au ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`, ar_singurZi:'Singur toată ziua', ar_cu:'Cu', ar_tarifZi:(zi)=>`tarif zi ${zi}`, ar_niciunArbitru:'Niciun arbitru în perioada aleasă.', ar_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.', ar_tip:'Tip zi', ar_detaliiZile:'Detalii pe zile', ar_tarifeTitle:'Tarife arbitri', ar_tZi:'Arbitru singur — lei/zi', ar_tOreZi:'Ore într-o zi completă', ar_tOra:'Doi arbitri — lei/oră fiecare', re_luna:'Lună (setează perioada)', re_intervalPersonalizat:'Interval personalizat', mp_anAnterior:'Anul anterior', mp_anUrmator:'Anul următor', mp_lunaAnterioara:'Luna anterioară', mp_lunaUrmatoare:'Luna următoare', mp_lunaCurenta:'Luna curentă', mp_inregistrari:'înregistrări', sx_perioada:'Perioada aleasă', sx_siLa:'și la', sx_echipeScurt:'echipe', sx_tabEchipe:'Clasament echipe', sx_ldWin:'Cel mai bun win rate', sx_ldPm:'Cel mai bun +/−', sx_ldActiv:'Cele mai multe meciuri', sx_ldCap:'Cel mai bun căpitan', sx_caCapitan:'ca căpitan', sx_capitanVM:'Căpitan V/M', sx_meciuriCapitan:'Meciuri căpitan', sx_niciunJucator:'Niciun jucător nu corespunde filtrelor.', sx_sortWin:'Sortare: win rate ↓', sx_sortVictorii:'Sortare: victorii ↓', sx_sortPm:'Sortare: +/− ↓', sx_sortRating:'Sortare: rating ↓', sx_minMeciuri:(n)=>`Minim ${n} meciuri`, sx_oriceNrMeciuri:'Orice nr. de meciuri', sx_hintEchipe:'Apăsați pe o echipă pentru a vedea statisticile jucătorilor ei.', sx_hintRand:'Apăsați pe un jucător pentru profil. Liderii de sus iau în calcul doar jucătorii cu minim 10 meciuri.', pl_th2_net:'Net / jucător', pl_th2_brut:'Brut necesar', pl_th2_ret:'Reținere 15%', pl_th2_netRamas:'Net rămas', pl_sumeMdl:'Sume în MDL', pl_th_victorii:'Victorii', pl_th_infrangeri:'Înfrângeri', pl_th_netJucator:'Net / jucător (MDL)', pl_th_coef:'Coef. vs bază', pl_th_brutNecesar:'Brut necesar (MDL)', pl_th_retinere15:'Reținere 15% (MDL)', pl_th_netRamas:'Net rămas (MDL)', pl_th_observatie:'Observație', pl_th_dePlataBrut:'De plătit (brut)', pl_dePlataTotalBrut:'Total de plătit (brut) în perioadă', pl_sortBrut:'Sortare: brut ↓', pl_obsCapitan:'Bonus de leadership inclus', pl_obsRezerva:'Rezervă egală cu jucătorul; nu penalizăm rotația', pl_obsBaza:'Jucător de bază', pl_obsRetinut:'Reținut din plată', pl_tabJucatori:'Jucători', pl_tabEchipe:'Pe echipe', pl_tabTarife:'Tarife', pl_dePlataTotal:'Total de plătit în perioadă', pl_cauta:'Caută jucător sau echipă…', pl_arataZile:'Coloane pe zile', pl_sortNume:'Sortare: nume', pl_sortDePlata:'Sortare: de plătit ↓', pl_sortNet:'Sortare: net ↓', pl_sortMeciuri:'Sortare: meciuri ↓', pl_sortDed:'Sortare: deduceri ↓', pl_sortEchipa:'Sortare: echipă', pl_tipVI:'Victorii–înfrângeri', pl_hintRand:'Apăsați pe un jucător pentru a vedea fiecare meci și calculul plății. Coef. vs bază = media sumei pe meci împărțită la baza (jucător, înfrângere). De plătit = brutul necesar minus deducerile.', pl_detMeciuri:'Meciurile din perioadă', pl_detCalcul:'Calculul plății', pl_deschideProfil:'Deschide profilul', pl_echipeHint:'Apăsați pe o echipă pentru a vedea plățile jucătorilor ei.', pa_countSuffix:["jucător", "jucători"], mt_meciuriSuffix:["meci", "meciuri"], an_countSuffix:["sesiune", "sesiuni"], ve_countSuffix:["eliberare", "eliberări"], ta_countSuffix:["sarcină", "sarcini"], sp_operatiuni:["operațiune", "operațiuni"], sp_countSuffix:["înregistrare", "înregistrări"], pt_countSuffix:["pauză înregistrată", "pauze înregistrate"], pl_zile:["zi de joc", "zile de joc"], ob_countSuffix:["observație", "observații"], le_countSuffix:["înregistrare", "înregistrări"], iv_lowStock:["articol sub stocul minim admis.", "articole sub stocul minim admis."], fp_countSuffix:["sancțiune înregistrată", "sancțiuni înregistrate"], da_categorii:["categorie", "categorii"], da2_countSuffix:["daună înregistrată", "daune înregistrate"], arb_countSuffix:["arbitru", "arbitri"], ar_countSuffix:["eliberare", "eliberări"], pa_expiraLa:["zi", "zile"], cal_ziuaPrecedenta:'Ziua precedentă', cal_ziuaUrmatoare:'Ziua următoare', cal_faraMeciuri:'fără meciuri', cal_jocAnterior:'ziua de joc anterioară', cal_jocUrmator:'următoarea zi de joc', cal_cuMeciuri:'zile cu meciuri', cal_azi:'Azi', te_lot:'Lotul echipei', te_cautaJucator:'Caută jucătorul după nume, echipă sau rating…', te_capitanRating:'Căpitan = cel mai mare rating', te_mutatDin:'mutat din', te_faraNr:'fără nr.', te_scoate:'Scoate', te_adauga:'Adaugă jucător în lot', te_vorFiScosi:'Vor fi scoși din echipă la salvare', te_notaNr:'Numărul în echipă (1–4) este cel din fișa personală. O echipă poate avea mai mulți căpitani; la fiecare meci se alege căpitanul din lot. Jucătorii mutați din altă echipă își schimbă echipa la salvare.', te_errNume:'Denumirea echipei este obligatorie.', te_errNrDublu:'Doi jucători au același număr.', te_errDoiCapitani:'Echipa poate avea un singur căpitan.', te_altaCuloare:'Altă culoare', te_sterge:'Șterge echipa', te_stergeBlocat:'Echipa are meciuri înregistrate și nu poate fi ștearsă — marcați-o inactivă.', te_confirmSterge:(n)=>`Ștergeți echipa ${n}? Jucătorii ei rămân în registru, fără echipă.`, ec_numeExista:'Există deja o echipă cu acest nume.', pt_confirmLunga:(m)=>`Pauza durează ${Math.floor(m/60)} h ${m%60} min (trece peste miezul nopții?). Salvați așa?`, ve_stocInsuficient:(n)=>`În stoc sunt doar ${n} buc. din această mărime. Eliberați totuși (stocul va deveni negativ)?`, re_sect_participanti:'Rapoarte privind jucătorii', act_s_meciuri:'Meciuri', act_echipaA:'Echipa A', act_echipaB:'Echipa B', act_scor:'Scor', act_platou:'Teren', act_cartonas:'Sancțiune', nav_participanti:'Jucători', nav_echipe:'Echipe', nav_meciuri:'Meciuri', nav_plati:'Plăți', nav_statistici:'Statistici',
+  st_rolValue:'Administrator', dl_title:'Loturile zilei', dl_btn:'Completează loturile zilei', dl_btnSub:'Un lot pe echipă, aplicat tuturor meciurilor ei din această zi care nu au încă jucători.', dl_sub:'Fiecare echipă joacă de obicei toată seara cu același lot: completați-l o dată și se aplică automat tuturor meciurilor ei fără jucători din această zi. Meciurile care au deja lot nu sunt modificate; un meci anume se poate corecta apoi din editorul meciului. Plățile se calculează automat.', dl_aplica:'Aplică', dl_seAplicaLa:(n)=>`Se aplică la ${n} ${plural(n,'mt_meciuriSuffix','ro')}:`, dl_salveaza:'Salvează loturile', dl_nimic:'Toate meciurile din această zi au deja loturile completate.', dl_conflict:(p,ora,a,b)=>`${p} apare în ambele echipe la meciul de la ${ora} (${a} – ${b}). Corectați unul dintre loturi.`, sx_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Clasamentul echipelor le include, dar statisticile jucătorilor și căpitanilor nu, până nu completați lotul. Zile:`, mt_lotDinUltimul:(d,opp)=>`Lot propus: cel din ultimul meci (${d}, cu ${opp}). Corectați dacă s-a schimbat.`, mt_lotDinEchipa:'Lot propus din componența echipei (nu există un meci anterior cu lot).', sh_faraPersonal:'Nu există personal de serviciu în listă, deci schimbul nu poate fi pornit. Un administrator adaugă numele în Setări → Personal de serviciu.', mt_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Jucătorii din aceste meciuri nu primesc plată până nu completați lotul. Zile:`, mt_faraLotCard:'Meci jucat fără lot: jucătorii nu sunt plătiți până nu se completează lotul.', mt_completeazaLot:'Completează lotul', pl_tabArbitri:'Arbitri', sh_updateBalls:'Actualizează mingi și ore', ar_oraStart:'Început', ar_oraStop:'Sfârșit', ar_interval:'Interval', ar_ore:'Ore', ar_editOre:'Ore', ar_faraOre:'fără ore', ar_singur:'singur', ar_inDoi:'în doi', ar_peste2:'>2 arbitri', ar_needAmbeleOre:'Completați atât ora de început, cât și ora de sfârșit.', ar_confirmAlTreilea:(n)=>`În această zi arbitrează deja ${n}. De regulă sunt cel mult doi arbitri pe zi — adăugați totuși un al treilea?`, ar_regulaPlata:(zi,ore,ora)=>`Un singur arbitru în ziua respectivă: ${zi} lei/zi (${ore} ore). Doi arbitri: fiecare primește ${ora} lei × orele arbitrate (${ore} h = ${ora*ore} lei).`, ar_zile:'Zile', ar_zileSingur:'Zile singur', ar_zileDoi:'Zile în doi', ar_oreDoi:'Ore (în doi)', ar_dePlata:'De plătit', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} în doi fără ore completate`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu peste 2 arbitri`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu doi arbitri nu au ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`, ar_singurZi:'Singur toată ziua', ar_cu:'Cu', ar_tarifZi:(zi)=>`tarif zi ${zi}`, ar_niciunArbitru:'Niciun arbitru în perioada aleasă.', ar_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.', ar_tip:'Tip zi', ar_detaliiZile:'Detalii pe zile', ar_tarifeTitle:'Tarife arbitri', ar_tZi:'Arbitru singur — lei/zi', ar_tOreZi:'Ore într-o zi completă', ar_tOra:'Doi arbitri — lei/oră fiecare', re_luna:'Lună (setează perioada)', re_intervalPersonalizat:'Interval personalizat', mp_anAnterior:'Anul anterior', mp_anUrmator:'Anul următor', mp_lunaAnterioara:'Luna anterioară', mp_lunaUrmatoare:'Luna următoare', mp_lunaCurenta:'Luna curentă', mp_inregistrari:'înregistrări', sx_perioada:'Perioada aleasă', sx_siLa:'și la', sx_echipeScurt:'echipe', sx_tabEchipe:'Clasament echipe', sx_ldWin:'Cel mai bun win rate', sx_ldPm:'Cel mai bun +/−', sx_ldActiv:'Cele mai multe meciuri', sx_ldCap:'Cel mai bun căpitan', sx_caCapitan:'ca căpitan', sx_capitanVM:'Căpitan V/M', sx_meciuriCapitan:'Meciuri căpitan', sx_niciunJucator:'Niciun jucător nu corespunde filtrelor.', sx_sortWin:'Sortare: win rate ↓', sx_sortVictorii:'Sortare: victorii ↓', sx_sortPm:'Sortare: +/− ↓', sx_sortRating:'Sortare: rating ↓', sx_minMeciuri:(n)=>`Minim ${n} meciuri`, sx_oriceNrMeciuri:'Orice nr. de meciuri', sx_hintEchipe:'Apăsați pe o echipă pentru a vedea statisticile jucătorilor ei.', sx_hintRand:'Apăsați pe un jucător pentru profil. Liderii de sus iau în calcul doar jucătorii cu minim 10 meciuri.', pl_th2_net:'Net / jucător', pl_th2_brut:'Brut necesar', pl_th2_ret:'Reținere 15%', pl_th2_netRamas:'Net rămas', pl_sumeMdl:'Sume în MDL', pl_th_victorii:'Victorii', pl_th_infrangeri:'Înfrângeri', pl_th_netJucator:'Net / jucător (MDL)', pl_th_coef:'Coef. vs bază', pl_th_brutNecesar:'Brut necesar (MDL)', pl_th_retinere15:'Reținere 15% (MDL)', pl_th_netRamas:'Net rămas (MDL)', pl_th_observatie:'Observație', pl_th_dePlataBrut:'De plătit (brut)', pl_dePlataTotalBrut:'Total de plătit (brut) în perioadă', pl_sortBrut:'Sortare: brut ↓', pl_obsCapitan:'Bonus de leadership inclus', pl_obsRezerva:'Rezervă egală cu jucătorul; nu penalizăm rotația', pl_obsBaza:'Jucător de bază', pl_obsRetinut:'Reținut din plată', pl_tabJucatori:'Jucători', pl_tabEchipe:'Pe echipe', pl_tabTarife:'Tarife', pl_dePlataTotal:'Total de plătit în perioadă', pl_cauta:'Caută jucător sau echipă…', pl_arataZile:'Coloane pe zile', pl_sortNume:'Sortare: nume', pl_sortDePlata:'Sortare: de plătit ↓', pl_sortNet:'Sortare: net ↓', pl_sortMeciuri:'Sortare: meciuri ↓', pl_sortDed:'Sortare: deduceri ↓', pl_sortEchipa:'Sortare: echipă', pl_tipVI:'Victorii–înfrângeri', pl_hintRand:'Apăsați pe un jucător pentru a vedea fiecare meci și calculul plății. Coef. vs bază = media sumei pe meci împărțită la baza (jucător, înfrângere). De plătit = brutul necesar minus deducerile.', pl_detMeciuri:'Meciurile din perioadă', pl_detCalcul:'Calculul plății', pl_deschideProfil:'Deschide profilul', pl_echipeHint:'Apăsați pe o echipă pentru a vedea plățile jucătorilor ei.', pa_countSuffix:["jucător", "jucători"], mt_meciuriSuffix:["meci", "meciuri"], an_countSuffix:["sesiune", "sesiuni"], ve_countSuffix:["eliberare", "eliberări"], ta_countSuffix:["sarcină", "sarcini"], sp_operatiuni:["operațiune", "operațiuni"], sp_countSuffix:["înregistrare", "înregistrări"], pt_countSuffix:["pauză înregistrată", "pauze înregistrate"], pl_zile:["zi de joc", "zile de joc"], ob_countSuffix:["observație", "observații"], le_countSuffix:["înregistrare", "înregistrări"], iv_lowStock:["articol sub stocul minim admis.", "articole sub stocul minim admis."], fp_countSuffix:["sancțiune înregistrată", "sancțiuni înregistrate"], da_categorii:["categorie", "categorii"], da2_countSuffix:["daună înregistrată", "daune înregistrate"], arb_countSuffix:["arbitru", "arbitri"], ar_countSuffix:["eliberare", "eliberări"], pa_expiraLa:["zi", "zile"], cal_ziuaPrecedenta:'Ziua precedentă', cal_ziuaUrmatoare:'Ziua următoare', cal_faraMeciuri:'fără meciuri', cal_jocAnterior:'ziua de joc anterioară', cal_jocUrmator:'următoarea zi de joc', cal_cuMeciuri:'zile cu meciuri', cal_azi:'Azi', te_lot:'Lotul echipei', te_cautaJucator:'Caută jucătorul după nume, echipă sau rating…', te_capitanRating:'Căpitan = cel mai mare rating', te_mutatDin:'mutat din', te_faraNr:'fără nr.', te_scoate:'Scoate', te_adauga:'Adaugă jucător în lot', te_vorFiScosi:'Vor fi scoși din echipă la salvare', te_notaNr:'Numărul în echipă (1–4) este cel din fișa personală. O echipă poate avea mai mulți căpitani; la fiecare meci se alege căpitanul din lot. Jucătorii mutați din altă echipă își schimbă echipa la salvare.', te_errNume:'Denumirea echipei este obligatorie.', te_errNrDublu:'Doi jucători au același număr.', te_errDoiCapitani:'Echipa poate avea un singur căpitan.', te_altaCuloare:'Altă culoare', te_sterge:'Șterge echipa', te_stergeBlocat:'Echipa are meciuri înregistrate și nu poate fi ștearsă — marcați-o inactivă.', te_confirmSterge:(n)=>`Ștergeți echipa ${n}? Jucătorii ei rămân în registru, fără echipă.`, ec_numeExista:'Există deja o echipă cu acest nume.', pt_confirmLunga:(m)=>`Pauza durează ${Math.floor(m/60)} h ${m%60} min (trece peste miezul nopții?). Salvați așa?`, ve_stocInsuficient:(n)=>`În stoc sunt doar ${n} buc. din această mărime. Eliberați totuși (stocul va deveni negativ)?`, re_sect_participanti:'Rapoarte privind jucătorii', act_s_meciuri:'Meciuri', act_echipaA:'Echipa A', act_echipaB:'Echipa B', act_scor:'Scor', act_platou:'Teren', act_cartonas:'Sancțiune', nav_participanti:'Jucători', nav_echipe:'Echipe', nav_meciuri:'Meciuri', nav_plati:'Plăți', nav_statistici:'Statistici',
   da_stat_activi:'Jucători activi', da_stat_meciuri:'Meciuri azi', da_stat_meciuriSub:'Săptămâna aceasta',
   pa_title:'Jucători', pa_sub:'Registrul jucătorilor BSKT Cup — fișa personală, echipa și istoricul fiecăruia.',
   pa_addTitle:'Înregistrare jucător nou', pa_btnAdd:'+ Adaugă jucător', pa_none:'Niciun jucător găsit.',   pa_editTitle:'Modifică fișa jucătorului', pa_deleteBtn:'Șterge jucător', pa_deleteTitle:'Șterge jucătorul din registru', pa_fisa:'Fișa jucătorului',
@@ -745,7 +784,7 @@ Object.assign(I18N.ro, {
   err_save:'Salvarea a eșuat:', err_update:'Actualizarea a eșuat:', err_delete:'Ștergerea a eșuat:', err_load:'Încărcarea a eșuat:', err_noPerm:'nu aveți permisiunea necesară.',
 });
 Object.assign(I18N.ru, {
-  st_rolValue:'Администратор', sx_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Таблица команд их учитывает, а статистика игроков и капитанов — нет, пока состав не заполнен. Дни:`, mt_lotDinUltimul:(d,opp)=>`Предложен состав из последнего матча (${d}, против ${opp}). Исправьте, если он изменился.`, mt_lotDinEchipa:'Состав предложен по списку команды (нет прошлого матча с составом).', sh_faraPersonal:'В списке нет дежурного персонала, поэтому смену нельзя начать. Администратор добавляет имена в Настройки → Дежурный персонал.', mt_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Игроки этих матчей не получат оплату, пока состав не заполнен. Дни:`, mt_faraLotCard:'Матч сыгран без состава: игрокам не начисляется оплата, пока состав не заполнен.', mt_completeazaLot:'Заполнить состав', pl_tabArbitri:'Арбитры', sh_updateBalls:'Обновить мячи и часы', ar_oraStart:'Начало', ar_oraStop:'Конец', ar_interval:'Интервал', ar_ore:'Часы', ar_editOre:'Часы', ar_faraOre:'без часов', ar_singur:'один', ar_inDoi:'вдвоём', ar_peste2:'>2 арбитров', ar_needAmbeleOre:'Укажите и время начала, и время окончания.', ar_confirmAlTreilea:(n)=>`В этот день уже судят ${n}. Обычно не больше двух арбитров в день — всё равно добавить третьего?`, ar_regulaPlata:(zi,ore,ora)=>`Один арбитр за день: ${zi} лей/день (${ore} ч). Два арбитра: каждый получает ${ora} лей × отсуженные часы (${ore} ч = ${ora*ore} лей).`, ar_zile:'Дни', ar_zileSingur:'Дни один', ar_zileDoi:'Дни вдвоём', ar_oreDoi:'Часы (вдвоём)', ar_dePlata:'К выплате', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} вдвоём без указанных часов`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с более чем 2 арбитрами`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с двумя арбитрами без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`, ar_singurZi:'Один весь день', ar_cu:'С', ar_tarifZi:(zi)=>`ставка за день ${zi}`, ar_niciunArbitru:'Нет арбитров за выбранный период.', ar_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.', ar_tip:'Тип дня', ar_detaliiZile:'Детали по дням', ar_tarifeTitle:'Ставки арбитров', ar_tZi:'Один арбитр — лей/день', ar_tOreZi:'Часов в полном дне', ar_tOra:'Два арбитра — лей/час каждому', re_luna:'Месяц (задаёт период)', re_intervalPersonalizat:'Свой период', mp_anAnterior:'Предыдущий год', mp_anUrmator:'Следующий год', mp_lunaAnterioara:'Предыдущий месяц', mp_lunaUrmatoare:'Следующий месяц', mp_lunaCurenta:'Текущий месяц', mp_inregistrari:'записей', sx_perioada:'Выбранный период', sx_siLa:'также в', sx_echipeScurt:'команд', sx_tabEchipe:'Таблица команд', sx_ldWin:'Лучший винрейт', sx_ldPm:'Лучший +/−', sx_ldActiv:'Больше всего матчей', sx_ldCap:'Лучший капитан', sx_caCapitan:'капитаном', sx_capitanVM:'Капитан П/М', sx_meciuriCapitan:'Матчи капитаном', sx_niciunJucator:'Нет игроков по этим фильтрам.', sx_sortWin:'Сортировка: винрейт ↓', sx_sortVictorii:'Сортировка: победы ↓', sx_sortPm:'Сортировка: +/− ↓', sx_sortRating:'Сортировка: рейтинг ↓', sx_minMeciuri:(n)=>`Минимум ${n} матчей`, sx_oriceNrMeciuri:'Любое число матчей', sx_hintEchipe:'Нажмите на команду, чтобы увидеть статистику её игроков.', sx_hintRand:'Нажмите на игрока, чтобы открыть профиль. Лидеры сверху учитывают только игроков с минимум 10 матчами.', pl_th2_net:'Нетто / игрок', pl_th2_brut:'Необходимое брутто', pl_th2_ret:'Удержание 15%', pl_th2_netRamas:'Остаток нетто', pl_sumeMdl:'Суммы в MDL', pl_th_victorii:'Победы', pl_th_infrangeri:'Поражения', pl_th_netJucator:'Нетто / игрок (MDL)', pl_th_coef:'Коэф. к базе', pl_th_brutNecesar:'Необходимое брутто (MDL)', pl_th_retinere15:'Удержание 15% (MDL)', pl_th_netRamas:'Остаток нетто (MDL)', pl_th_observatie:'Примечание', pl_th_dePlataBrut:'К выплате (брутто)', pl_dePlataTotalBrut:'Итого к выплате (брутто) за период', pl_sortBrut:'Сортировка: брутто ↓', pl_obsCapitan:'Включён бонус за лидерство', pl_obsRezerva:'Запасной наравне с игроком; ротацию не штрафуем', pl_obsBaza:'Базовый игрок', pl_obsRetinut:'Удержано из выплаты', pl_tabJucatori:'Игроки', pl_tabEchipe:'По командам', pl_tabTarife:'Ставки', pl_dePlataTotal:'Итого к выплате за период', pl_cauta:'Поиск игрока или команды…', pl_arataZile:'Колонки по дням', pl_sortNume:'Сортировка: имя', pl_sortDePlata:'Сортировка: к выплате ↓', pl_sortNet:'Сортировка: нетто ↓', pl_sortMeciuri:'Сортировка: матчи ↓', pl_sortDed:'Сортировка: вычеты ↓', pl_sortEchipa:'Сортировка: команда', pl_tipVI:'Победы–поражения', pl_hintRand:'Нажмите на игрока, чтобы увидеть каждый матч и расчёт выплаты. Коэф. к базе = средняя сумма за матч, делённая на базу (игрок, поражение). К выплате = необходимое брутто минус вычеты.', pl_detMeciuri:'Матчи за период', pl_detCalcul:'Расчёт выплаты', pl_deschideProfil:'Открыть профиль', pl_echipeHint:'Нажмите на команду, чтобы увидеть выплаты её игроков.', pa_countSuffix:["игрок", "игрока", "игроков"], mt_meciuriSuffix:["матч", "матча", "матчей"], an_countSuffix:["сессия", "сессии", "сессий"], ve_countSuffix:["выдача", "выдачи", "выдач"], ta_countSuffix:["задача", "задачи", "задач"], sp_operatiuni:["операция", "операции", "операций"], sp_countSuffix:["запись", "записи", "записей"], pt_countSuffix:["перерыв зарегистрирован", "перерыва зарегистрировано", "перерывов зарегистрировано"], pl_zile:["игровой день", "игровых дня", "игровых дней"], ob_countSuffix:["замечание", "замечания", "замечаний"], le_countSuffix:["запись", "записи", "записей"], iv_lowStock:["товар ниже допустимого минимума.", "товара ниже допустимого минимума.", "товаров ниже допустимого минимума."], fp_countSuffix:["зарегистрированная санкция", "зарегистрированные санкции", "зарегистрированных санкций"], da_categorii:["категории", "категорий", "категорий"], da2_countSuffix:["случай ущерба", "случая ущерба", "случаев ущерба"], arb_countSuffix:["судья", "судьи", "судей"], ar_countSuffix:["выдача", "выдачи", "выдач"], pa_expiraLa:["день", "дня", "дней"], cal_ziuaPrecedenta:'Предыдущий день', cal_ziuaUrmatoare:'Следующий день', cal_faraMeciuri:'без матчей', cal_jocAnterior:'предыдущий игровой день', cal_jocUrmator:'следующий игровой день', cal_cuMeciuri:'дни с матчами', cal_azi:'Сегодня', te_lot:'Состав команды', te_cautaJucator:'Поиск игрока по имени, команде или рейтингу…', te_capitanRating:'Капитан = самый высокий рейтинг', te_mutatDin:'переходит из', te_faraNr:'без №', te_scoate:'Убрать', te_adauga:'Добавить игрока в состав', te_vorFiScosi:'Будут убраны из команды при сохранении', te_notaNr:'Номер в команде (1–4) — тот же, что в личной карточке. У команды может быть несколько капитанов; капитан матча выбирается в составе на матч. Игроки из другой команды переходят при сохранении.', te_errNume:'Название команды обязательно.', te_errNrDublu:'У двух игроков одинаковый номер.', te_errDoiCapitani:'У команды может быть только один капитан.', te_altaCuloare:'Другой цвет', te_sterge:'Удалить команду', te_stergeBlocat:'У команды есть матчи, её нельзя удалить — отметьте её неактивной.', te_confirmSterge:(n)=>`Удалить команду ${n}? Её игроки останутся в реестре без команды.`, ec_numeExista:'Команда с таким названием уже существует.', pt_confirmLunga:(m)=>`Перерыв длится ${Math.floor(m/60)} ч ${m%60} мин (через полночь?). Сохранить так?`, ve_stocInsuficient:(n)=>`На складе только ${n} шт. этого размера. Всё равно выдать (остаток станет отрицательным)?`, re_sect_participanti:'Отчёты об игроках', act_s_meciuri:'Матчи', act_echipaA:'Команда A', act_echipaB:'Команда B', act_scor:'Счёт', act_platou:'Площадка', act_cartonas:'Санкция', nav_participanti:'Игроки', nav_echipe:'Команды', nav_meciuri:'Матчи', nav_plati:'Выплаты', nav_statistici:'Статистика',
+  st_rolValue:'Администратор', dl_title:'Составы дня', dl_btn:'Заполнить составы дня', dl_btnSub:'Один состав на команду для всех её матчей этого дня, где ещё нет игроков.', dl_sub:'Обычно команда играет весь вечер одним составом: заполните его один раз, и он применится ко всем её матчам этого дня без игроков. Матчи, где состав уже есть, не меняются; отдельный матч можно потом исправить в редакторе матча. Выплаты считаются автоматически.', dl_aplica:'Применить', dl_seAplicaLa:(n)=>`Применяется к ${n} ${plural(n,'mt_meciuriSuffix','ru')}:`, dl_salveaza:'Сохранить составы', dl_nimic:'У всех матчей этого дня составы уже заполнены.', dl_conflict:(p,ora,a,b)=>`${p} указан в обеих командах в матче в ${ora} (${a} – ${b}). Исправьте один из составов.`, sx_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Таблица команд их учитывает, а статистика игроков и капитанов — нет, пока состав не заполнен. Дни:`, mt_lotDinUltimul:(d,opp)=>`Предложен состав из последнего матча (${d}, против ${opp}). Исправьте, если он изменился.`, mt_lotDinEchipa:'Состав предложен по списку команды (нет прошлого матча с составом).', sh_faraPersonal:'В списке нет дежурного персонала, поэтому смену нельзя начать. Администратор добавляет имена в Настройки → Дежурный персонал.', mt_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Игроки этих матчей не получат оплату, пока состав не заполнен. Дни:`, mt_faraLotCard:'Матч сыгран без состава: игрокам не начисляется оплата, пока состав не заполнен.', mt_completeazaLot:'Заполнить состав', pl_tabArbitri:'Арбитры', sh_updateBalls:'Обновить мячи и часы', ar_oraStart:'Начало', ar_oraStop:'Конец', ar_interval:'Интервал', ar_ore:'Часы', ar_editOre:'Часы', ar_faraOre:'без часов', ar_singur:'один', ar_inDoi:'вдвоём', ar_peste2:'>2 арбитров', ar_needAmbeleOre:'Укажите и время начала, и время окончания.', ar_confirmAlTreilea:(n)=>`В этот день уже судят ${n}. Обычно не больше двух арбитров в день — всё равно добавить третьего?`, ar_regulaPlata:(zi,ore,ora)=>`Один арбитр за день: ${zi} лей/день (${ore} ч). Два арбитра: каждый получает ${ora} лей × отсуженные часы (${ore} ч = ${ora*ore} лей).`, ar_zile:'Дни', ar_zileSingur:'Дни один', ar_zileDoi:'Дни вдвоём', ar_oreDoi:'Часы (вдвоём)', ar_dePlata:'К выплате', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} вдвоём без указанных часов`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с более чем 2 арбитрами`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с двумя арбитрами без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`, ar_singurZi:'Один весь день', ar_cu:'С', ar_tarifZi:(zi)=>`ставка за день ${zi}`, ar_niciunArbitru:'Нет арбитров за выбранный период.', ar_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.', ar_tip:'Тип дня', ar_detaliiZile:'Детали по дням', ar_tarifeTitle:'Ставки арбитров', ar_tZi:'Один арбитр — лей/день', ar_tOreZi:'Часов в полном дне', ar_tOra:'Два арбитра — лей/час каждому', re_luna:'Месяц (задаёт период)', re_intervalPersonalizat:'Свой период', mp_anAnterior:'Предыдущий год', mp_anUrmator:'Следующий год', mp_lunaAnterioara:'Предыдущий месяц', mp_lunaUrmatoare:'Следующий месяц', mp_lunaCurenta:'Текущий месяц', mp_inregistrari:'записей', sx_perioada:'Выбранный период', sx_siLa:'также в', sx_echipeScurt:'команд', sx_tabEchipe:'Таблица команд', sx_ldWin:'Лучший винрейт', sx_ldPm:'Лучший +/−', sx_ldActiv:'Больше всего матчей', sx_ldCap:'Лучший капитан', sx_caCapitan:'капитаном', sx_capitanVM:'Капитан П/М', sx_meciuriCapitan:'Матчи капитаном', sx_niciunJucator:'Нет игроков по этим фильтрам.', sx_sortWin:'Сортировка: винрейт ↓', sx_sortVictorii:'Сортировка: победы ↓', sx_sortPm:'Сортировка: +/− ↓', sx_sortRating:'Сортировка: рейтинг ↓', sx_minMeciuri:(n)=>`Минимум ${n} матчей`, sx_oriceNrMeciuri:'Любое число матчей', sx_hintEchipe:'Нажмите на команду, чтобы увидеть статистику её игроков.', sx_hintRand:'Нажмите на игрока, чтобы открыть профиль. Лидеры сверху учитывают только игроков с минимум 10 матчами.', pl_th2_net:'Нетто / игрок', pl_th2_brut:'Необходимое брутто', pl_th2_ret:'Удержание 15%', pl_th2_netRamas:'Остаток нетто', pl_sumeMdl:'Суммы в MDL', pl_th_victorii:'Победы', pl_th_infrangeri:'Поражения', pl_th_netJucator:'Нетто / игрок (MDL)', pl_th_coef:'Коэф. к базе', pl_th_brutNecesar:'Необходимое брутто (MDL)', pl_th_retinere15:'Удержание 15% (MDL)', pl_th_netRamas:'Остаток нетто (MDL)', pl_th_observatie:'Примечание', pl_th_dePlataBrut:'К выплате (брутто)', pl_dePlataTotalBrut:'Итого к выплате (брутто) за период', pl_sortBrut:'Сортировка: брутто ↓', pl_obsCapitan:'Включён бонус за лидерство', pl_obsRezerva:'Запасной наравне с игроком; ротацию не штрафуем', pl_obsBaza:'Базовый игрок', pl_obsRetinut:'Удержано из выплаты', pl_tabJucatori:'Игроки', pl_tabEchipe:'По командам', pl_tabTarife:'Ставки', pl_dePlataTotal:'Итого к выплате за период', pl_cauta:'Поиск игрока или команды…', pl_arataZile:'Колонки по дням', pl_sortNume:'Сортировка: имя', pl_sortDePlata:'Сортировка: к выплате ↓', pl_sortNet:'Сортировка: нетто ↓', pl_sortMeciuri:'Сортировка: матчи ↓', pl_sortDed:'Сортировка: вычеты ↓', pl_sortEchipa:'Сортировка: команда', pl_tipVI:'Победы–поражения', pl_hintRand:'Нажмите на игрока, чтобы увидеть каждый матч и расчёт выплаты. Коэф. к базе = средняя сумма за матч, делённая на базу (игрок, поражение). К выплате = необходимое брутто минус вычеты.', pl_detMeciuri:'Матчи за период', pl_detCalcul:'Расчёт выплаты', pl_deschideProfil:'Открыть профиль', pl_echipeHint:'Нажмите на команду, чтобы увидеть выплаты её игроков.', pa_countSuffix:["игрок", "игрока", "игроков"], mt_meciuriSuffix:["матч", "матча", "матчей"], an_countSuffix:["сессия", "сессии", "сессий"], ve_countSuffix:["выдача", "выдачи", "выдач"], ta_countSuffix:["задача", "задачи", "задач"], sp_operatiuni:["операция", "операции", "операций"], sp_countSuffix:["запись", "записи", "записей"], pt_countSuffix:["перерыв зарегистрирован", "перерыва зарегистрировано", "перерывов зарегистрировано"], pl_zile:["игровой день", "игровых дня", "игровых дней"], ob_countSuffix:["замечание", "замечания", "замечаний"], le_countSuffix:["запись", "записи", "записей"], iv_lowStock:["товар ниже допустимого минимума.", "товара ниже допустимого минимума.", "товаров ниже допустимого минимума."], fp_countSuffix:["зарегистрированная санкция", "зарегистрированные санкции", "зарегистрированных санкций"], da_categorii:["категории", "категорий", "категорий"], da2_countSuffix:["случай ущерба", "случая ущерба", "случаев ущерба"], arb_countSuffix:["судья", "судьи", "судей"], ar_countSuffix:["выдача", "выдачи", "выдач"], pa_expiraLa:["день", "дня", "дней"], cal_ziuaPrecedenta:'Предыдущий день', cal_ziuaUrmatoare:'Следующий день', cal_faraMeciuri:'без матчей', cal_jocAnterior:'предыдущий игровой день', cal_jocUrmator:'следующий игровой день', cal_cuMeciuri:'дни с матчами', cal_azi:'Сегодня', te_lot:'Состав команды', te_cautaJucator:'Поиск игрока по имени, команде или рейтингу…', te_capitanRating:'Капитан = самый высокий рейтинг', te_mutatDin:'переходит из', te_faraNr:'без №', te_scoate:'Убрать', te_adauga:'Добавить игрока в состав', te_vorFiScosi:'Будут убраны из команды при сохранении', te_notaNr:'Номер в команде (1–4) — тот же, что в личной карточке. У команды может быть несколько капитанов; капитан матча выбирается в составе на матч. Игроки из другой команды переходят при сохранении.', te_errNume:'Название команды обязательно.', te_errNrDublu:'У двух игроков одинаковый номер.', te_errDoiCapitani:'У команды может быть только один капитан.', te_altaCuloare:'Другой цвет', te_sterge:'Удалить команду', te_stergeBlocat:'У команды есть матчи, её нельзя удалить — отметьте её неактивной.', te_confirmSterge:(n)=>`Удалить команду ${n}? Её игроки останутся в реестре без команды.`, ec_numeExista:'Команда с таким названием уже существует.', pt_confirmLunga:(m)=>`Перерыв длится ${Math.floor(m/60)} ч ${m%60} мин (через полночь?). Сохранить так?`, ve_stocInsuficient:(n)=>`На складе только ${n} шт. этого размера. Всё равно выдать (остаток станет отрицательным)?`, re_sect_participanti:'Отчёты об игроках', act_s_meciuri:'Матчи', act_echipaA:'Команда A', act_echipaB:'Команда B', act_scor:'Счёт', act_platou:'Площадка', act_cartonas:'Санкция', nav_participanti:'Игроки', nav_echipe:'Команды', nav_meciuri:'Матчи', nav_plati:'Выплаты', nav_statistici:'Статистика',
   da_stat_activi:'Активные игроки', da_stat_meciuri:'Матчи сегодня', da_stat_meciuriSub:'За эту неделю',
   pa_title:'Игроки', pa_sub:'Реестр игроков BSKT Cup — личная карточка, команда и история каждого.',
   pa_addTitle:'Регистрация нового игрока', pa_btnAdd:'+ Добавить игрока', pa_none:'Игроки не найдены.',   pa_editTitle:'Изменить карточку игрока', pa_deleteBtn:'Удалить игрока', pa_deleteTitle:'Удалить игрока из реестра', pa_fisa:'Карточка игрока',
@@ -823,7 +862,7 @@ let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
 const APP_BUILD = '2026-10-06-bskt-1';
-let currentRole = null;       // 'admin' | 'locatie'
+let currentRole = null;       // 'admin' | 'locatie' | 'asistent'
 let currentProfileId = null;
 let currentArbitruId = null;
 let currentShift = null;
@@ -833,6 +872,9 @@ let dashboardTrainingRows = 1;
 let demoShiftArbitrajIds = [];
 let dashboardRefereeEditId = null;
 function isFullAdmin(){ return currentRole === 'admin'; }
+// helper account: players, teams, matches, statistics and payments — read-only, no personal data
+function isAsistent(){ return currentRole === 'asistent'; }
+function canSeeMoney(){ return isFullAdmin() || isAsistent(); }
 function hasActiveShift(){ return isFullAdmin() || !!currentShift; }
 function activeShiftName(){
   if(isFullAdmin()) return currentAdmin;
@@ -869,7 +911,7 @@ function stableReminderMinute(dateKey,window){
   return window.start + ((hash>>>0) % (window.end-window.start));
 }
 function showRefreshReminder(kind='reminder'){
-  if(isFullAdmin()) return;
+  if(isFullAdmin() || isAsistent()) return;
   const box = document.getElementById('location-refresh-reminder');
   if(!box) return;
   refreshReminderKind = kind;
@@ -942,7 +984,7 @@ function startLocationRefreshReminders(){
   locationRefreshChannel = null;
   liveRefreshEvents = [];
   hideRefreshReminder();
-  if(isFullAdmin()) return;
+  if(isFullAdmin() || isAsistent()) return;
   const previewUrl = new URL(location.href);
   if(previewUrl.searchParams.get('preview-refresh')==='1'){
     previewUrl.searchParams.delete('preview-refresh');
@@ -955,7 +997,7 @@ function startLocationRefreshReminders(){
 }
 
 async function ensureCurrentAppBuild(){
-  if(isFullAdmin() || location.protocol==='file:') return true;
+  if(isFullAdmin() || isAsistent() || location.protocol==='file:') return true;
   const { data, error } = await sb.from('app_config').select('value').eq('key','location_app_build').single();
   if(error || !data?.value){
     showRefreshReminder('verify');
@@ -1004,8 +1046,8 @@ async function fetchAll(){
   ] = await Promise.all([
     sb.from('administratori').select('*'),
     sb.from('serviciu_administratori').select('*').eq('activ', true).order('nume'),
-    sb.from('participanti').select('*').order('created_at', {ascending:false}),
-    sb.from('arbitri').select('*').order('created_at', {ascending:false}),
+    isAsistent() ? sb.rpc('participanti_asistent') : sb.from('participanti').select('*').order('created_at', {ascending:false}),
+    isAsistent() ? sb.rpc('arbitri_asistent') : sb.from('arbitri').select('*').order('created_at', {ascending:false}),
     sb.from('intarzieri').select('*').order('data', {ascending:false}),
     sb.from('vestimentatie').select('*').order('data', {ascending:false}),
     sb.from('serviciu').select('*').order('data', {ascending:false}),
@@ -1110,6 +1152,7 @@ async function refetchInventar(){
 }
 
 async function logAction(actiune){
+  if(isAsistent()) return;
   const administratorServiciuId = !isFullAdmin() ? currentShift?.administratorServiciuId || null : null;
   DB.jurnal.unshift({ id: uid(), cont: journalActorName(), data: todayISO(), actiune });
   const { error } = await sb.from('jurnal').insert({ administrator_id: currentAdminId, administrator_serviciu_id:administratorServiciuId, actiune });
@@ -1195,7 +1238,8 @@ async function enterApp(userId, displayName, rol){
   currentAdminId = userId;
   currentAdmin = displayName;
   currentRole = rol || 'admin';
-  document.body.classList.toggle('role-locatie', currentRole!=='admin');
+  document.body.classList.toggle('role-locatie', currentRole==='locatie');
+  document.body.classList.toggle('role-asistent', currentRole==='asistent');
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app-shell').classList.add('visible');
   document.getElementById('header-user').textContent = currentAdmin;
@@ -1216,7 +1260,7 @@ async function logout(){
   liveRefreshEvents = [];
   hideRefreshReminder();
   currentAdmin = null; currentAdminId = null; currentRole = null; currentShift = null; adminDemoShiftActive = false; shiftStartPrompt = false; DB = null;
-  document.body.classList.remove('role-locatie');
+  document.body.classList.remove('role-locatie', 'role-asistent');
   document.getElementById('app-shell').classList.remove('visible');
   document.getElementById('auth-screen').style.display = 'flex';
   document.getElementById('login-msg').textContent = '';
@@ -1367,13 +1411,18 @@ const NAV = [
   {id:'setari', key:'nav_setari', icon:'settings'},
 ];
 const LOCATION_HIDDEN_VIEWS = new Set(['setari','plati']);
+// everything a helper account can open (all read-only)
+const ASISTENT_VIEWS = new Set(['dashboard','participanti','echipe','meciuri','plati','statistici','intarzieri','fairplay','daune','spalatorie','antrenamente']);
 // read-only views a location account can open before starting a shift
 const NO_SHIFT_VIEWS = new Set(['dashboard','rapoarte','statistici','meciuri','echipe']);
 
 function buildSidebar(){
   const nav = document.getElementById('sb-nav');
+  const footLabel = document.querySelector('.sb-foot span');
+  if(footLabel) footLabel.textContent = isAsistent() ? t('as_cont') : t('sb_shift');
   nav.innerHTML = NAV.filter(item => {
     if(isFullAdmin()) return true;
+    if(isAsistent()) return ASISTENT_VIEWS.has(item.id);
     if(!currentShift) return NO_SHIFT_VIEWS.has(item.id);
     return !LOCATION_HIDDEN_VIEWS.has(item.id);
   }).map(item => {
@@ -1393,8 +1442,11 @@ function navBadge(id){
 }
 
 function navigate(view){
-  if(!isFullAdmin() && LOCATION_HIDDEN_VIEWS.has(view)) view = 'dashboard';
-  if(!isFullAdmin() && !currentShift && !NO_SHIFT_VIEWS.has(view)) view = 'dashboard';
+  if(isAsistent()){ if(!ASISTENT_VIEWS.has(view)) view = 'dashboard'; }
+  else {
+    if(!isFullAdmin() && LOCATION_HIDDEN_VIEWS.has(view)) view = 'dashboard';
+    if(!isFullAdmin() && !currentShift && !NO_SHIFT_VIEWS.has(view)) view = 'dashboard';
+  }
   currentView = view;
   document.querySelectorAll('.sb-item').forEach(el => el.classList.toggle('active', el.dataset.view===view));
   const navItem = NAV.find(n=>n.id===view);
@@ -2369,7 +2421,26 @@ function renderShiftWorkflow(){
   </section>`;
 }
 
+function renderAsistentDashboard(){
+  const today = todayISO(), wk = weekStart(today);
+  const lastDay = DB.meciuri.filter(m=>m.data<=today && winnerOf(m)).map(m=>m.data).sort().pop();
+  const link = (view, key, sub)=>`<button class="stat-card asistent-link" onclick="navigate('${view}')"><div class="stat-label">${t(key)}</div><div class="stat-sub">${sub}</div></button>`;
+  return `
+  <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
+  <div class="view-sub">${fmtDate(today)} · ${t('as_dashSub')}</div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">${t('da_stat_activi')}</div><div class="stat-value">${DB.participanti.filter(p=>p.statut==='activ').length}</div><div class="stat-sub">${DB.participanti.length} ${t('da_total_inreg')}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('nav_echipe')}</div><div class="stat-value">${echipeActive().length}</div><div class="stat-sub">${t('as_echipeActive')}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('da_stat_meciuri')}</div><div class="stat-value">${DB.meciuri.filter(m=>m.data===today).length}</div><div class="stat-sub">${t('da_stat_meciuriSub')}: ${DB.meciuri.filter(m=>m.data>=wk).length}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('as_ultimaZi')}</div><div class="stat-value" style="font-size:22px">${lastDay?fmtDate(lastDay):'—'}</div><div class="stat-sub">${lastDay?`${DB.meciuri.filter(m=>m.data===lastDay).length} ${plural(DB.meciuri.filter(m=>m.data===lastDay).length,'mt_meciuriSuffix')}`:''}</div></div>
+  </div>
+  <div class="stats-row">
+    ${link('plati','nav_plati',t('as_linkPlati'))}${link('statistici','nav_statistici',t('as_linkStats'))}${link('meciuri','nav_meciuri',t('as_linkMeciuri'))}${link('participanti','nav_participanti',t('as_linkJucatori'))}
+  </div>
+  <div class="view-sub">${t('as_doarCitire')}</div>`;
+}
 function renderDashboard(){
+  if(isAsistent()) return renderAsistentDashboard();
   const alerts = buildAlerts();
   const cazatiAcum = DB.hostel.filter(h=>!DB.lenjerie.some(()=>false)).length; // placeholder not used
   const medExpirate = medicalRows().filter(r=>r.status==='expirat').length;
@@ -3049,7 +3120,7 @@ function renderMeciuri(){
   <div class="add-form">
     <div class="form-grid" style="grid-template-columns:1fr auto">
       <div class="field"><label>${t('mt_ziua')}</label>${renderMatchCalendar(day)}</div>
-      <div class="field" style="justify-content:flex-end">${isFullAdmin() ? `<div class="day-total">${t('mt_platiZi')}: <strong>${money(dayNet)} MDL</strong></div>` : ''}</div>
+      <div class="field" style="justify-content:flex-end">${canSeeMoney() ? `<div class="day-total">${t('mt_platiZi')}: <strong>${money(dayNet)} MDL</strong></div>` : ''}</div>
     </div>
     ${renderSyncBar()}
   </div>
@@ -3071,6 +3142,7 @@ function renderMeciuri(){
   </div>` : ''}
 
   ${matchesLoading ? '' : noRosterBanner(scoredWithoutRoster(matches))}
+  ${!matchesLoading && isFullAdmin() && matches.some(m=>sideEmpty(m, m.echipaAId) || sideEmpty(m, m.echipaBId)) ? `<div class="dl-cta"><button class="btn-primary" onclick="openDayLineups('${day}')">${t('dl_btn')}</button><span class="td-muted">${t('dl_btnSub')}</span></div>` : ''}
   ${matchesLoading ? `<div class="alert-empty">${t('st_loading2')}</div>` : matches.length ? `<div class="match-list">${matches.map((m,i)=>(isAfterMidnight(m.ora) && !isAfterMidnight(matches[i-1]?.ora) ? `<div class="night-divider"><span>${t('mt_dupaMiezulNoptii')} · ${fmtDate(addDays(day,1))}</span></div>` : '') + renderMatchCard(m)).join('')}</div>` : `<div class="alert-empty">${t('mt_none')}</div>`}`;
 }
 function scoredWithoutRoster(matches){ return matches.filter(m=>winnerOf(m) && !(rosterByMatch.get(m.id)||[]).length); }
@@ -3081,6 +3153,90 @@ function noRosterBanner(list, textKey='mt_faraLotAvert'){
     <span class="roster-warning-days">${days.map(d=>`<button type="button" class="btn-ghost btn-sm" onclick="goToMatchDay('${d}')">${fmtDate(d)} · ${list.filter(m=>m.data===d).length}</button>`).join('')}</span></div>`;
 }
 async function goToMatchDay(d){ matchDay = d; matchCalOpen = false; navigate('meciuri'); }
+/* ── Line-ups of the day: one line-up per team, applied to every match of that team on the day
+   that has no players yet (synced matches arrive from the site with scores only). Never overwrites
+   a side that already has players; single matches can still be corrected in the match editor. ── */
+let dayLineups = null;   // { day, teams: { echipaId: { slots:[{pid,rol}], matches:[id] } }, order:[echipaId] }
+function sideEmpty(m, eid){ return !(rosterByMatch.get(m.id)||[]).some(r=>r.echipaId===eid); }
+function openDayLineups(day){
+  if(!isFullAdmin()) return;
+  const matches = DB.meciuri.filter(m=>m.data===day).sort((a,b)=>matchSortKey(a.data,a.ora).localeCompare(matchSortKey(b.data,b.ora)));
+  const teams = {}, order = [];
+  matches.forEach(m=>[m.echipaAId, m.echipaBId].forEach(eid=>{
+    if(!sideEmpty(m, eid)) return;
+    if(!teams[eid]){ const key = matchSortKey(m.data, m.ora); teams[eid] = { slots: defaultSlots(eid, key), beforeKey: key, matches: [] }; order.push(eid); }
+    teams[eid].matches.push(m.id);
+  }));
+  dayLineups = { day, teams, order };
+  document.getElementById('record-modal-title').textContent = `${t('dl_title')} · ${fmtDate(day)}`;
+  renderDayLineups();
+  openModal('record-modal');
+}
+function dlSlot(eid, i, key, value){ dayLineups.teams[eid].slots[i][key] = value; }
+function dlAddSlot(eid){ dayLineups.teams[eid].slots.push({ pid:'', rol:'jucător' }); renderDayLineups(); }
+function dlSkip(eid){ dayLineups.teams[eid].skip = !dayLineups.teams[eid].skip; renderDayLineups(); }
+function renderDayLineups(){
+  const d = dayLineups;
+  const body = document.getElementById('record-modal-body');
+  if(!d.order.length){ body.innerHTML = `<div class="alert-empty">${t('dl_nimic')}</div>`; return; }
+  const matchLabel = id => { const m = DB.meciuri.find(x=>x.id===id); const score = m.scorA!=null && m.scorB!=null ? ` <strong>${m.scorA}:${m.scorB}</strong>` : ''; return `<strong>${esc(matchTimeLabel(m.data, m.ora)||'—')}</strong> · ${esc(echipaName(m.echipaAId))} – ${esc(echipaName(m.echipaBId))}${score}`; };
+  body.innerHTML = `
+    <div class="view-sub" style="margin:0 0 14px">${t('dl_sub')}</div>
+    <div class="dl-grid">${d.order.map(eid=>{ const tm = d.teams[eid]; const last = lastLineup(eid, tm.beforeKey);
+      return `<section class="dl-team ${tm.skip?'skipped':''}" style="--team:${esc(echipa(eid)?.culoare||'var(--border)')}">
+        <div class="dl-team-head"><div class="team-name">${teamDot(eid)}${esc(echipaName(eid))}</div>
+          <label class="check-line" style="padding:0"><input type="checkbox" ${tm.skip?'':'checked'} onchange="dlSkip('${eid}')"> ${t('dl_aplica')}</label></div>
+        <div class="lineup-source">${last ? t('mt_lotDinUltimul')(fmtDate(last.data), echipaName(last.opp)) : t('mt_lotDinEchipa')}</div>
+        ${tm.slots.map((sl,i)=>`<div class="match-slot">
+          <select ${tm.skip?'disabled':''} onchange="dlSlot('${eid}',${i},'pid',this.value)">${playerOptions(eid, sl.pid)}</select>
+          <select ${tm.skip?'disabled':''} onchange="dlSlot('${eid}',${i},'rol',this.value)">${MATCH_ROLES.map(r=>`<option value="${r}" ${sl.rol===r?'selected':''}>${esc(trEnum(r))}</option>`).join('')}</select>
+        </div>`).join('')}
+        ${tm.skip ? '' : `<button type="button" class="btn-ghost btn-sm" onclick="dlAddSlot('${eid}')">+ ${t('mt_addSlot')}</button>`}
+        <div class="dl-matches"><div class="pay-detail-title">${t('dl_seAplicaLa')(tm.matches.length)}</div>${tm.matches.map(id=>`<div class="td-muted">${matchLabel(id)}</div>`).join('')}</div>
+      </section>`; }).join('')}</div>
+    <div class="profile-edit-actions">
+      <button type="button" class="btn-ghost" onclick="closeModal('record-modal')">${t('btn_cancel')}</button>
+      <button type="button" class="btn-primary" onclick="saveDayLineups()">${t('dl_salveaza')}</button>
+    </div>`;
+}
+async function saveDayLineups(){
+  const d = dayLineups; if(!d) return;
+  const active = d.order.filter(eid=>!d.teams[eid].skip);
+  if(!active.length){ closeModal('record-modal'); return; }
+  // validate each team's line-up
+  for(const eid of active){
+    const picked = d.teams[eid].slots.filter(s=>s.pid);
+    const name = echipaName(eid);
+    if(picked.length < 3){ alert(`${name}: ${t('mt_needPlayers')}`); return; }
+    if(picked.filter(s=>s.rol==='căpitan').length > 1){ alert(`${name}: ${t('mt_unCapitan')}`); return; }
+    if(new Set(picked.map(s=>s.pid)).size !== picked.length){ alert(`${name}: ${t('mt_dublura')}`); return; }
+  }
+  // a player can't be on both sides of the same match
+  const rows = [];
+  for(const eid of active){
+    const picked = d.teams[eid].slots.filter(s=>s.pid);
+    for(const mid of d.teams[eid].matches){
+      const m = DB.meciuri.find(x=>x.id===mid); const opp = m.echipaAId===eid ? m.echipaBId : m.echipaAId;
+      const oppIds = new Set([...(rosterByMatch.get(mid)||[]).filter(r=>r.echipaId===opp).map(r=>r.participantId),
+        ...(active.includes(opp) && d.teams[opp].matches.includes(mid) ? d.teams[opp].slots.filter(s=>s.pid).map(s=>s.pid) : [])]);
+      const clash = picked.find(s=>oppIds.has(s.pid));
+      if(clash){ alert(t('dl_conflict')(participantName(clash.pid), matchTimeLabel(m.data, m.ora), echipaName(m.echipaAId), echipaName(m.echipaBId))); return; }
+      if(!sideEmpty(m, eid)) continue;   // filled meanwhile: never overwrite
+      picked.forEach(s=>rows.push({ meci_id:mid, echipa_id:eid, participant_id:s.pid, rol:s.rol }));
+    }
+  }
+  const btn = document.querySelector('#record-modal-body .profile-edit-actions .btn-primary');
+  if(btn){ btn.disabled = true; btn.textContent = t('btn_saving'); }
+  const { error } = await sb.from('meci_jucatori').insert(rows);
+  if(error){ alert(t('err_save')+' '+error.message); if(btn){ btn.disabled = false; btn.textContent = t('dl_salveaza'); } return; }
+  const nMatches = new Set(rows.map(r=>r.meci_id)).size;
+  invalidateStats();
+  await reloadMatchesForDay(d.day);
+  loadRecentLineups();
+  await logAction(`A completat loturile zilei ${fmtDate(d.day)}: ${active.length} echipe, ${nMatches} meciuri`);
+  closeModal('record-modal'); dayLineups = null;
+  render();
+}
 function renderMatchCard(m){
   const w = winnerOf(m);
   const side = (eid, score)=>`<div class="match-team ${w===eid?'won':w?'lost':''}" style="--team:${esc(echipa(eid)?.culoare||'var(--border)')}">
@@ -3089,7 +3245,7 @@ function renderMatchCard(m){
       <div class="match-roster">${rosterOf(m.id, eid).map(r=>`<div class="match-roster-row">
         <span class="td-name" onclick="openProfile('${r.participantId}')">${esc(participantName(r.participantId))}</span>
         <span>${r.rol!=='jucător'?`<span class="badge ${r.rol==='căpitan'?'gold':'muted'}">${esc(trEnum(r.rol))}</span>`:''}</span>
-        ${isFullAdmin() ? `<span class="td-gold">${r.sumaNet==null?'—':money(r.sumaNet)}</span>` : '<span></span>'}</div>`).join('') || `<div class="mini-empty">${t('mt_faraLot')}</div>`}</div>
+        ${canSeeMoney() ? `<span class="td-gold">${r.sumaNet==null?'—':money(r.sumaNet)}</span>` : '<span></span>'}</div>`).join('') || `<div class="mini-empty">${t('mt_faraLot')}</div>`}</div>
     </div>`;
   const editing = matchScoreEditId===m.id;
   const fromSite = !!m.idExtern;   // the site is the official score; the sync overwrites manual edits
@@ -3782,7 +3938,7 @@ function statsPlayersTableHtml(){
   return `<div class="table-scroll pay-scroll"><table class="pay-table stats-table">
     <thead><tr><th class="num">#</th>${th('nume', `${t('pl_th_jucator')}<span class="pay-th-sub">${t('sx_echipe')}</span>`)}${th('rating', t('sx_rating'), 'num')}
       ${th('meciuri', t('pl_th_m'), 'num')}${th('victorii', t('pl_th_victorii'), 'num')}<th class="num">${t('pl_th_infrangeri')}</th>
-      ${th('winRate', t('sx_winRate'))}${th('plusMinus', '+/−', 'num')}<th class="num">${t('sx_capitanVM')}</th>${isFullAdmin() ? th('net', t('pl_th2_net'), 'num') : ''}</tr></thead>
+      ${th('winRate', t('sx_winRate'))}${th('plusMinus', '+/−', 'num')}<th class="num">${t('sx_capitanVM')}</th>${canSeeMoney() ? th('net', t('pl_th2_net'), 'num') : ''}</tr></thead>
     <tbody>${players.length ? players.map((r,i)=>{ const p = participant(r.participantId);
       return `<tr class="pay-row" onclick="openProfile('${r.participantId}')">
         <td class="num td-muted">${i+1}</td>
@@ -3791,7 +3947,7 @@ function statsPlayersTableHtml(){
         <td><span class="rate-bar"><span style="width:${Math.round((r.winRate||0)*100)}%"></span></span>${pct(r.winRate)}</td>
         <td class="num ${(r.plusMinus||0)>=0?'c-green':'c-red'}">${signed(r.plusMinus)}</td>
         <td class="num td-muted">${r.meciuriCapitan?`${r.victoriiCapitan}/${r.meciuriCapitan}`:''}</td>
-        ${isFullAdmin() ? `<td class="num td-gold">${money(r.totalNet)}</td>` : ''}</tr>`; }).join('')
+        ${canSeeMoney() ? `<td class="num td-gold">${money(r.totalNet)}</td>` : ''}</tr>`; }).join('')
       : `<tr><td class="td-empty" colspan="10">${t('sx_niciunJucator')}</td></tr>`}</tbody>
   </table></div>`;
 }
@@ -3854,7 +4010,7 @@ function renderStatsBody(){
           <input placeholder="${esc(t('pl_cauta'))}" value="${esc(statsState.q)}" oninput="statsSet('q', this.value)">
         </div>
         <select onchange="statsSet('team', this.value)"><option value="">${t('pa_toateEchipele')}</option>${teams.map(s=>`<option value="${s.echipaId}" ${statsState.team===s.echipaId?'selected':''}>${esc(echipaName(s.echipaId))}</option>`).join('')}</select>
-        <select onchange="statsSet('sort', this.value)">${[['winRate','sx_sortWin'],['victorii','sx_sortVictorii'],['meciuri','pl_sortMeciuri'],['plusMinus','sx_sortPm'],['rating','sx_sortRating'],['net','pl_sortNet'],['nume','pl_sortNume']].filter(([k])=>k!=='net' || isFullAdmin()).map(([k,l])=>`<option value="${k}" ${statsState.sort===k?'selected':''}>${t(l)}</option>`).join('')}</select>
+        <select onchange="statsSet('sort', this.value)">${[['winRate','sx_sortWin'],['victorii','sx_sortVictorii'],['meciuri','pl_sortMeciuri'],['plusMinus','sx_sortPm'],['rating','sx_sortRating'],['net','pl_sortNet'],['nume','pl_sortNume']].filter(([k])=>k!=='net' || canSeeMoney()).map(([k,l])=>`<option value="${k}" ${statsState.sort===k?'selected':''}>${t(l)}</option>`).join('')}</select>
         <select onchange="statsSet('minM', Number(this.value))">${[0,5,10,20].map(n=>`<option value="${n}" ${statsState.minM===n?'selected':''}>${n?t('sx_minMeciuri')(n):t('sx_oriceNrMeciuri')}</option>`).join('')}</select>
       </div>
       <div id="stats-table-box">${statsPlayersTableHtml()}</div>
@@ -3884,7 +4040,7 @@ let participantTeamFilter = '';
 function renderParticipanti(){
   return `
   <div class="view-head"><div class="view-title">${t('pa_title')}</div></div>
-  <div class="view-sub">${t('pa_sub')}</div>
+  <div class="view-sub">${t(isAsistent() ? 'as_paSub' : 'pa_sub')}</div>
 
   ${!hasActiveShift() ? '' : `<div class="add-form">
     <div class="form-title">${t('pa_addTitle')}</div>
@@ -3905,7 +4061,7 @@ function renderParticipanti(){
 
   <div class="search-bar">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-    <input id="p-search" placeholder="${t('pa_searchPh')}" value="${esc(participantSearchQuery)}" oninput="participantSearchQuery=this.value; refreshParticipantiTable();">
+    <input id="p-search" placeholder="${t(isAsistent() ? 'as_paSearchPh' : 'pa_searchPh')}" value="${esc(participantSearchQuery)}" oninput="participantSearchQuery=this.value; refreshParticipantiTable();">
   </div>
 
   <div class="form-grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
@@ -3925,7 +4081,7 @@ function renderParticipanti(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title" id="participanti-count">${participantiFiltered().length} ${plural(participantiFiltered().length,'pa_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th><th>${t('pa_telefon')}</th><th>${t('pa_th_avizMed')}</th><th>${t('th_statut')}</th></tr></thead>
+      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th>${isAsistent() ? '' : `<th>${t('pa_telefon')}</th><th>${t('pa_th_avizMed')}</th>`}<th>${t('th_statut')}</th></tr></thead>
       <tbody id="participanti-tbody">${participantiRows()}</tbody>
     </table></div>
   </div>`;
@@ -3965,8 +4121,8 @@ function participantiRows(){
       <td>${p.rolEchipa && p.rolEchipa!=='jucător' ? `<span class="badge gold">${esc(trEnum(p.rolEchipa))}</span>` : `<span class="td-muted">${esc(trEnum(p.rolEchipa||'jucător'))}</span>`}</td>
       <td class="td-gold">${p.rating ?? ''}</td>
       <td>${p.categorieSportiva ? `<span class="badge muted">${esc(p.categorieSportiva)}</span>` : ''}</td>
-      <td class="td-muted">${esc(p.telefon)}</td>
-      <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>
+      ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>
+      <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>`}
       <td><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></td>
     </tr>`).join('');
 }
@@ -4100,7 +4256,7 @@ function renderProfile(editing = false){
   editBtn.style.display = (editing || !hasActiveShift()) ? 'none' : '';
   editBtn.title = t('pa_editTitle');
   const pdfBtn = document.getElementById('profile-pdf-btn');
-  if(pdfBtn) pdfBtn.style.display = editing ? 'none' : '';
+  if(pdfBtn) pdfBtn.style.display = (editing || isAsistent()) ? 'none' : '';
   const deleteBtn = document.getElementById('profile-delete-btn');
   deleteBtn.style.display = (editing || !isFullAdmin()) ? 'none' : '';
   deleteBtn.title = t('pa_deleteTitle');
@@ -4149,20 +4305,21 @@ function renderProfile(editing = false){
       <div class="stat-card"><div class="stat-label">${t('pl_th_m')}</div><div class="stat-value">${st?.meciuri ?? (profileStats?0:'…')}</div><div class="stat-sub">${st?`${st.victorii}–${st.infrangeri}`:''}</div></div>
       <div class="stat-card"><div class="stat-label">${t('sx_winRate')}</div><div class="stat-value">${st?pct(st.winRate):'—'}</div><div class="stat-sub">+/− ${st?signed(st.plusMinus):'—'}</div></div>
       <div class="stat-card"><div class="stat-label">${t('sx_capitan')}</div><div class="stat-value">${st?.meciuriCapitan||0}</div><div class="stat-sub">${st?.meciuriCapitan?`${st.victoriiCapitan} ${t('pl_th_v').toLowerCase()}`:''}</div></div>
-      ${isFullAdmin() ? `<div class="stat-card"><div class="stat-label">${t('pl_th_net')}</div><div class="stat-value">${st?money(st.totalNet):'—'}</div><div class="stat-sub">MDL · ${t('sx_tot').toLowerCase()}</div></div>` : ''}
+      ${canSeeMoney() ? `<div class="stat-card"><div class="stat-label">${t('pl_th_net')}</div><div class="stat-value">${st?money(st.totalNet):'—'}</div><div class="stat-sub">MDL · ${t('sx_tot').toLowerCase()}</div></div>` : ''}
     </div>
 
     <div class="profile-grid">
       <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></div></div>
-      <div><div class="k">${t('pa_aviz')} / ${LANG==='ru'?'истекает':'expiră'}</div><div class="v">${medicalInfo}</div></div>
+      ${isAsistent() ? '' : `<div><div class="k">${t('pa_aviz')} / ${LANG==='ru'?'истекает':'expiră'}</div><div class="v">${medicalInfo}</div></div>
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(p.nrDulap)||'—'}</div></div>
-      <div><div class="k">${t('fi_completare')}</div><div class="v">${filled}/${FISA_FIELDS.filter(f=>f.type!=='bool').length}</div></div>
+      <div><div class="k">${t('fi_completare')}</div><div class="v">${filled}/${FISA_FIELDS.filter(f=>f.type!=='bool').length}</div></div>`}
+      ${isAsistent() && p.categorieSportiva ? `<div><div class="k">${t('pa_th_categorieSp')}</div><div class="v">${esc(p.categorieSportiva)}</div></div>` : ''}
     </div>
 
-    <section class="profile-section fisa-section">
+    ${isAsistent() ? '' : `<section class="profile-section fisa-section">
       <div class="profile-section-title">${t('fi_title')}</div>
       <div class="fisa-grid">${FISA_FIELDS.map(f=>{ const v = fisaValue(p,f); return `<div class="fisa-item ${f.type==='long'?'span-2':''}"><div class="k"><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</div><div class="v ${v?'':'td-muted'}">${v?esc(v):'—'}</div></div>`; }).join('')}</div>
-    </section>
+    </section>`}
 
     <div class="profile-history-grid">
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_intarzieri')}</div>
@@ -4177,18 +4334,18 @@ function renderProfile(editing = false){
       <section class="profile-section"><div class="profile-section-title">${t('nav_spalatorie')}</div>
         ${list(DB.spalatorie.filter(s=>s.participantId===id), r=>`<div class="mini-row"><span>${esc(r.tipArticole||'')} · ${money(r.suma)} MDL</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
-      <section class="profile-section"><div class="profile-section-title">${t('pa_k_cazari')}</div>
+      ${isAsistent() ? '' : `<section class="profile-section"><div class="profile-section-title">${t('pa_k_cazari')}</div>
         ${list(DB.hostel.filter(h=>h.participantId===id), r=>`<div class="mini-row"><span>${esc(r.observatii)||t('pa_cazare_word')}</span><span>${fmtDate(r.dataCazare)}</span></div>`)}
       </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_lenjerie')}</div>
         ${list(DB.lenjerie.filter(l=>l.participantId===id), r=>`<div class="mini-row"><span>${t('pa_eliberat_returnat')}</span><span>${fmtDate(r.dataEliberare)} → ${r.dataReturnare?fmtDate(r.dataReturnare):t('pa_nereturnat')}</span></div>`)}
-      </section>
+      </section>`}
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_daune')}</div>
         ${list(DB.daune.filter(d=>d.participantId===id), r=>`<div class="mini-row"><span>${esc(r.inventarAfectat)} — ${esc(r.natura)} · ${money(r.valoareEstimata)} MDL</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
-      <section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
+      ${isAsistent() ? '' : `<section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
         ${list(DB.observatii.filter(o=>o.participantId===id), r=>`<div class="mini-row"><span>${esc(trEnum(r.categorie))}: ${esc(r.descriere)}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>
+      </section>`}
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_antrenamente')}</div>
         ${list(DB.treninguri.filter(x=>x.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${esc(r.antrenor)}${r.ora?' · '+String(r.ora).slice(0,5):''}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
@@ -4242,6 +4399,7 @@ async function imageToDataUrl(url){
 }
 // A4 version of the paper "Fișa personală a sportivului": numbered fields, value over a rule, caption below.
 async function exportFisaPdf(){
+  if(isAsistent()) return;
   const p = participant(currentProfileId); if(!p) return;
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf')); return; }
   const lang = LANG;
@@ -6774,7 +6932,7 @@ function renderSetari(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${t('st_admins')}</div></div>
     <div class="table-scroll"><table><thead><tr><th>${t('pa_nume')}</th><th>${t('st_rol')}</th></tr></thead><tbody>
-      ${visibleAdmins().map(a=>`<tr><td>${esc(adminName(a))}${a.id===currentAdminId?` <span class="badge gold">${t('st_activAcum')}</span>`:''}</td><td class="td-muted">${a.rol==='admin'?t('st_rolValue'):t('st_rolLocatieCont')}</td></tr>`).join('')}
+      ${visibleAdmins().map(a=>`<tr><td>${esc(adminName(a))}${a.id===currentAdminId?` <span class="badge gold">${t('st_activAcum')}</span>`:''}</td><td class="td-muted">${a.rol==='admin'?t('st_rolValue'):a.rol==='asistent'?t('as_rol'):t('st_rolLocatieCont')}</td></tr>`).join('')}
     </tbody></table></div>
   </div>
 
@@ -6868,8 +7026,8 @@ function startIconPreview(){
   const today=todayISO();
   currentAdminId='icon-preview-admin';
   currentAdmin='Previzualizare iconuri';
-  currentRole='admin';
-  adminDemoShiftActive=true;
+  currentRole=new URLSearchParams(location.search).get('role')==='asistent' ? 'asistent' : 'admin';
+  adminDemoShiftActive=currentRole==='admin';
   DB={
     administratori:[{id:currentAdminId,nume:'Previzualizare',prenume:'Iconuri',rol:'admin',ascuns:false}],
     serviciuAdministratori:[{id:'employee-1',nume:'Ahmetzeanov Rustam'}],
@@ -6966,6 +7124,13 @@ function startIconPreview(){
   };
   photoUrl = async ()=>null;
   document.body.classList.remove('role-locatie');
+  document.body.classList.toggle('role-asistent', isAsistent());
+  if(isAsistent()){
+    // same shape the participanti_asistent() RPC returns: sport fields only
+    const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii'];
+    DB.participanti=DB.participanti.map(p=>Object.fromEntries(keep.map(k=>[k,p[k]])));
+    DB.hostel=[]; DB.lenjerie=[]; DB.observatii=[]; DB.acteSchimb=[]; DB.jurnal=[];
+  }
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-shell').classList.add('visible');
   document.getElementById('header-user').textContent=currentAdmin;
