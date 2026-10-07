@@ -4517,7 +4517,7 @@ function renderParticipanti(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title" id="participanti-count">${participantiFiltered().length} ${plural(participantiFiltered().length,'pa_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th>${isAsistent() ? '' : `<th>${t('pa_telefon')}</th>`}<th>${t('pa_th_avizMed')}</th><th>${t('th_statut')}</th></tr></thead>
+      <thead><tr><th></th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('fi_echipa')}</th><th>${t('fi_nrEchipaShort')}</th><th>${t('fi_statutEchipaShort')}</th><th>${t('sx_rating')}</th><th>${t('pa_th_categorieSp')}</th>${isAsistent() ? '' : `<th>${t('pa_telefon')}</th>`}<th>${t('pa_th_avizMed')}</th><th>${t('fl_label')}</th><th>${t('th_statut')}</th></tr></thead>
       <tbody id="participanti-tbody">${participantiRows()}</tbody>
     </table></div>
   </div>`;
@@ -4546,7 +4546,7 @@ function refreshParticipantiTable(){
 }
 function participantiRows(){
   const rows = participantiFiltered();
-  if(!rows.length) return `<tr><td class="td-empty" colspan="11">${t('pa_none')}</td></tr>`;
+  if(!rows.length) return `<tr><td class="td-empty" colspan="12">${t('pa_none')}</td></tr>`;
   return rows.map(p=>`
     <tr class="clickable" onclick="openProfile('${p.id}')">
       <td>${p.fotoPath ? `<span class="avatar-dot" title="${esc(t('fi_foto'))}">${icon('participants')}</span>` : ''}</td>
@@ -4559,6 +4559,7 @@ function participantiRows(){
       <td>${p.categorieSportiva ? `<span class="badge muted">${esc(p.categorieSportiva)}</span>` : ''}</td>
       ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>`}
       <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>
+      <td>${freelancerBadge(p.freelancer!==false)}</td>
       <td><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></td>
     </tr>`).join('');
 }
@@ -6208,13 +6209,14 @@ function renderArbitraj(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${DB.arbitri.length} ${plural(DB.arbitri.length,'arb_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th>${t('pa_th_dulap')}</th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('pa_th_naștere')}</th><th>${t('pa_telefon')}</th><th>${t('th_statut')}</th></tr></thead>
+      <thead><tr><th>${t('pa_th_dulap')}</th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('pa_th_naștere')}</th><th>${t('pa_telefon')}</th><th>${t('fl_label')}</th><th>${t('th_statut')}</th></tr></thead>
       <tbody>${DB.arbitri.length ? DB.arbitri.slice().sort((a,b)=>(a.statut==='inactiv')-(b.statut==='inactiv')||a.nume.localeCompare(b.nume,'ro')||a.prenume.localeCompare(b.prenume,'ro')).map(a=>`
         <tr class="clickable" onclick="openArbitruProfile('${a.id}')">
           <td class="td-muted">${esc(a.nrDulap)}</td><td class="td-name">${esc(a.nume)}</td><td>${esc(a.prenume)}</td>
           <td class="td-muted">${fmtDate(a.dataNasterii)}</td><td class="td-muted">${esc(a.telefon)}</td>
+          <td>${freelancerBadge(a.freelancer!==false)}</td>
           <td><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></td>
-        </tr>`).join('') : `<tr><td class="td-empty" colspan="6">${t('arb_none')}</td></tr>`}</tbody>
+        </tr>`).join('') : `<tr><td class="td-empty" colspan="7">${t('arb_none')}</td></tr>`}</tbody>
     </table></div>
   </div>
 
