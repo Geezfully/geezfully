@@ -8,7 +8,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // statement trigger that errors instead of silently changing 0 rows); this guard stops any
 // write the UI might still offer before it leaves the browser, and says so on screen.
 const ASISTENT_READ_RPCS = new Set(['statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent',
-  'asistent_salveaza_meci','asistent_salveaza_echipa','asistent_salveaza_jucator']);
+  'asistent_salveaza_meci','asistent_salveaza_echipa','asistent_salveaza_jucator','asistent_salveaza_arbitru']);
 function readOnlyRefusal(){
   const error = { message: t('as_readOnly'), code: 'asistent_read_only' };
   alert(t('as_readOnly'));
@@ -40,6 +40,12 @@ const DEFAULT_TERENURI = ['Teren 1'];
 // the company pays the gross amount = net ÷ (1 − retinerePct%), same rule as the players
 const DEFAULT_TARIF_ARBITRI = { ora:80, retinerePct:15 };
 function refereeGross(net){ return Math.round(net/(1-TARIF_ARBITRI.retinerePct/100)*100)/100; }
+// Freelancer (default on): pays the 15% tax itself, so the company pays the GROSS and the person keeps the net.
+// Not a freelancer: taxes go another way, the company pays the NET. Both end up with the same net.
+function isFreelancer(pid){ return participant(pid)?.freelancer !== false; }
+function refereeByName(name){ return DB.arbitri.find(a=>`${a.nume} ${a.prenume}`===name) || null; }
+function refereeFreelancer(name){ return refereeByName(name)?.freelancer !== false; }
+function freelancerBadge(on){ return `<span class="badge ${on?'green':'muted'}">${t(on?'fl_da':'fl_nu')}</span>`; }
 let TARIF_ARBITRI = { ...DEFAULT_TARIF_ARBITRI };
 let TERENURI = DEFAULT_TERENURI.slice();
 let TRAINERS = [];
@@ -417,6 +423,12 @@ ro: {
   ar2_obsLipsa:(n)=>`${n} ${n===1?'zi':'zile'} fără ore completate`,
   ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
   ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
+  fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
+  fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
+  fl_reviewTitlu:'Verificați statutul de freelancer',
+  fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
+  fl_explNu:'Nu este freelancer: compania plătește doar netul; impozitul se achită pe altă cale.',
+  as_impactPlata:'Impact asupra plăților (suma de plătit)',
   as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
   as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
@@ -425,7 +437,7 @@ ro: {
   as_fereastra:(a,b)=>`Contul de asistent poate adăuga și modifica meciuri din ${a} până la ${b}.`, as_inafaraFerestrei:(a,b)=>`Data este în afara perioadei permise (${a} – ${b}).`,
   as_teamNota:'Contul de asistent poate modifica doar lotul echipei (jucători, număr, căpitan/jucător). Denumirea, culoarea și statutul echipei rămân la administrator.',
   as_teamPlataNota:'Lotul echipei nu schimbă plățile meciurilor deja jucate; contează doar ca propunere pentru loturile meciurilor următoare.',
-  as_profilNota:'Contul de asistent poate modifica statutul, data avizului medical și numărul dulapului.', as_avizInvalid:'Data avizului medical trebuie să fie din ultimul an, nu din viitor.',
+  as_profilNota:'Contul de asistent poate modifica statutul, data avizului medical, numărul dulapului și dacă jucătorul este freelancer.', as_avizInvalid:'Data avizului medical trebuie să fie din ultimul an, nu din viitor.',
   as_reviewMeciNou:'Verificați meciul nou', as_reviewMeci:'Verificați modificările meciului', as_reviewEchipa:'Verificați modificările lotului', as_reviewJucator:'Verificați modificările jucătorului',
   as_reviewNota:'Modificarea se salvează imediat, se înregistrează și poate fi anulată de administrator.', as_inapoi:'Înapoi la editare', as_confirma:'Confirm și salvez',
   as_chData:'Data', as_chEchipe:'Echipe', as_chDetalii:'Detalii (nr., teren, arbitru, observații sau OT)', as_nou:'nou', as_faraSchimbari:'Fără schimbări de lot.',
@@ -742,6 +754,12 @@ ru: {
   ar2_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} без указанных часов`,
   ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
   ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
+  fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
+  fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
+  fl_reviewTitlu:'Проверьте статус фрилансера',
+  fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
+  fl_explNu:'Не фрилансер: компания платит только нетто; налог уплачивается иначе.',
+  as_impactPlata:'Влияние на выплаты (сумма к выплате)',
   as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
   as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
@@ -750,7 +768,7 @@ ru: {
   as_fereastra:(a,b)=>`Ассистент может добавлять и изменять матчи с ${a} по ${b}.`, as_inafaraFerestrei:(a,b)=>`Дата вне разрешённого периода (${a} – ${b}).`,
   as_teamNota:'Ассистент может менять только состав команды (игроки, номер, капитан/игрок). Название, цвет и статус команды меняет администратор.',
   as_teamPlataNota:'Состав команды не меняет выплаты за уже сыгранные матчи; он служит предложением для составов следующих матчей.',
-  as_profilNota:'Ассистент может менять статус, дату медсправки и номер шкафчика.', as_avizInvalid:'Дата медсправки должна быть за последний год и не в будущем.',
+  as_profilNota:'Ассистент может менять статус, дату медсправки, номер шкафчика и статус фрилансера.', as_avizInvalid:'Дата медсправки должна быть за последний год и не в будущем.',
   as_reviewMeciNou:'Проверьте новый матч', as_reviewMeci:'Проверьте изменения матча', as_reviewEchipa:'Проверьте изменения состава', as_reviewJucator:'Проверьте изменения игрока',
   as_reviewNota:'Изменение сохраняется сразу, записывается и может быть отменено администратором.', as_inapoi:'Назад к редактированию', as_confirma:'Подтвердить и сохранить',
   as_chData:'Дата', as_chEchipe:'Команды', as_chDetalii:'Детали (№, площадка, арбитр, примечания или OT)', as_nou:'новый', as_faraSchimbari:'Состав не изменён.',
@@ -1168,7 +1186,7 @@ async function fetchAll(){
     arbitri: (arbitriR.data||[]).map(a=>({
       id:a.id, nrDulap:a.nr_dulap, nume:a.nume, prenume:a.prenume, dataNasterii:a.data_nasterii,
       adresa:a.adresa, telefon:a.telefon, email:a.email, dataAvizMedical:a.data_aviz_medical,
-      statut:a.statut, dataInregistrarii:a.data_inregistrarii,
+      statut:a.statut, dataInregistrarii:a.data_inregistrarii, freelancer: a.freelancer!==false,
     })),
     intarzieri: (intarzieriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, arbitru:r.arbitru, data:r.data, minuteIntarziere:r.minute_intarziere, motiv:r.motiv, createdAt:r.created_at})),
     vestimentatie: (vestimentatieR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, arbitru:r.arbitru, inventarId:r.inventar_id, tip:r.tip, culoare:r.culoare, marime:r.marime, cantitate:r.cantitate, dataReturnare:r.data_returnare, stareReturnare:r.stare_returnare})),
@@ -2772,7 +2790,7 @@ function mapParticipant(p){
     caracteristica:p.caracteristica, informatSecuritate:!!p.informat_securitate, acordDatePersonale:!!p.acord_date_personale,
     comentarii:p.comentarii, rating:p.rating, fotoPath:p.foto_path,
     dataAvizMedical:p.data_aviz_medical, statut:p.statut, dataInregistrarii:p.data_inregistrarii,
-    eligibilAntrenament:p.eligibil_antrenament,
+    eligibilAntrenament:p.eligibil_antrenament, freelancer: p.freelancer!==false,
   };
 }
 function mapMeci(m){
@@ -3621,7 +3639,7 @@ function showReview(title, html, onConfirm){
   reviewAction = onConfirm;
   document.getElementById('review-modal-title').textContent = title;
   document.getElementById('review-modal-body').innerHTML = `${html}
-    <div class="view-sub" style="margin:14px 0 0">${t('as_reviewNota')}</div>
+    ${isAsistent() ? `<div class="view-sub" style="margin:14px 0 0">${t('as_reviewNota')}</div>` : ''}
     <div class="profile-edit-actions">
       <button type="button" class="btn-ghost" onclick="closeReview()">${t('as_inapoi')}</button>
       <button type="button" class="btn-primary" id="review-confirm" onclick="confirmReview()">${t('as_confirma')}</button>
@@ -3642,7 +3660,10 @@ function grossFor(day, won, rol){ const r = currentRate(rol, won?'victorie':'în
 function payMap(match, rows){
   const w = match.sa!=null && match.sb!=null && match.sa!==match.sb ? (match.sa>match.sb ? match.a : match.b) : null;
   const map = new Map();
-  rows.forEach(r=>map.set(r.participant_id, { rol:r.rol, eid:r.echipa_id, gross: w ? grossFor(match.data, r.echipa_id===w, r.rol) : 0 }));
+  rows.forEach(r=>{
+    const net = w ? (currentRate(r.rol, r.echipa_id===w?'victorie':'înfrângere', match.data)?.net || 0) : 0;
+    map.set(r.participant_id, { rol:r.rol, eid:r.echipa_id, gross: !w ? 0 : isFreelancer(r.participant_id) ? grossFor(match.data, r.echipa_id===w, r.rol) : net });
+  });
   return { scored: !!w, map };
 }
 function signedMoney(v){ const r = Math.round(v*100)/100; return `${r>0?'+':r<0?'−':''}${money(Math.abs(r))}`; }
@@ -3676,7 +3697,7 @@ function changesHtml(list){
       ${c.lines.length ? c.lines.map(l=>`<div class="review-line"><span>${esc(l.text)}</span>${l.delta!=null && c.scored ? `<span class="${l.delta>0?'c-green':l.delta<0?'c-red':'td-muted'}">${signedMoney(l.delta)} MDL</span>` : '<span></span>'}</div>`).join('') : `<div class="td-muted">${t('as_faraSchimbari')}</div>`}
       ${c.scored ? '' : `<div class="td-muted review-note">${t('as_faraScorPlata')}</div>`}
     </section>`).join('')}</div>
-    <div class="review-total"><span>${t('as_impactBrut')}</span><strong class="${total>0?'c-green':total<0?'c-red':''}">${signedMoney(total)} MDL</strong></div>`;
+    <div class="review-total"><span>${t('as_impactPlata')}</span><strong class="${total>0?'c-green':total<0?'c-red':''}">${signedMoney(total)} MDL</strong></div>`;
 }
 function changesSummary(c){
   const parts = c.lines.map(l=>l.text).slice(0, 12);
@@ -3766,17 +3787,19 @@ function saveTeamEditorAsistent(){
 function saveProfileAsistent(){
   const p = participant(currentProfileId); if(!p) return;
   const statut = document.getElementById('ap-statut').value, aviz = document.getElementById('ap-aviz').value || null, dulap = document.getElementById('ap-dulap').value.trim() || null;
+  const freelancer = document.getElementById('ap-freelancer').value==='1';
   if(aviz && (aviz > todayISO() || aviz < addDays(todayISO(),-366))){ alert(t('as_avizInvalid')); return; }
   const lines = [];
   if(statut!==p.statut) lines.push(`${t('th_statut')}: ${trEnum(p.statut)} → ${trEnum(statut)}`);
   if((aviz||null)!==(p.dataAvizMedical||null)) lines.push(`${t('pa_aviz')}: ${p.dataAvizMedical?fmtDate(p.dataAvizMedical):'—'} → ${aviz?fmtDate(aviz):'—'}`);
   if((dulap||null)!==(p.nrDulap||null)) lines.push(`${t('pa_dulap')}: ${p.nrDulap||'—'} → ${dulap||'—'}`);
+  if(freelancer!==(p.freelancer!==false)) lines.push(`${t('fl_label')}: ${t(p.freelancer!==false?'fl_da':'fl_nu')} → ${t(freelancer?'fl_da':'fl_nu')}`);
   if(!lines.length){ renderProfile(false); return; }
   const html = `<div class="review-list"><section class="review-item"><div class="review-head">${esc(participantName(p.id))}</div>${lines.map(l=>`<div class="review-line"><span>${esc(l)}</span><span></span></div>`).join('')}</section></div>`;
   showReview(t('as_reviewJucator'), html, async ()=>{
-    const { error } = await sb.rpc('asistent_salveaza_jucator', { p_id:p.id, p_statut:statut, p_aviz:aviz, p_dulap:dulap||'', p_rezumat:`${participantName(p.id)}: ${lines.join('; ')}` });
+    const { error } = await sb.rpc('asistent_salveaza_jucator', { p_id:p.id, p_statut:statut, p_aviz:aviz, p_dulap:dulap||'', p_freelancer:freelancer, p_rezumat:`${participantName(p.id)}: ${lines.join('; ')}` });
     if(error){ alert(t('err_update')+' '+error.message); return false; }
-    Object.assign(p, { statut, dataAvizMedical:aviz, nrDulap:dulap });
+    Object.assign(p, { statut, dataAvizMedical:aviz, nrDulap:dulap, freelancer });
     asLog = null; renderProfile(false); render(); return true;
   });
 }
@@ -3891,9 +3914,12 @@ function payRows(){
   const rows = [...byPlayer.values()].map(e=>{
     const ded = deductionsFor(e.participantId, from, to);
     e.items.sort((a,b)=>(a.m.data+String(a.m.nr||0).padStart(6,'0')).localeCompare(b.m.data+String(b.m.nr||0).padStart(6,'0')));
-    // the company pays the GROSS ("Brut necesar"); the player pays the 15% tax and keeps the net
-    return { ...e, echipe:[...e.echipe].join(', '), echipaIds:[...e.echipaIds], nume:participantName(e.participantId), ded,
-      coef: e.coefN ? e.coefSum / e.coefN : null, dePlata: e.brut - ded.total };
+    // freelancer: the company pays the GROSS ("Brut necesar") and the player pays the 15% tax;
+    // not a freelancer: the company pays the net (brut = net, no withholding on our side)
+    const fl = isFreelancer(e.participantId);
+    const brut = fl ? e.brut : e.net, ret = fl ? e.ret : 0;
+    return { ...e, brut, ret, brutFreelancer: e.brut, freelancer: fl, echipe:[...e.echipe].join(', '), echipaIds:[...e.echipaIds], nume:participantName(e.participantId), ded,
+      coef: e.coefN ? e.coefSum / e.coefN : null, dePlata: brut - ded.total };
   }).sort((a,b)=>a.nume.localeCompare(b.nume,'ro'));
   return { rows, days, matches };
 }
@@ -3962,10 +3988,11 @@ function payDetailHtml(r, colspan){
       <div>
         <div class="pay-detail-title">${t('pl_detCalcul')}</div>
         <div class="pay-calc">
+          <div><span>${t('fl_label')}</span><b>${freelancerBadge(r.freelancer)}</b></div>
           <div><span>${t('pl_th_netJucator')}</span><b>${money(r.net)}</b></div>
-          <div><span>÷ 0,85 = ${t('pl_th_brutNecesar')}</span><b>${money(r.brut)}</b></div>
+          ${r.freelancer ? `<div><span>÷ 0,85 = ${t('pl_th_brutNecesar')}</span><b>${money(r.brut)}</b></div>
           <div><span>− ${t('pl_th_retinere15')}</span><b>${money(r.ret)}</b></div>
-          <div class="sum"><span>= ${t('pl_th_netRamas')}</span><b>${money(r.net)}</b></div>
+          <div class="sum"><span>= ${t('pl_th_netRamas')}</span><b>${money(r.net)}</b></div>` : `<div class="td-muted" style="font-size:12px">${t('fl_nuCalc')}</div>`}
           <div><span>${t('pl_th_brutNecesar')}</span><b>${money(r.brut)}</b></div>
           <div><span>− ${t('nav_spalatorie')}</span><b>${d.spal?money(d.spal):'0'}</b></div>
           <div><span>− ${t('nav_daune')}</span><b>${d.daune?money(d.daune):'0'}</b></div>
@@ -3981,12 +4008,12 @@ function payTableHtml(){
   const { rows:all, days, matches } = payRows();
   const rows = payFilteredRows(all);
   const showDays = payView.days;
-  const cols = 14 + (showDays ? days.length : 0);
+  const cols = 15 + (showDays ? days.length : 0);
   const tot = rows.reduce((s,r)=>({ v:s.v+r.v, i:s.i+r.i, net:s.net+r.net, ret:s.ret+r.ret, brut:s.brut+r.brut, ded:s.ded+r.ded.total, dp:s.dp+r.dePlata }), { v:0, i:0, net:0, ret:0, brut:0, ded:0, dp:0 });
   const filtered = rows.length !== all.length;
   return `<div class="table-scroll pay-scroll"><table class="pay-table">
     <thead><tr><th class="pay-caret-col"></th><th>${t('pl_th_jucator')}<span class="pay-th-sub">${t('pl_th_echipa')}</span></th>
-      <th class="num">${t('pl_th_victorii')}</th><th class="num">${t('pl_th_infrangeri')}</th><th>${t('pl_th_rol')}</th>
+      <th class="num">${t('pl_th_victorii')}</th><th class="num">${t('pl_th_infrangeri')}</th><th>${t('pl_th_rol')}</th><th>${t('fl_label')}</th>
       ${showDays ? days.map(d=>`<th class="num">${ddmm(d)}</th>`).join('') : ''}
       <th class="num">${t('pl_th2_net')}</th><th class="num">${t('pl_th_coef')}</th><th class="num pay-gross-col">${t('pl_th2_brut')}</th>
       <th class="num">${t('pl_th2_ret')}</th><th class="num">${t('pl_th2_netRamas')}</th>
@@ -3997,6 +4024,7 @@ function payTableHtml(){
         <td class="pay-who"><span class="td-name">${esc(r.nume)}</span>${playerTeamsHtml(r.participantId, r.echipaIds)}</td>
         <td class="num c-green">${r.v}</td><td class="num c-red">${r.i}</td>
         <td class="td-muted pay-role">${payRoleText(r).split(' · ').map(x=>`<span>${esc(x)}</span>`).join('')}</td>
+        <td>${freelancerBadge(r.freelancer)}</td>
         ${showDays ? days.map(d=>`<td class="num td-muted">${r.perDay[d]?money(r.perDay[d]):''}</td>`).join('') : ''}
         <td class="num">${money(r.net)}</td>
         <td class="num td-muted">${coefText(r.coef)}</td>
@@ -4008,7 +4036,7 @@ function payTableHtml(){
         <td class="td-muted pay-obs">${esc(payObservation(r))}</td></tr>${open ? payDetailHtml(r, cols) : ''}`; }).join('')
       : `<tr><td class="td-empty" colspan="${cols}">${t(filtered?'pa_none':'pl_none')}</td></tr>`}</tbody>
     ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}${filtered?` <span class="td-muted">(${rows.length} ${plural(rows.length,'pa_countSuffix')})</span>`:''}</td>
-      <td class="num">${tot.v}</td><td class="num">${tot.i}</td><td></td>
+      <td class="num">${tot.v}</td><td class="num">${tot.i}</td><td></td><td></td>
       ${showDays ? days.map(d=>`<td class="num">${money(rows.reduce((s,r)=>s+(r.perDay[d]||0),0))}</td>`).join('') : ''}
       <td class="num">${money(tot.net)}</td><td></td><td class="num pay-gross-col">${money(tot.brut)}</td><td class="num">${money(tot.ret)}</td><td class="num">${money(tot.net)}</td>
       <td class="num">${tot.ded?'−'+money(tot.ded):''}</td><td class="num pay-gross-col pay-gross-end">${money(tot.dp)}</td><td></td></tr></tfoot>` : ''}
@@ -4019,7 +4047,8 @@ function payRefToggle(name){ payRefOpen.has(name) ? payRefOpen.delete(name) : pa
 function payRefereesHtml(){
   const rows = refereePayRows(payState.from, payState.to);
   const tot = rows.reduce((s,r)=>({ zile:s.zile+r.zile, ore:s.ore+r.ore, net:s.net+r.net, brut:s.brut+r.brut, lipsa:s.lipsa+r.lipsa }), { zile:0, ore:0, net:0, brut:0, lipsa:0 });
-  const cols = 8;
+  const cols = 9;
+  const canToggle = isFullAdmin() || isAsistent();
   return `<div class="table-wrap">
     <div class="pay-toolbar" style="grid-template-columns:1fr auto auto">
       <div class="view-sub" style="margin:0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div>
@@ -4028,20 +4057,21 @@ function payRefereesHtml(){
     </div>
     ${tot.lipsa ? `<div class="te-problems" style="margin:12px 14px 0">${t('ar2_avertOreLipsa')(tot.lipsa)}</div>` : ''}
     <div class="table-scroll pay-scroll"><table class="pay-table">
-      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th class="num">${t('ar_zile')}</th><th class="num">${t('ar_ore')}</th><th class="num">${t('ar2_net')(TARIF_ARBITRI.ora)}</th><th class="num">${t('ar2_retinere')(TARIF_ARBITRI.retinerePct)}</th><th>${t('pl_th_observatie')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th></tr></thead>
+      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th>${t('fl_label')}</th><th class="num">${t('ar_zile')}</th><th class="num">${t('ar_ore')}</th><th class="num">${t('ar2_net')(TARIF_ARBITRI.ora)}</th><th class="num">${t('ar2_retinere')(TARIF_ARBITRI.retinerePct)}</th><th>${t('pl_th_observatie')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th></tr></thead>
       <tbody>${rows.length ? rows.map(r=>{ const open = payRefOpen.has(r.arbitru);
         const obs = r.lipsa ? t('ar2_obsLipsa')(r.lipsa) : '';
         return `<tr class="pay-row ${open?'open':''}" onclick="payRefToggle(${esc(JSON.stringify(r.arbitru))})">
           <td class="pay-caret-col"><span class="pay-caret">›</span></td><td class="td-name">${esc(r.arbitru)}</td>
+          <td>${canToggle && r.ref ? `<button type="button" class="fl-toggle" title="${esc(t('fl_schimba'))}" onclick="event.stopPropagation(); toggleRefereeFreelancer('${r.ref.id}')">${freelancerBadge(r.freelancer)}</button>` : freelancerBadge(r.freelancer)}</td>
           <td class="num">${r.zile}</td><td class="num">${hoursText(r.ore)}</td><td class="num">${money(r.net)}</td><td class="num td-muted">${money(r.brut-r.net)}</td>
           <td class="pay-obs ${obs?'c-yellow':'td-muted'}">${esc(obs)}</td><td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.brut)}</strong></td></tr>
           ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match ${it.missing?'lost':'won'}" style="grid-template-columns:96px 1fr 170px 90px">
             <span class="td-muted">${ddmm(it.day)} · ${CAL_WEEKDAYS_LONG[LANG==='ru'?'ru':'ro'][isoWeekday(it.day)].slice(0,3)}</span>
             <span>${it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:t('ar_faraOre')).join(', ')}</span>
-            <span class="td-muted">${hoursText(it.hours)} × ${TARIF_ARBITRI.ora} = ${money(it.net)} net</span>
+            <span class="td-muted">${hoursText(it.hours)} × ${TARIF_ARBITRI.ora} = ${money(it.net)} net${r.freelancer?'':` · ${t('fl_nu')}`}</span>
             <span class="num td-gold">${money(it.brut)}</span></div>`).join('')}</div></td></tr>` : ''}`; }).join('')
         : `<tr><td class="td-empty" colspan="${cols}">${t('ar_niciunArbitru')}</td></tr>`}</tbody>
-      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td class="num">${tot.zile}</td><td class="num">${hoursText(tot.ore)}</td><td class="num">${money(tot.net)}</td><td class="num">${money(tot.brut-tot.net)}</td><td></td><td class="num pay-gross-col pay-gross-end">${money(tot.brut)}</td></tr></tfoot>` : ''}
+      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td></td><td class="num">${tot.zile}</td><td class="num">${hoursText(tot.ore)}</td><td class="num">${money(tot.net)}</td><td class="num">${money(tot.brut-tot.net)}</td><td></td><td class="num pay-gross-col pay-gross-end">${money(tot.brut)}</td></tr></tfoot>` : ''}
     </table></div>
     <div class="view-sub" style="padding:10px 16px 14px;margin:0">${t('ar2_hint')}</div>
   </div>`;
@@ -4050,16 +4080,33 @@ function exportArbitriExcel(){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
   const rows = refereePayRows(payState.from, payState.to);
   const r2 = v=>Math.round(v*100)/100;
-  const head = [t('ar_th_arbitru'), t('ar_zile'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('ar2_retinere')(TARIF_ARBITRI.retinerePct), t('pl_th_dePlataBrut')];
-  const body = rows.map(r=>[r.arbitru, r.zile, r2(r.ore), r2(r.net), r2(r.brut-r.net), r2(r.brut)]);
+  const head = [t('ar_th_arbitru'), t('fl_label'), t('ar_zile'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('ar2_retinere')(TARIF_ARBITRI.retinerePct), t('pl_th_dePlataBrut')];
+  const body = rows.map(r=>[r.arbitru, t(r.freelancer?'fl_da':'fl_nu'), r.zile, r2(r.ore), r2(r.net), r2(r.brut-r.net), r2(r.brut)]);
   const detailHead = [t('th_data'), t('ar_th_arbitru'), t('ar_interval'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('pl_th_dePlataBrut')];
   const detail = rows.flatMap(r=>r.items.map(it=>[fmtDate(it.day), r.arbitru, it.entries.map(e=>e.oraStart&&e.oraStop?`${e.oraStart}–${e.oraStop}`:'').join(', '), r2(it.hours), it.net, it.brut]));
   const sum = i => body.reduce((s,r)=>s+Number(r[i]||0),0);
   const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_tabArbitri')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))], [], head, ...body,
-    [t('pl_total'), sum(1), r2(sum(2)), r2(sum(3)), r2(sum(4)), r2(sum(5))], [], [t('ar_detaliiZile')], detailHead, ...detail]);
-  ws['!cols'] = [{wch:16},{wch:24},{wch:16},{wch:10},{wch:14},{wch:16}];
+    [t('pl_total'), '', sum(2), r2(sum(3)), r2(sum(4)), r2(sum(5)), r2(sum(6))], [], [t('ar_detaliiZile')], detailHead, ...detail]);
+  ws['!cols'] = [{wch:16},{wch:24},{wch:16},{wch:10},{wch:14},{wch:16},{wch:16}];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, t('pl_tabArbitri').slice(0,30));
   XLSX.writeFile(wb, `bskt-arbitri_${payState.from}_${payState.to}.xlsx`);
+}
+function toggleRefereeFreelancer(id){
+  const a = DB.arbitri.find(x=>x.id===id); if(!a) return;
+  const next = !(a.freelancer!==false), name = `${a.nume} ${a.prenume}`;
+  const line = `${t('fl_label')}: ${t(a.freelancer!==false?'fl_da':'fl_nu')} → ${t(next?'fl_da':'fl_nu')}`;
+  const apply = async ()=>{
+    const { error } = isAsistent()
+      ? await sb.rpc('asistent_salveaza_arbitru', { p_id:id, p_freelancer:next, p_rezumat:`${name}: ${line}` })
+      : await sb.from('arbitri').update({ freelancer:next }).eq('id', id).select('id').single();
+    if(error){ alert(t('err_update')+' '+error.message); return false; }
+    a.freelancer = next;
+    if(!isAsistent()) await logAction(`A setat arbitrul ${name}: freelancer ${next?'da':'nu'}`);
+    asLog = null; renderPlatiBodyOnly(); return true;
+  };
+  showReview(t('fl_reviewTitlu'), `<div class="review-list"><section class="review-item"><div class="review-head">${esc(name)}</div>
+    <div class="review-line"><span>${esc(line)}</span><span></span></div></section></div>
+    <div class="view-sub" style="margin:10px 0 0">${t(next?'fl_explDa':'fl_explNu')}</div>`, apply);
 }
 async function saveTarifArbitri(){
   const ora = Number(document.getElementById('ta-ora').value), retinerePct = Number(document.getElementById('ta-pct').value);
@@ -4078,7 +4125,7 @@ function payTeamsHtml(){
     [[m.echipaAId,m.scorA,m.scorB],[m.echipaBId,m.scorB,m.scorA]].forEach(([eid,pf,pa])=>{
       const e = teams.get(eid) || { eid, m:0, v:0, i:0, players:new Set(), net:0, ret:0, brut:0 };
       e.m++; pf>pa ? e.v++ : e.i++;
-      rosterOf(m.id, eid).forEach(r=>{ e.players.add(r.participantId); e.net += r.sumaNet||0; e.ret += r.retinere||0; e.brut += r.sumaBruta||0; });
+      rosterOf(m.id, eid).forEach(r=>{ const fl = isFreelancer(r.participantId); e.players.add(r.participantId); e.net += r.sumaNet||0; e.ret += fl ? (r.retinere||0) : 0; e.brut += fl ? (r.sumaBruta||0) : (r.sumaNet||0); });
       teams.set(eid, e);
     });
   });
@@ -4232,16 +4279,16 @@ function exportPlatiExcel(){
   const { rows:all, days } = payRows();
   const rows = payFilteredRows(all);
   const r2 = v => Math.round((v||0)*100)/100;
-  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), ...(payView.days ? days.map(ddmm) : []),
+  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(payView.days ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
     t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
-  const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), ...(payView.days ? days.map(d=>r.perDay[d]||0) : []),
+  const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(payView.days ? days.map(d=>r.perDay[d]||0) : []),
     r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]);
   const nDays = payView.days ? days.length : 0;
-  const moneyIdx = new Set([5+nDays, 7+nDays, 8+nDays, 9+nDays, 10+nDays, 11+nDays, 12+nDays, 13+nDays, ...Array.from({length:nDays},(_,k)=>5+k)]);
+  const moneyIdx = new Set([6+nDays, 8+nDays, 9+nDays, 10+nDays, 11+nDays, 12+nDays, 13+nDays, 14+nDays, ...Array.from({length:nDays},(_,k)=>6+k)]);
   const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===2||i===3) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
   const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_title')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], head, ...body, total]);
-  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?20 : i===4?26 : h===t('pl_th_observatie')?48 : 13 }));
+  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?20 : i===4?26 : i===5?11 : h===t('pl_th_observatie')?48 : 13 }));
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, t('pl_title').slice(0,30));
   XLSX.writeFile(wb, `bskt-plati_${payState.from}_${payState.to}.xlsx`);
@@ -4667,6 +4714,9 @@ function renderProfile(editing = false){
           <option value="inactiv" ${p.statut==='inactiv'?'selected':''}>${trEnum('inactiv')}</option></select></div>
         <div class="field"><label>${t('pa_aviz')}</label><input id="ap-aviz" type="date" min="${addDays(todayISO(),-366)}" max="${todayISO()}" value="${esc(p.dataAvizMedical||'')}"></div>
         <div class="field"><label>${t('pa_dulap')}</label><input id="ap-dulap" value="${esc(p.nrDulap||'')}"></div>
+        <div class="field"><label>${t('fl_label')}</label><select id="ap-freelancer">
+          <option value="1" ${p.freelancer!==false?'selected':''}>${t('fl_daLung')}</option>
+          <option value="0" ${p.freelancer===false?'selected':''}>${t('fl_nuLung')}</option></select></div>
       </div>
       <div class="profile-edit-actions">
         <button class="btn-ghost" onclick="renderProfile(false)">${t('btn_cancel')}</button>
@@ -4684,6 +4734,9 @@ function renderProfile(editing = false){
         <div class="field"><label>${t('th_statut')}</label><select id="ep-statut">
           <option value="activ" ${p.statut==='activ'?'selected':''}>${trEnum('activ')}</option>
           <option value="inactiv" ${p.statut==='inactiv'?'selected':''}>${trEnum('inactiv')}</option></select></div>
+        <div class="field"><label>${t('fl_label')}</label><select id="ep-freelancer">
+          <option value="1" ${p.freelancer!==false?'selected':''}>${t('fl_daLung')}</option>
+          <option value="0" ${p.freelancer===false?'selected':''}>${t('fl_nuLung')}</option></select></div>
         <div class="field"><label>${t('sx_rating')}</label><input id="ep-rating" type="number" min="0" max="100" value="${esc(p.rating??'')}"></div>
         <div class="field"><label>${t('pa_aviz')}</label><input id="ep-aviz" type="date" value="${esc(p.dataAvizMedical||'')}"></div>
         <div class="field"><label>${t('pa_dulap')}</label><input id="ep-dulap" value="${esc(p.nrDulap||'')}"></div>
@@ -4716,6 +4769,7 @@ function renderProfile(editing = false){
 
     <div class="profile-grid">
       <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></div></div>
+      <div><div class="k">${t('fl_label')}</div><div class="v">${freelancerBadge(p.freelancer!==false)}</div></div>
       <div><div class="k">${t('pa_aviz')} / ${LANG==='ru'?'истекает':'expiră'}</div><div class="v">${medicalInfo}</div></div>
       ${isAsistent() ? `<div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(p.nrDulap)||'—'}</div></div>` : `
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(p.nrDulap)||'—'}</div></div>
@@ -4769,6 +4823,7 @@ async function saveParticipantProfile(){
     nume, prenume,
     patronimic: document.getElementById('ep-patronimicNume').value.trim() || null,
     statut: document.getElementById('ep-statut').value,
+    freelancer: document.getElementById('ep-freelancer').value==='1',
     rating: rating==='' ? null : Number(rating),
     data_aviz_medical: document.getElementById('ep-aviz').value || null,
     nr_dulap: document.getElementById('ep-dulap').value.trim() || null,
@@ -5442,8 +5497,9 @@ function refereePayRows(from, to){
       const hrs = entries.map(refereeHours);
       const missing = hrs.some(h=>h==null);
       const hours = hrs.reduce((s,h)=>s+(h||0),0);
-      const net = Math.round(hours*TARIF_ARBITRI.ora*100)/100, brut = refereeGross(net);
-      const e = byRef.get(name) || { arbitru:name, zile:0, ore:0, net:0, brut:0, lipsa:0, items:[] };
+      const fl = refereeFreelancer(name);
+      const net = Math.round(hours*TARIF_ARBITRI.ora*100)/100, brut = fl ? refereeGross(net) : net;
+      const e = byRef.get(name) || { arbitru:name, freelancer:fl, ref:refereeByName(name), zile:0, ore:0, net:0, brut:0, lipsa:0, items:[] };
       e.zile++; e.ore += hours; e.net += net; e.brut += brut;
       if(missing) e.lipsa++;
       e.items.push({ day, hours, net, brut, missing, entries });
@@ -6242,6 +6298,9 @@ function renderArbitruProfile(editing = false){
           <option value="activ" ${a.statut==='activ'?'selected':''}>${trEnum('activ')}</option>
           <option value="inactiv" ${a.statut==='inactiv'?'selected':''}>${trEnum('inactiv')}</option>
         </select></div>
+        <div class="field"><label>${t('fl_label')}</label><select id="eab-freelancer">
+          <option value="1" ${a.freelancer!==false?'selected':''}>${t('fl_daLung')}</option>
+          <option value="0" ${a.freelancer===false?'selected':''}>${t('fl_nuLung')}</option></select></div>
         <div class="field"><label>${t('pa_nume')}</label><input id="eab-nume" value="${esc(a.nume)}"></div>
         <div class="field"><label>${t('pa_prenume')}</label><input id="eab-prenume" value="${esc(a.prenume)}"></div>
         <div class="field"><label>${t('pa_nastere')}</label><input id="eab-nastere" type="date" value="${esc(a.dataNasterii)}"></div>
@@ -6261,6 +6320,7 @@ function renderArbitruProfile(editing = false){
     <div class="profile-grid">
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(a.nrDulap)||'—'}</div></div>
       <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></div></div>
+      <div><div class="k">${t('fl_label')}</div><div class="v">${freelancerBadge(a.freelancer!==false)}</div></div>
       <div><div class="k">${t('pa_nastere')}</div><div class="v">${fmtDate(a.dataNasterii)}</div></div>
       <div><div class="k">${t('pa_adresa')}</div><div class="v">${esc(a.adresa)||'—'}</div></div>
       <div><div class="k">${t('pa_telefon')}</div><div class="v">${esc(a.telefon)||'—'}</div></div>
@@ -6282,6 +6342,7 @@ async function saveArbitruProfile(){
     adresa: document.getElementById('eab-adresa').value.trim() || null,
     data_aviz_medical: document.getElementById('eab-aviz').value || null,
     statut: document.getElementById('eab-statut').value,
+    freelancer: document.getElementById('eab-freelancer').value==='1',
   };
   const saveBtn = document.querySelector('#arbitru-modal-body .btn-primary');
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = t('btn_saving'); }
@@ -7528,7 +7589,7 @@ function startIconPreview(){
   document.body.classList.toggle('role-asistent', isAsistent());
   if(isAsistent()){
     // same shape the participanti_asistent() RPC returns: sport fields only
-    const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii','dataAvizMedical','nrDulap','marime'];
+    const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii','dataAvizMedical','nrDulap','marime','freelancer'];
     DB.participanti=DB.participanti.map(p=>Object.fromEntries(keep.map(k=>[k,p[k]])));
     DB.acteSchimb=[]; DB.jurnal=[];
   }

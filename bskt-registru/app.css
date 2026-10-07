@@ -862,3 +862,6 @@ body.role-asistent .upload-btn{display:none !important}
 .as-log-row{align-items:center}
 .as-log-row .as-log-when{flex:0 0 150px;font-size:12px}
 .as-log-row.undone .alert-text{text-decoration:line-through;opacity:.6}
+
+.fl-toggle{background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.fl-toggle:hover .badge{outline:1px solid var(--gold);outline-offset:1px}
