@@ -947,3 +947,15 @@ body.role-asistent .upload-btn{display:none !important}
   .modal-body { padding-left:16px; padding-right:16px; }
 }
 @media (max-width: 680px){ .profile-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width: 680px){
+  /* desktop lists scroll inside a capped box; as cards on a phone the whole page scrolls instead,
+     otherwise the cards spill out of the capped box and overlap whatever follows it */
+  main .table-scroll, main [class*="-scroll"] { max-height:none !important; overflow:visible !important; }
+}
+@media (max-width: 680px){
+  .pay-toolbar { grid-template-columns:1fr !important; }
+  .pay-toolbar > .btn-primary { width:100%; justify-content:center; }
+}
+@media (max-width: 680px){
+  main table.m-cards tfoot td:not(.pay-gross-end) { background:none !important; box-shadow:none !important; }
+}
