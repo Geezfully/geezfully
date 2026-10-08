@@ -865,3 +865,9 @@ body.role-asistent .upload-btn{display:none !important}
 
 .fl-toggle{background:none;border:0;padding:0;cursor:pointer;font:inherit}
 .fl-toggle:hover .badge{outline:1px solid var(--gold);outline-offset:1px}
+
+/* 1920×1080 at 125% Windows scaling gives a ~1536 px wide browser: keep the wide tables without side-scroll */
+@media (max-width: 1700px){
+  main.wide .table-scroll th, main.wide .table-scroll td{padding-left:8px;padding-right:8px}
+  .pay-table .pay-opt{display:none}
+}

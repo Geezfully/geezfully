@@ -1653,7 +1653,7 @@ function render(){
     echipe: renderEchipe, meciuri: renderMeciuri, plati: renderPlati,
     rapoarte: renderRapoarte, setari: renderSetari,
   };
-  main.classList.toggle('wide', currentView==='plati' || currentView==='statistici');
+  main.classList.toggle('wide', ['plati','statistici','participanti'].includes(currentView));
   main.innerHTML = fns[currentView] ? fns[currentView]() : '';
   if(currentView==='plati') fitPayDetails();
   enhanceIcons(main);
@@ -4004,6 +4004,7 @@ function payDetailHtml(r, colspan){
           <div><span>− ${t('nav_antrenamente')}</span><b>${d.antr?money(d.antr):'0'}</b></div>
           <div class="sum total"><span>= ${t('pl_th_dePlataBrut')}</span><b>${money(r.dePlata)} MDL</b></div>
         </div>
+        <div class="td-muted" style="font-size:12px;margin-top:8px">${t('pl_th_coef')} ${coefText(r.coef)} · ${t('pl_th_observatie')}: ${esc(payObservation(r))}</div>
         <button type="button" class="btn-profile" onclick="openProfile('${r.participantId}')"><span class="btn-profile-icon">${icon('participants')}</span><span>${t('pl_deschideProfil')}</span><span class="btn-profile-arrow">→</span></button>
       </div>
     </div>
@@ -4013,16 +4014,18 @@ function payTableHtml(){
   const { rows:all, days, matches } = payRows();
   const rows = payFilteredRows(all);
   const showDays = payView.days;
-  const cols = 15 + (showDays ? days.length : 0);
+  // with day columns on, Coef., Net rămas (= Net / jucător) and Observație make room for a full week;
+  // the observation is still shown in the player's detail panel
+  const cols = 15 + (showDays ? days.length - 3 : 0);
   const tot = rows.reduce((s,r)=>({ v:s.v+r.v, i:s.i+r.i, net:s.net+r.net, ret:s.ret+r.ret, brut:s.brut+r.brut, ded:s.ded+r.ded.total, dp:s.dp+r.dePlata }), { v:0, i:0, net:0, ret:0, brut:0, ded:0, dp:0 });
   const filtered = rows.length !== all.length;
   return `<div class="table-scroll pay-scroll"><table class="pay-table">
     <thead><tr><th class="pay-caret-col"></th><th>${t('pl_th_jucator')}<span class="pay-th-sub">${t('pl_th_echipa')}</span></th>
       <th class="num">${t('pl_th_victorii')}</th><th class="num">${t('pl_th_infrangeri')}</th><th>${t('pl_th_rol')}</th><th>${t('fl_label')}</th>
       ${showDays ? days.map(d=>`<th class="num">${ddmm(d)}</th>`).join('') : ''}
-      <th class="num">${t('pl_th2_net')}</th><th class="num">${t('pl_th_coef')}</th><th class="num pay-gross-col">${t('pl_th2_brut')}</th>
-      <th class="num">${t('pl_th2_ret')}</th><th class="num">${t('pl_th2_netRamas')}</th>
-      <th class="num">${t('pl_th_ded')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th><th class="pay-obs">${t('pl_th_observatie')}</th></tr></thead>
+      <th class="num">${t('pl_th2_net')}</th>${showDays ? '' : `<th class="num pay-opt">${t('pl_th_coef')}</th>`}<th class="num pay-gross-col">${t('pl_th2_brut')}</th>
+      <th class="num">${t('pl_th2_ret')}</th>${showDays ? '' : `<th class="num pay-opt">${t('pl_th2_netRamas')}</th>`}
+      <th class="num">${t('pl_th_ded')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th>${showDays ? '' : `<th class="pay-obs">${t('pl_th_observatie')}</th>`}</tr></thead>
     <tbody>${payLoading ? `<tr><td class="td-empty" colspan="${cols}">${t('st_loading2')}</td></tr>` : rows.length ? rows.map(r=>{ const open = payView.open.has(r.participantId);
       return `<tr class="pay-row ${open?'open':''}" onclick="payToggle('${r.participantId}')">
         <td class="pay-caret-col"><span class="pay-caret">›</span></td>
@@ -4032,19 +4035,19 @@ function payTableHtml(){
         <td>${freelancerBadge(r.freelancer)}</td>
         ${showDays ? days.map(d=>`<td class="num td-muted">${r.perDay[d]?money(r.perDay[d]):''}</td>`).join('') : ''}
         <td class="num">${money(r.net)}</td>
-        <td class="num td-muted">${coefText(r.coef)}</td>
+        ${showDays ? '' : `<td class="num td-muted pay-opt">${coefText(r.coef)}</td>`}
         <td class="num pay-gross-col">${money(r.brut)}</td>
         <td class="num td-muted">${money(r.ret)}</td>
-        <td class="num">${money(r.net)}</td>
+        ${showDays ? '' : `<td class="num pay-opt">${money(r.net)}</td>`}
         <td class="num ${r.ded.total?'c-yellow':'td-muted'}">${r.ded.total?'−'+money(r.ded.total):''}</td>
         <td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.dePlata)}</strong></td>
-        <td class="td-muted pay-obs">${esc(payObservation(r))}</td></tr>${open ? payDetailHtml(r, cols) : ''}`; }).join('')
+        ${showDays ? '' : `<td class="td-muted pay-obs">${esc(payObservation(r))}</td>`}</tr>${open ? payDetailHtml(r, cols) : ''}`; }).join('')
       : `<tr><td class="td-empty" colspan="${cols}">${t(filtered?'pa_none':'pl_none')}</td></tr>`}</tbody>
     ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}${filtered?` <span class="td-muted">(${rows.length} ${plural(rows.length,'pa_countSuffix')})</span>`:''}</td>
       <td class="num">${tot.v}</td><td class="num">${tot.i}</td><td></td><td></td>
       ${showDays ? days.map(d=>`<td class="num">${money(rows.reduce((s,r)=>s+(r.perDay[d]||0),0))}</td>`).join('') : ''}
-      <td class="num">${money(tot.net)}</td><td></td><td class="num pay-gross-col">${money(tot.brut)}</td><td class="num">${money(tot.ret)}</td><td class="num">${money(tot.net)}</td>
-      <td class="num">${tot.ded?'−'+money(tot.ded):''}</td><td class="num pay-gross-col pay-gross-end">${money(tot.dp)}</td><td></td></tr></tfoot>` : ''}
+      <td class="num">${money(tot.net)}</td>${showDays ? '' : '<td class="pay-opt"></td>'}<td class="num pay-gross-col">${money(tot.brut)}</td><td class="num">${money(tot.ret)}</td>${showDays ? '' : `<td class="num pay-opt">${money(tot.net)}</td>`}
+      <td class="num">${tot.ded?'−'+money(tot.ded):''}</td><td class="num pay-gross-col pay-gross-end">${money(tot.dp)}</td>${showDays ? '' : '<td></td>'}</tr></tfoot>` : ''}
   </table></div>`;
 }
 let payRefOpen = new Set();
