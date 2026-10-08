@@ -2647,9 +2647,9 @@ function renderDashboard(){
   const medCurand = medicalRows().filter(r=>r.status==='expiră curând').length;
   return `
   <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
-  <div class="view-sub">${fmtDate(todayISO())} · ${t('sb_shift').toLowerCase()}: ${esc(activeShiftName())}</div>
+  <div class="view-sub">${fmtDate(todayISO())} · ${isFullAdmin() ? esc(currentAdmin) : `${t('sb_shift').toLowerCase()}: ${esc(activeShiftName())}`}</div>
 
-  ${renderShiftWorkflow()}
+  ${isFullAdmin() ? '' : renderShiftWorkflow()}
 
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">${t('da_stat_activi')}</div><div class="stat-value">${DB.participanti.filter(p=>p.statut==='activ').length}</div><div class="stat-sub">${DB.participanti.length} ${t('da_total_inreg')}</div></div>
@@ -7491,7 +7491,7 @@ function startIconPreview(){
   currentAdminId='icon-preview-admin';
   currentAdmin='Previzualizare iconuri';
   currentRole=new URLSearchParams(location.search).get('role')==='asistent' ? 'asistent' : 'admin';
-  adminDemoShiftActive=currentRole==='admin';
+  adminDemoShiftActive=false;
   DB={
     administratori:[{id:currentAdminId,nume:'Previzualizare',prenume:'Iconuri',rol:'admin',ascuns:false}],
     serviciuAdministratori:[{id:'employee-1',nume:'Ahmetzeanov Rustam'}],
