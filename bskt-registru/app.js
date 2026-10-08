@@ -830,7 +830,7 @@ Object.assign(I18N.ro, {
   mt_scorBtn:'Scor', mt_needTeams:'Alegeți două echipe diferite.', mt_needPlayers:'Fiecare echipă are nevoie de cel puțin 3 jucători.',
   mt_unCapitan:'O echipă poate avea un singur căpitan în meci.', mt_dublura:'Același jucător apare de două ori în meci.',
   mt_egal:'În 3×3 nu există egalitate — corectați scorul.', mt_confirmDelete:(n)=>`Ștergeți meciul #${n??''} împreună cu loturile și plățile lui?`,
-  pl_title:'Plăți', pl_sub:'Remunerarea echipelor — net și brut (15%). Compania plătește brutul necesar; jucătorul achită reținerea de 15% și rămâne cu netul. Deducerile (spălătorie, daune, antrenamente) se scad din suma de plată.',
+  pl_title:'Plăți', pl_sub:'Remunerarea echipelor — net și brut (15%). Pentru freelanceri compania plătește brutul necesar (jucătorul achită reținerea de 15% și rămâne cu netul); pentru ceilalți plătește netul. Deducerile (spălătorie, daune) se scad din suma de plată.',
   pl_saptCurenta:'Săptămâna curentă', pl_saptTrecuta:'Săptămâna trecută', pl_lunaCurenta:'Luna curentă',
   pl_meciuri:'Meciuri jucate', pl_faraScor:'fără scor', pl_jucatori:'Jucători plătiți', pl_fondNet:'Fond net (MDL)', pl_brut:'Brut',
   pl_retinere:'Reținere 15%', pl_deduceri:'Deduceri', pl_deduceriSub:'spălătorie · daune · antrenamente', pl_maxim:'Plata maximă',
@@ -903,7 +903,7 @@ Object.assign(I18N.ru, {
   mt_scorBtn:'Счёт', mt_needTeams:'Выберите две разные команды.', mt_needPlayers:'В каждой команде должно быть минимум 3 игрока.',
   mt_unCapitan:'У команды в матче может быть только один капитан.', mt_dublura:'Один и тот же игрок указан дважды.',
   mt_egal:'В 3×3 ничьих нет — исправьте счёт.', mt_confirmDelete:(n)=>`Удалить матч #${n??''} вместе с составами и выплатами?`,
-  pl_title:'Выплаты', pl_sub:'Вознаграждение команд — нетто и брутто (15%). Компания выплачивает необходимое брутто; игрок платит 15% и остаётся с нетто. Вычеты (прачечная, ущерб, тренировки) вычитаются из суммы к выплате.',
+  pl_title:'Выплаты', pl_sub:'Вознаграждение команд — нетто и брутто (15%). Фрилансерам компания выплачивает необходимое брутто (игрок платит 15% и остаётся с нетто); остальным — нетто. Вычеты (прачечная, ущерб) вычитаются из суммы к выплате.',
   pl_saptCurenta:'Текущая неделя', pl_saptTrecuta:'Прошлая неделя', pl_lunaCurenta:'Текущий месяц',
   pl_meciuri:'Сыграно матчей', pl_faraScor:'без счёта', pl_jucatori:'Игроков к выплате', pl_fondNet:'Фонд нетто (MDL)', pl_brut:'Брутто',
   pl_retinere:'Удержание 15%', pl_deduceri:'Вычеты', pl_deduceriSub:'прачечная · ущерб · тренировки', pl_maxim:'Максимальная выплата',
@@ -1496,17 +1496,13 @@ const NAV = [
   {id:'meciuri', key:'nav_meciuri', icon:'ball'},
   {id:'plati', key:'nav_plati', icon:'money'},
   {id:'statistici', key:'nav_statistici', icon:'chart'},
-  {id:'intarzieri', key:'nav_intarzieri', icon:'clock'},
-  {id:'vestimentatie', key:'nav_vestimentatie', icon:'shirt'},
   {id:'serviciu', key:'nav_serviciu', icon:'calendar'},
   {id:'spalatorie', key:'nav_spalatorie', icon:'washer'},
   {id:'hostel', key:'nav_hostel', icon:'hostel'},
   {id:'lenjerie', key:'nav_lenjerie', icon:'linen'},
   {id:'medical', key:'nav_medical', icon:'medical'},
   {id:'daune', key:'nav_daune', icon:'damage'},
-  {id:'fairplay', key:'nav_fairplay', icon:'fairplay'},
   {id:'arbitraj', key:'nav_arbitraj', icon:'referee'},
-  {id:'antrenamente', key:'nav_antrenamente', icon:'training'},
   {id:'inventar', key:'nav_inventar', icon:'inventory'},
   {id:'sarcini', key:'nav_sarcini', icon:'tasks'},
   {id:'observatii', key:'nav_observatii', icon:'observations'},
@@ -1516,7 +1512,7 @@ const NAV = [
 ];
 const LOCATION_HIDDEN_VIEWS = new Set(['setari','plati']);
 // everything a helper account can open (all read-only)
-const ASISTENT_VIEWS = new Set(['dashboard','participanti','echipe','meciuri','plati','statistici','intarzieri','vestimentatie','serviciu','spalatorie','hostel','lenjerie','medical','daune','fairplay','arbitraj','antrenamente','inventar','sarcini','observatii','pauzatehnica']);
+const ASISTENT_VIEWS = new Set(['dashboard','participanti','echipe','meciuri','plati','statistici','serviciu','spalatorie','hostel','lenjerie','medical','daune','arbitraj','inventar','sarcini','observatii','pauzatehnica']);
 // read-only views a location account can open before starting a shift
 const NO_SHIFT_VIEWS = new Set(['dashboard','rapoarte','statistici','meciuri','echipe']);
 
@@ -1546,6 +1542,7 @@ function navBadge(id){
 }
 
 function navigate(view){
+  if(!NAV.some(n=>n.id===view)) view = 'dashboard';
   if(view==='dashboard' && !asDash?.loading) asDash = null;
   if(view==='dashboard' && !asLog?.loading) asLog = null;   // helper dashboard: fresh problem list on every visit
   if(isAsistent()){ if(!ASISTENT_VIEWS.has(view)) view = 'dashboard'; }
@@ -2003,7 +2000,11 @@ function actConditieLabel(conditie, lang=LANG){
   if(conditie!=='nou' && conditie!=='uzat') return '';
   return t(conditie==='uzat' ? 'le_stockUsed' : 'le_stockNew', lang);
 }
+const ACT_SECTIONS_REMOVED = new Set(['act_s_intarzieri','act_s_fairplay','act_s_treninguri']);
 function actSections(c, lang=LANG){
+  return actSectionsAll(c, lang).filter(s=>!ACT_SECTIONS_REMOVED.has(s.titleKey));
+}
+function actSectionsAll(c, lang=LANG){
   return [
     ...(c.meciuri ? [{ titleKey:'act_s_meciuri', headers:['#', t('act_ora',lang), t('act_echipaA',lang), t('act_scor',lang), t('act_echipaB',lang)], rows:c.meciuri.map(r=>[r.nr??'', r.ora||'', r.a, r.scor, r.b]) }] : []),
     { titleKey:'act_s_intarzieri', headers:[t('act_numeSportiv',lang), t('act_min',lang), t('act_motiv',lang)], rows:(c.intarzieri||[]).map(r=>[r.nume, r.min ?? '', r.motiv||'']) },
@@ -2506,21 +2507,8 @@ function renderShiftWorkflow(){
         </div>
       </div>
 
-      <div class="ops-card training">
-        <div class="ops-title"><span>${t('sh_trainingTitle')}</span><span class="ops-kicker">03</span></div>
-        <div class="ops-help">${t('sh_trainingHelp')}</div>
-        ${eligible.length ? Array.from({length:dashboardTrainingRows},(_,idx)=>`<div class="ops-row training-row">
-          <div class="field"><label>${t('sh_trainee')}</label><select id="shift-training-player-${idx}">${eligible.map(p=>`<option value="${p.id}">${esc(p.nume)} ${esc(p.prenume)}</option>`).join('')}</select></div>
-          <div class="field"><label>${t('sh_trainer')}</label><select id="shift-training-coach-${idx}">${TRAINERS.map(x=>`<option>${esc(x)}</option>`).join('') || `<option value="">${t('stx_faraAntrenori')}</option>`}</select></div>
-          <div class="field"><label>${t('sh_time')}</label><input id="shift-training-time-${idx}" type="time"></div>
-          <button class="btn-primary btn-sm" onclick="addDashboardTraining(${idx})">${t('sh_addTraining')}</button>
-        </div>`).join('') : `<div class="alert-empty">${t('sh_noEligible')}</div>`}
-        ${eligible.length ? `<button class="btn-ghost btn-sm" style="margin-top:10px" onclick="addDashboardTrainingRow()">${t('sh_addRow')}</button>` : ''}
-        ${todayTrainings.length ? `<div class="ops-today-list">${todayTrainings.map(r=>`<span class="ops-today-chip">${esc(String(r.ora||'').slice(0,5)||'—')} · ${esc(participantName(r.participantId))} / ${esc(r.antrenor)}</span>`).join('')}</div>` : ''}
-      </div>
-
       <div class="ops-card">
-        <div class="ops-title"><span>${t('sh_matchesTitle')}</span><span class="ops-kicker">04</span></div>
+        <div class="ops-title"><span>${t('sh_matchesTitle')}</span><span class="ops-kicker">03</span></div>
         <div class="ops-help">${t('sh_matchesHelp')}</div>
         <div class="ops-today-list">${DB.meciuri.filter(m=>m.data===todayISO()).sort((a,b)=>(a.nr||0)-(b.nr||0)).map(m=>`<span class="ops-today-chip">#${m.nr??''} ${esc(echipaName(m.echipaAId))} ${m.scorA??'–'}:${m.scorB??'–'} ${esc(echipaName(m.echipaBId))}</span>`).join('') || `<span class="td-muted">${t('mt_none')}</span>`}</div>
         <button class="btn-primary btn-sm" style="margin-top:10px" onclick="navigate('meciuri')">${t('sh_matchesOpen')}</button>
@@ -2587,12 +2575,7 @@ function asistentProblems(){
   const noTeam = DB.participanti.filter(p=>p.statut==='activ' && !p.echipaId).map(p=>`${p.nume} ${p.prenume}`);
   if(noTeam.length) add('info', 'team', t('as_pFaraEchipa')(noTeam.length, names(noTeam)), `participantTeamFilter='__none__'; navigate('participanti')`);
   // discipline (last 7 days) and repeated lateness (30 days)
-  DB.fairPlay.filter(f=>f.data>=addDays(today,-7) && (f.tipCartonas==='descalificare' || f.tipCartonas==='fault antisportiv')).forEach(f=>
-    add(f.tipCartonas==='descalificare'?'red':'yellow', 'fairplay', t('as_pFairPlay')(participantName(f.participantId), trEnum(f.tipCartonas), fmtDate(f.data)), `navigate('fairplay')`));
-  frequentLate().forEach(x=>add('yellow', 'late', t('as_pIntarzieri')(x.arbitru || participantName(x.participantId), x.count), `navigate('intarzieri')`));
   // items out and not back
-  const kitOut = DB.vestimentatie.filter(v=>!v.dataReturnare && v.data<addDays(today,-1));
-  if(kitOut.length) add('yellow', 'kit', t('as_pVestimentatie')(kitOut.length, names([...new Set(kitOut.map(v=>v.arbitru||participantName(v.participantId)))])), `navigate('vestimentatie')`);
   const laundryOut = DB.spalatorie.filter(r=>!r.dataReturnare && r.data<addDays(today,-2));
   if(laundryOut.length) add('yellow', 'kit', t('as_pSpalatorie')(laundryOut.length), `navigate('spalatorie')`);
   const linenOut = DB.lenjerie.filter(l=>!l.dataReturnare && l.dataEliberare<addDays(today,-7));
@@ -3946,7 +3929,6 @@ function payObservation(r){
     const d = [];
     if(r.ded.spal) d.push(`${t('nav_spalatorie')} ${money(r.ded.spal)}`);
     if(r.ded.daune) d.push(`${t('nav_daune')} ${money(r.ded.daune)}`);
-    if(r.ded.antr) d.push(`${t('nav_antrenamente')} ${money(r.ded.antr)}`);
     o.push(`${t('pl_obsRetinut')}: ${d.join(', ')}`);
   }
   return o.join('; ');
@@ -4003,7 +3985,6 @@ function payDetailHtml(r, colspan){
           <div><span>${t('pl_th_brutNecesar')}</span><b>${money(r.brut)}</b></div>
           <div><span>− ${t('nav_spalatorie')}</span><b>${d.spal?money(d.spal):'0'}</b></div>
           <div><span>− ${t('nav_daune')}</span><b>${d.daune?money(d.daune):'0'}</b></div>
-          <div><span>− ${t('nav_antrenamente')}</span><b>${d.antr?money(d.antr):'0'}</b></div>
           <div class="sum total"><span>= ${t('pl_th_dePlataBrut')}</span><b>${money(r.dePlata)} MDL</b></div>
         </div>
         <div class="td-muted" style="font-size:12px;margin-top:8px">${t('pl_th_coef')} ${coefText(r.coef)} · ${t('pl_th_observatie')}: ${esc(payObservation(r))}</div>
@@ -4291,11 +4272,11 @@ function exportPlatiExcel(){
   const r2 = v => Math.round((v||0)*100)/100;
   const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(payView.days ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
-    t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
+    t('nav_spalatorie'), t('nav_daune'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
   const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(payView.days ? days.map(d=>r.perDay[d]||0) : []),
-    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]);
+    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r2(r.dePlata), payObservation(r)]);
   const nDays = payView.days ? days.length : 0;
-  const moneyIdx = new Set([6+nDays, 8+nDays, 9+nDays, 10+nDays, 11+nDays, 12+nDays, 13+nDays, 14+nDays, ...Array.from({length:nDays},(_,k)=>6+k)]);
+  const moneyIdx = new Set([6+nDays, 8+nDays, 9+nDays, 10+nDays, 11+nDays, 12+nDays, 13+nDays, ...Array.from({length:nDays},(_,k)=>6+k)]);
   const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===2||i===3) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
   const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_title')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], head, ...body, total]);
   ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?20 : i===4?26 : i===5?11 : h===t('pl_th_observatie')?48 : 13 }));
@@ -4794,15 +4775,6 @@ function renderProfile(editing = false){
     </section>`}
 
     <div class="profile-history-grid">
-      <section class="profile-section"><div class="profile-section-title">${t('pa_k_intarzieri')}</div>
-        ${list(DB.intarzieri.filter(i=>i.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${t('pa_intarziere_word')}${r.minuteIntarziere?` · ${r.minuteIntarziere} min`:''}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>
-      <section class="profile-section"><div class="profile-section-title">${t('nav_fairplay')}</div>
-        ${list(DB.fairPlay.filter(f=>f.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span><span class="badge ${FAIRPLAY_BADGE[r.tipCartonas]||'muted'}">${esc(trEnum(r.tipCartonas))}</span> ${esc(r.descriere||'')}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>
-      <section class="profile-section"><div class="profile-section-title">${t('pa_k_vestimentatie')}</div>
-        ${list(DB.vestimentatie.filter(v=>v.participantId===id), r=>`<div class="mini-row"><span>${esc(trEnum(r.tip))} · ${esc(r.marime)} × ${r.cantitate}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>
       <section class="profile-section"><div class="profile-section-title">${t('nav_spalatorie')}</div>
         ${list(DB.spalatorie.filter(s=>s.participantId===id), r=>`<div class="mini-row"><span>${esc(r.tipArticole||'')} · ${money(r.suma)} MDL</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
@@ -4817,9 +4789,6 @@ function renderProfile(editing = false){
       </section>
       <section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
         ${list(DB.observatii.filter(o=>o.participantId===id), r=>`<div class="mini-row"><span>${esc(trEnum(r.categorie))}: ${esc(r.descriere)}</span><span>${fmtDate(r.data)}</span></div>`)}
-      </section>
-      <section class="profile-section"><div class="profile-section-title">${t('pa_k_antrenamente')}</div>
-        ${list(DB.treninguri.filter(x=>x.participantId===id).sort((a,b)=>b.data.localeCompare(a.data)), r=>`<div class="mini-row"><span>${esc(r.antrenor)}${r.ora?' · '+String(r.ora).slice(0,5):''}</span><span>${fmtDate(r.data)}</span></div>`)}
       </section>
     </div>`;
   fillProfilePhoto(p);
@@ -7010,7 +6979,7 @@ async function addPauzaTehnica(){
 
 /* ══════════════════════ RAPOARTE ══════════════════════ */
 let reportState = { type:'total', from: addDays(todayISO(),-30), to: todayISO() };
-const REPORT_TYPES = ['total','intarzieri','spalatorie','medical','daune','arbitraj','antrenamente','inventar'];
+const REPORT_TYPES = ['total','spalatorie','medical','daune','arbitraj','inventar'];
 // the month picker shows a month only when the range is exactly that calendar month
 function reportFullMonth(){
   const { from, to } = reportState;
@@ -7159,10 +7128,8 @@ function reportSections(){
   if(type==='total'){
     sections = [
       { title:t('re_sect_participanti'), rows:[
-        [t('re_r_intarzieri'), DB.intarzieri.filter(r=>range.includes(r.data)).length],
         [t('re_r_obsAbs'), DB.observatii.filter(r=>range.includes(r.data)).length],
         [t('re_r_cazariHostel'), DB.hostel.filter(r=>range.includes(r.dataCazare)).length],
-        [t('re_r_vestElib'), DB.vestimentatie.filter(r=>range.includes(r.data)).reduce((s,v)=>s+v.cantitate,0)+' buc'],
         [t('re_r_avizeExp'), medicalRows().filter(r=>r.status==='expirat' && range.includes(r.dataExpirare)).length],
         [t('re_r_dauneProv'), DB.daune.filter(r=>range.includes(r.data)).length],
       ]},
@@ -7173,7 +7140,6 @@ function reportSections(){
         return [
           [t('re_r_meciuri'), ms.length], [t('re_r_meciuriFaraScor'), ms.filter(m=>m.scorA==null||m.scorB==null).length],
           [t('re_r_zileJoc'), days.size], [t('re_r_echipe'), teams.size],
-          [t('re_r_sanctiuni'), DB.fairPlay.filter(r=>range.includes(r.data)).length],
         ];
       })() },
       { title:t('re_sect_admin'), rows:[
@@ -7204,7 +7170,7 @@ function reportFileBase(report){ return `raport_${report.type}_${report.from}_${
 function excelReportRows(report){
   const rows = [];
   const type = report.type;
-  const wants = domain => type==='total' || type===domain;
+  const wants = domain => !['intarzieri','antrenamente'].includes(domain) && (type==='total' || type===domain);
   const add = (data, sectiune, tip, persoana='', detalii='', valoare='', unitate='', statut='', dataFinala='') => {
     rows.push({ data:data||'', sectiune, tip, persoana, detalii, valoare, unitate, statut, dataFinala:dataFinala||'' });
   };
@@ -7237,11 +7203,6 @@ function excelReportRows(report){
     ));
   }
   if(wants('total')){
-    DB.vestimentatie.filter(r=>report.includes(r.data) || report.includes(r.dataReturnare)).forEach(r=>add(
-      r.data, 'Vestimentație', 'Eliberare vestimentație', entryPersonName(r),
-      [r.tip, r.culoare, r.marime].filter(Boolean).join(' · '), Number(r.cantitate||0), 'buc',
-      r.dataReturnare ? 'returnat' : 'eliberat', r.dataReturnare
-    ));
     DB.serviciu.filter(r=>report.includes(r.data)).forEach(r=>add(
       r.data, 'Serviciu administratori', 'Schimb programat', r.administrator
     ));
