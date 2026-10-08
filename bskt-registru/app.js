@@ -4853,7 +4853,7 @@ async function exportFisaPdf(){
   doc.text(L('fi_pdfTitlu'), M, 22);
   doc.setFont('NotoSans','normal'); doc.setFontSize(10); doc.setTextColor(110,100,95);
   doc.text(L('fi_pdfSub'), M, 28);
-  doc.setDrawColor(245,130,42); doc.setLineWidth(.8); doc.line(M, 32, M+40, 32);
+  doc.setDrawColor(22,140,62); doc.setLineWidth(.8); doc.line(M, 32, M+40, 32);
   // photo box top-right
   const px = W-M-32, py = 12;
   doc.setDrawColor(200,190,185); doc.setLineWidth(.3); doc.rect(px, py, 32, 40);
@@ -4880,7 +4880,7 @@ async function exportFisaPdf(){
     if(y + h > 285){ doc.addPage(); y = 18; }
     cells.forEach((f, i)=>{
       const x = M + i*colW;
-      doc.setFont('NotoSans','bold'); doc.setFontSize(9); doc.setTextColor(245,130,42);
+      doc.setFont('NotoSans','bold'); doc.setFontSize(9); doc.setTextColor(22,140,62);
       if(i===0 || String(f.n).match(/^\d+$/)) doc.text(`${String(f.n).replace(/b|c/,'')}.`, x, y);
       doc.setFont('NotoSans','normal'); doc.setFontSize(10); doc.setTextColor(25,20,20);
       doc.text(lines[i], x+6, y);
