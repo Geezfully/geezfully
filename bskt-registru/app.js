@@ -429,6 +429,7 @@ ro: {
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
   fl_explNu:'Nu este freelancer: compania plătește doar netul; impozitul se achită pe altă cale.',
   as_impactPlata:'Impact asupra plăților (suma de plătit)',
+  as_jucDatePersonale:'Fișa personală a jucătorului (naștere, adresă, act de identitate, IDNP, telefon, contacte și restul datelor personale) este vizibilă doar administratorilor.',
   as_arbInregistrat:'Înregistrat în registru', as_arbDatePersonale:'Datele personale ale arbitrului (naștere, adresă, act de identitate, telefon, aviz medical) sunt vizibile doar administratorilor.',
   as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
@@ -761,6 +762,7 @@ ru: {
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
   fl_explNu:'Не фрилансер: компания платит только нетто; налог уплачивается иначе.',
   as_impactPlata:'Влияние на выплаты (сумма к выплате)',
+  as_jucDatePersonale:'Личная карточка игрока (дата рождения, адрес, документ, IDNP, телефон, контакты и остальные личные данные) видна только администраторам.',
   as_arbInregistrat:'Внесён в реестр', as_arbDatePersonale:'Личные данные арбитра (дата рождения, адрес, документ, телефон, медсправка) видны только администраторам.',
   as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
@@ -4781,7 +4783,7 @@ function renderProfile(editing = false){
       ${isAsistent() && p.categorieSportiva ? `<div><div class="k">${t('pa_th_categorieSp')}</div><div class="v">${esc(p.categorieSportiva)}</div></div>` : ''}
     </div>
 
-    ${isAsistent() ? '' : `<section class="profile-section fisa-section">
+    ${isAsistent() ? `<div class="view-sub" style="margin:12px 0 0">${t('as_jucDatePersonale')}</div>` : `<section class="profile-section fisa-section">
       <div class="profile-section-title">${t('fi_title')}</div>
       <div class="fisa-grid">${FISA_FIELDS.map(f=>{ const v = fisaValue(p,f); return `<div class="fisa-item ${f.type==='long'?'span-2':''}"><div class="k"><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</div><div class="v ${v?'':'td-muted'}">${v?esc(v):'—'}</div></div>`; }).join('')}</div>
     </section>`}
