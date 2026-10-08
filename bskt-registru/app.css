@@ -959,3 +959,18 @@ body.role-asistent .upload-btn{display:none !important}
 @media (max-width: 680px){
   main table.m-cards tfoot td:not(.pay-gross-end) { background:none !important; box-shadow:none !important; }
 }
+@media (max-width: 680px){
+  /* desktop forms pin some fields to a column (e.g. grid-column:4 for the add button); on a phone that
+     recreated the desktop columns and squeezed fields to 0px — every field spans the single column */
+  .form-grid > * { grid-column:1 / -1 !important; }
+  .pay-sum-value { font-size:30px; overflow-wrap:anywhere; }
+  .mini-row { align-items:center; }
+  .mini-row > span:first-child { min-width:0; overflow-wrap:anywhere; }
+}
+@media (max-width: 680px){ .mini-row > span:last-child { white-space:nowrap; flex:none; } }
+@media (max-width: 680px){
+  main table.m-cards tr.pay-row.open td { background:none !important; box-shadow:none !important; }
+  main table.m-cards tr.pay-row.open { border-color:var(--gold); }
+  main table.m-cards tr.pay-row.open td.pay-gross-end { background:var(--gold-dim) !important; border-radius:8px; padding-left:8px; }
+}
+@media (max-width: 680px){ .stats-leader { gap:5px; } .stats-leader-val { line-height:1; } }
