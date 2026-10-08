@@ -871,3 +871,79 @@ body.role-asistent .upload-btn{display:none !important}
   main.wide .table-scroll th, main.wide .table-scroll td{padding-left:8px;padding-right:8px}
   .pay-table .pay-opt{display:none}
 }
+
+/* ══ Phones & touch ══════════════════════════════════════════════════════════ */
+@media (max-width: 880px){
+  /* 16px text in fields: iOS Safari zooms the page on focus below that */
+  input:not([type=checkbox]):not([type=radio]), select, textarea { font-size:16px !important; }
+  /* touch targets ≥44px */
+  button, .btn-primary, .btn-ghost, .btn-danger, select, input:not([type=checkbox]):not([type=radio]):not([type=color]) { min-height:44px; }
+  .btn-sm { min-height:40px; padding-left:14px; padding-right:14px; }
+  .toggle-btn { min-height:40px; }
+  button.badge { min-height:36px; padding:6px 12px; }
+  .sb-item { min-height:46px; }
+  .lang-btn { min-height:36px; min-width:40px; }
+  .modal-close { min-width:44px; min-height:44px; }
+  .stat-label, .alert-type, .pay-th-sub, .stat-sub, .field label, .auth-label { font-size:11.5px; }
+  /* tabs: a 2×2 grid instead of a strip that runs off the screen */
+  .pay-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; overflow:visible; border-bottom:0; }
+  .pay-tab { min-height:44px; justify-content:center; border:1px solid var(--border); border-radius:10px; }
+  .pay-tab.active { border-color:var(--gold); }
+}
+@media (max-width: 680px){
+  main .table-wrap { background:transparent; border:0; box-shadow:none; }
+  main .table-scroll { overflow:visible; }
+  main table.m-cards, main table.m-cards tbody, main table.m-cards tfoot, main table.m-cards tr { display:block; width:100%; }
+  main table.m-cards thead { display:none; }
+  main table.m-cards tr { display:grid; grid-template-columns:1fr 1fr; column-gap:14px; background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:10px 14px; margin:0 0 10px; }
+  main table.m-cards tfoot tr { border-color:var(--gold); }
+  main table.m-cards td { display:block; padding:6px 0; border:0; white-space:normal; text-align:left; font-size:14px; min-width:0; overflow-wrap:anywhere; }
+  main table.m-cards td::before { content:attr(data-label); display:block; margin-bottom:2px; color:var(--muted);
+    font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; }
+  main table.m-cards td[data-label=""]::before { display:none; }
+  main table.m-cards td:empty, main table.m-cards td.pay-caret-col { display:none; }
+  /* the name is the card's title, actions and full-width cells span both columns */
+  main table.m-cards td.td-name, main table.m-cards td.pay-who, main table.m-cards td.m-full,
+  main table.m-cards td.row-actions, main table.m-cards td.pay-obs { grid-column:1 / -1; }
+  main table.m-cards td.td-name, main table.m-cards td.pay-who { font-size:16px; font-weight:600; padding-top:2px; }
+  main table.m-cards td.td-name::before, main table.m-cards td.pay-who::before { display:none; }
+  main table.m-cards td.row-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; border-top:1px solid var(--surface2); margin-top:4px; padding-top:10px; }
+  main table.m-cards td.m-full { border-bottom:0; }
+  main table.m-cards tr.pay-detail, main table.m-cards tr.task-group { display:block; background:transparent; border:0; padding:0; }
+  main table.m-cards tr.task-group td { font-weight:600; color:var(--gold); padding:12px 0 4px; }
+  main table.m-cards .pay-detail-grid { width:auto !important; }
+  main table.m-cards .row-actions { gap:8px; flex-wrap:wrap; }
+  main table.m-cards tr.clickable, main table.m-cards tr.pay-row { cursor:pointer; }
+  main table.m-cards tr.clickable:active, main table.m-cards tr.pay-row:active { border-color:var(--gold); }
+}
+
+@media (max-width: 680px){
+  .add-form.m-fold > .form-title { cursor:pointer; min-height:44px; display:flex; align-items:center; margin:-4px 0; user-select:none; }
+  .add-form.m-fold > .form-title::after { content:''; margin-left:auto; width:10px; height:10px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted);
+    transform:rotate(45deg) translateY(-3px); transition:transform .18s; }
+  .add-form.m-fold.m-open > .form-title::after { transform:rotate(-135deg) translateX(-3px); }
+  .add-form.m-fold:not(.m-open) > :not(.form-title) { display:none !important; }
+  .add-form.m-fold.m-open > .form-title { margin-bottom:12px; }
+}
+@media (max-width: 680px){
+  /* sync status: dot + text on one line, button on its own full-width line */
+  .sync-bar { display:grid; grid-template-columns:auto 1fr; align-items:start; }
+  .sync-bar .sync-dot { margin-top:5px; }
+  .sync-bar .btn-sm { grid-column:1 / -1; margin-left:0; width:100%; }
+  /* payment cards: only the amount to pay keeps the gross highlight; day columns make no sense here */
+  main table.m-cards td.pay-gross-col:not(.pay-gross-end) { background:none; box-shadow:none; }
+  main table.m-cards td.pay-gross-end { grid-column:1 / -1; font-size:16px; }
+  .pay-days-toggle { display:none !important; }
+}
+@media (max-width: 680px){
+  /* pop-up header: title + ✕ always on the first line, action buttons wrap underneath */
+  .modal-head { position:relative; flex-wrap:wrap; gap:10px; padding:14px 60px 14px 16px; }
+  .modal-title { font-size:20px; line-height:1.25; overflow-wrap:anywhere; }
+  .modal-head-actions { width:100%; flex-wrap:wrap; gap:8px; }
+  .modal-head-actions:not(:has(> :not(.modal-close))) { width:auto; }
+  .modal-head-actions > :not(.modal-close) { flex:1 1 auto; justify-content:center; }
+  .modal-head .modal-close { position:absolute; top:8px; right:8px; }
+  .modal-body { padding-left:16px; padding-right:16px; }
+}
+@media (max-width: 680px){ .profile-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }

@@ -1657,6 +1657,8 @@ function render(){
   main.innerHTML = fns[currentView] ? fns[currentView]() : '';
   if(currentView==='plati') fitPayDetails();
   enhanceIcons(main);
+  labelTables(main);
+  foldEntryForms(main);
 }
 function participantAcOptions(extra){
   const base = DB.participanti.filter(p=>p.statut==='activ').map(p=>({value:p.id, label:`${p.nume} ${p.prenume}`}));
@@ -7629,5 +7631,50 @@ function startIconPreview(){
   buildSidebar();
   const previewView=new URLSearchParams(location.search).get('view');
   navigate(NAV.some(item=>item.id===previewView) ? previewView : 'dashboard');
+}
+/* ── Phones: every table in the page becomes a stack of cards (CSS in app.css, ≤680px).
+   Each cell gets its column heading as data-label so the card can show "label  value";
+   cells spanning several columns (group headings, detail panels, empty states) span the card. ── */
+/* Phones: data-entry forms start folded into their title bar so the list is visible straight away;
+   a form the user opened stays open across redraws (remembered per page + title). */
+const openMobileForms = new Set();
+function foldEntryForms(root){
+  root.querySelectorAll('.add-form').forEach(form=>{
+    const title = form.querySelector(':scope > .form-title');
+    if(!title || !form.querySelector('input:not([type=hidden]),select,textarea')) return;
+    const key = currentView + '|' + title.textContent.trim();
+    form.classList.add('m-fold');
+    form.classList.toggle('m-open', openMobileForms.has(key));
+    if(title.dataset.fold) return;
+    title.dataset.fold = '1';
+    title.setAttribute('role', 'button');
+    title.tabIndex = 0;
+    const toggle = ()=>{ const open = !form.classList.contains('m-open'); form.classList.toggle('m-open', open); open ? openMobileForms.add(key) : openMobileForms.delete(key); title.setAttribute('aria-expanded', open); };
+    title.addEventListener('click', toggle);
+    title.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggle(); } });
+  });
+}
+function labelTables(root){
+  root.querySelectorAll('table').forEach(table=>{
+    const head = table.tHead?.rows[table.tHead.rows.length-1];
+    const labels = [];
+    if(head) [...head.cells].forEach(th=>{ const txt = th.innerText.replace(/\s+/g,' ').trim(); for(let i=0;i<(th.colSpan||1);i++) labels.push(txt); });
+    table.classList.add('m-cards');
+    [...table.tBodies, ...(table.tFoot ? [table.tFoot] : [])].forEach(sec=>[...sec.rows].forEach(tr=>{
+      let col = 0;
+      [...tr.cells].forEach(td=>{
+        const span = td.colSpan||1;
+        if(span>1 || tr.cells.length===1) td.classList.add('m-full');
+        else td.dataset.label = labels[col] || '';
+        col += span;
+      });
+    }));
+  });
+}
+{
+  let pending = false;
+  const run = ()=>{ pending = false; const main = document.getElementById('main'); if(main){ labelTables(main); foldEntryForms(main); } };
+  new MutationObserver(()=>{ if(!pending){ pending = true; setTimeout(run, 0); } })
+    .observe(document.getElementById('main'), { childList:true, subtree:true });
 }
 if(ICON_PREVIEW_MODE) startIconPreview();
