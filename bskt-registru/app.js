@@ -4644,7 +4644,7 @@ function fisaInput(p, f){
   if(f.type==='role') return `<select id="${id}">${TEAM_ROLES.map(r=>`<option value="${r}" ${r===v?'selected':''}>${esc(trEnum(r))}</option>`).join('')}</select>`;
   if(f.type==='category') return `<select id="${id}"><option value="">${t('pa_nespecificata')}</option>${SPORT_CATEGORIES.map(c=>`<option ${c===v?'selected':''}>${c}</option>`).join('')}</select>`;
   if(f.type==='size') return `<select id="${id}"><option value="">—</option>${PLAYER_SIZES.map(s=>`<option ${s===v?'selected':''}>${s}</option>`).join('')}</select>`;
-  if(f.type==='bool') return `<label class="check-line"><input id="${id}" type="checkbox" ${v?'checked':''}> ${t('fi_da')}</label>`;
+  if(f.type==='bool') return `<label class="check-box"><input id="${id}" type="checkbox" ${v?'checked':''}><span>${t('fi_da')}</span></label>`;
   if(f.type==='long') return `<textarea id="${id}" rows="2">${esc(v||'')}</textarea>`;
   return `<input id="${id}" type="${f.type==='email'?'email':'text'}" value="${esc(v||'')}">`;
 }
