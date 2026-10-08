@@ -1187,6 +1187,7 @@ async function fetchAll(){
       id:a.id, nrDulap:a.nr_dulap, nume:a.nume, prenume:a.prenume, dataNasterii:a.data_nasterii,
       adresa:a.adresa, telefon:a.telefon, email:a.email, dataAvizMedical:a.data_aviz_medical,
       statut:a.statut, dataInregistrarii:a.data_inregistrarii, freelancer: a.freelancer!==false,
+      idnp:a.idnp, nrAct:a.nr_act, dataEmiteriiAct:a.data_emiterii_act,
     })),
     intarzieri: (intarzieriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, arbitru:r.arbitru, data:r.data, minuteIntarziere:r.minute_intarziere, motiv:r.motiv, createdAt:r.created_at})),
     vestimentatie: (vestimentatieR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, arbitru:r.arbitru, inventarId:r.inventar_id, tip:r.tip, culoare:r.culoare, marime:r.marime, cantitate:r.cantitate, dataReturnare:r.data_returnare, stareReturnare:r.stare_returnare})),
@@ -6309,6 +6310,9 @@ function renderArbitruProfile(editing = false){
         <div class="field"><label>${t('pa_telefon')}</label><input id="eab-telefon" value="${esc(a.telefon)}"></div>
         <div class="field"><label>${t('pa_email')}</label><input id="eab-email" type="email" value="${esc(a.email)}"></div>
         <div class="field"><label>${t('pa_adresa')}</label><input id="eab-adresa" value="${esc(a.adresa)}"></div>
+        <div class="field"><label>${t('fi_idnp')}</label><input id="eab-idnp" inputmode="numeric" maxlength="13" value="${esc(a.idnp)}"></div>
+        <div class="field"><label>${t('fi_nrAct')}</label><input id="eab-nract" value="${esc(a.nrAct)}"></div>
+        <div class="field"><label>${t('fi_dataEmiterii')}</label><input id="eab-emis" type="date" value="${esc(a.dataEmiteriiAct)}"></div>
         <div class="field"><label>${t('pa_aviz')}</label><input id="eab-aviz" type="date" value="${esc(a.dataAvizMedical)}"></div>
       </div>
       <div class="profile-edit-actions">
@@ -6325,6 +6329,8 @@ function renderArbitruProfile(editing = false){
       <div><div class="k">${t('fl_label')}</div><div class="v">${freelancerBadge(a.freelancer!==false)}</div></div>
       <div><div class="k">${t('pa_nastere')}</div><div class="v">${fmtDate(a.dataNasterii)}</div></div>
       <div><div class="k">${t('pa_adresa')}</div><div class="v">${esc(a.adresa)||'—'}</div></div>
+      <div><div class="k">${t('fi_idnp')}</div><div class="v">${esc(a.idnp)||'—'}</div></div>
+      <div><div class="k">${t('fi_nrAct')}</div><div class="v">${esc(a.nrAct)||'—'}${a.dataEmiteriiAct?` <span class="td-muted">· ${fmtDate(a.dataEmiteriiAct)}</span>`:''}</div></div>
       <div><div class="k">${t('pa_telefon')}</div><div class="v">${esc(a.telefon)||'—'}</div></div>
       <div><div class="k">${t('pa_email')}</div><div class="v">${esc(a.email)||'—'}</div></div>
       <div><div class="k">${t('pa_aviz')}</div><div class="v">${fmtDate(a.dataAvizMedical)||'—'}</div></div>
@@ -6342,6 +6348,9 @@ async function saveArbitruProfile(){
     telefon: document.getElementById('eab-telefon').value.trim() || null,
     email: document.getElementById('eab-email').value.trim() || null,
     adresa: document.getElementById('eab-adresa').value.trim() || null,
+    idnp: document.getElementById('eab-idnp').value.trim() || null,
+    nr_act: document.getElementById('eab-nract').value.trim().toUpperCase() || null,
+    data_emiterii_act: document.getElementById('eab-emis').value || null,
     data_aviz_medical: document.getElementById('eab-aviz').value || null,
     statut: document.getElementById('eab-statut').value,
     freelancer: document.getElementById('eab-freelancer').value==='1',
@@ -6357,7 +6366,7 @@ async function saveArbitruProfile(){
   Object.assign(a, {
     nrDulap:data.nr_dulap, nume:data.nume, prenume:data.prenume, dataNasterii:data.data_nasterii,
     adresa:data.adresa, telefon:data.telefon, email:data.email, dataAvizMedical:data.data_aviz_medical,
-    statut:data.statut,
+    statut:data.statut, freelancer:data.freelancer!==false, idnp:data.idnp, nrAct:data.nr_act, dataEmiteriiAct:data.data_emiterii_act,
   });
   await logAction(`A actualizat profilul arbitrului ${data.nume} ${data.prenume}`);
   render();
