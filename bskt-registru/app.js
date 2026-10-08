@@ -101,6 +101,7 @@ function setLang(l){
   applyStaticI18n();
   if (DB) { buildSidebar(); navigate(currentView); }
   if(refreshReminderKind) showRefreshReminder(refreshReminderKind);
+  renderInviteRole();
 }
 function applyStaticI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
@@ -132,7 +133,7 @@ function trEnum(v, lang=LANG){ return (lang==='ru' && ENUM_RU[v]) ? ENUM_RU[v] :
 const I18N = {
 ro: {
   au_sub:'Registru electronic · BSKT Cup 3×3', au_email:'E-mail', au_pass:'Parolă', au_login:'Autentificare',
-  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.',
+  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
   au_emailPh:'nume@exemplu.com', au_passPh:'••••••••',
   au_modeAdmin:'Administrator', au_modeLocatie:'Locație', au_pin:'Cod PIN', au_pinPh:'••••••',
   au_pinNeed:'Introduceți codul PIN.', au_pinWrong:'PIN incorect.',
@@ -464,7 +465,7 @@ ro: {
 },
 ru: {
   au_sub:'Электронный журнал · BSKT Cup 3×3', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
-  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.',
+  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
   au_emailPh:'name@example.com', au_passPh:'••••••••',
   au_modeAdmin:'Администратор', au_modeLocatie:'Локация', au_pin:'PIN-код', au_pinPh:'••••••',
   au_pinNeed:'Введите PIN-код.', au_pinWrong:'Неверный PIN-код.',
@@ -1133,7 +1134,7 @@ function fmtTime(value){
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ══════════════════════ DATA LAYER (Supabase) ══════════════════════ */
-function adminName(a){ return a ? `${a.nume} ${a.prenume}` : '—'; }
+function adminName(a){ return a ? [a.nume, a.prenume].filter(Boolean).join(' ') : '—'; }
 // nume afișat altor administratori — conturile marcate "ascuns" (proprietar, nu angajat) apar generic
 function publicAdminName(a){ return !a ? '—' : (a.ascuns ? (LANG==='ru'?'Администратор':'Administrator') : adminName(a)); }
 function visibleAdmins(){ return DB.administratori.filter(a=>!a.ascuns); }
@@ -1379,10 +1380,81 @@ async function resumeSession(){
   if(!profile){ await sb.auth.signOut(); return; }
   await enterApp(session.user.id, adminName(profile), profile.rol);
 }
+/* ══════════════════════ INVITAȚII: înregistrare prin link unic ══════════════════════ */
+// Links are always built on the public address, so an admin working on a local copy still hands out a working link.
+const PUBLIC_APP_URL = 'https://geezfully.com/bskt-registru/';
+// #invitatie=<48 hex>[&lang=ru] — kept in the fragment so the token never reaches a server log or a Referer header
+function readInviteToken(){
+  const h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const token = h.get('invitatie') || '';
+  return /^[0-9a-f]{48}$/.test(token) ? { token, lang: h.get('lang') } : null;
+}
+async function callInviteFunction(payload){
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/accept-invite`, {
+    method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload),
+  });
+  return resp.json().catch(()=>({ error:'server_error' }));
+}
+function inviteError(code){
+  const key = { invalid:'iv2_errInvalid', used:'iv2_errUsed', expired:'iv2_errExpired', cancelled:'iv2_errCancelled',
+    email_exists:'iv2_errEmailExists', bad_email:'iv2_errEmail', bad_password:'iv2_errPassword', bad_name:'iv2_errName' }[code];
+  return t(key || 'iv2_errServer');
+}
+let inviteInfo = null;
+async function startInvite(inv){
+  if(inv.lang==='ru' || inv.lang==='ro') setLang(inv.lang);
+  document.querySelector('.auth-mode-switch').style.display = 'none';
+  document.getElementById('auth-form-admin').style.display = 'none';
+  document.getElementById('auth-form-locatie').style.display = 'none';
+  document.getElementById('auth-form-invite').style.display = '';
+  const fields = document.getElementById('inv-fields'), msg = document.getElementById('inv-msg');
+  fields.style.display = 'none'; msg.style.color = 'var(--muted)'; msg.textContent = t('iv2_checking');
+  let r;
+  try { r = await callInviteFunction({ action:'check', token:inv.token }); } catch(e){ r = { error:'server_error' }; }
+  if(!r?.ok){ msg.style.color = 'var(--red)'; msg.textContent = inviteError(r?.error); return; }
+  inviteInfo = { ...inv, rol:r.rol, expiraLa:r.expira_la };
+  renderInviteRole();
+  fields.style.display = ''; msg.textContent = '';
+  document.getElementById('inv-nume').focus();
+}
+function renderInviteRole(){
+  const el = document.getElementById('inv-role');
+  if(!el || !inviteInfo) return;
+  el.textContent = t('iv2_role')(t(inviteInfo.rol==='admin' ? 'st_inv_rolAdmin' : 'st_inv_rolAsistent'), fmtDateTime(inviteInfo.expiraLa));
+}
+async function acceptInvite(){
+  if(!inviteInfo) return;
+  const nume = document.getElementById('inv-nume').value.replace(/\s+/g,' ').trim();
+  const email = document.getElementById('inv-email').value.trim().toLowerCase();
+  const password = document.getElementById('inv-pass').value, password2 = document.getElementById('inv-pass2').value;
+  const msg = document.getElementById('inv-msg'), btn = document.getElementById('inv-btn');
+  msg.style.color = 'var(--red)';
+  if(nume.length < 2){ msg.textContent = t('iv2_errName'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ msg.textContent = t('iv2_errEmail'); return; }
+  if(password.length < 8){ msg.textContent = t('iv2_errPassword'); return; }
+  if(password !== password2){ msg.textContent = t('iv2_errMismatch'); return; }
+  btn.disabled = true; btn.textContent = t('iv2_creating'); msg.textContent = '';
+  let r;
+  try { r = await callInviteFunction({ action:'accept', token:inviteInfo.token, email, password, nume }); } catch(e){ r = { error:'server_error' }; }
+  if(!r?.ok){ btn.disabled = false; btn.textContent = t('iv2_btn'); msg.textContent = inviteError(r?.error); return; }
+  // account created: drop the token from the address bar and sign the new user straight in
+  history.replaceState(null, '', location.pathname + location.search);
+  msg.style.color = 'var(--gold)'; msg.textContent = t('iv2_done');
+  await sb.auth.signOut();
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ btn.textContent = t('iv2_btn'); msg.textContent = t('iv2_doneLogin'); return; }
+  const { data: profile } = await sb.from('administratori').select('*').eq('id', data.user.id).maybeSingle();
+  if(!profile){ await sb.auth.signOut(); msg.style.color = 'var(--red)'; msg.textContent = t('au_noAccess'); return; }
+  inviteInfo = null;
+  await enterApp(data.user.id, adminName(profile), profile.rol);
+}
+
 applyStaticI18n();
 setAuthMode('admin');
 const ICON_PREVIEW_MODE = new URLSearchParams(location.search).has('icon-preview');
-if(!ICON_PREVIEW_MODE) resumeSession();
+const INVITE = readInviteToken();
+if(INVITE) startInvite(INVITE);
+else if(!ICON_PREVIEW_MODE) resumeSession();
 
 /* ══════════════════════ ICON SYSTEM ══════════════════════ */
 const ICONS = {
@@ -7377,6 +7449,79 @@ function printReport(){
 }
 
 /* ══════════════════════ SETĂRI ══════════════════════ */
+/* ── Setări → linkuri de înregistrare (doar administrator) ── */
+let invitesState = { list:null, loading:false, link:null, copied:false };
+async function loadInvitatii(){
+  if(invitesState.loading) return;
+  invitesState.loading = true;
+  const { data, error } = await sb.from('invitatii').select('id,rol,limba,creat_de,creat_la,expira_la,folosita_la,anulata_la,email,nume_afisat').order('creat_la', { ascending:false }).limit(50);
+  invitesState.loading = false;
+  invitesState.list = error ? [] : (data||[]);
+  if(currentView==='setari') render();
+}
+function invitatieStatus(i){
+  if(i.folosita_la) return { cls:'green', key:'st_inv_folosita' };
+  if(i.anulata_la) return { cls:'muted', key:'st_inv_anulata' };
+  if(new Date(i.expira_la) <= new Date()) return { cls:'muted', key:'st_inv_expirata' };
+  return { cls:'gold', key:'st_inv_activa' };
+}
+function renderInvitatii(){
+  if(invitesState.list===null && !invitesState.loading && !ICON_PREVIEW_MODE) loadInvitatii();
+  const list = invitesState.list || [];
+  const roleLabel = r => t(r==='admin' ? 'st_inv_rolAdminScurt' : 'st_inv_rolAsistentScurt');
+  return `<div class="add-form">
+    <div class="form-title">${t('st_inv_title')}</div>
+    <div class="view-sub" style="margin:-4px 0 14px">${t('st_inv_sub')}</div>
+    <div class="form-grid" style="grid-template-columns:1.4fr .7fr .7fr auto">
+      <div class="field"><label>${t('st_inv_rol')}</label><select id="stf-inv-rol">
+        <option value="asistent">${t('st_inv_rolAsistent')}</option><option value="admin">${t('st_inv_rolAdmin')}</option></select></div>
+      <div class="field"><label>${t('st_inv_limba')}</label><select id="stf-inv-limba">
+        <option value="ro" ${LANG==='ro'?'selected':''}>Română</option><option value="ru" ${LANG==='ru'?'selected':''}>Русский</option></select></div>
+      <div class="field"><label>${t('st_inv_zile')}</label><select id="stf-inv-zile">
+        ${[1,3,7,14,30].map(z=>`<option value="${z}" ${z===7?'selected':''}>${z} ${plural(z,'pa_expiraLa')}</option>`).join('')}</select></div>
+      <div class="field" style="justify-content:flex-end"><button class="btn-primary" onclick="createInvitatie()">${t('st_inv_btn')}</button></div>
+    </div>
+    ${invitesState.link ? `<div class="invite-link-box">
+      <div class="invite-link-row"><input id="stf-inv-link" readonly value="${esc(invitesState.link)}" onclick="this.select()">
+        <button class="btn-primary" onclick="copyInvitatie()">${t(invitesState.copied ? 'st_inv_copied' : 'st_inv_copy')}</button></div>
+      <div class="invite-link-note">${t('st_inv_once')}</div>
+    </div>` : ''}
+    <div class="table-scroll" style="margin-top:16px"><table><thead><tr><th>${t('st_inv_thCreat')}</th><th>${t('st_inv_rol')}</th><th>${t('st_inv_thExpira')}</th><th>${t('th_statut')}</th><th>${t('st_inv_thCont')}</th><th></th></tr></thead><tbody>
+      ${invitesState.loading && !list.length ? `<tr><td class="td-empty" colspan="6">${t('st_loading2')}</td></tr>`
+        : list.length ? list.map(i=>{ const st = invitatieStatus(i);
+          return `<tr><td class="td-muted">${fmtDateTime(i.creat_la)}</td><td>${roleLabel(i.rol)} <span class="td-muted">· ${i.limba.toUpperCase()}</span></td>
+            <td class="td-muted">${fmtDateTime(i.expira_la)}</td><td><span class="badge ${st.cls}">${t(st.key)}</span></td>
+            <td>${i.folosita_la ? `${esc(i.nume_afisat||'')} <span class="td-muted">${esc(i.email||'')}</span>` : '<span class="td-muted">—</span>'}</td>
+            <td class="row-actions">${st.key==='st_inv_activa' ? `<button class="btn-danger btn-sm" onclick="cancelInvitatie('${i.id}')">${t('st_inv_anuleaza')}</button>` : ''}</td></tr>`; }).join('')
+        : `<tr><td class="td-empty" colspan="6">${t('st_inv_none')}</td></tr>`}
+    </tbody></table></div>
+  </div>`;
+}
+async function createInvitatie(){
+  const p_rol = document.getElementById('stf-inv-rol').value;
+  const p_limba = document.getElementById('stf-inv-limba').value;
+  const p_zile = Number(document.getElementById('stf-inv-zile').value);
+  if(p_rol==='admin' && !confirm(t('st_inv_confirmAdmin'))) return;
+  const { data, error } = await sb.rpc('creeaza_invitatie', { p_rol, p_zile, p_limba });
+  if(error || !data?.length){ alert(t('err_save')+' '+(error?.message||'')); return; }
+  invitesState.link = `${PUBLIC_APP_URL}#invitatie=${data[0].token}${p_limba==='ru' ? '&lang=ru' : ''}`;
+  invitesState.copied = false;
+  invitesState.list = null;
+  render();
+}
+async function copyInvitatie(){
+  const input = document.getElementById('stf-inv-link'); if(!input) return;
+  try { await navigator.clipboard.writeText(input.value); } catch(e){ input.select(); document.execCommand('copy'); }
+  invitesState.copied = true;
+  render();
+}
+async function cancelInvitatie(id){
+  if(!confirm(t('st_inv_confirmAnulare'))) return;
+  const { error } = await sb.rpc('anuleaza_invitatie', { p_id:id });
+  if(error){ alert(t('err_update')+' '+error.message); return; }
+  invitesState.list = null;
+  render();
+}
 function renderSetari(){
   return `
   <div class="view-head"><div class="view-title">${t('st_title')}</div></div>
@@ -7388,6 +7533,8 @@ function renderSetari(){
       ${visibleAdmins().map(a=>`<tr><td>${esc(adminName(a))}${a.id===currentAdminId?` <span class="badge gold">${t('st_activAcum')}</span>`:''}</td><td class="td-muted">${a.rol==='admin'?t('st_rolValue'):a.rol==='asistent'?t('as_rol'):t('st_rolLocatieCont')}</td></tr>`).join('')}
     </tbody></table></div>
   </div>
+
+  ${renderInvitatii()}
 
   <div class="add-form">
     <div class="form-title">${t('st_praguri')}</div>

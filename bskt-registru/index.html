@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
-<link rel="stylesheet" href="app.css?v=20261008-18">
+<link rel="stylesheet" href="app.css?v=20261008-19">
 </head>
 <body>
 
@@ -49,6 +49,35 @@
       </div>
       <button class="auth-submit" id="login-locatie-btn" data-i18n="au_login" onclick="loginLocatie()">Autentificare</button>
       <div class="auth-hint" id="login-locatie-msg"></div>
+    </div>
+    <!-- one-time sign-up link (#invitatie=<token>): shown instead of the login forms -->
+    <div class="auth-fields" id="auth-form-invite" style="display:none">
+      <div class="auth-invite-head">
+        <div class="auth-invite-title" data-i18n="iv2_title">Creează-ți contul</div>
+        <div class="auth-invite-role" id="inv-role"></div>
+      </div>
+      <div id="inv-fields">
+        <div class="auth-fields">
+          <div>
+            <label class="auth-label" for="inv-nume" data-i18n="iv2_nume">Nume afișat</label>
+            <input type="text" id="inv-nume" class="auth-input" data-i18n-ph="iv2_numePh" placeholder="ex. Ion Popescu" autocomplete="name" maxlength="60">
+          </div>
+          <div>
+            <label class="auth-label" for="inv-email" data-i18n="au_email">E-mail</label>
+            <input type="email" id="inv-email" class="auth-input" data-i18n-ph="au_emailPh" placeholder="nume@exemplu.com" autocomplete="email">
+          </div>
+          <div>
+            <label class="auth-label" for="inv-pass" data-i18n="au_pass">Parolă</label>
+            <input type="password" id="inv-pass" class="auth-input" data-i18n-ph="iv2_passPh" placeholder="minim 8 caractere" autocomplete="new-password">
+          </div>
+          <div>
+            <label class="auth-label" for="inv-pass2" data-i18n="iv2_pass2">Confirmă parola</label>
+            <input type="password" id="inv-pass2" class="auth-input" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')acceptInvite()">
+          </div>
+          <button class="auth-submit" id="inv-btn" data-i18n="iv2_btn" onclick="acceptInvite()">Creează contul</button>
+        </div>
+      </div>
+      <div class="auth-hint" id="inv-msg"></div>
     </div>
   </div>
   <div class="auth-lang">
@@ -189,6 +218,6 @@
   </div>
 </aside>
 
-<script src="app.js?v=20261008-18"></script>
+<script src="app.js?v=20261008-19"></script>
 </body>
 </html>
