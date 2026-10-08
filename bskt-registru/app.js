@@ -429,6 +429,7 @@ ro: {
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
   fl_explNu:'Nu este freelancer: compania plătește doar netul; impozitul se achită pe altă cale.',
   as_impactPlata:'Impact asupra plăților (suma de plătit)',
+  as_arbInregistrat:'Înregistrat în registru', as_arbDatePersonale:'Datele personale ale arbitrului (naștere, adresă, act de identitate, telefon, aviz medical) sunt vizibile doar administratorilor.',
   as_paSub:'Jucătorii BSKT Cup — echipa, rezultatele și istoricul sportiv.', as_paSearchPh:'Caută după nume sau echipă…',
   as_rol:'Asistent (doar citire)', as_cont:'Cont asistent', as_readOnly:'Contul de asistent are doar drept de citire — modificarea nu a fost făcută.',
   as_dashSub:'cont de asistent · doar citire', as_echipeActive:'echipe active', as_ultimaZi:'Ultima zi de joc',
@@ -760,6 +761,7 @@ ru: {
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
   fl_explNu:'Не фрилансер: компания платит только нетто; налог уплачивается иначе.',
   as_impactPlata:'Влияние на выплаты (сумма к выплате)',
+  as_arbInregistrat:'Внесён в реестр', as_arbDatePersonale:'Личные данные арбитра (дата рождения, адрес, документ, телефон, медсправка) видны только администраторам.',
   as_paSub:'Игроки BSKT Cup — команда, результаты и спортивная история.', as_paSearchPh:'Поиск по имени или команде…',
   as_rol:'Ассистент (только чтение)', as_cont:'Учётная запись ассистента', as_readOnly:'У учётной записи ассистента только право чтения — изменение не выполнено.',
   as_dashSub:'ассистент · только чтение', as_echipeActive:'активных команд', as_ultimaZi:'Последний игровой день',
@@ -6210,11 +6212,11 @@ function renderArbitraj(){
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${DB.arbitri.length} ${plural(DB.arbitri.length,'arb_countSuffix')}</div></div>
     <div class="table-scroll"><table>
-      <thead><tr><th>${t('pa_th_dulap')}</th><th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th><th>${t('pa_th_naștere')}</th><th>${t('pa_telefon')}</th><th>${t('fl_label')}</th><th>${t('th_statut')}</th></tr></thead>
+      <thead><tr>${isAsistent() ? '' : `<th>${t('pa_th_dulap')}</th>`}<th>${t('pa_nume')}</th><th>${t('pa_prenume')}</th>${isAsistent() ? '' : `<th>${t('pa_th_naștere')}</th><th>${t('pa_telefon')}</th>`}<th>${t('fl_label')}</th><th>${t('th_statut')}</th></tr></thead>
       <tbody>${DB.arbitri.length ? DB.arbitri.slice().sort((a,b)=>(a.statut==='inactiv')-(b.statut==='inactiv')||a.nume.localeCompare(b.nume,'ro')||a.prenume.localeCompare(b.prenume,'ro')).map(a=>`
         <tr class="clickable" onclick="openArbitruProfile('${a.id}')">
-          <td class="td-muted">${esc(a.nrDulap)}</td><td class="td-name">${esc(a.nume)}</td><td>${esc(a.prenume)}</td>
-          <td class="td-muted">${fmtDate(a.dataNasterii)}</td><td class="td-muted">${esc(a.telefon)}</td>
+          ${isAsistent() ? '' : `<td class="td-muted">${esc(a.nrDulap)}</td>`}<td class="td-name">${esc(a.nume)}</td><td>${esc(a.prenume)}</td>
+          ${isAsistent() ? '' : `<td class="td-muted">${fmtDate(a.dataNasterii)}</td><td class="td-muted">${esc(a.telefon)}</td>`}
           <td>${freelancerBadge(a.freelancer!==false)}</td>
           <td><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></td>
         </tr>`).join('') : `<tr><td class="td-empty" colspan="7">${t('arb_none')}</td></tr>`}</tbody>
@@ -6322,6 +6324,16 @@ function renderArbitruProfile(editing = false){
     return;
   }
 
+  if(isAsistent()){
+    document.getElementById('arbitru-modal-body').innerHTML = `
+    <div class="profile-grid">
+      <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></div></div>
+      <div><div class="k">${t('fl_label')}</div><div class="v">${freelancerBadge(a.freelancer!==false)}</div></div>
+      <div><div class="k">${t('as_arbInregistrat')}</div><div class="v">${fmtDate(a.dataInregistrarii)}</div></div>
+    </div>
+    <div class="view-sub" style="margin:14px 0 0">${t('as_arbDatePersonale')}</div>`;
+    return;
+  }
   document.getElementById('arbitru-modal-body').innerHTML = `
     <div class="profile-grid">
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(a.nrDulap)||'—'}</div></div>
@@ -7603,6 +7615,7 @@ function startIconPreview(){
     const keep=['id','nume','prenume','echipaId','nrEchipa','rolEchipa','rating','categorieSportiva','fotoPath','statut','eligibilAntrenament','dataInregistrarii','dataAvizMedical','nrDulap','marime','freelancer'];
     DB.participanti=DB.participanti.map(p=>Object.fromEntries(keep.map(k=>[k,p[k]])));
     DB.acteSchimb=[]; DB.jurnal=[];
+    DB.arbitri=DB.arbitri.map(a=>({ id:a.id, nume:a.nume, prenume:a.prenume, statut:a.statut, dataInregistrarii:a.dataInregistrarii, freelancer:a.freelancer!==false }));
   }
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app-shell').classList.add('visible');
