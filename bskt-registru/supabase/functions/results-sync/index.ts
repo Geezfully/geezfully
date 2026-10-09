@@ -4,7 +4,8 @@
 //
 // Rules
 // - only matches where BOTH teams are in our registry (echipe.slug_extern) are stored; the rest are counted as ignored
-// - id_extern = "<site calendar date>T<HH:MM>|<slug A>|<slug B>"; the site is the official source, so its score wins
+// - id_extern = "<site calendar date>T<HH:MM>|<slug A>|<slug B>"; the owners' Google Sheet (sheet-sync) is the main
+//   source and this feed the fallback: it never overrides the sheet, a manual edit, a locked week or a manual deletion
 // - games after midnight belong to the evening session before (data = calendar date − 1 when hour < 06:00),
 //   same convention as the matches imported from the Excel
 // - an unplayed fixture that vanishes from the schedule while still in the future is deleted (unless it has a roster)
@@ -214,52 +215,94 @@ Deno.serve(async (req) => {
     if (unknownTeams.size) detalii.echipeNecunoscute = [...unknownTeams];
 
     // ── 3. upsert ──────────────────────────────────────────────
+    // The owners' Google Sheet is the main source (sheet-sync); this feed is the fallback. It never touches a match
+    // the sheet owns (sursa 'tabel'), a match changed by hand since the last sync wrote it (sync_baza differs),
+    // a match in a locked week, or a match someone deleted by hand (meciuri_sterse).
     const dates = wanted.map(w => w.data).sort();
     const existing = dates.length ? (await admin.from("meciuri")
-      .select("id,data,ora,echipa_a_id,echipa_b_id,scor_a,scor_b,sursa,id_extern")
+      .select("id,data,ora,echipa_a_id,echipa_b_id,scor_a,scor_b,prelungiri,sursa,id_extern,sync_baza")
       .gte("data", dates[0]).lte("data", dates[dates.length - 1])).data ?? [] : [];
     const byExt = new Map(existing.filter(m => m.id_extern).map(m => [m.id_extern as string, m]));
     const stamp = new Date().toISOString();
+    const lockedWeeks = new Set(((await admin.from("saptamani_blocate").select("luni")).data ?? []).map(r => r.luni as string));
+    const mondayOf = (iso: string) => { const d = new Date(iso + "T00:00:00Z"); return addDays(iso, -((d.getUTCDay() + 6) % 7)); };
+    const isLocked = (day: string) => lockedWeeks.has(mondayOf(day));
+    const deleted = new Set(((await admin.from("meciuri_sterse").select("cheie").like("cheie", "site:%")).data ?? []).map(r => r.cheie as string));
+    const baseOf = (m: any) => ({ data: m.data, ora: String(m.ora ?? "").slice(0, 5), a: m.echipa_a_id, b: m.echipa_b_id, sa: m.scor_a, sb: m.scor_b, ot: !!m.prelungiri });
+    const changedByHand = (m: any) => {
+      const b = m.sync_baza; if (!b || !b.data) return false;
+      const c = baseOf(m);
+      return b.data !== c.data || b.ora !== c.ora || b.a !== c.a || b.b !== c.b || (b.sa ?? null) !== (c.sa ?? null) || (b.sb ?? null) !== (c.sb ?? null) || !!b.ot !== c.ot;
+    };
+    // a slot the owners' sheet already fills with a DIFFERENT game: the site's version is not added (fallback only)
+    const sheetSlotTaken = (day: string, ora: string, a: string, b: string) => existing.some(m => m.sursa === "tabel" && m.data === day &&
+      String(m.ora ?? "").slice(0, 5) === ora && !((m.echipa_a_id === a && m.echipa_b_id === b) || (m.echipa_a_id === b && m.echipa_b_id === a)));
+    const skipped = { tabel: 0, manual: 0, blocat: 0, sters: 0, ocupat_tabel: 0, curatate: 0 };
 
     for (const w of wanted) {
+      if (deleted.has(`site:${w.key}`)) { skipped.sters++; continue; }
       const cur = byExt.get(w.key);
       if (cur) {
+        if (cur.sursa === "tabel") { skipped.tabel++; continue; }
         if (w.sa != null && (cur.scor_a !== w.sa || cur.scor_b !== w.sb)) {
-          const { error } = await admin.from("meciuri").update({ scor_a: w.sa, scor_b: w.sb, sincronizat_la: stamp }).eq("id", cur.id);
+          if (changedByHand(cur)) { skipped.manual++; continue; }
+          if (isLocked(cur.data)) { skipped.blocat++; continue; }
+          const next = { ...baseOf(cur), sa: w.sa, sb: w.sb };
+          const { error } = await admin.from("meciuri").update({ scor_a: w.sa, scor_b: w.sb, sincronizat_la: stamp,
+            sync_baza: { ...next, lot: cur.sync_baza?.lot ?? {} } }).eq("id", cur.id);
           if (error) throw error;
           stats.actualizate++;
         }
         continue;
       }
-      // a match the shift already typed in by hand: same session day, time and teams → link it
+      // a match already in the app (typed by hand, or created from the sheet): same session day, time and teams → link it
       const manual = existing.find(m => !m.id_extern && m.data === w.data && String(m.ora ?? "").slice(0, 5) === w.ora &&
         ((m.echipa_a_id === w.a && m.echipa_b_id === w.b) || (m.echipa_a_id === w.b && m.echipa_b_id === w.a)));
       if (manual) {
-        const flipped = manual.echipa_a_id === w.b;
+        if (isLocked(manual.data)) { skipped.blocat++; continue; }
         const patch: Record<string, unknown> = { id_extern: w.key, sincronizat_la: stamp };
-        if (w.sa != null) { patch.scor_a = flipped ? w.sb : w.sa; patch.scor_b = flipped ? w.sa : w.sb; }
+        // the sheet's score, or a score someone typed, wins over the site's
+        if (w.sa != null && manual.sursa !== "tabel" && manual.scor_a == null) {
+          const flipped = manual.echipa_a_id === w.b;
+          patch.scor_a = flipped ? w.sb : w.sa; patch.scor_b = flipped ? w.sa : w.sb;
+          patch.sync_baza = { ...baseOf(manual), sa: patch.scor_a, sb: patch.scor_b, lot: manual.sync_baza?.lot ?? {} };
+        }
         const { error } = await admin.from("meciuri").update(patch).eq("id", manual.id);
         if (error) throw error;
         manual.id_extern = w.key;
         stats.actualizate++;
         continue;
       }
+      if (isLocked(w.data)) { skipped.blocat++; continue; }
+      if (sheetSlotTaken(w.data, w.ora, w.a, w.b)) { skipped.ocupat_tabel++; continue; }
       const { error } = await admin.from("meciuri").insert({
         data: w.data, ora: w.ora, echipa_a_id: w.a, echipa_b_id: w.b, scor_a: w.sa, scor_b: w.sb,
         sursa: "bsktcup", id_extern: w.key, sincronizat_la: stamp,
+        sync_baza: { data: w.data, ora: w.ora, a: w.a, b: w.b, sa: w.sa, sb: w.sb, ot: false, lot: {} },
       });
       if (error) throw error;
       stats.inserate++;
     }
+    // site-only games sitting in a slot where the sheet has a different game were the site's mistakes: remove them,
+    // unless someone gave them a line-up, edited them by hand, or the week is locked
+    for (const m of existing) {
+      if (m.sursa !== "bsktcup" || !sheetSlotTaken(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id)) continue;
+      if (changedByHand(m) || isLocked(m.data)) continue;
+      const { count } = await admin.from("meci_jucatori").select("id", { count: "exact", head: true }).eq("meci_id", m.id);
+      if (count) continue;
+      const { error } = await admin.from("meciuri").delete().eq("id", m.id);
+      if (!error) { skipped.curatate++; stats.sterse++; }
+    }
+    detalii.sarite = skipped;
 
     // ── 4. drop future fixtures that left the schedule (rescheduled / cancelled) ──
     if (scheduleCount > 0) {
       const seen = new Set(wanted.map(w => w.key));
-      const { data: pending } = await admin.from("meciuri").select("id,id_extern")
+      const { data: pending } = await admin.from("meciuri").select("id,id_extern,data,ora,echipa_a_id,echipa_b_id,scor_a,scor_b,prelungiri,sync_baza")
         .eq("sursa", "bsktcup").is("scor_a", null).gte("data", addDays(today, -1));
       for (const p of pending ?? []) {
         const k = p.id_extern as string | null;
-        if (!k || seen.has(k)) continue;
+        if (!k || seen.has(k) || changedByHand(p) || isLocked(p.data)) continue;   // edited by hand or locked — keep
         const kickoff = k.slice(0, 16).replace("T", " ");
         if (kickoff <= now) continue;                       // played but result not published yet — keep
         const { count } = await admin.from("meci_jucatori").select("id", { count: "exact", head: true }).eq("meci_id", p.id);

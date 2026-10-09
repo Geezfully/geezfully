@@ -133,7 +133,7 @@ function trEnum(v, lang=LANG){ return (lang==='ru' && ENUM_RU[v]) ? ENUM_RU[v] :
 const I18N = {
 ro: {
   au_sub:'Registru electronic · BSKT Cup 3×3', au_email:'E-mail', au_pass:'Parolă', au_login:'Autentificare',
-  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
+  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', pl_saptamana:'Săptămâna', pl_blocata:'Blocată', pl_deschisa:'Deschisă', pl_blocheaza:'Blochează', pl_deblocheaza:'Deblochează', pl_confirmBlocare:(s)=>`Blocați săptămâna ${s}? După blocare, nimeni nu mai poate modifica meciurile, scorurile și loturile ei — nici manual, nici tabelul Google, nici site-ul.`, pl_confirmDeblocare:(s)=>`ATENȚIE: săptămâna ${s} este blocată. Deblocarea permite din nou modificări ale meciurilor, loturilor și plăților ei (manual, din tabel și de pe site). Deblocați?`, pl_blocataTitlu:'Săptămâna acestui meci este blocată. Deblocați-o din Plăți pentru a face modificări.', al_typeSync:'Tabel', al_tabelNume:(n)=>`${n} nume din tabelul Google așteaptă confirmare (Setări → Tabel Google). Loturile cu aceste nume nu se importă până atunci.`, tb_title:'Tabel Google (meciuri, loturi, rating)', tb_sub:'Tabelul este sursa principală: rezultatele (foaia Results), loturile (foile PD_zz.ll.aaaa), ratingul și echipa jucătorilor (Player data). Site-ul 3x3.bsktcup.com rămâne rezervă. Ce modificați manual în aplicație rămâne așa — sincronizarea nu suprascrie modificările manuale și nu recreează meciurile șterse. Săptămânile blocate nu se modifică deloc.', tb_neconfigurat:'Tabelul nu este conectat încă — urmați pașii de mai jos.', tb_ultima:'Ultima sincronizare:', tb_niciodata:'Conectat, încă nesincronizat.', tb_meciuriTabel:'meciuri în tabel', tb_conflicte:'diferențe păstrate manual', tb_loturiAsteapta:'loturi așteaptă nume', tb_simuleaza:'Simulează (fără modificări)', tb_conectare:'Conectarea tabelului', tb_pas1:'În tabel: Extensii → Apps Script → <b>+ lângă „Fișiere” → Script</b>, numiți-l „bskt-registru-sync”, lipiți scriptul în acest fișier NOU → Salvare. <b>Nu ștergeți și nu modificați scripturile care există deja</b> (de ex. updatePlayerData).', tb_pas2:'Generați cheia secretă și puneți-o în Apps Script → Setări proiect → Proprietăți script: <b>CHEIE</b> = cheia de mai jos.', tb_pas3:'În Apps Script: Implementare → Implementare nouă → Aplicație web → Execută ca: Eu → Acces: Oricine → Implementare → autorizați.', tb_pas4:'Copiați linkul aplicației web (…/exec) și salvați-l aici:', tb_faraCheie:'nicio cheie generată', tb_arata:'Arată', tb_ascunde:'Ascunde', tb_genereazaCheie:'Generează cheia', tb_cheieNoua:'Cheie nouă', tb_confirmCheieNoua:'Generați o cheie nouă? Cea veche nu va mai funcționa: trebuie pusă și cheia nouă în Apps Script (Proprietăți script → CHEIE).', tb_numeTitlu:'Nume din tabel de confirmat', tb_numeSub:'Numele potrivite exact se leagă automat. Pentru celelalte alegeți jucătorul din registru (propunerea e deja selectată) sau creați un jucător nou. Alegerea se memorează.', tb_numeNiciunul:'Niciun nume de confirmat.', tb_alegeJucator:'Alegeți jucătorul din registru', tb_leaga:'Leagă', tb_jucatorNou:'Jucător nou', tb_numePrenume:'Completați numele și prenumele jucătorului nou.', tb_confirmNou:(n)=>`Creați jucătorul nou „${n}”? Fișa personală (IDNP, act etc.) se completează ulterior din profilul lui.`, tb_legate:(n)=>`Nume legate (${n}) — verificați sau schimbați`, tb_inTabel:'În tabel', tb_inRegistru:'În registru', tb_st_auto:'automat', tb_st_confirmat:'confirmat', tb_st_nou:'creat nou', tb_schimba:'Schimbă', tb_eroare:'Sincronizarea cu tabelul a eșuat:', tb_raport:'Sincronizare cu tabelul', tb_raportSimulare:'Simulare — nimic nu a fost modificat', tb_simulareNota:'Aceasta este doar o simulare: arată ce s-ar schimba. Nimic nu a fost salvat.', tb_noi:'meciuri noi', tb_actualizate:'meciuri actualizate', tb_loturiSchimbate:'loturi completate', tb_r_nume_noi:'Nume noi de confirmat', tb_r_conflicte:'Modificate manual (păstrate)', tb_r_blocate:'În săptămâni blocate (neschimbate)', tb_r_loturi_in_asteptare:'Loturi care așteaptă confirmarea unor nume', tb_r_schimbari:'Schimbări', tb_r_echipe_necunoscute:'Echipe necunoscute', tb_r_erori:'Erori', tb_aplicatia:'aplicația', tb_tabelul:'tabelul', tb_nou:'nou', tb_inchide:'Închide', tb_ultimaTabel:'Ultima sincronizare cu tabelul Google:', tb_azi:'azi', tb_syncCuTabelul:'Sincronizează cu tabelul', tb_syncScurt:'Sincronizează', tb_syncTitlu:'Preia acum meciurile, loturile și ratingurile din tabelul Google', tb_tSincronizat:'Sincronizat:', tb_tLaZi:'Totul este la zi cu tabelul.', tb_tLoturi:(n)=>`${n} ${n===1?'lot':'loturi'}`, tb_tMeciuri:(n)=>`${n} ${n===1?'meci actualizat':'meciuri actualizate'}`, tb_tNume:(n)=>`${n} nume de confirmat (Setări)`, tb_tConflicte:(n)=>`${n} ${n===1?'modificare manuală păstrată':'modificări manuale păstrate'}`, tb_tRaport:'Raport', tb_numeDeConfirmat:'nume de confirmat', tb_badgeTabel:'Tabel', tb_dinTabelTitlu:'Rezultat și lot din tabelul Google', tb_badgeManual:'modificat manual', tb_manualTitlu:'Acest meci a fost modificat manual după sincronizare; tabelul și site-ul nu îl mai suprascriu.', tb_preia:'Preia din tabel', tb_confirmPreia:'Renunțați la modificările manuale ale acestui meci și preluați din nou scorul și loturile din tabel?', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
   au_emailPh:'nume@exemplu.com', au_passPh:'••••••••',
   au_modeAdmin:'Administrator', au_modeLocatie:'Locație', au_pin:'Cod PIN', au_pinPh:'••••••',
   au_pinNeed:'Introduceți codul PIN.', au_pinWrong:'PIN incorect.',
@@ -465,7 +465,7 @@ ro: {
 },
 ru: {
   au_sub:'Электронный журнал · BSKT Cup 3×3', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
-  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
+  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', pl_saptamana:'Неделя', pl_blocata:'Заблокирована', pl_deschisa:'Открыта', pl_blocheaza:'Заблокировать', pl_deblocheaza:'Разблокировать', pl_confirmBlocare:(s)=>`Заблокировать неделю ${s}? После блокировки никто не сможет изменить её матчи, счёт и составы — ни вручную, ни из Google-таблицы, ни с сайта.`, pl_confirmDeblocare:(s)=>`ВНИМАНИЕ: неделя ${s} заблокирована. Разблокировка снова разрешит изменять её матчи, составы и выплаты (вручную, из таблицы и с сайта). Разблокировать?`, pl_blocataTitlu:'Неделя этого матча заблокирована. Разблокируйте её в разделе «Выплаты», чтобы вносить изменения.', al_typeSync:'Таблица', al_tabelNume:(n)=>`${n} имён из Google-таблицы ждут подтверждения (Настройки → Google-таблица). Составы с этими именами до тех пор не импортируются.`, tb_title:'Google-таблица (матчи, составы, рейтинг)', tb_sub:'Таблица — основной источник: результаты (лист Results), составы (листы PD_дд.мм.гггг), рейтинг и команда игроков (Player data). Сайт 3x3.bsktcup.com остаётся резервным. То, что вы меняете вручную в приложении, сохраняется — синхронизация не перезаписывает ручные изменения и не восстанавливает удалённые матчи. Заблокированные недели не меняются вообще.', tb_neconfigurat:'Таблица ещё не подключена — выполните шаги ниже.', tb_ultima:'Последняя синхронизация:', tb_niciodata:'Подключено, ещё не синхронизировано.', tb_meciuriTabel:'матчей в таблице', tb_conflicte:'ручных отличий сохранено', tb_loturiAsteapta:'составов ждут имён', tb_simuleaza:'Проверить (без изменений)', tb_conectare:'Подключение таблицы', tb_pas1:'В таблице: Расширения → Apps Script → <b>+ рядом с «Файлы» → Скрипт</b>, назовите его «bskt-registru-sync», вставьте скрипт в этот НОВЫЙ файл → Сохранить. <b>Не удаляйте и не меняйте уже существующие скрипты</b> (например, updatePlayerData).', tb_pas2:'Создайте секретный ключ и укажите его в Apps Script → Настройки проекта → Свойства скрипта: <b>CHEIE</b> = ключ ниже.', tb_pas3:'В Apps Script: Начать развёртывание → Новое развёртывание → Веб-приложение → Запуск от: Меня → Доступ: Все → Развернуть → разрешите доступ.', tb_pas4:'Скопируйте ссылку веб-приложения (…/exec) и сохраните её здесь:', tb_faraCheie:'ключ не создан', tb_arata:'Показать', tb_ascunde:'Скрыть', tb_genereazaCheie:'Создать ключ', tb_cheieNoua:'Новый ключ', tb_confirmCheieNoua:'Создать новый ключ? Старый перестанет работать: новый ключ нужно указать и в Apps Script (Свойства скрипта → CHEIE).', tb_numeTitlu:'Имена из таблицы для подтверждения', tb_numeSub:'Точно совпадающие имена связываются автоматически. Для остальных выберите игрока из реестра (предложение уже выбрано) или создайте нового. Выбор запоминается.', tb_numeNiciunul:'Нет имён для подтверждения.', tb_alegeJucator:'Выберите игрока из реестра', tb_leaga:'Связать', tb_jucatorNou:'Новый игрок', tb_numePrenume:'Укажите фамилию и имя нового игрока.', tb_confirmNou:(n)=>`Создать нового игрока «${n}»? Личную карточку (IDNP, документ и т. д.) заполните позже в его профиле.`, tb_legate:(n)=>`Связанные имена (${n}) — проверить или изменить`, tb_inTabel:'В таблице', tb_inRegistru:'В реестре', tb_st_auto:'автоматически', tb_st_confirmat:'подтверждено', tb_st_nou:'создан новый', tb_schimba:'Изменить', tb_eroare:'Синхронизация с таблицей не удалась:', tb_raport:'Синхронизация с таблицей', tb_raportSimulare:'Проверка — ничего не изменено', tb_simulareNota:'Это только проверка: показано, что изменилось бы. Ничего не сохранено.', tb_noi:'новых матчей', tb_actualizate:'обновлённых матчей', tb_loturiSchimbate:'заполненных составов', tb_r_nume_noi:'Новые имена для подтверждения', tb_r_conflicte:'Изменено вручную (сохранено)', tb_r_blocate:'В заблокированных неделях (без изменений)', tb_r_loturi_in_asteptare:'Составы, ожидающие подтверждения имён', tb_r_schimbari:'Изменения', tb_r_echipe_necunoscute:'Неизвестные команды', tb_r_erori:'Ошибки', tb_aplicatia:'приложение', tb_tabelul:'таблица', tb_nou:'новый', tb_inchide:'Закрыть', tb_ultimaTabel:'Последняя синхронизация с Google-таблицей:', tb_azi:'сегодня', tb_syncCuTabelul:'Синхронизировать с таблицей', tb_syncScurt:'Синхронизировать', tb_syncTitlu:'Сейчас взять матчи, составы и рейтинги из Google-таблицы', tb_tSincronizat:'Синхронизировано:', tb_tLaZi:'Всё совпадает с таблицей.', tb_tLoturi:(n)=>`составов: ${n}`, tb_tMeciuri:(n)=>`обновлено матчей: ${n}`, tb_tNume:(n)=>`имён для подтверждения: ${n} (Настройки)`, tb_tConflicte:(n)=>`ручных изменений сохранено: ${n}`, tb_tRaport:'Отчёт', tb_numeDeConfirmat:'имён для подтверждения', tb_badgeTabel:'Таблица', tb_dinTabelTitlu:'Результат и состав из Google-таблицы', tb_badgeManual:'изменён вручную', tb_manualTitlu:'Этот матч изменён вручную после синхронизации; таблица и сайт его больше не перезаписывают.', tb_preia:'Взять из таблицы', tb_confirmPreia:'Отменить ручные изменения этого матча и снова взять счёт и составы из таблицы?', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
   au_emailPh:'name@example.com', au_passPh:'••••••••',
   au_modeAdmin:'Администратор', au_modeLocatie:'Локация', au_pin:'PIN-код', au_pinPh:'••••••',
   au_pinNeed:'Введите PIN-код.', au_pinWrong:'Неверный PIN-код.',
@@ -977,7 +977,7 @@ function canSeeMoney(){ return isFullAdmin() || isAsistent(); }
 function asistentWindowStart(){ return addDays(weekStart(todayISO()), -7); }
 function asistentWindowEnd(){ return addDays(todayISO(), 30); }
 function inAsistentWindow(day){ return !!day && day >= asistentWindowStart() && day <= asistentWindowEnd(); }
-function canOpenMatchEditor(m){ return isFullAdmin() || (isAsistent() && inAsistentWindow(m.data)); }
+function canOpenMatchEditor(m){ return !isWeekLocked(m.data) && (isFullAdmin() || (isAsistent() && inAsistentWindow(m.data))); }
 function hasActiveShift(){ return isFullAdmin() || !!currentShift; }
 function activeShiftName(){
   if(isFullAdmin()) return currentAdmin;
@@ -1349,6 +1349,7 @@ async function enterApp(userId, displayName, rol){
   document.getElementById('header-user').textContent = currentAdmin;
   document.getElementById('sb-admin').textContent = currentAdmin;
   await fetchAll();
+  await loadSyncMeta().catch(e=>console.error(e));
   document.getElementById('sb-admin').textContent = activeShiftName();
   buildSidebar();
   navigate('dashboard');
@@ -1705,6 +1706,7 @@ function buildAlerts(){
       ? t('al_staleTask')(t2.descriere)
       : t('al_openTask')(t2.descriere) });
   });
+  if(isFullAdmin() && tabelPending) alerts.unshift({ type:'sync', level:'yellow', text: t('al_tabelNume')(tabelPending) });
   return alerts;
 }
 
@@ -1889,7 +1891,16 @@ const ACT_REASON_RU = [
   [/^Anulare returnare vestimentație(?: — (.+))?$/i, (m,n)=>n ? `Отмена возврата формы: ${n}` : 'Отмена возврата формы'],
   [/^Set lenjerie eliberat(?: către (.+))?$/i, (m,n)=>n ? `Выдача комплекта белья: ${n}` : 'Выдача комплекта белья'],
   [/^Returnare set lenjerie(?: de la (.+))?$/i, (m,n)=>n ? `Возврат комплекта белья: ${n}` : 'Возврат комплекта белья'],
+  // the stock trigger writes "Mingi eliberate arbitrului <nume> (<teren>)" (no brand word)
+  [/^Mingi eliberate arbitrului (.+?)(?: \((.+)\))?$/i, (m,n,ter)=>`Мячи выданы арбитру ${n}${ter ? ` (${ter})` : ''}`],
   [/^Mingi (\S+) eliberate arbitrului (.+)$/i, (m,marca,n)=>`Мячи ${marca} выданы арбитру ${n}`],
+  [/^Ștergere arbitraj (.+?) \((.+)\): mingi restituite$/i, (m,n,ter)=>`Запись судейства удалена: ${n} (${ter}), мячи возвращены`],
+  [/^Corecție vestimentație: anulare eliberare$/i, ()=>'Исправление выдачи формы: выдача отменена'],
+  [/^Corecție vestimentație: eliberare corectată$/i, ()=>'Исправление выдачи формы: выдача исправлена'],
+  [/^Corecție set lenjerie: anulare eliberare$/i, ()=>'Исправление комплекта белья: выдача отменена'],
+  [/^Corecție set lenjerie: anulare returnare$/i, ()=>'Исправление комплекта белья: возврат отменён'],
+  [/^Corecție set lenjerie: eliberat din (nou|uzat)$/i, (m,src)=>`Исправление комплекта белья: выдан из ${src==='uzat'?'б/у':'новых'}`],
+  [/^Corecție set lenjerie: returnare$/i, ()=>'Исправление комплекта белья: возврат'],
   [/^Corecție mingi arbitraj pentru (.+): anulare valoare anterioară$/i, (m,n)=>`Корректировка мячей для арбитра ${n}: отмена прежнего значения`],
   [/^Ajustare manuală din pagina Inventar$/i, ()=>'Ручная корректировка на странице Инвентарь'],
   [/^Intrare înregistrată din tabloul de bord$/i, ()=>'Поступление, внесённое с панели управления'],
@@ -2676,7 +2687,7 @@ function renderAsistentDashboard(){
   const card = (label, value, sub, cls='', go='')=>`<div class="stat-card ${cls} ${go?'asistent-link':''}" ${go?`onclick="${go}"`:''}><div class="stat-label">${label}</div><div class="stat-value ${cls==='crit'?'c-red':cls==='warn'?'c-yellow':''}">${value}</div><div class="stat-sub">${sub}</div></div>`;
   const loadingTxt = '…';
   return `
-  <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('da_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${fmtDate(today)} · ${t('as_dashSub')}</div>
 
   <div class="stats-row">
@@ -2708,7 +2719,7 @@ function renderDashboard(){
   const medExpirate = medicalRows().filter(r=>r.status==='expirat').length;
   const medCurand = medicalRows().filter(r=>r.status==='expiră curând').length;
   return `
-  <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('da_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${fmtDate(todayISO())} · ${isFullAdmin() ? esc(currentAdmin) : `${t('sb_shift').toLowerCase()}: ${esc(activeShiftName())}`}</div>
 
   ${isFullAdmin() ? '' : renderShiftWorkflow()}
@@ -2721,6 +2732,8 @@ function renderDashboard(){
     <div class="stat-card"><div class="stat-label">${t('da_stat_meciuri')}</div><div class="stat-value">${DB.meciuri.filter(m=>m.data===todayISO()).length}</div><div class="stat-sub">${t('da_stat_meciuriSub')}: ${DB.meciuri.filter(m=>m.data>=weekStart(todayISO())).length}</div></div>
     <div class="stat-card"><div class="stat-label">${t('da_stat_hostel')}</div><div class="stat-value">${DB.hostel.filter(h=>h.dataCazare===todayISO()).length}</div><div class="stat-sub">${t('da_total_inregistrari')}: ${DB.hostel.length}</div></div>
   </div>
+
+  ${syncStrip()}
 
   <div class="alerts-panel">
     <div class="alerts-panel-head">${t('da_alerts_title')}</div>
@@ -2860,7 +2873,7 @@ function mapMeci(m){
     id:m.id, nr:m.nr, data:m.data, ora:m.ora ? String(m.ora).slice(0,5) : '', teren:m.teren,
     echipaAId:m.echipa_a_id, echipaBId:m.echipa_b_id, scorA:m.scor_a, scorB:m.scor_b,
     prelungiri:!!m.prelungiri, arbitru:m.arbitru, observatii:m.observatii, sesiuneSchimbId:m.sesiune_schimb_id,
-    sursa:m.sursa||'manual', idExtern:m.id_extern||null,
+    sursa:m.sursa||'manual', idExtern:m.id_extern||null, syncBaza:m.sync_baza||null,
   };
 }
 function mapRoster(r){
@@ -2912,7 +2925,7 @@ function money(v){ const n = Number(v||0); return (Math.round(n*100)/100).toLoca
 function pct(v){ return v==null ? '—' : Math.round(Number(v)*100)+'%'; }
 function signed(v){ if(v==null) return '—'; const n=Number(v); return (n>0?'+':'')+n.toLocaleString('ro-RO'); }
 function winnerOf(m){ if(m.scorA==null || m.scorB==null) return null; return m.scorA>m.scorB ? m.echipaAId : m.echipaBId; }
-function canEditMatch(m){ return isFullAdmin() || (!!currentShift && m.sesiuneSchimbId===currentShift.id); }
+function canEditMatch(m){ return !isWeekLocked(m.data) && (isFullAdmin() || (!!currentShift && m.sesiuneSchimbId===currentShift.id)); }
 function weekStart(iso){ const d=new Date(iso+'T00:00:00Z'); return addDays(iso, -((d.getUTCDay()+6)%7)); }
 function datesBetween(from,to){ const out=[]; for(let d=from; d<=to && out.length<3700; d=addDays(d,1)) out.push(d); return out; }
 function ddmm(iso){ return iso ? `${iso.slice(8,10)}.${iso.slice(5,7)}` : ''; }
@@ -2982,7 +2995,7 @@ function renderEchipe(){
   const teams = DB.echipe.slice().sort((a,b)=>(b.activ-a.activ) || (statById[b.id]?.winRate??-1)-(statById[a.id]?.winRate??-1) || a.nume.localeCompare(b.nume));
   const fara = DB.participanti.filter(p=>!p.echipaId && p.statut==='activ');
   return `
-  <div class="view-head"><div class="view-title">${t('ec_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('ec_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t('ec_sub')}</div>
 
   ${hasActiveShift() ? `<div class="add-form">
@@ -2993,6 +3006,8 @@ function renderEchipe(){
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" onclick="addEchipa()">${t('ec_btnAdd')}</button></div>
     </div>
   </div>` : ''}
+
+  ${syncStrip()}
 
   <div class="team-grid">
     ${teams.map(e=>{
@@ -3200,7 +3215,7 @@ async function openMeciuri(){
     matchDay = DB.meciuri.some(m=>m.data===today) || hasActiveShift() ? today : (matchDaysAvailable().find(d=>DB.meciuri.some(m=>m.data===d)) || today);
   }
   matchesLoading = true; render();
-  try { await Promise.all([reloadMatchesForDay(matchDay), loadLastSync(), recentLineups ? null : loadRecentLineups()]); } catch(e){ console.error(e); }
+  try { await Promise.all([reloadMatchesForDay(matchDay), loadLastSync(), loadSyncMeta(), recentLineups ? null : loadRecentLineups()]); } catch(e){ console.error(e); }
   matchesLoading = false;
   if(currentView==='meciuri') render();
 }
@@ -3354,7 +3369,7 @@ function renderSyncBar(){
   return `<div class="sync-bar">
     <span class="sync-dot ${lastSync ? (ok ? 'ok' : 'err') : ''}"></span>
     <span>${t('mt_syncSursa')} <a href="https://3x3.bsktcup.com/#results" target="_blank" rel="noopener">3x3.bsktcup.com</a> · ${esc(when)}${lastSync && !ok ? ` · <span style="color:var(--red)">${esc(lastSync.eroare||'')}</span>` : ''}</span>
-    ${isFullAdmin() ? `<button class="btn-ghost btn-sm" ${syncRunning?'disabled':''} onclick="syncNow()">${t(syncRunning?'mt_syncRuleaza':'mt_syncAcum')}</button>` : ''}
+    ${isFullAdmin() && !tabelActiv ? `<button class="btn-ghost btn-sm" ${syncRunning?'disabled':''} onclick="syncNow()">${t(syncRunning?'mt_syncRuleaza':'mt_syncAcum')}</button>` : ''}
   </div>`;
 }
 async function syncNow(){
@@ -3377,7 +3392,7 @@ function renderMeciuri(){
   const matches = DB.meciuri.filter(m=>m.data===day).sort((a,b)=>matchSortKey(a).localeCompare(matchSortKey(b)));
   const dayNet = matches.reduce((s,m)=>s+rosterOf(m.id).reduce((x,r)=>x+(r.sumaNet||0),0),0);
   return `
-  <div class="view-head"><div class="view-title">${t('mt_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('mt_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t('mt_sub')}</div>
 
   <div class="add-form">
@@ -3407,6 +3422,7 @@ function renderMeciuri(){
 
   ${matchesLoading ? '' : noRosterBanner(scoredWithoutRoster(matches))}
   ${!matchesLoading && (isFullAdmin() || (isAsistent() && inAsistentWindow(day))) && matches.some(m=>sideEmpty(m, m.echipaAId) || sideEmpty(m, m.echipaBId)) ? `<div class="dl-cta"><button class="btn-primary" onclick="openDayLineups('${day}')">${t('dl_btn')}</button><span class="td-muted">${t('dl_btnSub')}</span></div>` : ''}
+  ${syncStrip()}
   ${matchesLoading ? `<div class="alert-empty">${t('st_loading2')}</div>` : matches.length ? `<div class="match-list">${matches.map((m,i)=>(isAfterMidnight(m.ora) && !isAfterMidnight(matches[i-1]?.ora) ? `<div class="night-divider"><span>${t('mt_dupaMiezulNoptii')} · ${fmtDate(addDays(day,1))}</span></div>` : '') + renderMatchCard(m)).join('')}</div>` : `<div class="alert-empty">${t('mt_none')}</div>`}`;
 }
 function scoredWithoutRoster(matches){ return matches.filter(m=>winnerOf(m) && !(rosterByMatch.get(m.id)||[]).length); }
@@ -3513,17 +3529,20 @@ function renderMatchCard(m){
         ${canSeeMoney() ? `<span class="td-gold">${r.sumaNet==null?'—':money(r.sumaNet)}</span>` : '<span></span>'}</div>`).join('') || `<div class="mini-empty">${t('mt_faraLot')}</div>`}</div>
     </div>`;
   const editing = matchScoreEditId===m.id;
-  const fromSite = !!m.idExtern;   // the site is the official score; the sync overwrites manual edits
+  const fromSheet = m.sursa==='tabel', fromSite = !fromSheet && !!m.idExtern;
+  const manual = (fromSheet || fromSite) && matchManualOverride(m);   // edited by hand: syncs leave it alone
   return `<article class="match-card ${m.scorA==null?'pending':''}">
     <div class="match-meta">${m.nr!=null?`<span class="match-nr">#${m.nr}</span>`:''}<span class="match-time">${esc(matchTimeLabel(m.data, m.ora))||'—'}</span>${isAfterMidnight(m.ora)?`<span class="badge night" title="${esc(t('mt_dupaMiezulNoptiiTitlu')(fmtDate(m.data), fmtDate(addDays(m.data,1))))}">${t('mt_dupaMiezulNoptii')}</span>`:''}${m.teren?`<span>${esc(m.teren)}</span>`:''}${m.prelungiri?`<span class="badge amber">OT</span>`:''}
-      ${fromSite ? `<span class="badge site" title="${esc(t('mt_dinSiteTitlu'))}">3x3.bsktcup.com</span>` : ''}
-      ${fromSite && m.scorA==null ? `<span class="badge muted">${t('mt_programat')}</span>` : ''}
+      ${fromSheet ? `<span class="badge site" title="${esc(t('tb_dinTabelTitlu'))}">${t('tb_badgeTabel')}</span>` : fromSite ? `<span class="badge site" title="${esc(t('mt_dinSiteTitlu'))}">3x3.bsktcup.com</span>` : ''}
+      ${(fromSheet || fromSite) && m.scorA==null ? `<span class="badge muted">${t('mt_programat')}</span>` : ''}
+      ${manual ? `<span class="badge amber" title="${esc(t('tb_manualTitlu'))}">${t('tb_badgeManual')}</span>${isFullAdmin() && fromSheet && !isWeekLocked(m.data) ? ` <button class="btn-ghost btn-sm" onclick="acceptSheetForMatch('${m.id}')">${t('tb_preia')}</button>` : ''}` : ''}
+      ${isWeekLocked(m.data) ? `<span class="badge gold" title="${esc(t('pl_blocataTitlu'))}">${t('pl_blocata')}</span>` : ''}
       ${canEditMatch(m) ? `<span class="match-actions">${editing ? `
         <input id="ms-a-${m.id}" type="number" min="0" value="${m.scorA??''}" class="score-input"> : <input id="ms-b-${m.id}" type="number" min="0" value="${m.scorB??''}" class="score-input">
         <label class="ot-check"><input id="ms-ot-${m.id}" type="checkbox" ${m.prelungiri?'checked':''}> OT</label>
         <button class="btn-primary btn-sm" onclick="saveMatchScore('${m.id}')">${t('btn_save')}</button>
         <button class="btn-ghost btn-sm" onclick="matchScoreEditId=null; render();">${t('btn_cancel')}</button>` : `
-        ${fromSite ? '' : `<button class="btn-ghost btn-sm" onclick="matchScoreEditId='${m.id}'; render();">${t('mt_scorBtn')}</button>`}
+        <button class="btn-ghost btn-sm" onclick="matchScoreEditId='${m.id}'; render();">${t('mt_scorBtn')}</button>
         ${isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="openMatchEditor('${m.id}')">${t('ed_edit')}</button>` : ''}
         <button class="btn-danger btn-sm" onclick="deleteMatch('${m.id}')">${t('btn_delete')}</button>`}</span>` : isAsistent() && canOpenMatchEditor(m) ? `<span class="match-actions"><button class="btn-ghost btn-sm" onclick="openMatchEditor('${m.id}')">${t('ed_edit')}</button></span>` : ''}
     </div>
@@ -3564,14 +3583,16 @@ async function saveMatch(){
 /* ── admin match editor: details, teams, score and both line-ups (pay is re-frozen by the DB trigger on save) ── */
 let matchEdit = null;
 function openMatchEditor(id){
-  const m = DB.meciuri.find(x=>x.id===id); if(!m || !canOpenMatchEditor(m)) return;
+  const m = DB.meciuri.find(x=>x.id===id);
+  if(m && isWeekLocked(m.data)){ alert(t('pl_blocataTitlu')); return; }
+  if(!m || !canOpenMatchEditor(m)) return;
   const slotsFor = eid => {
     const rows = rosterOf(m.id, eid).map(r=>({ pid:r.participantId, rol:r.rol }));
     if(!rows.length) return defaultSlots(eid, matchSortKey(m.data, m.ora));
     while(rows.length < 4) rows.push({ pid:'', rol: rows.length===3 ? 'rezervă' : 'jucător' });
     return rows;
   };
-  matchEdit = { id, locked: !!m.idExtern, nr: m.nr ?? '', data: m.data, ora: m.ora || '', teren: m.teren || '', prelungiri: !!m.prelungiri,
+  matchEdit = { id, locked: isAsistent() && !!m.idExtern, nr: m.nr ?? '', data: m.data, ora: m.ora || '', teren: m.teren || '', prelungiri: !!m.prelungiri,
     arbitru: m.arbitru || '', observatii: m.observatii || '', a: m.echipaAId, b: m.echipaBId,
     sa: m.scorA ?? '', sb: m.scorB ?? '', slots: { a: slotsFor(m.echipaAId), b: slotsFor(m.echipaBId) },
     original: (rosterByMatch.get(m.id)||[]).map(r=>({ echipa_id:r.echipaId, participant_id:r.participantId, rol:r.rol })) };
@@ -3904,16 +3925,21 @@ async function undoAsistentGroup(grup){
 /* ══════════════════════ PLĂȚI ══════════════════════ */
 let payState = null;
 let payLoading = false;
+// Plăți opens on the current calendar month
 function defaultPayRange(){
-  const today = todayISO();
-  const ref = DB.meciuri.some(m=>m.data>=weekStart(today)) ? today : (DB.meciuri.map(m=>m.data).sort().pop() || today);
-  const from = weekStart(ref);
-  return { from, to:addDays(from,6) };
+  const from = todayISO().slice(0,8) + '01';
+  return { from, to:addDays(addMonths(from,1),-1) };
+}
+// "Octombrie 2026" when the period is exactly one calendar month, otherwise "06.10 – 12.10.2026"
+function payPeriodLabel(from, to){
+  const m = Number(from.slice(5,7)), y = from.slice(0,4);
+  if(from.slice(8)==='01' && to === addDays(addMonths(from,1),-1)) return `${MONTH_NAMES[LANG==='ru'?'ru':'ro'][m-1]} ${y}`;
+  return from.slice(0,4)===to.slice(0,4) ? `${ddmm(from)} – ${fmtDate(to)}` : `${fmtDate(from)} – ${fmtDate(to)}`;
 }
 async function openPlati(){
   if(!payState) payState = defaultPayRange();
   payLoading = true; renderPlatiBodyOnly();
-  try { await loadRosters(payState.from, payState.to); } catch(e){ console.error(e); alert(t('err_load')+' '+e.message); }
+  try { await Promise.all([loadRosters(payState.from, payState.to), loadSyncMeta()]); } catch(e){ console.error(e); alert(t('err_load')+' '+e.message); }
   payLoading = false;
   if(currentView==='plati') renderPlatiBodyOnly();
 }
@@ -3932,6 +3958,8 @@ async function setPayRange(from, to){
   if(!isCompleteDate(from) || !isCompleteDate(to)) return;
   if(from > to) [from, to] = [to, from];
   payState = { from, to };
+  const lbl = document.querySelector('.pay-period-label'); if(lbl) lbl.textContent = payPeriodLabel(from, to);
+  const wl = document.querySelector('.week-locks'); if(wl) wl.outerHTML = renderWeekLocks(from, to);
   const ins = document.querySelectorAll('.pay-period-dates input');
   ins.forEach((el,i)=>{ const v = i===0 ? from : to; if(el.value!==v && document.activeElement!==el) el.value = v; });
   await openPlati();
@@ -4207,10 +4235,11 @@ function renderPlati(){
   if(!payState) payState = defaultPayRange();
   const presets = [['week','pl_saptCurenta'],['lastWeek','pl_saptTrecuta'],['month','pl_lunaCurenta']];
   return `
-  <div class="view-head"><div class="view-title">${t('pl_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('pl_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t('pl_sub')}</div>
 
   <div class="pay-period">
+    <div class="pay-period-label">${esc(payPeriodLabel(payState.from, payState.to))}</div>
     <div class="pay-period-dates">
       <input type="date" value="${payState.from}" onchange="setPayRange(this.value, payState.to)" aria-label="${esc(t('re_de_la'))}">
       <span class="td-muted">—</span>
@@ -4219,6 +4248,8 @@ function renderPlati(){
     <div class="pay-presets">${presets.map(([k,l])=>`<button type="button" class="toggle-btn" onclick="payPreset('${k}')">${t(l)}</button>`).join('')}</div>
     <button class="btn-primary btn-sm pay-export" onclick="exportPlatiExcel()">${t('re_excel')}</button>
   </div>
+  ${renderWeekLocks(payState.from, payState.to)}
+  ${syncStrip()}
   <div id="pay-body">${renderPlatiBody()}</div>`;
 }
 function renderPlatiBody(){
@@ -4519,7 +4550,7 @@ function renderStatsBody(){
 function renderStatistici(){
   const modes = [['all','sx_tot'],['week','pl_saptCurenta'],['month','pl_lunaCurenta'],['custom','sx_interval']];
   return `
-  <div class="view-head"><div class="view-title">${t('sx_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('sx_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t('sx_sub')}</div>
   <div class="pay-period">
     <div class="toggle-group stats-modes">${modes.map(([m,k])=>`<button type="button" class="toggle-btn ${statsState.mode===m?'active':''}" data-mode="${m}" onclick="setStatsMode('${m}')">${t(k)}</button>`).join('')}</div>
@@ -4529,6 +4560,7 @@ function renderStatistici(){
       <input type="date" value="${statsState.to}" onchange="setStatsDate('to', this.value)" aria-label="${esc(t('re_pana_la'))}">
     </div>
   </div>
+  ${syncStrip()}
   <div id="stats-body">${renderStatsBody()}</div>`;
 }
 
@@ -4538,7 +4570,7 @@ let participantSort = { mode:'nume' };
 let participantTeamFilter = '';
 function renderParticipanti(){
   return `
-  <div class="view-head"><div class="view-title">${t('pa_title')}</div></div>
+  <div class="view-head"><div class="view-title">${t('pa_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t(isAsistent() ? 'as_paSub' : 'pa_sub')}</div>
 
   ${!hasActiveShift() ? '' : `<div class="add-form">
@@ -4557,6 +4589,8 @@ function renderParticipanti(){
     </div>
     <div class="view-sub" style="margin:8px 0 0">${t('pa_restFisa')}</div>
   </div>`}
+
+  ${syncStrip()}
 
   <div class="search-bar">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -7449,6 +7483,269 @@ function printReport(){
 }
 
 /* ══════════════════════ SETĂRI ══════════════════════ */
+/* ══════════════════════ TABEL GOOGLE: sincronizare + săptămâni blocate ══════════════════════ */
+// Sheet sync rules live in supabase/functions/sheet-sync; here: locked weeks, "changed by hand" badges and Setări → Tabel Google.
+let LOCKED_WEEKS = new Set();
+let tabelPending = 0;
+let tabelActiv = false;      // sheet connected → header sync buttons are shown (admins)
+let lastSheetReport = null;  // last quick-sync report, opened from the toast
+async function loadSyncMeta(){
+  if(ICON_PREVIEW_MODE) return;
+  const [locks, pend, cfg, last] = await Promise.all([
+    sb.from('saptamani_blocate').select('luni'),
+    isFullAdmin() ? sb.from('tabel_jucatori').select('cheie', { count:'exact', head:true }).eq('status','in_asteptare') : Promise.resolve({ count:0 }),
+    isFullAdmin() ? sb.from('tabel_config').select('activ').maybeSingle() : Promise.resolve({ data:null }),
+    isFullAdmin() ? sb.from('sync_rezultate').select('rulat_la,ok').eq('sursa','tabel').order('id', { ascending:false }).limit(1) : Promise.resolve({ data:[] }),
+  ]);
+  LOCKED_WEEKS = new Set((locks.data||[]).map(r=>r.luni));
+  tabelPending = pend.count || 0;
+  tabelActiv = !!cfg.data?.activ;
+  lastSheetSync = (last.data||[])[0] || null;
+}
+let lastSheetSync = null;
+// the big centred strip in the middle of each relevant tab (the header has the small button too)
+function syncStrip(){
+  if(!isFullAdmin() || !tabelActiv) return '';
+  const busy = tabelState.busy, ls = lastSheetSync;
+  const when = ls ? (new Date(ls.rulat_la).toLocaleDateString('sv-SE', { timeZone:'Europe/Chisinau' })===new Date().toLocaleDateString('sv-SE', { timeZone:'Europe/Chisinau' }) ? `${t('tb_azi')} ${fmtTime(ls.rulat_la)}` : fmtDateTime(ls.rulat_la)) : t('mt_syncNiciodata');
+  return `<div class="sync-strip ${ls && !ls.ok ? 'err' : ''}">
+    <span class="sync-strip-text"><span class="sync-dot ${ls ? (ls.ok ? 'ok' : 'err') : ''}"></span>${t('tb_ultimaTabel')} <b>${esc(when)}</b></span>
+    <button class="btn-primary sync-strip-btn ${busy?'busy':''}" ${busy?'disabled':''} onclick="quickSheetSync()">${icon('refresh')}<span>${t(busy?'mt_syncRuleaza':'tb_syncCuTabelul')}</span></button>
+  </div>`;
+}
+// compact sync button for the header of every tab that shows sheet data
+function syncHeaderBtn(){
+  if(!isFullAdmin() || !tabelActiv) return '';
+  const busy = tabelState.busy;
+  return `<button class="btn-primary btn-sm head-sync ${busy?'busy':''}" ${busy?'disabled':''} onclick="quickSheetSync()" title="${esc(t('tb_syncTitlu'))}">${icon('refresh')}<span>${t(busy?'mt_syncRuleaza':'tb_syncScurt')}</span></button>`;
+}
+async function quickSheetSync(){
+  const d = await runSheetSync(false, true);
+  if(!d) return;
+  lastSheetReport = d;
+  const loturi = (d.schimbari||[]).filter(x=>x.lot).length;
+  const meciuri = (d.inserate||0) + (d.actualizate||0);
+  const parts = [];
+  if(loturi) parts.push(t('tb_tLoturi')(loturi));
+  if(meciuri) parts.push(t('tb_tMeciuri')(meciuri));
+  const warn = [];
+  if(tabelPending) warn.push(t('tb_tNume')(tabelPending));
+  if((d.conflicte||[]).length) warn.push(t('tb_tConflicte')((d.conflicte||[]).length));
+  showToast(`<b>${parts.length ? t('tb_tSincronizat') + ' ' + parts.join(', ') : t('tb_tLaZi')}</b>${warn.length ? `<span class="c-yellow"> · ${warn.join(' · ')}</span>` : ''}`,
+    { action: t('tb_tRaport'), onAction: ()=>showSyncReport(lastSheetReport, false) });
+}
+let toastTimer = null;
+function showToast(html, opts={}){
+  let el = document.getElementById('app-toast');
+  if(!el){ el = document.createElement('div'); el.id = 'app-toast'; el.className = 'app-toast'; document.body.appendChild(el); }
+  el.innerHTML = `<span class="app-toast-text">${html}</span>${opts.action ? `<button class="btn-ghost btn-sm" id="app-toast-act">${esc(opts.action)}</button>` : ''}<button class="app-toast-x" aria-label="✕" onclick="hideToast()">✕</button>`;
+  if(opts.action) document.getElementById('app-toast-act').onclick = ()=>{ hideToast(); opts.onAction?.(); };
+  el.classList.add('visible');
+  clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, 8000);
+}
+function hideToast(){ document.getElementById('app-toast')?.classList.remove('visible'); }
+function isWeekLocked(day){ return !!day && LOCKED_WEEKS.has(weekStart(day)); }
+function weekLabel(luni){ return `${ddmm(luni)}–${ddmm(addDays(luni,6))}`; }
+function renderWeekLocks(from, to){
+  const weeks = [];
+  for(let w = weekStart(from); w <= to && weeks.length < 8; w = addDays(w,7)) weeks.push(w);
+  return `<div class="week-locks">${weeks.map(w=>{ const locked = LOCKED_WEEKS.has(w);
+    return `<div class="week-lock ${locked?'locked':''}">
+      <span class="week-lock-label">${t('pl_saptamana')} ${weekLabel(w)}</span>
+      <span class="badge ${locked?'gold':'muted'}">${t(locked?'pl_blocata':'pl_deschisa')}</span>
+      ${isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="toggleWeekLock('${w}', ${!locked})">${t(locked?'pl_deblocheaza':'pl_blocheaza')}</button>` : ''}
+    </div>`; }).join('')}</div>`;
+}
+async function toggleWeekLock(luni, lock){
+  if(!confirm(t(lock ? 'pl_confirmBlocare' : 'pl_confirmDeblocare')(weekLabel(luni)))) return;
+  const { error } = await sb.rpc('blocheaza_saptamana', { p_luni:luni, p_blocat:lock });
+  if(error){ alert(t('err_update')+' '+error.message); return; }
+  await loadSyncMeta();
+  render();
+}
+// a match whose values no longer equal what the last sync wrote was changed by hand — syncs leave it alone
+function matchManualOverride(m){
+  const b = m.syncBaza;
+  if(!b) return false;
+  if(b.data && (b.data!==m.data || (b.ora||'')!==(m.ora||'') || b.a!==m.echipaAId || b.b!==m.echipaBId
+     || (b.sa??null)!==(m.scorA??null) || (b.sb??null)!==(m.scorB??null) || !!b.ot!==!!m.prelungiri)) return true;
+  const lot = b.lot || {};
+  return Object.entries(lot).some(([eid, keys])=>{
+    const cur = rosterOf(m.id, eid).map(r=>`${r.participantId}:${r.rol}`).sort();
+    return rosterLoadedDays.has(m.data) && JSON.stringify(cur) !== JSON.stringify([...keys].sort());
+  });
+}
+async function acceptSheetForMatch(id){
+  const m = DB.meciuri.find(x=>x.id===id); if(!m) return;
+  if(!confirm(t('tb_confirmPreia'))) return;
+  const { error } = await sb.rpc('accepta_tabel_pentru_meci', { p_meci:id });
+  if(error){ alert(t('err_update')+' '+error.message); return; }
+  await runSheetSync(false, true);
+  await reloadMatchesForDay(m.data);
+  render();
+}
+
+/* ── Setări → Tabel Google (doar administrator) ── */
+let tabelState = { loaded:false, loading:false, cfg:null, last:null, names:[], showKey:false, showLinked:false, busy:false };
+async function loadTabelState(){
+  if(tabelState.loading || ICON_PREVIEW_MODE) return;
+  tabelState.loading = true;
+  const [cfg, last, names] = await Promise.all([
+    sb.from('tabel_config').select('url,cheie,activ,actualizat_la').maybeSingle(),
+    sb.from('sync_rezultate').select('rulat_la,ok,gasite,inserate,actualizate,eroare,detalii').eq('sursa','tabel').order('id', { ascending:false }).limit(1),
+    sb.from('tabel_jucatori').select('cheie,nume,participant_id,status,propunere_id,scor,echipa,rating,aparitii,ultima_data').order('nume'),
+  ]);
+  tabelState = { ...tabelState, loading:false, loaded:true, cfg:cfg.data||null, last:(last.data||[])[0]||null, names:names.data||[] };
+  tabelPending = tabelState.names.filter(n=>n.status==='in_asteptare').length;
+  if(currentView==='setari') render();
+}
+function splitSheetName(nume){   // sheet writes "Firstname Lastname"; the registry keeps nume = surname
+  const w = String(nume||'').trim().split(/\s+/);
+  return w.length < 2 ? { nume:w[0]||'', prenume:'' } : { nume:w.slice(1).join(' '), prenume:w[0] };
+}
+function renderTabelGoogle(){
+  if(!tabelState.loaded) loadTabelState();
+  const s = tabelState, cfg = s.cfg || {};
+  const pending = s.names.filter(n=>n.status==='in_asteptare');
+  const linked = s.names.filter(n=>n.status!=='in_asteptare');
+  const det = s.last?.detalii || {};
+  const count = k => (det[k]||[]).length;
+  const playerOpts = DB.participanti.slice().sort((a,b)=>a.nume.localeCompare(b.nume,'ro')).map(p=>({ value:p.id, label:`${p.nume} ${p.prenume}${p.echipaId?' · '+echipaName(p.echipaId):''}` }));
+  return `<div class="add-form" id="tabel-google">
+    <div class="form-title">${t('tb_title')}</div>
+    <div class="view-sub" style="margin:-4px 0 14px">${t('tb_sub')}</div>
+
+    <div class="tb-hero ${cfg.activ ? (s.last ? (s.last.ok ? 'ok' : 'err') : '') : 'off'}">
+      <div class="tb-hero-info">
+        <div class="tb-hero-line"><span class="sync-dot ${cfg.activ ? (s.last ? (s.last.ok ? 'ok' : 'err') : '') : ''}"></span>
+          <b>${!cfg.activ ? t('tb_neconfigurat') : s.last ? `${t('tb_ultima')} ${fmtDateTime(s.last.rulat_la)}` : t('tb_niciodata')}</b></div>
+        ${cfg.activ && s.last ? `<div class="tb-hero-sub">${s.last.gasite} ${t('tb_meciuriTabel')}${count('conflicte') ? ` · <span class="c-yellow">${count('conflicte')} ${t('tb_conflicte')}</span>` : ''}${count('loturi_in_asteptare') ? ` · <span class="c-yellow">${count('loturi_in_asteptare')} ${t('tb_loturiAsteapta')}</span>` : ''}${pending.length ? ` · <span class="c-yellow">${pending.length} ${t('tb_numeDeConfirmat')}</span>` : ''}${s.last.eroare ? ` · <span style="color:var(--red)">${esc(s.last.eroare)}</span>` : ''}</div>` : ''}
+      </div>
+      <div class="tb-hero-actions">
+        <button class="btn-ghost" ${!cfg.activ||s.busy?'disabled':''} onclick="runSheetSync(true)">${t('tb_simuleaza')}</button>
+        <button class="btn-primary tb-sync-btn ${s.busy?'busy':''}" ${!cfg.activ||s.busy?'disabled':''} onclick="runSheetSync(false)">${icon('refresh')}<span>${t(s.busy?'mt_syncRuleaza':'mt_syncAcum')}</span></button>
+      </div>
+    </div>
+
+    <details class="tb-setup" ${cfg.activ ? '' : 'open'}>
+      <summary>${t('tb_conectare')}</summary>
+      <ol class="tb-steps">
+        <li>${t('tb_pas1')}</li>
+        <li>${t('tb_pas2')}
+          <div class="invite-link-row" style="margin-top:8px">
+            <input readonly value="${esc(cfg.cheie ? (s.showKey ? cfg.cheie : '•'.repeat(24)) : '')}" placeholder="${esc(t('tb_faraCheie'))}" onclick="this.select()">
+            ${cfg.cheie ? `<button class="btn-ghost btn-sm" onclick="tabelState.showKey=!tabelState.showKey; render();">${t(s.showKey?'tb_ascunde':'tb_arata')}</button>
+              <button class="btn-ghost btn-sm" onclick="copyText('${esc(cfg.cheie)}')">${t('st_inv_copy')}</button>` : ''}
+            <button class="btn-primary btn-sm" onclick="newTabelKey(${!!cfg.cheie})">${t(cfg.cheie?'tb_cheieNoua':'tb_genereazaCheie')}</button>
+          </div></li>
+        <li>${t('tb_pas3')}</li>
+        <li>${t('tb_pas4')}
+          <div class="invite-link-row" style="margin-top:8px">
+            <input id="tb-url" value="${esc(cfg.url||'')}" placeholder="https://script.google.com/macros/s/…/exec">
+            <button class="btn-primary btn-sm" onclick="saveTabelUrl()">${t('btn_save')}</button>
+          </div></li>
+      </ol>
+    </details>
+
+    <div class="tb-names">
+      <div class="tb-names-title">${t('tb_numeTitlu')} ${pending.length ? `<span class="badge gold">${pending.length}</span>` : ''}</div>
+      <div class="view-sub" style="margin:2px 0 10px">${t('tb_numeSub')}</div>
+      ${pending.length ? pending.map(n=>{ const sp = splitSheetName(n.nume); const id = 'tbn-'+n.cheie.replace(/[^a-z0-9]/g,'_');
+        return `<div class="tb-name-row">
+          <div class="tb-name-src"><b>${esc(n.nume)}</b><span class="td-muted">${esc(n.echipa||'—')}${n.rating!=null?' · ★'+n.rating:''} · ${n.aparitii} ${plural(n.aparitii,'mt_meciuriSuffix')}</span></div>
+          <div class="tb-name-link">${autocompleteField(id, playerOpts, { selectedValue: n.propunere_id || '', placeholder: t('tb_alegeJucator') })}
+            <button class="btn-primary btn-sm" onclick="linkSheetName('${esc(n.cheie)}','${id}')">${t('tb_leaga')}</button></div>
+          <div class="tb-name-new"><input id="${id}-n" value="${esc(sp.nume)}" placeholder="${esc(t('pa_nume'))}"><input id="${id}-p" value="${esc(sp.prenume)}" placeholder="${esc(t('pa_prenume'))}">
+            <button class="btn-ghost btn-sm" onclick="createFromSheetName('${esc(n.cheie)}','${id}')">${t('tb_jucatorNou')}</button></div>
+        </div>`; }).join('') : `<div class="mini-empty">${t(s.loaded ? 'tb_numeNiciunul' : 'st_loading2')}</div>`}
+      ${linked.length ? `<details class="tb-linked" ${s.showLinked?'open':''} ontoggle="tabelState.showLinked=this.open">
+        <summary>${t('tb_legate')(linked.length)}</summary>
+        <div class="table-scroll"><table><thead><tr><th>${t('tb_inTabel')}</th><th>${t('tb_inRegistru')}</th><th>${t('th_statut')}</th><th></th></tr></thead><tbody>
+          ${linked.map(n=>`<tr><td>${esc(n.nume)}</td><td class="td-name" onclick="openProfile('${n.participant_id}')">${esc(participantName(n.participant_id))}</td>
+            <td><span class="badge ${n.status==='auto'?'muted':'green'}">${t('tb_st_'+n.status)}</span></td>
+            <td class="row-actions"><button class="btn-ghost btn-sm" onclick="relinkSheetName('${esc(n.cheie)}')">${t('tb_schimba')}</button></td></tr>`).join('')}
+        </tbody></table></div>
+      </details>` : ''}
+    </div>
+  </div>`;
+}
+async function copyText(v){ try { await navigator.clipboard.writeText(v); } catch(e){} }
+async function newTabelKey(replacing){
+  if(replacing && !confirm(t('tb_confirmCheieNoua'))) return;
+  const { error } = await sb.rpc('seteaza_tabel_config', { p_url:null, p_cheie_noua:true });
+  if(error){ alert(t('err_update')+' '+error.message); return; }
+  tabelState.showKey = true;
+  await loadTabelState();
+}
+async function saveTabelUrl(){
+  const url = document.getElementById('tb-url').value.trim();
+  const { error } = await sb.rpc('seteaza_tabel_config', { p_url:url||null, p_cheie_noua:false });
+  if(error){ alert(error.message); return; }
+  await loadTabelState();
+}
+async function linkSheetName(cheie, fieldId){
+  const pid = document.getElementById(fieldId)?.value;
+  if(!pid){ alert(t('tb_alegeJucator')); return; }
+  const { error } = await sb.rpc('rezolva_jucator_tabel', { p_cheie:cheie, p_participant_id:pid });
+  if(error){ alert(t('err_update')+' '+error.message); return; }
+  await afterNameResolved();
+}
+async function createFromSheetName(cheie, fieldId){
+  const nume = document.getElementById(fieldId+'-n').value.trim(), prenume = document.getElementById(fieldId+'-p').value.trim();
+  if(!nume || !prenume){ alert(t('tb_numePrenume')); return; }
+  if(!confirm(t('tb_confirmNou')(`${nume} ${prenume}`))) return;
+  const { error } = await sb.rpc('rezolva_jucator_tabel', { p_cheie:cheie, p_participant_id:null, p_nume:nume, p_prenume:prenume });
+  if(error){ alert(t('err_save')+' '+error.message); return; }
+  await afterNameResolved(true);
+}
+function relinkSheetName(cheie){
+  const n = tabelState.names.find(x=>x.cheie===cheie); if(!n) return;
+  // reuse the confirm row: put it back in the pending list locally, prefilled with the current link
+  n.propunere_id = n.participant_id; n.status = 'in_asteptare';
+  render();
+  document.getElementById('tabel-google')?.scrollIntoView({ block:'start' });
+}
+async function afterNameResolved(created){
+  if(created) await fetchAll();
+  await loadTabelState();
+  // the waiting line-ups only need this name — pull them in right away when the sheet is connected
+  if(tabelState.cfg?.activ && !tabelState.names.some(n=>n.status==='in_asteptare')) await runSheetSync(false, true);
+}
+async function runSheetSync(dryRun, quiet){
+  if(tabelState.busy) return null;
+  tabelState.busy = true; render();
+  const { data, error } = await sb.functions.invoke('sheet-sync', { body:{ dryRun:!!dryRun } });
+  tabelState.busy = false;
+  if(error || data?.error){ alert(t('tb_eroare')+' '+(data?.error || error?.message || '')); render(); return null; }
+  if(!dryRun){
+    // the sheet may change matches, line-ups, ratings, teams and add players: reload it all, then reopen this tab
+    await fetchAll();
+    await Promise.all([loadTabelState(), loadSyncMeta()]);
+  }
+  if(!quiet) showSyncReport(data, dryRun);
+  navigate(currentView);
+  return data;
+}
+function showSyncReport(d, dryRun){
+  const list = (k, fmt) => (d[k]||[]).length ? `<div class="tb-rep-sec"><div class="tb-rep-title">${t('tb_r_'+k)} <span class="badge muted">${d[k].length}</span></div>
+    <ul>${d[k].slice(0,40).map(x=>`<li>${fmt(x)}</li>`).join('')}${d[k].length>40?`<li class="td-muted">… ${d[k].length-40}</li>`:''}</ul></div>` : '';
+  const arr = v => Array.isArray(v) ? v.join(', ') : (v ?? '—');
+  document.getElementById('record-modal-title').textContent = t(dryRun ? 'tb_raportSimulare' : 'tb_raport');
+  document.getElementById('record-modal-body').innerHTML = `
+    ${dryRun ? `<div class="alert-note">${t('tb_simulareNota')}</div>` : ''}
+    <div class="tb-rep-stats"><div><b>${d.gasite??0}</b><span>${t('tb_meciuriTabel')}</span></div><div><b>${d.inserate??0}</b><span>${t('tb_noi')}</span></div>
+      <div><b>${d.actualizate??0}</b><span>${t('tb_actualizate')}</span></div><div><b>${(d.schimbari||[]).filter(x=>x.lot).length}</b><span>${t('tb_loturiSchimbate')}</span></div></div>
+    ${list('nume_noi', x=>`<b>${esc(x.nume)}</b> · ${esc(x.echipa||'—')}${x.propunere?` → ${esc(x.propunere)} (${Math.round(x.scor*100)}%)`:''}`)}
+    ${list('conflicte', x=>`${x.nr?'#'+x.nr+' ':''}${esc(x.jucator||x.echipa||'')} — ${t('tb_aplicatia')}: <b>${esc(arr(x.aplicatie))}</b> · ${t('tb_tabelul')}: <b>${esc(arr(x.tabel))}</b>`)}
+    ${list('blocate', x=>`#${x.nr} · ${fmtDate(x.data)} — ${esc(x.motiv)}`)}
+    ${list('loturi_in_asteptare', x=>`#${x.nr??'—'} · ${fmtDate(x.data)} ${esc(x.ora)} · ${esc(x.echipa)}: ${esc(arr(x.nume))}`)}
+    ${list('schimbari', x=>x.lot ? `#${x.nr} ${esc(x.lot)}: ${esc(arr(x.dupa))}` : x.jucator ? `${esc(x.jucator)}${x.rating?` · ★ ${esc(x.rating)}`:''}${x.echipa?` · ${esc(x.echipa)}`:''}` : x.nou ? `#${x.nr} ${t('tb_nou')}: ${esc(x.nou)} ${x.scor?esc(x.scor):''}` : `#${x.nr}: ${esc(x.inainte)} → ${esc(x.dupa)}`)}
+    ${list('echipe_necunoscute', x=>esc(x))}
+    ${list('erori', x=>esc(x))}
+    <div class="profile-edit-actions"><button type="button" class="btn-primary" onclick="closeModal('record-modal')">${t('tb_inchide')}</button></div>`;
+  openModal('record-modal');
+}
+
 /* ── Setări → linkuri de înregistrare (doar administrator) ── */
 let invitesState = { list:null, loading:false, link:null, copied:false };
 async function loadInvitatii(){
@@ -7526,6 +7823,8 @@ function renderSetari(){
   return `
   <div class="view-head"><div class="view-title">${t('st_title')}</div></div>
   <div class="view-sub">${t('st_sub')}</div>
+
+  ${renderTabelGoogle()}
 
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${t('st_admins')}</div></div>
