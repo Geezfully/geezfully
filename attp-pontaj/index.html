@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-07-27-linen-stock-source-1">
+<meta name="attp-build" content="2026-10-10-observatii-arbitri-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -244,6 +244,8 @@
     font-size: 13.5px; padding: 9px 11px; outline: none; transition: border-color .15s; width: 100%;
   }
   .field textarea { resize: vertical; min-height: 38px; }
+  /* Chrome's calendar/clock icon made date and time fields 2px taller than their neighbours */
+  .field input[type=date], .field input[type=time] { height: 38px; }
   .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
   .field input::placeholder, .field textarea::placeholder { color: var(--muted); }
 
@@ -390,6 +392,8 @@
   .act-section-title { font-family: Georgia, serif; font-size: 12.5px; text-transform: uppercase; letter-spacing: .14em; color: #6b5f43; border-bottom: 1px solid #d9cfb2; padding-bottom: 5px; margin-bottom: 7px; }
   .act-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   .act-table td, .act-table th { padding: 6px 9px; border-bottom: 1px solid #e6dfc9; text-align: left; vertical-align: top; }
+  /* long descriptions (often in Observații) wrap inside the page instead of running off it */
+  .act-table td { white-space: normal; overflow-wrap: anywhere; }
   .act-table th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: #8a7f63; font-weight: 600; }
   .act-table tr:last-child td { border-bottom: none; }
   .act-table-act_s_hostel th:nth-child(2), .act-table-act_s_hostel td:nth-child(2),
@@ -528,6 +532,20 @@
     .view-title { font-size: 22px; }
     .stat-card { min-width: 0; flex: 1 1 calc(50% - 6px); }
   }
+
+  /* One chevron for every dropdown: the native arrow sat almost on the right border.
+     background-image only (not the shorthand), so each select keeps its own colours. */
+  select:not([multiple]) {
+    -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238B949E' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 11px center !important;
+    background-size: 11px 7px !important;
+    padding-right: 30px !important;
+    cursor: pointer;
+  }
+  select:not([multiple]):disabled { cursor: not-allowed; opacity: .6; }
+  select:not([multiple])::-ms-expand { display: none; }
 </style>
 </head>
 <body>
@@ -705,7 +723,7 @@ function monthLabel(yyyyMM){
 const CLOTHING_TYPES = ['Maiou roșu','Maiou albastru'];
 const CLOTHING_SIZES = ['M','L','XL','XXL','XXXL'];
 const SPORT_CATEGORIES = ['MS','CMS','Categoria I','Categoria II','Categoria III','Amator'];
-const OBS_CATEGORIES = ['Joc pasiv','Simptome de boală','Fără cartelă','Absent','Lipsă vestimentație','Comportament necorespunzător','Conflict','Altă situație'];
+const OBS_CATEGORIES = ['Joc pasiv','Simptome de boală','Fără cartelă','Absent','Lipsă vestimentație','Comportament necorespunzător','Conflict','Arbitraj','Altă situație'];
 
 /* Doi sportivi (Anatolie și Alexandru) folosesc profilul „Ivanov Anatolie Alexandru”.
    Vestimentația de mai jos a fost ridicată de celălalt, deci o ascundem din profil ca
@@ -745,7 +763,7 @@ const ENUM_RU = {
   'Roșu':'Красный', 'Albastru':'Синий', 'Albă':'Белый',
   'Joc pasiv':'Пассивная игра', 'Simptome de boală':'Симптомы болезни', 'Fără cartelă':'Без карты',
   'Absent':'Отсутствует', 'Lipsă vestimentație':'Нет формы', 'Comportament necorespunzător':'Ненадлежащее поведение',
-  'Conflict':'Конфликт', 'Altă situație':'Другая ситуация',
+  'Conflict':'Конфликт', 'Arbitraj':'Судейство', 'Altă situație':'Другая ситуация',
   'intrare':'приход', 'iesire':'расход', 'corectare':'корректировка',
   'Maiouri roșii':'Красные майки', 'Maiouri albastre':'Синие майки', 'Mingi noi':'Новые мячи',
   'Mingi noi DHS':'Новые мячи DHS', 'Mingi noi JOOLA':'Новые мячи JOOLA', 'Șorturi':'Шорты',
@@ -968,7 +986,7 @@ ro: {
   ob_title:'Observații', ob_sub:'Situații scurte despre participanți sau despre locație și activitatea zilnică.',
   ob_addTitle:'Înregistrare observație', ob_targetType:'Observația se referă la', ob_targetParticipant:'Participant', ob_targetGeneral:'Situație generală',
   ob_target:'Participant / Subiect', ob_subject:'Subiect', ob_subjectPh:'ex. Locație, curățenie, vestiar...', ob_categorie:'Categorie', ob_descScurta:'Descriere scurtă',
-  ob_descScurtaPh:'detalii...', ob_countSuffix:'observații', ob_none:'Nicio observație.', ob_needParticipant:'Selectați participantul.', ob_needSubject:'Introduceți subiectul situației.',
+  ob_descScurtaPh:'detalii...', ob_countSuffix:'observații', ob_none:'Nicio observație.', ob_needParticipant:'Selectați participantul sau arbitrul.', ob_refereeTag:'Arbitru', ob_participantOrReferee:'Participant / Arbitru', ob_needSubject:'Introduceți subiectul situației.',
 
   pt_title:'Pauză tehnică', pt_sub:'Evidența întârzierilor la începutul meciurilor — intervalul pauzei, terenul și motivul.',
   pt_addTitle:'Înregistrare pauză tehnică', pt_oraStart:'De la ora', pt_oraStop:'Până la ora', pt_teren:'Teren',
@@ -1271,7 +1289,7 @@ ru: {
   ob_title:'Замечания', ob_sub:'Краткие ситуации об участниках, объекте или ежедневной работе.',
   ob_addTitle:'Регистрация замечания', ob_targetType:'Замечание относится к', ob_targetParticipant:'Участник', ob_targetGeneral:'Общая ситуация',
   ob_target:'Участник / Тема', ob_subject:'Тема', ob_subjectPh:'напр. объект, уборка, раздевалка...', ob_categorie:'Категория', ob_descScurta:'Краткое описание',
-  ob_descScurtaPh:'детали...', ob_countSuffix:'замечаний', ob_none:'Замечаний нет.', ob_needParticipant:'Выберите участника.', ob_needSubject:'Введите тему ситуации.',
+  ob_descScurtaPh:'детали...', ob_countSuffix:'замечаний', ob_none:'Замечаний нет.', ob_needParticipant:'Выберите участника или судью.', ob_refereeTag:'Судья', ob_participantOrReferee:'Участник / Судья', ob_needSubject:'Введите тему ситуации.',
 
   pt_title:'Технический перерыв', pt_sub:'Учёт задержек начала матчей — интервал перерыва, корт и причина.',
   pt_addTitle:'Регистрация технического перерыва', pt_oraStart:'С', pt_oraStop:'По', pt_teren:'Корт',
@@ -1365,7 +1383,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-07-27-linen-stock-source-1';
+const APP_BUILD = '2026-10-10-observatii-arbitri-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1611,7 +1629,7 @@ async function fetchAll(){
     arbitraj: (arbitrajR.data||[]).map(r=>({id:r.id, data:r.data, arbitru:r.arbitru, turneu:r.turneu, marcaMingi:r.marca_mingi, cantitateMingi:r.cantitate_mingi, observatii:r.observatii, sesiuneSchimbId:r.sesiune_schimb_id, slotSchimb:r.slot_schimb})),
     inventar: (inventarR.data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie})),
     sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
-    observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
+    observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, arbitru:r.arbitru, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
     pauzeTehnice: (pauzeTehniceR.data||[]).map(r=>({id:r.id, data:r.data, oraStart:String(r.ora_start||'').slice(0,5), oraStop:String(r.ora_stop||'').slice(0,5), teren:r.teren, descriere:r.descriere, createdAt:r.created_at})),
     jurnal: (jurnalR.data||[]).map(r=>({id:r.id, cont: serviciuAdminById[r.administrator_serviciu_id]?.nume || publicAdminName(adminById[r.administrator_id]), data:String(r.data).slice(0,10), actiune:r.actiune})),
     trustedIps: (trustedIpsR.data||[]).map(r=>({id:r.id, ip:r.ip, eticheta:r.eticheta, createdAt:r.created_at})),
@@ -1658,9 +1676,13 @@ async function logAction(actiune){
 
 function participant(id){ return DB.participanti.find(p=>p.id===id); }
 function participantName(id){ const p=participant(id); return p ? `${p.nume} ${p.prenume}` : '—'; }
-function observationTargetName(observation){
-  return observation?.participantId ? participantName(observation.participantId) : (observation?.subiect||'—');
+function observationTargetName(observation, lang=LANG){
+  if(observation?.participantId) return participantName(observation.participantId);
+  if(observation?.arbitru) return `${observation.arbitru} · ${t('ob_refereeTag', lang)}`;
+  return observation?.subiect||'—';
 }
+// referees are stored by name (as in Întârzieri); any status, so old rows still open a profile
+function refereeByName(name){ return DB.arbitri.find(a=>`${a.nume} ${a.prenume}`===name) || null; }
 function arbitru(id){ return DB.arbitri.find(a=>a.id===id); }
 function arbitriActivi(){ return DB.arbitri.filter(a=>a.statut==='activ').sort((a,b)=>a.nume.localeCompare(b.nume,'ro')||a.prenume.localeCompare(b.prenume,'ro')); }
 
@@ -2035,7 +2057,7 @@ function participantAcOptions(extra){
 }
 function participantAndRefereeAcOptions(){
   const participants = DB.participanti.filter(p=>p.statut==='activ').map(p=>({value:'participant:'+p.id, label:`${p.nume} ${p.prenume}`}));
-  const referees = arbitriActivi().map(a=>({value:'referee:'+a.nume+' '+a.prenume, label:`${a.nume} ${a.prenume} · Arbitru`}));
+  const referees = arbitriActivi().map(a=>({value:'referee:'+a.nume+' '+a.prenume, label:`${a.nume} ${a.prenume} · ${t('ob_refereeTag')}`}));
   return [...participants, ...referees];
 }
 function selectedPerson(value){
@@ -2046,7 +2068,7 @@ function selectedPerson(value){
 const acData = {};
 function autocompleteField(id, options, opts){
   opts = opts || {};
-  acData[id] = { options, filtered: options };
+  acData[id] = { options, filtered: options, onSelect: opts.onSelect };
   const selectedValue = opts.selectedValue !== undefined ? opts.selectedValue : '';
   const sel = options.find(o=>o.value===selectedValue);
   return `<div class="ac-wrap">
@@ -2070,6 +2092,7 @@ function acSelect(id, idx){
   document.getElementById(id).value = o.value;
   document.getElementById(id+'-q').value = o.label;
   document.getElementById(id+'-list').style.display = 'none';
+  acData[id].onSelect?.(o.value);
 }
 function acKey(e, id){
   if(e.key==='Escape'){ document.getElementById(id+'-list').style.display='none'; e.target.blur(); }
@@ -2261,7 +2284,9 @@ async function buildActContinut(startedAt, endedAt, shiftId){
     sarcini: (sarciniR.data||[])
       .filter(r=>r.status==='nesoluționat' || r.status==='în lucru' || (r.status==='soluționat' && sarciniSolutionateInSchimb.has(r.id)))
       .map(r=>({ statut: r.status, descriere: r.descriere || '' })),
-    observatii: (observatiiR.data||[]).map(r=>({ nume: observationTargetName({participantId:r.participant_id, subiect:r.subiect}), categorie: r.categorie || '', descriere: r.descriere || '' })),
+    observatii: (observatiiR.data||[]).map(r=>({
+      nume: r.arbitru ? r.arbitru : observationTargetName({participantId:r.participant_id, subiect:r.subiect}),
+      arbitru: !!r.arbitru, categorie: r.categorie || '', descriere: r.descriere || '' })),
     pauzeTehnice: (pauzeTehniceR.data||[]).map(r=>{
       const oraStart = String(r.ora_start||'').slice(0,5), oraStop = String(r.ora_stop||'').slice(0,5);
       return { teren: r.teren || '', oraStart, oraStop, durata: pauzaDurata(oraStart, oraStop), descriere: r.descriere || '' };
@@ -2364,7 +2389,7 @@ function actSections(c, lang=LANG){
     { titleKey:'act_s_hostel', headers:[t('act_numeSportiv',lang), t('act_camera',lang), t('act_oraCazarii',lang), t('act_statut',lang)], rows:(c.hostel||[]).map(r=>[r.nume, actRoomNumber(r.camera), r.ora||'', trEnum(r.statut,lang)]) },
     { titleKey:'act_s_treninguri', headers:[t('act_numeSportiv',lang), t('act_antrenor',lang), t('act_data',lang), t('act_ora',lang), t('act_statut',lang)], rows:(c.treninguri||[]).map(r=>[r.nume, r.antrenor, r.data?fmtDate(r.data):'', r.ora||'', r.statut==='programat'?t('act_programat',lang):t('act_desfasurat',lang)]) },
     { titleKey:'act_s_sarcini', headers:[t('act_statut',lang), t('act_descriere',lang)], rows:(c.sarcini||[]).map(r=>[trEnum(r.statut,lang), r.descriere||'']) },
-    { titleKey:'act_s_observatii', headers:[t('ob_target',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.nume||'—', r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
+    { titleKey:'act_s_observatii', headers:[t('ob_target',lang), t('th_categorie',lang), t('act_descriere',lang)], rows:(c.observatii||[]).map(r=>[r.arbitru ? `${r.nume} · ${t('ob_refereeTag',lang)}` : (r.nume||'—'), r.categorie?trEnum(r.categorie,lang):'—', r.descriere||'']) },
     { titleKey:'act_s_pauzatehnica', headers:[t('act_teren',lang), t('act_interval',lang), t('act_durata',lang), t('act_descriere',lang)], rows:(c.pauzeTehnice||[]).map(r=>{
       const durata = r.durata!=null ? r.durata : pauzaDurata(r.oraStart, r.oraStop);
       return [r.teren||'', r.oraStart&&r.oraStop ? `${r.oraStart} — ${r.oraStop}` : '', durata==null ? '' : `${durata} ${t('pt_minSuffix',lang)}`, r.descriere||''];
@@ -4606,7 +4631,15 @@ function renderArbitruProfile(editing = false){
       <div><div class="k">${t('pa_telefon')}</div><div class="v">${esc(a.telefon)||'—'}</div></div>
       <div><div class="k">${t('pa_email')}</div><div class="v">${esc(a.email)||'—'}</div></div>
       <div><div class="k">${t('pa_aviz')}</div><div class="v">${fmtDate(a.dataAvizMedical)||'—'}</div></div>
-    </div>`;
+    </div>
+    <section class="profile-section"><div class="profile-section-title">${t('pa_k_observatii')}</div>
+      ${(()=>{
+        const rows = DB.observatii.filter(o=>o.arbitru===`${a.nume} ${a.prenume}`).sort((x,y)=>y.data.localeCompare(x.data));
+        return rows.length
+          ? `<div class="mini-list">${rows.map(r=>`<div class="mini-row"><span>${esc(trEnum(r.categorie))}${r.descriere?': '+esc(r.descriere):''}</span><span>${fmtDate(r.data)}</span></div>`).join('')}</div>`
+          : `<div class="mini-empty">${t('pa_fara_inreg')}</div>`;
+      })()}
+    </section>`;
 }
 async function saveArbitruProfile(){
   const a = arbitru(currentArbitruId); if(!a) return;
@@ -5125,9 +5158,9 @@ function renderObservatii(){
     <div class="form-title">${t('ob_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr 1.4fr auto">
       ${observationTargetMode==='participant'
-        ? `<div class="field"><label>${t('th_participant')}</label>${autocompleteField('of-participant', participantAcOptions())}</div>`
+        ? `<div class="field"><label>${t('ob_participantOrReferee')}</label>${autocompleteField('of-participant', participantAndRefereeAcOptions(), {onSelect:observationPersonPicked})}</div>`
         : `<div class="field"><label>${t('ob_subject')}</label><input id="of-subiect" maxlength="120" placeholder="${t('ob_subjectPh')}"></div>`}
-      <div class="field"><label>${t('ob_categorie')}</label><select id="of-categorie">${OBS_CATEGORIES.map(c=>`<option value="${c}" ${observationTargetMode==='general'&&c==='Altă situație'?'selected':''}>${trEnum(c)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('ob_categorie')}</label><select id="of-categorie" onchange="this.dataset.auto=''">${OBS_CATEGORIES.map(c=>`<option value="${c}" ${observationTargetMode==='general'&&c==='Altă situație'?'selected':''}>${trEnum(c)}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ob_descScurta')}</label><input id="of-desc" placeholder="${t('ob_descScurtaPh')}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addObservatie()">${t('btn_add')}</button></div>
       ${observationTargetToggle()}
@@ -5141,23 +5174,33 @@ function renderObservatii(){
       <tbody>${DB.observatii.length ? DB.observatii.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(o=>`
         <tr><td class="td-muted">${fmtDate(o.data)}</td>${o.participantId
           ? `<td class="td-name" onclick="openProfile('${o.participantId}')">${esc(observationTargetName(o))}</td>`
+          : o.arbitru && refereeByName(o.arbitru)
+          ? `<td class="td-name" onclick="openArbitruProfile('${refereeByName(o.arbitru).id}')">${esc(observationTargetName(o))}</td>`
           : `<td class="td-name">${esc(observationTargetName(o))}</td>`}
         <td><span class="badge muted">${esc(trEnum(o.categorie))}</span></td><td>${esc(o.descriere)}</td>
         <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('observatii','${o.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="5">${t('ob_none')}</td></tr>`}</tbody>
     </table></div>
   </div>`;
 }
+// Picking a referee suggests the "Arbitraj" category; a category the admin chose stays.
+function observationPersonPicked(value){
+  const sel = document.getElementById('of-categorie'); if(!sel) return;
+  const isReferee = String(value).startsWith('referee:');
+  if(isReferee && (sel.dataset.auto==='1' || sel.selectedIndex===0)){ sel.value = 'Arbitraj'; sel.dataset.auto = '1'; }
+  else if(!isReferee && sel.dataset.auto==='1'){ sel.selectedIndex = 0; sel.dataset.auto = ''; }
+}
 async function addObservatie(){
   const isGeneral = observationTargetMode==='general';
-  const participantId = isGeneral ? null : document.getElementById('of-participant')?.value;
+  const picked = isGeneral ? '' : (document.getElementById('of-participant')?.value || '');
+  const person = picked ? selectedPerson(picked) : { participantId:null, arbitru:null };
   const subiect = isGeneral ? document.getElementById('of-subiect')?.value.trim() : null;
-  if(!isGeneral && !participantId){ alert(t('ob_needParticipant')); return; }
+  if(!isGeneral && !person.participantId && !person.arbitru){ alert(t('ob_needParticipant')); return; }
   if(isGeneral && !subiect){ alert(t('ob_needSubject')); return; }
   const categorie = document.getElementById('of-categorie').value;
-  const row = { data:todayISO(), participant_id:participantId, subiect, categorie, descriere:document.getElementById('of-desc').value.trim()||null };
+  const row = { data:todayISO(), participant_id:person.participantId, arbitru:person.arbitru, subiect, categorie, descriere:document.getElementById('of-desc').value.trim()||null };
   const { data, error } = await sb.from('observatii').insert(row).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
-  const saved = {id:data.id, data:data.data, participantId:data.participant_id, subiect:data.subiect, categorie:data.categorie, descriere:data.descriere, createdAt:data.created_at};
+  const saved = {id:data.id, data:data.data, participantId:data.participant_id, arbitru:data.arbitru, subiect:data.subiect, categorie:data.categorie, descriere:data.descriere, createdAt:data.created_at};
   DB.observatii.unshift(saved);
   await logAction(`A înregistrat o observație (${categorie}) pentru ${observationTargetName(saved)}`);
   render();
