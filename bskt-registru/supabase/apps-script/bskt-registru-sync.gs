@@ -54,7 +54,8 @@ function days_(ss) {
     const v = range.getDisplayValues(), raw = range.getValues();
     const blocuri = [];
     for (let r = 0; r + 7 < v.length; r++) {
-      if (v[r][0] !== 'Match#' || !v[r + 1][0]) continue;
+      // recognised by "Match#" in A, or by its layout when that label was typed over ("Start time" in C, "Jersey#" 2 rows down)
+      if (!v[r + 1][0] || (v[r][0] !== 'Match#' && !(v[r][2] === 'Start time' && v[r + 2][0] === 'Jersey#'))) continue;
       const side = (c) => [4, 5, 6, 7].map(k => [v[r + k][c], v[r + k][c + 1], v[r + k][c + 2]]).filter(p => p[1] !== '');
       blocuri.push({ nr: v[r][1], data: date_(raw[r][3], v[r][3]), ora: time_(raw[r][10], v[r][10]), castigator: v[r][15],
                      a: v[r + 1][0], b: v[r + 1][9], jucA: side(0), jucB: side(9) });

@@ -70,10 +70,16 @@ function results_(shown, raw) {
 
 // day sheet: a block starts at a row whose column A is "Match#"; teams on the next row (A and J);
 // four player rows start 4 rows below (jersey, name, level in A–C and J–L)
+// A block is also recognised by its layout ("Start time" in C, "Jersey#" two rows down), because the "Match#"
+// label is sometimes typed over by accident (PD_08.10.2026 had a space there and its first game was missed).
+function isBlock_(v, r) {
+  if (!cell_(v[r + 1], 0)) return false;
+  return cell_(v[r], 0) === 'Match#' || (cell_(v[r], 2) === 'Start time' && cell_(v[r + 2], 0) === 'Jersey#');
+}
 function blocks_(v, raw) {
   const out = [];
   for (let r = 0; r < v.length; r++) {
-    if (cell_(v[r], 0) !== 'Match#' || !cell_(v[r + 1], 0)) continue;
+    if (!isBlock_(v, r)) continue;
     const side = (c) => [4, 5, 6, 7].map(k => [cell_(v[r + k], c), cell_(v[r + k], c + 1), cell_(v[r + k], c + 2)]).filter(p => p[1] !== '');
     out.push({ nr: cell_(v[r], 1), data: date_(raw[r] && raw[r][3], cell_(v[r], 3)), ora: time_(raw[r] && raw[r][10], cell_(v[r], 10)),
                castigator: cell_(v[r], 15), a: cell_(v[r + 1], 0), b: cell_(v[r + 1], 9), jucA: side(0), jucB: side(9) });

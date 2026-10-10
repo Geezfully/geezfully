@@ -7547,8 +7547,8 @@ function hideToast(){ document.getElementById('app-toast')?.classList.remove('vi
 function isWeekLocked(day){ return !!day && LOCKED_WEEKS.has(weekStart(day)); }
 function weekLabel(luni){ return `${ddmm(luni)}–${ddmm(addDays(luni,6))}`; }
 function renderWeekLocks(from, to){
-  const weeks = [];
-  for(let w = weekStart(from); w <= to && weeks.length < 8; w = addDays(w,7)) weeks.push(w);
+  const weeks = [], last = weekStart(todayISO());   // weeks that haven't started yet have nothing to lock
+  for(let w = weekStart(from); w <= to && w <= last && weeks.length < 8; w = addDays(w,7)) weeks.push(w);
   return `<div class="week-locks">${weeks.map(w=>{ const locked = LOCKED_WEEKS.has(w);
     return `<div class="week-lock ${locked?'locked':''}">
       <span class="week-lock-label">${t('pl_saptamana')} ${weekLabel(w)}</span>
