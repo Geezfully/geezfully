@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-10-16-conexiune-sarcini-1">
+<meta name="attp-build" content="2026-10-16-logout-local-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1422,7 +1422,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-10-16-conexiune-sarcini-1';
+const APP_BUILD = '2026-10-16-logout-local-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -2014,7 +2014,10 @@ async function logout(){
   lastClosedShift = null;
   connectionLostAt = null; enterAppPending = false;
   document.getElementById('conn-banner').hidden = true;
-  try{ await sb.auth.signOut(); }catch(_error){}
+  // 'local' ends only this device's session. The default ('global') revoked every session of
+  // the account: logging out of the shared location account on any other device logged the
+  // location PC out mid-entry (16 Oct, 18:19, a yellow card was lost).
+  try{ await sb.auth.signOut({ scope:'local' }); }catch(_error){}
   manualLogout = false;
   if(locationRefreshTimer) clearInterval(locationRefreshTimer);
   if(locationRefreshChannel) sb.removeChannel(locationRefreshChannel);
