@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-10-10-observatii-arbitri-1">
+<meta name="attp-build" content="2026-10-16-conexiune-sarcini-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -330,6 +330,7 @@
   .task-select.s-inlucru { background: rgba(210,166,74,.13); border-color: rgba(210,166,74,.45); color: var(--yellow); }
   .task-select.s-solutionat { background: rgba(63,185,80,.11); border-color: rgba(63,185,80,.35); color: var(--green); }
   .task-select option { background: var(--surface); color: var(--text); }
+  .task-solver { max-width: 190px; color: var(--muted); }
   .task-filter-bar { display: flex; align-items: center; gap: 10px; }
   .task-list-scroll { overflow: auto; }
   .task-list-scroll.has-overflow {
@@ -426,6 +427,21 @@
   .mini-row span:first-child { color: var(--text); }
   .mini-row span:last-child { color: var(--muted); }
   .mini-empty { font-size: 12px; color: var(--muted); padding: 6px 2px; }
+
+  /* connection lost: shown instead of silently emptying the register */
+  .conn-banner { position: sticky; top: 56px; z-index: 19; display: flex; align-items: center; gap: 12px; padding: 10px 28px; background: #2a1517; border-bottom: 1px solid rgba(248,81,73,.45); color: #ffb4ae; font-size: 13px; line-height: 1.45; }
+  .conn-banner[hidden] { display: none; }
+  .conn-banner .ui-icon { width: 18px; height: 18px; color: var(--red); flex: none; }
+  .conn-banner-text { flex: 1; min-width: 0; }
+  .conn-banner-text strong { color: var(--red); font-weight: 700; }
+  .conn-banner-retry { flex: none; background: none; border: 1px solid rgba(248,81,73,.55); color: var(--red); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .conn-banner-retry:hover { background: rgba(248,81,73,.12); }
+  .conn-banner-retry:disabled { opacity: .5; cursor: wait; }
+  .shift-closed-ok { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px 16px; border-radius: 10px; background: rgba(63,185,80,.1); border: 1px solid rgba(63,185,80,.4); color: var(--green); font-size: 13.5px; font-weight: 600; }
+  .shift-closed-ok .ui-icon { width: 18px; height: 18px; flex: none; }
+  .conn-wait { text-align: center; padding: 70px 20px; color: var(--muted); }
+  .conn-wait strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 6px; }
+  @media (max-width: 880px) { .conn-banner { padding: 10px 16px; flex-wrap: wrap; } }
 
   /* statistici jucători (Setka Cup rating) */
   .setka-sync { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: -10px 0 20px; }
@@ -625,6 +641,11 @@
         <button class="btn-ghost" data-i18n="hdr_logout" onclick="logout()">Ieșire</button>
       </div>
     </header>
+    <div class="conn-banner" id="conn-banner" role="alert" hidden>
+      <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <div class="conn-banner-text"><strong id="conn-banner-title"></strong> <span id="conn-banner-text"></span></div>
+      <button class="conn-banner-retry" id="conn-banner-retry" onclick="retryConnection()"></button>
+    </div>
     <main id="main"></main>
   </div>
 </div>
@@ -705,7 +726,9 @@
 /* ══════════════════════ STATE ══════════════════════ */
 const SUPABASE_URL = 'https://ildoegipvcgxboijfksw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsZG9lZ2lwdmNneGJvaWpma3N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0NTE1MDIsImV4cCI6MjEwMDAyNzUwMn0.P4bSmuSQn58A5ag6KODWebsU4A2xPqv8mLKCzxJmy5I';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Every request goes through monitoredFetch, so any request that cannot reach the server
+// (whatever the user was doing) raises the "no connection" banner at once.
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { fetch: (...args)=>monitoredFetch(...args) } });
 
 const TOURNAMENTS = ['RIO','MEXICO Day','MEXICO Night'];
 const DAUNE_TERENURI = ['Mexico','Rio'];
@@ -1054,7 +1077,7 @@ ro: {
   al_typeMedical:'Medical', al_typeInventory:'Inventar', al_typeTask:'Sarcină',
   al_frequentLate:(name,count)=>`Sportivul ${name} a întârziat de ${count} ori în ultimele 30 de zile.`,
   nav_statistici:'Statistici jucători',
-  st_title:'Statistici jucători', st_sub:'Evoluția ratingului Setka Cup al participanților. Se actualizează automat în fiecare dimineață.',
+  stj_title:'Statistici jucători', stj_sub:'Evoluția ratingului Setka Cup al participanților. Se actualizează automat în fiecare dimineață.',
   st_syncOk:(d,at)=>`Rating la zi: ${d} · actualizat ${at}`, st_syncNever:'Ratingul Setka nu a fost încă sincronizat.',
   st_syncLive:(at,d)=>`Rating actualizat azi la ${at} (provizoriu până se încheie ziua) · ultima zi încheiată: ${d}`,
   st_syncStale:(d)=>`Ratingul Setka nu s-a actualizat — ultimele date sunt din ${d}.`, st_syncLastErr:'Ultima eroare',
@@ -1072,6 +1095,14 @@ ro: {
   st_change:'Schimbare', st_min:'Minim', st_max:'Maxim', st_winrate:'Victorii', st_since:(d)=>`din ${d}`,
   st_openSetka:'Profil Setka', st_notLinked:'Nu este legat de un profil Setka Cup.', st_noHistory:'Încă nu există puncte de rating.',
   st_profileTitle:'Rating Setka Cup', al_typeSetka:'Setka', st_retry:'Reîncearcă',
+  conn_title:'Fără conexiune la server.', conn_text:'Nimic nu s-a pierdut și schimbul rămâne deschis, dar până revine conexiunea nu se poate salva nimic și schimbul NU poate fi încheiat. Se reîncearcă automat.',
+  conn_retry:'Reîncearcă acum', conn_waitTitle:'Se conectează la server…', conn_waitText:'Nu s-au putut încărca datele. Se reîncearcă automat; verificați conexiunea la internet.',
+  conn_noServer:'Serverul nu poate fi contactat. Verificați conexiunea și încercați din nou — schimbul rămâne deschis și nimic nu s-a pierdut.',
+  au_sessionExpired:'Sesiunea a expirat. Autentificați-vă din nou — schimbul deschis și datele rămân neschimbate.',
+  sh_resumedOpen:'Pe acest cont există deja un schimb deschis. A fost reluat.',
+  ta_solverTitle:'Cine a soluționat sarcina',
+  sh_closedOk:(name,ora)=>`Schimbul ${name} a fost încheiat cu succes la ${ora}. Raportul final a fost salvat.`,
+  st_eroriTitle:'Erori pe calculatoarele registrului', st_eroriSub:'Conexiuni pierdute, sesiuni expirate și salvări eșuate, înregistrate automat (ultimele 30).', st_eroriNone:'Nicio eroare înregistrată.', st_eroriCont:'Cont', st_eroriActiune:'Acțiune', st_eroriMesaj:'Mesaj',
   al_setkaStale:(d)=>`Ratingul Setka Cup nu s-a actualizat automat (ultimele date: ${d}). Verificați Statistici jucători.`,
 },
 ru: {
@@ -1357,7 +1388,7 @@ ru: {
   al_typeMedical:'Медицина', al_typeInventory:'Инвентарь', al_typeTask:'Задача',
   al_frequentLate:(name,count)=>`Спортсмен ${name} опаздывал ${count} раз(а) за последние 30 дней.`,
   nav_statistici:'Статистика игроков',
-  st_title:'Статистика игроков', st_sub:'Динамика рейтинга Setka Cup участников. Обновляется автоматически каждое утро.',
+  stj_title:'Статистика игроков', stj_sub:'Динамика рейтинга Setka Cup участников. Обновляется автоматически каждое утро.',
   st_syncOk:(d,at)=>`Рейтинг на ${d} · обновлено ${at}`, st_syncNever:'Рейтинг Setka ещё не синхронизирован.',
   st_syncLive:(at,d)=>`Рейтинг обновлён сегодня в ${at} (предварительно до конца дня) · последний завершённый день: ${d}`,
   st_syncStale:(d)=>`Рейтинг Setka не обновился — последние данные за ${d}.`, st_syncLastErr:'Последняя ошибка',
@@ -1375,6 +1406,14 @@ ru: {
   st_change:'Изменение', st_min:'Минимум', st_max:'Максимум', st_winrate:'Победы', st_since:(d)=>`с ${d}`,
   st_openSetka:'Профиль Setka', st_notLinked:'Не связан с профилем Setka Cup.', st_noHistory:'Пока нет точек рейтинга.',
   st_profileTitle:'Рейтинг Setka Cup', al_typeSetka:'Setka', st_retry:'Повторить',
+  conn_title:'Нет связи с сервером.', conn_text:'Ничего не потеряно, смена остаётся открытой, но пока связь не восстановится, ничего нельзя сохранить и смену НЕЛЬЗЯ завершить. Повтор выполняется автоматически.',
+  conn_retry:'Повторить сейчас', conn_waitTitle:'Подключение к серверу…', conn_waitText:'Не удалось загрузить данные. Повтор выполняется автоматически; проверьте подключение к интернету.',
+  conn_noServer:'Сервер недоступен. Проверьте подключение и повторите попытку — смена остаётся открытой, ничего не потеряно.',
+  au_sessionExpired:'Сессия истекла. Войдите снова — открытая смена и данные не изменились.',
+  sh_resumedOpen:'На этом аккаунте уже есть открытая смена. Она восстановлена.',
+  ta_solverTitle:'Кто выполнил задачу',
+  sh_closedOk:(name,ora)=>`Смена ${name} успешно завершена в ${ora}. Итоговый отчёт сохранён.`,
+  st_eroriTitle:'Ошибки на компьютерах реестра', st_eroriSub:'Потеря связи, истёкшие сессии и неудачные сохранения, записанные автоматически (последние 30).', st_eroriNone:'Ошибок не зарегистрировано.', st_eroriCont:'Аккаунт', st_eroriActiune:'Действие', st_eroriMesaj:'Сообщение',
   al_setkaStale:(d)=>`Рейтинг Setka Cup не обновился автоматически (последние данные: ${d}). Проверьте «Статистика игроков».`,
 },
 };
@@ -1383,7 +1422,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-10-10-observatii-arbitri-1';
+const APP_BUILD = '2026-10-16-conexiune-sarcini-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1431,6 +1470,7 @@ function stableReminderMinute(dateKey,window){
 }
 function showRefreshReminder(kind='reminder'){
   if(isFullAdmin()) return;
+  if(kind==='reminder' && connectionLostAt) return;   // never suggest a reload while offline
   const box = document.getElementById('location-refresh-reminder');
   if(!box) return;
   refreshReminderKind = kind;
@@ -1449,6 +1489,12 @@ function hideRefreshReminder(){
   refreshReminderKind = null;
 }
 function forceFreshReload(){
+  // Reloading without a connection would replace the register with the browser's error page.
+  if(connectionLostAt || navigator.onLine === false){
+    hideRefreshReminder();
+    showConnectionLost([{ error:{ message:'reload blocked: offline' }, status:0 }]);
+    return;
+  }
   const url = new URL(location.href);
   url.searchParams.set('fresh',Date.now());
   location.replace(url.href);
@@ -1519,7 +1565,10 @@ async function ensureCurrentAppBuild(){
   if(isFullAdmin() || location.protocol==='file:') return true;
   const { data, error } = await sb.from('app_config').select('value').eq('key','location_app_build').single();
   if(error || !data?.value){
-    showRefreshReminder('verify');
+    noteActionFailure('verificare_versiune', error || 'location_app_build lipsă');
+    // offline: the red banner already explains it and retries safely; a "refresh" button here
+    // would reload a page that cannot load and leave the browser on an error screen
+    if(!connectionLostAt) showRefreshReminder('verify');
     return false;
   }
   if(data.value!==APP_BUILD){
@@ -1556,10 +1605,175 @@ function visibleAdmins(){ return DB.administratori.filter(a=>!a.ascuns); }
 // pentru selectoare "asignat lui X" — exclude contul comun de locație, care nu e o persoană reală
 function realAdmins(){ return DB.administratori.filter(a=>!a.ascuns && a.rol==='admin'); }
 
-async function fetchAll(){
+/* ══════════════════════ CONEXIUNE, SESIUNE, ERORI ══════════════════════ */
+// When the register cannot reach the server it says so and keeps the data and the open
+// shift on screen, retrying in the background; a session that really ended goes back to
+// the login screen. Every such event is written to erori_client (queued while offline).
+const CONNECTION_RETRY_MS = 20000;
+let connectionLostAt = null;
+let connectionRetryTimer = null;
+let enterAppPending = false;
+let manualLogout = false;
+let serverClockOffset = 0;   // server clock − PC clock, from the last ora_server() call
+
+function isAuthFailure(result){
+  const e = result?.error; if(!e) return false;
+  return result.status===401 || /^PGRST30[0-3]$/.test(e.code||'') || /jwt/i.test(e.message||'');
+}
+async function handleLoadFailure(failed, opts={}){
+  if(failed.some(isAuthFailure)){
+    if(!opts.afterRefresh){
+      const { error } = await sb.auth.refreshSession();
+      if(!error) return fetchAll({ afterRefresh:true });
+      // a refresh that could not reach the server is a connection problem, not a logout
+      if(error.status && error.status !== 0 && error.name !== 'AuthRetryableFetchError'){ sessionLost(error); return false; }
+    } else { sessionLost(failed.find(isAuthFailure).error); return false; }
+  }
+  showConnectionLost(failed);
+  return false;
+}
+function showConnectionLost(failed){
+  if(!connectionLostAt){
+    connectionLostAt = Date.now();
+    const first = failed?.[0]?.error;
+    logClientError('conexiune_pierduta', first, { cereri_esuate: failed?.length || 0, status: failed?.[0]?.status ?? null });
+  }
+  const banner = document.getElementById('conn-banner');
+  if(banner){
+    document.getElementById('conn-banner-title').textContent = t('conn_title');
+    document.getElementById('conn-banner-text').textContent = t('conn_text');
+    const btn = document.getElementById('conn-banner-retry');
+    btn.textContent = t('conn_retry'); btn.disabled = false;
+    banner.hidden = false;
+  }
+  if(!retryInFlight){
+    clearTimeout(connectionRetryTimer);
+    connectionRetryTimer = setTimeout(retryConnection, CONNECTION_RETRY_MS);
+  }
+}
+function markConnectionOk(){
+  clearTimeout(connectionRetryTimer); connectionRetryTimer = null;
+  const banner = document.getElementById('conn-banner');
+  if(banner) banner.hidden = true;
+  if(connectionLostAt){
+    const secunde = Math.round((Date.now()-connectionLostAt)/1000);
+    connectionLostAt = null;
+    logClientError('conexiune_restabilita', null, { secunde_fara_conexiune: secunde });
+  }
+  flushClientErrors();
+}
+let retryInFlight = false;
+async function retryConnection(){
+  clearTimeout(connectionRetryTimer); connectionRetryTimer = null;
+  if(!currentAdminId || retryInFlight) return;
+  retryInFlight = true;
+  const btn = document.getElementById('conn-banner-retry'); if(btn) btn.disabled = true;
+  let ok = false;
+  try{ ok = await fetchAll(); } finally { retryInFlight = false; }
+  if(!ok){ if(btn) btn.disabled = false; return; }                       // the banner and the next retry are already scheduled
+  if(enterAppPending){ finishEnterApp(); return; }
+  document.getElementById('sb-admin').textContent = activeShiftName();
+  buildSidebar();
+  // don't wipe a form someone is filling in; the next navigation shows the fresh data
+  const typing = document.activeElement?.closest?.('#main') && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName);
+  if(!typing) render();
+}
+async function sessionLost(error){
+  if(!currentAdminId || manualLogout) return;
+  const wasLocation = currentRole !== 'admin';
+  logClientError('sesiune_expirata', error);
+  await logout();
+  setAuthMode(wasLocation ? 'locatie' : 'admin');
+  const msg = document.getElementById(wasLocation ? 'login-locatie-msg' : 'login-msg');
+  if(msg){ msg.textContent = t('au_sessionExpired'); msg.style.color = 'var(--yellow)'; }
+}
+// The PC's clock can run minutes slow; shift ends and report windows use the server's.
+async function serverNowISO(){
+  const { data, error } = await sb.rpc('ora_server');
+  if(!error && data){
+    serverClockOffset = new Date(data).getTime() - Date.now();
+    return new Date(data).toISOString();
+  }
+  return new Date(Date.now() + serverClockOffset).toISOString();
+}
+
+// fetch() rejects only when the server could not be reached at all (offline, DNS, dropped
+// connection) — that is exactly the case the register used to hide.
+async function monitoredFetch(input, init){
+  // the auth client may fetch while the page is still loading, before this module's state
+  // exists; read it defensively so that first request is never broken by the monitor
+  const state = ()=>{ try{ return { lost: connectionLostAt, user: currentAdminId }; }catch(_e){ return {}; } };
+  try{
+    const response = await fetch(input, init);
+    if(state().lost && response.ok) setTimeout(retryConnection, 0);
+    return response;
+  }catch(error){
+    if(error?.name !== 'AbortError' && state().user) setTimeout(()=>showConnectionLost([{ error, status:0 }]), 0);
+    throw error;
+  }
+}
+// A tiny request every minute (and when the PC wakes up or the network changes) so a dropped
+// connection shows up even when nobody is clicking. It also keeps the server clock offset fresh.
+const HEARTBEAT_MS = 60000;
+let heartbeatTimer = null;
+async function heartbeat(){
+  if(!currentAdminId) return;
+  const { error } = await sb.from('app_config').select('key').limit(1);
+  if(error && (error.status===0 || /fetch|network/i.test(error.message||''))){ showConnectionLost([{ error, status:0 }]); return; }
+  if(!error && connectionLostAt) retryConnection();
+}
+function startHeartbeat(){
+  clearInterval(heartbeatTimer);
+  heartbeatTimer = setInterval(heartbeat, HEARTBEAT_MS);
+}
+window.addEventListener('offline', ()=>{ if(currentAdminId) showConnectionLost([{ error:{ message:'navigator offline' }, status:0 }]); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') heartbeat(); });
+// For an action that failed: log it, and if the server was unreachable, raise the banner too.
+function noteActionFailure(actiune, error){
+  logClientError(actiune, error);
+  const msg = String(error?.message||error||'');
+  if(error?.status===0 || /failed to fetch|networkerror|load failed|network/i.test(msg)) showConnectionLost([{ error, status:0 }]);
+}
+
+const CLIENT_ERROR_QUEUE_KEY = 'attp-erori-client';
+function readClientErrorQueue(){ try{ return JSON.parse(localStorage.getItem(CLIENT_ERROR_QUEUE_KEY)||'[]'); }catch(_error){ return []; } }
+function writeClientErrorQueue(queue){ try{ localStorage.setItem(CLIENT_ERROR_QUEUE_KEY, JSON.stringify(queue.slice(-50))); }catch(_error){} }
+function logClientError(actiune, error, detalii){
+  if(!currentAdminId) return;
+  const queue = readClientErrorQueue();
+  const mesaj = error ? String(error.message || error).slice(0,500) : null;
+  // the same failure repeating within a minute (retries, re-renders) is kept once
+  if(queue.some(e=>e.actiune===actiune && e.mesaj===mesaj && Date.now()-Date.parse(e.ora_client) < 60000)) return;
+  queue.push({
+    actiune, mesaj, detalii: detalii || null,
+    ora_client: new Date().toISOString(),
+    sesiune_schimb_id: currentShift?.id || null,
+    user_agent: String(navigator.userAgent||'').slice(0,300),
+  });
+  writeClientErrorQueue(queue);
+  if(!connectionLostAt) flushClientErrors();
+}
+let clientErrorFlushRunning = false;
+async function flushClientErrors(){
+  if(clientErrorFlushRunning || !currentAdminId) return;
+  const queue = readClientErrorQueue();
+  if(!queue.length) return;
+  clientErrorFlushRunning = true;
+  try{
+    const { error } = await sb.from('erori_client').insert(queue);
+    // drop only what was sent; entries added meanwhile stay queued
+    if(!error) writeClientErrorQueue(readClientErrorQueue().slice(queue.length));
+  } finally { clientErrorFlushRunning = false; }
+}
+window.addEventListener('error', e=>logClientError('eroare_js', e.error || e.message, { sursa: `${e.filename||''}:${e.lineno||''}` }));
+window.addEventListener('unhandledrejection', e=>logClientError('eroare_js', e.reason));
+window.addEventListener('online', ()=>{ if(connectionLostAt) retryConnection(); });
+sb.auth.onAuthStateChange(event=>{ if(event==='SIGNED_OUT') sessionLost(null); });
+
+async function fetchAll(opts={}){
   const [
     administratoriR, serviciuAdministratoriR, participantiR, arbitriR, intarzieriR, vestimentatieR, serviciuR, spalatorieR,
-    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR, setkaSyncR
+    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR, setkaSyncR, eroriClientR
   ] = await Promise.all([
     sb.from('administratori').select('*'),
     sb.from('serviciu_administratori').select('*').eq('activ', true).order('nume'),
@@ -1584,7 +1798,17 @@ async function fetchAll(){
     sb.from('sesiuni_schimb').select('*').eq('cont_id', currentAdminId).is('ended_at', null).order('started_at', {ascending:false}).limit(1),
     sb.from('acte_schimb').select('*').order('created_at', {ascending:false}).limit(60),
     sb.from('setka_sync_log').select('*').order('pornit_la', {ascending:false}).limit(30),
+    isFullAdmin() ? sb.from('erori_client').select('*').order('created_at', {ascending:false}).limit(30) : Promise.resolve({data:[]}),
   ]);
+
+  // A failed request must never be read as "no data": that is what emptied every list and
+  // dropped the open shift on the location PC (13 and 15 Oct). Keep what is on screen instead.
+  // setka_sync_log and erori_client are optional extras and may fail on their own.
+  const failed = [
+    administratoriR, serviciuAdministratoriR, participantiR, arbitriR, intarzieriR, vestimentatieR, serviciuR, spalatorieR,
+    hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR,
+  ].filter(result=>result?.error);
+  if(failed.length) return handleLoadFailure(failed, opts);
 
   const administratori = administratoriR.data || [];
   const adminById = Object.fromEntries(administratori.map(a=>[a.id, a]));
@@ -1628,7 +1852,7 @@ async function fetchAll(){
     fairPlay: (fairPlayR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, data:r.data, ora:r.ora ? String(r.ora).slice(0,5) : '', platou:r.platou, descriere:r.descriere, tipCartonas:r.tip_cartonas, createdAt:r.created_at})),
     arbitraj: (arbitrajR.data||[]).map(r=>({id:r.id, data:r.data, arbitru:r.arbitru, turneu:r.turneu, marcaMingi:r.marca_mingi, cantitateMingi:r.cantitate_mingi, observatii:r.observatii, sesiuneSchimbId:r.sesiune_schimb_id, slotSchimb:r.slot_schimb})),
     inventar: (inventarR.data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie})),
-    sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
+    sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionareId:r.admin_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
     observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, arbitru:r.arbitru, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
     pauzeTehnice: (pauzeTehniceR.data||[]).map(r=>({id:r.id, data:r.data, oraStart:String(r.ora_start||'').slice(0,5), oraStop:String(r.ora_stop||'').slice(0,5), teren:r.teren, descriere:r.descriere, createdAt:r.created_at})),
     jurnal: (jurnalR.data||[]).map(r=>({id:r.id, cont: serviciuAdminById[r.administrator_serviciu_id]?.nume || publicAdminName(adminById[r.administrator_id]), data:String(r.data).slice(0,10), actiune:r.actiune})),
@@ -1642,6 +1866,7 @@ async function fetchAll(){
   };
   // null while the Setka tables don't exist yet: the rating features then stay quiet
   DB.setkaSync = setkaSyncR.error ? null : (setkaSyncR.data||[]);
+  DB.eroriClient = eroriClientR.error ? null : (eroriClientR.data||[]);
   // Older versions could insert more than one snapshot for the same shift. Keep those rows in
   // Supabase for audit purposes, but show only the newest canonical report in the interface.
   const reportShiftIds = new Set();
@@ -1660,10 +1885,13 @@ async function fetchAll(){
       startedAt:open.started_at,
     } : null;
   }
+  markConnectionOk();
+  return true;
 }
 
 async function refetchInventar(){
-  const { data } = await sb.from('inventar').select('*').order('denumire');
+  const { data, error } = await sb.from('inventar').select('*').order('denumire');
+  if(error){ logClientError('incarcare_inventar', error); return; }   // keep the list on screen
   DB.inventar = (data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie}));
 }
 
@@ -1761,15 +1989,33 @@ async function enterApp(userId, displayName, rol){
   document.getElementById('app-shell').classList.add('visible');
   document.getElementById('header-user').textContent = currentAdmin;
   document.getElementById('sb-admin').textContent = currentAdmin;
-  await fetchAll();
+  enterAppPending = true;
+  if(!(await fetchAll())){
+    document.getElementById('sb-nav').innerHTML = '';
+    document.getElementById('main').innerHTML = `<div class="conn-wait"><strong>${esc(t('conn_waitTitle'))}</strong>${esc(t('conn_waitText'))}</div>`;
+    return;   // retryConnection() finishes entering once the data loads
+  }
+  finishEnterApp();
+}
+function finishEnterApp(){
+  enterAppPending = false;
   document.getElementById('sb-admin').textContent = activeShiftName();
   buildSidebar();
   navigate('dashboard');
   startLocationRefreshReminders();
+  startHeartbeat();
+  flushClientErrors();
 }
 
 async function logout(){
-  await sb.auth.signOut();
+  manualLogout = true;
+  clearTimeout(connectionRetryTimer); connectionRetryTimer = null;
+  clearInterval(heartbeatTimer); heartbeatTimer = null;
+  lastClosedShift = null;
+  connectionLostAt = null; enterAppPending = false;
+  document.getElementById('conn-banner').hidden = true;
+  try{ await sb.auth.signOut(); }catch(_error){}
+  manualLogout = false;
   if(locationRefreshTimer) clearInterval(locationRefreshTimer);
   if(locationRefreshChannel) sb.removeChannel(locationRefreshChannel);
   locationRefreshTimer = null;
@@ -1788,7 +2034,15 @@ async function logout(){
 async function resumeSession(){
   const { data:{ session } } = await sb.auth.getSession();
   if(!session) return;
-  const { data: profile } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
+  const { data: profile, error: profileError } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
+  if(profileError && !profile){
+    // Without the profile the role is unknown; never guess "admin" for the location PC.
+    const msg = document.getElementById('login-msg'), msgLoc = document.getElementById('login-locatie-msg');
+    [msg, msgLoc].forEach(m=>{ if(m){ m.textContent = t('conn_waitTitle')+' '+t('conn_waitText'); m.style.color = 'var(--yellow)'; } });
+    setTimeout(resumeSession, CONNECTION_RETRY_MS);
+    return;
+  }
+  [document.getElementById('login-msg'), document.getElementById('login-locatie-msg')].forEach(m=>{ if(m) m.textContent = ''; });
   const displayName = profile ? adminName(profile) : (session.user.email || 'Administrator');
   await enterApp(session.user.id, displayName, profile?.rol || 'admin');
 }
@@ -2156,8 +2410,21 @@ async function confirmLocationShift(){
     cont_id:currentAdminId,
     administrator_serviciu_id:employeeId,
   }).select().single();
-  if(error){ alert(t('sh_startError')+' '+error.message); return; }
+  if(error){
+    noteActionFailure('pornire_schimb', error);
+    // 23505 = this account already has an open shift (one open shift per account is enforced
+    // in the database): resume it rather than leaving the location on "start a new shift".
+    if(error.code==='23505' && await fetchAll() && currentShift){
+      shiftStartPrompt = false;
+      document.getElementById('sb-admin').textContent = activeShiftName();
+      alert(t('sh_resumedOpen'));
+      buildSidebar(); render();
+      return;
+    }
+    alert(t('sh_startError')+' '+error.message); return;
+  }
   currentShift = { id:data.id, administratorServiciuId:employeeId, administrator:employee.nume, startedAt:data.started_at };
+  lastClosedShift = null;
   shiftStartPrompt = false;
   dashboardRefereeEditId = null;
   dashboardTrainingRows = 1;
@@ -2296,7 +2563,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
 async function saveActSchimb({ shiftId, administratorServiciuId, administratorId, numeAdministrator, startedAt, endedAt }){
   // Refresh lookup data before assembling the snapshot, then read every report section directly
   // from Supabase. This includes rows added in the same open browser tab and on another device.
-  await fetchAll();
+  if(!(await fetchAll())) throw new Error(t('conn_noServer'));
   const continut = await buildActContinut(startedAt, endedAt, shiftId);
   continut.admin.nume = numeAdministrator;
   const row = {
@@ -2334,8 +2601,8 @@ async function generateActSchimb(){
   if(!(await ensureCurrentAppBuild())) return;
   const active = isFullAdmin() ? adminDemoShiftActive : !!currentShift;
   if(!active){ alert(t('act_needShift')); return; }
-  const startedAt = isFullAdmin() ? new Date(Date.now() - 8*3600*1000).toISOString() : currentShift.startedAt;
-  const now = new Date().toISOString();
+  const now = await serverNowISO();
+  const startedAt = isFullAdmin() ? new Date(Date.parse(now) - 8*3600*1000).toISOString() : currentShift.startedAt;
   const shiftId = isFullAdmin() ? null : currentShift.id;
   const administratorServiciuId = isFullAdmin() ? null : currentShift.administratorServiciuId;
   const numeAdministrator = activeShiftName();
@@ -2346,6 +2613,7 @@ async function generateActSchimb(){
     await logAction(`A generat raportul de schimb pentru ${numeAdministrator}`);
     openActPreview(act);
   } catch(error){
+    noteActionFailure('generare_raport', error);
     alert('Generarea actului a eșuat: ' + error.message);
   } finally {
     if(btn){ btn.disabled = false; btn.textContent = t('act_btnGenerate'); }
@@ -2707,6 +2975,7 @@ async function generateActForPastShift(){
     render();
     openActPreview(act);
   } catch(error){
+    noteActionFailure('generare_raport', error);
     alert('Generarea actului a eșuat: ' + error.message);
   } finally {
     if(btn){ btn.disabled = false; btn.textContent = t('act_btnGenerate'); }
@@ -2747,14 +3016,14 @@ async function stopDashboardShift(){
   if(!(await ensureCurrentAppBuild())) return;
   const shiftId = currentShift.id;
   const { data:reports, error:reportError } = await sb.from('acte_schimb').select('id').eq('sesiune_schimb_id',shiftId).limit(1);
-  if(reportError){ alert(t('sh_reportCheckError')+' '+reportError.message); return; }
+  if(reportError){ noteActionFailure('inchidere_schimb_verificare', reportError); alert(t('sh_reportCheckError')+' '+reportError.message); return; }
   if(!reports?.length){
     alert(t('sh_reportRequired'));
     document.getElementById('act-generate-btn')?.focus();
     return;
   }
   if(!window.confirm(t('sh_stopConfirm'))) return;
-  const endedAt = new Date().toISOString();
+  const endedAt = await serverNowISO();
   const shiftName = currentShift.administrator;
   try{
     // The earlier button press is a preview/checkpoint. Immediately before closing, replace it
@@ -2768,11 +3037,12 @@ async function stopDashboardShift(){
       endedAt,
     });
   }catch(reportError){
+    noteActionFailure('inchidere_schimb_raport', reportError);
     alert(t('sh_reportFinalizeError')+' '+reportError.message);
     return;
   }
   const { data, error } = await sb.from('sesiuni_schimb').update({ended_at:endedAt}).eq('id',currentShift.id).select();
-  if(error){ alert(t('sh_stopError')+' '+error.message); return; }
+  if(error){ noteActionFailure('inchidere_schimb', error); alert(t('sh_stopError')+' '+error.message); return; }
   if(!data?.length){
     // Nothing matched — most likely this shift was already ended elsewhere (another tab/device
     // sharing the location login, or an admin closed it). Resync from the server instead of
@@ -2782,7 +3052,7 @@ async function stopDashboardShift(){
     hideRefreshReminder();
     dashboardRefereeEditId = null;
     dashboardTrainingRows = 1;
-    await fetchAll();
+    if(!(await fetchAll())) return;
     document.getElementById('sb-admin').textContent = currentShift ? currentShift.administrator : currentAdmin;
     currentView = 'dashboard';
     buildSidebar();
@@ -2790,6 +3060,7 @@ async function stopDashboardShift(){
     return;
   }
   await logAction(`A încheiat schimbul de locație: ${shiftName}`);
+  lastClosedShift = { name: shiftName, ora: fmtTime(data[0]?.ended_at || endedAt) };
   currentShift = null;
   hideRefreshReminder();
   dashboardRefereeEditId = null;
@@ -2803,10 +3074,11 @@ function addDashboardTrainingRow(){
   dashboardTrainingRows = Math.min(8, dashboardTrainingRows + 1);
   render();
 }
+let lastClosedShift = null;   // shown on the start screen until the next shift begins
 function renderShiftWorkflow(){
   const active = isFullAdmin() ? adminDemoShiftActive : !!currentShift;
   if(!active){
-    return `<section class="shift-launch">
+    return `${lastClosedShift && !isFullAdmin() ? `<div class="shift-closed-ok" role="status">${icon('check')}<span>${esc(t('sh_closedOk')(lastClosedShift.name, lastClosedShift.ora))}</span></div>` : ''}<section class="shift-launch">
       <div class="shift-launch-icon">${icon('play')}</div>
       <h3>${t('sh_startTitle')}</h3>
       <p>${t('sh_startSub')}</p>
@@ -3409,8 +3681,8 @@ function setkaSyncLine(){
 }
 
 function renderStatistici(){
-  const head = `<div class="view-head"><div class="view-title">${t('st_title')}</div></div>
-    <div class="view-sub">${t('st_sub')}</div>${setkaSyncLine()}`;
+  const head = `<div class="view-head"><div class="view-title">${t('stj_title')}</div></div>
+    <div class="view-sub">${t('stj_sub')}</div>${setkaSyncLine()}`;
   if(SETKA.status==='error') return head + `<div class="empty-state">${esc(t('st_loadErr'))} <button class="btn-ghost btn-sm" onclick="loadSetkaStats(true)">${t('st_retry')}</button></div>`;
   if(SETKA.status!=='ready') return head + `<div class="empty-state">${esc(t('st_loading'))}</div>`;
 
@@ -5043,10 +5315,49 @@ function taskGroupsRows(groups){
             <option value="soluționat" ${task.status==='soluționat'?'selected':''}>${trEnum('soluționat')}</option>
           </select>
         </td>
-        <td class="td-muted">${esc(task.adminSolutionare)||'—'}</td>
+        <td class="td-muted">${taskSolverCell(task)}</td>
         <td><button class="btn-danger" ${disabledAttr(true)} onclick="removeRow('sarcini','${task.id}')">${t('btn_delete')}</button></td>
       </tr>`;
     }).join('')}`).join('');
+}
+// "Solved by": on a solved task, whoever is on shift (or an admin) can say who actually did it;
+// it starts on the shift's administrator, as recorded automatically.
+function taskSolverCell(task){
+  if(task.status!=='soluționat') return '—';
+  if(!hasActiveShift()) return esc(task.adminSolutionare)||'—';
+  const current = task.administratorServiciuSolutionareId ? `service:${task.administratorServiciuSolutionareId}`
+    : task.adminSolutionareId ? `account:${task.adminSolutionareId}` : '';
+  const options = DB.serviciuAdministratori.map(a=>({ value:`service:${a.id}`, label:a.nume }));
+  if(isFullAdmin()) realAdmins().forEach(a=>options.push({ value:`account:${a.id}`, label:adminName(a) }));
+  // someone no longer on the roster (or a location account) stays visible as the current value
+  if(current && !options.some(o=>o.value===current)) options.unshift({ value:current, label:task.adminSolutionare||'—', keep:true });
+  if(!current) options.unshift({ value:'', label:'—', keep:true });
+  return `<select class="task-select task-solver" title="${esc(t('ta_solverTitle'))}" aria-label="${esc(t('ta_solverTitle'))}" onchange="setTaskSolver('${task.id}', this.value)">
+    ${options.map(o=>`<option value="${esc(o.value)}" ${o.value===current?'selected':''} ${o.keep?'disabled':''}>${esc(o.label)}</option>`).join('')}
+  </select>`;
+}
+async function setTaskSolver(id, value){
+  const task = DB.sarcini.find(s=>s.id===id); if(!task || !value) return;
+  const [kind, personId] = value.split(':');
+  const { data, error } = await sb.rpc('seteaza_solutionare_sarcina', {
+    p_sarcina_id:id,
+    p_administrator_serviciu_id: kind==='service' ? personId : null,
+    p_admin_id: kind==='account' ? personId : null,
+  });
+  if(error || !data?.length){
+    if(error) noteActionFailure('sarcina_solutionata_de', error);
+    alert('Actualizarea a eșuat: ' + (error?.message || 'fără permisiune'));
+    render(); return;
+  }
+  const row = data[0];
+  task.administratorServiciuSolutionareId = row.administrator_serviciu_solutionare_id;
+  task.adminSolutionareId = row.admin_solutionare_id;
+  task.adminSolutionare = row.administrator_serviciu_solutionare_id
+    ? (DB.serviciuAdministratori.find(a=>a.id===row.administrator_serviciu_solutionare_id)?.nume || '')
+    : publicAdminName(DB.administratori.find(a=>a.id===row.admin_solutionare_id));
+  if(isFullAdmin()) DB.jurnal.unshift({ id:uid(), cont:journalActorName(), data:todayISO(),
+    actiune:`${journalActorName()} a indicat că sarcina „${task.descriere}” a fost soluționată de ${task.adminSolutionare}` });
+  render();
 }
 function taskTableSegment(groups, solvedSegment=false){
   if(!groups.length) return '';
@@ -5126,6 +5437,7 @@ async function updateTaskStatus(id, status){
   t.status = row.status;
   t.dataSolutionare = row.data_solutionare;
   t.administratorServiciuSolutionareId = row.administrator_serviciu_solutionare_id;
+  t.adminSolutionareId = row.admin_solutionare_id;
   t.adminSolutionare = row.status==='soluționat' ? journalActorName() : '';
   if(isFullAdmin() && previousStatus!==status){
     DB.jurnal.unshift({id:uid(), cont:journalActorName(), data:todayISO(), actiune:`${journalActorName()} a schimbat statutul sarcinii „${t.descriere}” din „${previousStatus}” în „${status}”`});
@@ -5694,6 +6006,20 @@ function renderSetari(){
         <td><button class="btn-danger" onclick="removeRow('trusted_ips','${ip.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="4">${t('st_ipNone')}</td></tr>`}</tbody>
     </table></div>
   </div>
+
+  ${DB.eroriClient ? `<div class="table-wrap">
+    <div class="table-header"><div class="table-title">${t('st_eroriTitle')}</div></div>
+    <div class="view-sub" style="padding:0 20px;margin:8px 0 0">${t('st_eroriSub')}</div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>${t('th_data')}</th><th>${t('st_eroriCont')}</th><th>${t('st_eroriActiune')}</th><th>${t('st_eroriMesaj')}</th></tr></thead>
+      <tbody>${DB.eroriClient.length ? DB.eroriClient.map(e=>`<tr>
+        <td class="td-muted">${esc(fmtDateTime(e.created_at))}</td>
+        <td class="td-muted">${esc(publicAdminName(DB.administratori.find(a=>a.id===e.cont_id)))}</td>
+        <td>${esc(e.actiune)}</td>
+        <td class="td-muted" style="white-space:normal">${esc(e.mesaj||'')}${e.detalii?` <span style="opacity:.7">${esc(JSON.stringify(e.detalii))}</span>`:''}</td></tr>`).join('')
+        : `<tr><td class="td-empty" colspan="4">${t('st_eroriNone')}</td></tr>`}</tbody>
+    </table></div>
+  </div>` : ''}
 
   <div class="table-wrap">
     <div class="table-header">
