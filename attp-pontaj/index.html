@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-10-16-logout-local-1">
+<meta name="attp-build" content="2026-10-17-date-moldova-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1422,7 +1422,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-10-16-logout-local-1';
+const APP_BUILD = '2026-10-17-date-moldova-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1578,11 +1578,27 @@ async function ensureCurrentAppBuild(){
   return true;
 }
 
-function todayISO(){ return new Date().toISOString().slice(0,10); }
+// Dates follow Moldova time, in two kinds:
+// - todayISO(): the calendar day in Moldova right now. For anything that happens at a moment
+//   (a card, a late arrival, an observation, a technical break, a return, a solved task):
+//   after midnight that is already the new day.
+// - shiftDateISO(): the day the current night shift started. For what belongs to the shift
+//   itself (its report, the referee schedule, the hostel night, the dashboard of the shift),
+//   which stays on the evening's date for the whole night.
+function todayISO(){ return moldovaClock().dateKey; }
+function moldovaDateOf(timestamp){ return moldovaClock(new Date(timestamp)).dateKey; }
+function shiftDateISO(){ return currentShift?.startedAt ? moldovaDateOf(currentShift.startedAt) : todayISO(); }
 function uid(){ return Math.random().toString(36).slice(2,9); }
-function addDays(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
-function addMonths(iso,n){ const d=new Date(iso+'T00:00:00'); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); }
-function daysDiff(iso){ const a=new Date(todayISO()+'T00:00:00'); const b=new Date(iso+'T00:00:00'); return Math.round((b-a)/86400000); }
+// Calendar arithmetic at noon UTC, independent of the computer's time zone (local-midnight
+// math returned the previous day on a UTC+2/+3 PC, e.g. a medical expiry one day early).
+function addDays(iso,n){ const d=new Date(iso+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); }
+// 31 Aug + 6 months = 28 Feb (last day of the month), not a spill into March
+function addMonths(iso,n){
+  const [y,m,day] = iso.split('-').map(Number);
+  const lastDay = new Date(Date.UTC(y, m-1+n+1, 0, 12)).getUTCDate();
+  return new Date(Date.UTC(y, m-1+n, Math.min(day,lastDay), 12)).toISOString().slice(0,10);
+}
+function daysDiff(iso){ return Math.round((Date.parse(iso+'T12:00:00Z') - Date.parse(todayISO()+'T12:00:00Z'))/86400000); }
 function fmtDate(iso){ if(!iso) return '—'; const [y,m,d]=iso.split('-'); return `${d}.${m}.${y}`; }
 function fmtDateTime(value){
   if(!value) return '—';
@@ -2526,7 +2542,7 @@ async function buildActContinut(startedAt, endedAt, shiftId){
   const sarciniSolutionateInSchimb = new Set((sarciniSolutionateR.data||[]).map(row=>row.sarcina_id));
 
   return {
-    admin: { data: startedAt.slice(0,10), nume: '' },
+    admin: { data: moldovaDateOf(startedAt), nume: '' },
     intarzieri: (intarzieriR.data||[]).map(r=>({ nume: entryPersonName({participantId:r.participant_id, arbitru:r.arbitru}), min: r.minute_intarziere, motiv: r.motiv || '' })),
     arbitraj: (arbitrajR.data||[]).map(r=>({ platou: r.turneu, arbitru: r.arbitru })),
     fairPlay: (fairPlayR.data||[]).map(r=>({ nume: participantName(r.participant_id), ora: r.ora ? String(r.ora).slice(0,5) : '', cartonas: r.tip_cartonas, descriere: r.descriere || '' })),
@@ -2573,7 +2589,7 @@ async function saveActSchimb({ shiftId, administratorServiciuId, administratorId
     sesiune_schimb_id: shiftId,
     administrator_serviciu_id: administratorServiciuId,
     administrator_id: administratorId,
-    data: startedAt.slice(0,10),
+    data: moldovaDateOf(startedAt),
     inceput_perioada: startedAt,
     sfarsit_perioada: endedAt,
     nume_administrator: numeAdministrator,
@@ -3094,7 +3110,8 @@ function renderShiftWorkflow(){
 
   const refs = dashboardArbitrajRows();
   const eligible = eligibleTrainingParticipants();
-  const todayTrainings = DB.treninguri.filter(r=>r.data===todayISO()).sort((a,b)=>String(a.ora||'').localeCompare(String(b.ora||'')));
+  // trainings of this shift: the evening's date, and after midnight the new day too
+  const todayTrainings = DB.treninguri.filter(r=>r.data===todayISO() || r.data===shiftDateISO()).sort((a,b)=>String(a.ora||'').localeCompare(String(b.ora||'')));
   const startedAt = isFullAdmin() ? new Date().toISOString() : currentShift.startedAt;
   const shiftName = activeShiftName();
   return `<section class="daily-ops">
@@ -3157,7 +3174,7 @@ function renderDashboard(){
   const medCurand = medicalRows().filter(r=>r.status==='expiră curând').length;
   return `
   <div class="view-head"><div class="view-title">${t('da_title')}</div></div>
-  <div class="view-sub">${fmtDate(todayISO())} · ${t('sb_shift').toLowerCase()}: ${esc(activeShiftName())}</div>
+  <div class="view-sub">${fmtDate(shiftDateISO())} · ${t('sb_shift').toLowerCase()}: ${esc(activeShiftName())}</div>
 
   ${renderShiftWorkflow()}
 
@@ -3166,7 +3183,7 @@ function renderDashboard(){
     <div class="stat-card ${medExpirate?'crit':medCurand?'warn':''}"><div class="stat-label">${t('da_stat_medical')}</div><div class="stat-value ${medExpirate?'c-red':medCurand?'c-yellow':''}">${medExpirate}</div><div class="stat-sub">${trEnum('expirat')} · ${medCurand} ${t('da_expira30')} &lt;30${LANG==='ru'?' дн.':' zile'}</div></div>
     <div class="stat-card ${lowStockItems().length?'warn':''}"><div class="stat-label">${t('da_stat_stoc')}</div><div class="stat-value ${lowStockItems().length?'c-yellow':''}">${lowStockItems().length}</div><div class="stat-sub">${t('da_din')} ${DB.inventar.length} ${t('da_categorii')}</div></div>
     <div class="stat-card ${staleTasks().length?'crit':''}"><div class="stat-label">${t('da_stat_sarcini')}</div><div class="stat-value ${staleTasks().length?'c-red':''}">${staleTasks().length}</div><div class="stat-sub">${DB.sarcini.filter(s=>s.status!=='soluționat').length} ${t('da_total_lucru')}</div></div>
-    <div class="stat-card"><div class="stat-label">${t('da_stat_hostel')}</div><div class="stat-value">${DB.hostel.filter(h=>h.dataCazare===todayISO()).length}</div><div class="stat-sub">${t('da_total_inregistrari')}: ${DB.hostel.length}</div></div>
+    <div class="stat-card"><div class="stat-label">${t('da_stat_hostel')}</div><div class="stat-value">${DB.hostel.filter(h=>h.dataCazare===shiftDateISO()).length}</div><div class="stat-sub">${t('da_total_inregistrari')}: ${DB.hostel.length}</div></div>
   </div>
 
   <div class="alerts-panel">
@@ -3190,7 +3207,7 @@ async function saveDashboardReferee(slot){
   const arbitru = document.getElementById(`shift-ref-${slot}`)?.value;
   const turneu = document.getElementById(`shift-venue-${slot}`)?.value;
   if(!arbitru || !turneu) return;
-  const payload = { data:todayISO(), arbitru, turneu, marca_mingi:'DHS', cantitate_mingi:0 };
+  const payload = { data:shiftDateISO(), arbitru, turneu, marca_mingi:'DHS', cantitate_mingi:0 };
   if(!isFullAdmin()){
     payload.sesiune_schimb_id = currentShift.id;
     payload.slot_schimb = slot;
@@ -4147,7 +4164,7 @@ function renderServiciu(){
   <div class="add-form">
     <div class="form-title">${t('se_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr auto">
-      <div class="field"><label>${t('th_data')}</label><input id="sf-data" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>${t('th_data')}</label><input id="sf-data" type="date" value="${shiftDateISO()}"></div>
       <div class="field"><label>${t('th_administrator')}</label><select id="sf-admin">${DB.serviciuAdministratori.map(a=>`<option value="${a.id}">${esc(a.nume)}</option>`).join('')}</select></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr(true)} onclick="addServiciu()">${t('btn_add')}</button></div>
     </div>
@@ -4172,7 +4189,7 @@ function renderServiciu(){
   </div>`;
 }
 async function addServiciu(){
-  const data = document.getElementById('sf-data').value || todayISO();
+  const data = document.getElementById('sf-data').value || shiftDateISO();
   const administratorServiciuId = document.getElementById('sf-admin').value;
   const serviciuAdmin = DB.serviciuAdministratori.find(a=>a.id===administratorServiciuId);
   if(!serviciuAdmin) return;
@@ -4342,7 +4359,7 @@ async function toggleSpalatorieReturn(id){
 function renderHostel(){
   const nights = {};
   DB.hostel.forEach(h=>{ nights[h.participantId]=(nights[h.participantId]||0)+1; });
-  const cazatiAzi = DB.hostel.filter(h=>h.dataCazare===todayISO());
+  const cazatiAzi = DB.hostel.filter(h=>h.dataCazare===shiftDateISO());   // tonight's check-ins
   const cazatiActivAcum = DB.hostel.filter(h=>h.statut==='activ');
   return `
   <div class="view-head"><div class="view-title">${t('ho_title')}</div></div>
@@ -4358,7 +4375,7 @@ function renderHostel(){
     <div class="form-title">${t('ho_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr 1.4fr auto">
       <div class="field"><label>${t('th_participant')}</label>${autocompleteField('hf-participant', participantAcOptions())}</div>
-      <div class="field"><label>${t('ho_dataCazarii')}</label><input id="hf-data" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>${t('ho_dataCazarii')}</label><input id="hf-data" type="date" value="${shiftDateISO()}"></div>
       <div class="field"><label>${t('ho_observatii')}</label><input id="hf-obs" placeholder="${t('ho_observatiiPh')}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addHostel()">${t('btn_add')}</button></div>
     </div>
@@ -4389,7 +4406,7 @@ function renderHostel(){
 async function addHostel(){
   const participantId = document.getElementById('hf-participant').value;
   if(!participantId) return;
-  const row = { participant_id:participantId, data_cazare: document.getElementById('hf-data').value||todayISO(), observatii: document.getElementById('hf-obs').value.trim() || null };
+  const row = { participant_id:participantId, data_cazare: document.getElementById('hf-data').value||shiftDateISO(), observatii: document.getElementById('hf-obs').value.trim() || null };
   const { data, error } = await sb.from('hostel').insert(row).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
   DB.hostel.unshift({id:data.id, participantId:data.participant_id, dataCazare:data.data_cazare, observatii:data.observatii, statut:data.statut});
@@ -4816,7 +4833,7 @@ function renderArbitraj(){
   <div class="add-form">
     <div class="form-title">${t('ar_addTitle')}</div>
     <div class="form-grid" style="grid-template-columns:0.8fr 1.2fr 1fr 0.6fr 0.7fr auto">
-      <div class="field"><label>${t('th_data')}</label><input id="af-data" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>${t('th_data')}</label><input id="af-data" type="date" value="${shiftDateISO()}"></div>
       <div class="field"><label>${t('ar_numeArbitru')}</label><select id="af-arbitru">${arbitriActivi().map(a=>`<option>${esc(a.nume)} ${esc(a.prenume)}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ar_turneu')}</label><select id="af-turneu">${TOURNAMENTS.map(tour=>`<option>${tour}</option>`).join('')}</select></div>
       <div class="field"><label>${t('ar_marcaMingi')}</label><select id="af-marca"><option value="DHS">DHS</option><option value="JOOLA">JOOLA</option></select></div>
@@ -4967,7 +4984,7 @@ async function addArbitraj(){
   const marcaMingi = document.getElementById('af-marca').value;
   const cantitateMingiRaw = parseInt(document.getElementById('af-mingi').value);
   const cantitateMingi = Number.isFinite(cantitateMingiRaw) && cantitateMingiRaw>=0 ? cantitateMingiRaw : 0;
-  const data = document.getElementById('af-data').value || todayISO();
+  const data = document.getElementById('af-data').value || shiftDateISO();
   const { data:row, error } = await sb.from('arbitraj').insert({ data, arbitru, turneu, marca_mingi:marcaMingi, cantitate_mingi:cantitateMingi }).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
   DB.arbitraj.unshift({id:row.id, data:row.data, arbitru:row.arbitru, turneu:row.turneu, marcaMingi:row.marca_mingi, cantitateMingi:row.cantitate_mingi, observatii:row.observatii});
