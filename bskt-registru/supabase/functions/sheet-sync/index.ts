@@ -267,11 +267,13 @@ Deno.serve(async (req) => {
       if (untouched && !isLocked(now.data) && (!baza || !same(baza, want) || m.sursa !== "tabel")) {
         patch.sync_baza = { ...want, lot: baza?.lot ?? {} }; patch.sursa = "tabel"; patch.tabel_actualizat_la = stamp;
       }
+      // a team that wasn't in the match before → the whole line-up is cleared and rebuilt from the sheet below; forget the
+      // line-up baseline too, otherwise the side whose team stayed looks "emptied by hand" and is never refilled (18.10.2026)
+      const teamsChange = ("echipa_a_id" in patch && patch.echipa_a_id !== now.a && patch.echipa_a_id !== now.b) || ("echipa_b_id" in patch && patch.echipa_b_id !== now.a && patch.echipa_b_id !== now.b);
+      if (teamsChange) patch.sync_baza = { ...((patch.sync_baza as Baza) ?? baza ?? want), lot: {} };
       if (Object.keys(patch).length && !isLocked(now.data)) {
         if (!dry) {
-          // teams change → the old line-up no longer fits the pay trigger; clear it first (it is rebuilt from the sheet below)
-          if (("echipa_a_id" in patch && patch.echipa_a_id !== now.a && patch.echipa_a_id !== now.b) || ("echipa_b_id" in patch && patch.echipa_b_id !== now.a && patch.echipa_b_id !== now.b))
-            await db.from("meci_jucatori").delete().eq("meci_id", m.id);
+          if (teamsChange) await db.from("meci_jucatori").delete().eq("meci_id", m.id);
           const { data: up, error } = await db.from("meciuri").update(patch).eq("id", m.id).select("*").single();
           if (error) { note("erori", `#${r.nr}: ${error.message}`); continue; }
           Object.assign(m, up);
