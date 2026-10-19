@@ -4976,6 +4976,15 @@ async function exportFisaPdf(){
   doc.setDrawColor(31,150,66); doc.setLineWidth(.8); doc.line(M, 32, M+40, 32);
   // photo box top-right
   const px = W-M-32, py = 12;
+  // freelancer contract number, large, centred in the white space between the title and the photo
+  if(p.nrContract){
+    doc.setFont('NotoSans','bold'); doc.setFontSize(18);
+    const left = M + doc.getTextWidth(L('fi_pdfTitlu')) + 6, cx = (left + px - 4) / 2;
+    doc.setFont('NotoSans','normal'); doc.setFontSize(8); doc.setTextColor(120,110,105);
+    doc.text(L('fd_nrContract').toUpperCase(), cx, 19, { align:'center' });
+    doc.setFont('NotoSans','bold'); doc.setFontSize(26); doc.setTextColor(25,20,20);
+    doc.text(String(p.nrContract), cx, 31, { align:'center', maxWidth: px - 4 - left });
+  }
   doc.setDrawColor(200,190,185); doc.setLineWidth(.3); doc.rect(px, py, 32, 40);
   if(p.fotoPath){
     try { const url = await photoUrl(p.fotoPath); if(url){ const dataUrl = await imageToDataUrl(url); doc.addImage(dataUrl, dataUrl.includes('image/png')?'PNG':'JPEG', px+.5, py+.5, 31, 39); } } catch(e){ console.warn('photo', e); }
