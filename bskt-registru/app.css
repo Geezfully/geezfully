@@ -202,7 +202,20 @@
   .alert-type.medical { color: var(--red); border-color: rgba(248,81,73,.35); background: rgba(248,81,73,.08); }
   .alert-type.inventory { color: var(--yellow); border-color: rgba(210,166,74,.35); background: rgba(210,166,74,.08); }
   .alert-type.task { color: #79C7FF; border-color: rgba(121,199,255,.42); background: rgba(121,199,255,.10); }
-  .alert-text { min-width: 0; padding-top: 1px; }
+  .alert-text { min-width: 0; padding-top: 1px; flex: 1; }
+  .alert-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+  .alert-actions .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .alert-type.zi { color: var(--red); border-color: rgba(248,81,73,.35); background: rgba(248,81,73,.08); }
+  .day-check { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 0 0 18px; }
+  .day-check.has-active { border-color: rgba(248,81,73,.45); }
+  .day-check summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; list-style: none; }
+  .day-check summary::-webkit-details-marker { display: none; }
+  .day-check-title { font-weight: 700; }
+  .day-check.has-active .day-check-title { color: var(--red); }
+  .day-check-sum { color: var(--muted); font-size: 13px; }
+  .day-check-log-title { font-weight: 600; font-size: 13px; margin: 16px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .day-check tr.day-hidden td { opacity: .6; }
+  @media (max-width: 680px){ .alert-row { flex-wrap: wrap; } .alert-actions { width: 100%; justify-content: flex-start; } }
   .alert-empty { padding: 20px 18px; color: var(--muted); font-size: 13px; text-align: center; }
 
   /* guided daily shift */

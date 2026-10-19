@@ -7,7 +7,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Helper ("asistent") accounts are read-only. The database refuses their writes (RLS + a
 // statement trigger that errors instead of silently changing 0 rows); this guard stops any
 // write the UI might still offer before it leaves the browser, and says so on screen.
-const ASISTENT_READ_RPCS = new Set(['statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent',
+const ASISTENT_READ_RPCS = new Set(['verificare_zile','statistici_jucatori','statistici_echipe','participanti_asistent','arbitri_asistent',
   'asistent_salveaza_meci','asistent_salveaza_echipa','asistent_salveaza_jucator','asistent_salveaza_arbitru']);
 function readOnlyRefusal(){
   const error = { message: t('as_readOnly'), code: 'asistent_read_only' };
@@ -133,6 +133,7 @@ function trEnum(v, lang=LANG){ return (lang==='ru' && ENUM_RU[v]) ? ENUM_RU[v] :
 const I18N = {
 ro: {
   au_sub:'Registru electronic · BSKT Cup 3×3', au_email:'E-mail', au_pass:'Parolă', au_login:'Autentificare',
+  dz_title:'Verificarea zilelor (24 meciuri/zi)', dz_sub:'Fiecare zi încheiată trebuie să aibă 24 de meciuri cu rezultat și loturi pe ambele părți. Zilele cu probleme apar ca avertizare pe Tabloul de bord. O avertizare ascunsă nu mai apare, dar rămâne aici în jurnal și poate fi restabilită oricând.', dz_meciuri:(n,a)=>`${n} din ${a} meciuri cu rezultat`, dz_loturi:(n)=>`${n} ${n===1?'lot gol':'loturi goale'}`, dz_alert:(d,txt)=>`Ziua ${d}: ${txt}.`, dz_rezumat:(a,h)=>`${a} ${a===1?'avertizare activă':'avertizări active'} · ${h} ${h===1?'ascunsă':'ascunse'}`, dz_niciuna:'Toate zilele încheiate au 24 de meciuri cu rezultat și loturi complete.', dz_zileProbleme:'Zile cu probleme', dz_thZi:'Ziua', dz_thMeciuri:'Meciuri cu rezultat', dz_thLoturi:'Loturi goale', dz_thStare:'Stare', dz_thCand:'Când', dz_thActiune:'Acțiune', dz_thSituatia:'Situația atunci', dz_thMotiv:'Motiv', dz_thCont:'Cont', dz_stActiva:'activă', dz_stAscunsa:'ascunsă', dz_stSchimbata:'s-a schimbat după ascundere', dz_actAscunsa:'Ascunsă', dz_actRestabilita:'Restabilită', dz_ascunde:'Ascunde', dz_restabileste:'Restabilește', dz_vezi:'Vezi ziua', dz_jurnal:'Jurnal', dz_jurnalTitlu:'Jurnalul avertizărilor (ascunderi și restabiliri)', dz_jurnalGol:'Nicio avertizare ascunsă sau restabilită încă.', dz_motivPrompt:(d)=>`Ascundeți avertizarea pentru ${d}? Nu va mai apărea pe Tabloul de bord, dar rămâne în jurnal (Meciuri → Verificarea zilelor) și poate fi restabilită oricând.\n\nMotiv (opțional, ex. „zi liberă”):`, dz_confirmRestabilire:(d)=>`Restabiliți avertizarea pentru ${d}? Va apărea din nou pe Tabloul de bord.`, dz_seIncarca:'Se verifică zilele…', al_typeZi:'Meciuri', as_t_zi:'Meciuri',
   au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', pl_saptamana:'Săptămâna', pl_blocata:'Blocată', pl_deschisa:'Deschisă', pl_blocheaza:'Blochează', pl_deblocheaza:'Deblochează', pl_confirmBlocare:(s)=>`Blocați săptămâna ${s}? După blocare, nimeni nu mai poate modifica meciurile, scorurile și loturile ei — nici manual, nici tabelul Google, nici site-ul.`, pl_confirmDeblocare:(s)=>`ATENȚIE: săptămâna ${s} este blocată. Deblocarea permite din nou modificări ale meciurilor, loturilor și plăților ei (manual, din tabel și de pe site). Deblocați?`, pl_blocataTitlu:'Săptămâna acestui meci este blocată. Deblocați-o din Plăți pentru a face modificări.', al_typeSync:'Tabel', al_tabelNume:(n)=>`${n} nume din tabelul Google așteaptă confirmare (Setări → Tabel Google). Loturile cu aceste nume nu se importă până atunci.`, tb_title:'Tabel Google (meciuri, loturi, rating)', tb_sub:'Tabelul este sursa principală: rezultatele (foaia Results), loturile (foile PD_zz.ll.aaaa), ratingul și echipa jucătorilor (Player data). Site-ul 3x3.bsktcup.com rămâne rezervă. Ce modificați manual în aplicație rămâne așa — sincronizarea nu suprascrie modificările manuale și nu recreează meciurile șterse. Săptămânile blocate nu se modifică deloc.', tb_neconfigurat:'Tabelul nu este conectat încă — urmați pașii de mai jos.', tb_ultima:'Ultima sincronizare:', tb_niciodata:'Conectat, încă nesincronizat.', tb_meciuriTabel:'meciuri în tabel', tb_conflicte:'diferențe păstrate manual', tb_loturiAsteapta:'loturi așteaptă nume', tb_simuleaza:'Simulează (fără modificări)', tb_conectare:'Conectarea tabelului', tb_pas1:'În tabel: Extensii → Apps Script → <b>+ lângă „Fișiere” → Script</b>, numiți-l „bskt-registru-sync”, lipiți scriptul în acest fișier NOU → Salvare. <b>Nu ștergeți și nu modificați scripturile care există deja</b> (de ex. updatePlayerData).', tb_pas2:'Generați cheia secretă și puneți-o în Apps Script → Setări proiect → Proprietăți script: <b>CHEIE</b> = cheia de mai jos.', tb_pas3:'În Apps Script: Implementare → Implementare nouă → Aplicație web → Execută ca: Eu → Acces: Oricine → Implementare → autorizați.', tb_pas4:'Copiați linkul aplicației web (…/exec) și salvați-l aici:', tb_faraCheie:'nicio cheie generată', tb_arata:'Arată', tb_ascunde:'Ascunde', tb_genereazaCheie:'Generează cheia', tb_cheieNoua:'Cheie nouă', tb_confirmCheieNoua:'Generați o cheie nouă? Cea veche nu va mai funcționa: trebuie pusă și cheia nouă în Apps Script (Proprietăți script → CHEIE).', tb_numeTitlu:'Nume din tabel de confirmat', tb_numeSub:'Numele potrivite exact se leagă automat. Pentru celelalte alegeți jucătorul din registru (propunerea e deja selectată) sau creați un jucător nou. Alegerea se memorează.', tb_numeNiciunul:'Niciun nume de confirmat.', tb_alegeJucator:'Alegeți jucătorul din registru', tb_leaga:'Leagă', tb_jucatorNou:'Jucător nou', tb_numePrenume:'Completați numele și prenumele jucătorului nou.', tb_confirmNou:(n)=>`Creați jucătorul nou „${n}”? Fișa personală (IDNP, act etc.) se completează ulterior din profilul lui.`, tb_legate:(n)=>`Nume legate (${n}) — verificați sau schimbați`, tb_inTabel:'În tabel', tb_inRegistru:'În registru', tb_st_auto:'automat', tb_st_confirmat:'confirmat', tb_st_nou:'creat nou', tb_schimba:'Schimbă', tb_eroare:'Sincronizarea cu tabelul a eșuat:', tb_raport:'Sincronizare cu tabelul', tb_raportSimulare:'Simulare — nimic nu a fost modificat', tb_simulareNota:'Aceasta este doar o simulare: arată ce s-ar schimba. Nimic nu a fost salvat.', tb_noi:'meciuri noi', tb_actualizate:'meciuri actualizate', tb_loturiSchimbate:'loturi completate', tb_r_nume_noi:'Nume noi de confirmat', tb_r_conflicte:'Modificate manual (păstrate)', tb_r_blocate:'În săptămâni blocate (neschimbate)', tb_r_loturi_in_asteptare:'Loturi care așteaptă confirmarea unor nume', tb_r_schimbari:'Schimbări', tb_r_echipe_necunoscute:'Echipe necunoscute', tb_r_erori:'Erori', tb_aplicatia:'aplicația', tb_tabelul:'tabelul', tb_nou:'nou', tb_inchide:'Închide', tb_ultimaTabel:'Ultima sincronizare cu tabelul Google:', tb_azi:'azi', tb_syncCuTabelul:'Sincronizează cu tabelul', tb_syncScurt:'Sincronizează', tb_syncTitlu:'Preia acum meciurile, loturile și ratingurile din tabelul Google', tb_tSincronizat:'Sincronizat:', tb_tLaZi:'Totul este la zi cu tabelul.', tb_tLoturi:(n)=>`${n} ${n===1?'lot':'loturi'}`, tb_tMeciuri:(n)=>`${n} ${n===1?'meci actualizat':'meciuri actualizate'}`, tb_tNume:(n)=>`${n} nume de confirmat (Setări)`, tb_tConflicte:(n)=>`${n} ${n===1?'modificare manuală păstrată':'modificări manuale păstrate'}`, tb_tRaport:'Raport', tb_numeDeConfirmat:'nume de confirmat', tb_badgeTabel:'Tabel', tb_dinTabelTitlu:'Rezultat și lot din tabelul Google', tb_badgeManual:'modificat manual', tb_manualTitlu:'Acest meci a fost modificat manual după sincronizare; tabelul și site-ul nu îl mai suprascriu.', tb_preia:'Preia din tabel', tb_confirmPreia:'Renunțați la modificările manuale ale acestui meci și preluați din nou scorul și loturile din tabel?', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
   au_emailPh:'nume@exemplu.com', au_passPh:'••••••••',
   au_modeAdmin:'Administrator', au_modeLocatie:'Locație', au_pin:'Cod PIN', au_pinPh:'••••••',
@@ -465,6 +466,7 @@ ro: {
 },
 ru: {
   au_sub:'Электронный журнал · BSKT Cup 3×3', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
+  dz_title:'Проверка дней (24 матча в день)', dz_sub:'В каждый завершённый день должно быть 24 матча с результатом и составы у обеих команд. Дни с проблемами показываются как предупреждение на Главной. Скрытое предупреждение больше не появляется, но остаётся здесь в журнале и может быть восстановлено в любой момент.', dz_meciuri:(n,a)=>`${n} из ${a} матчей с результатом`, dz_loturi:(n)=>`пустых составов: ${n}`, dz_alert:(d,txt)=>`День ${d}: ${txt}.`, dz_rezumat:(a,h)=>`активных предупреждений: ${a} · скрытых: ${h}`, dz_niciuna:'Во все завершённые дни 24 матча с результатом и полными составами.', dz_zileProbleme:'Дни с проблемами', dz_thZi:'День', dz_thMeciuri:'Матчей с результатом', dz_thLoturi:'Пустых составов', dz_thStare:'Статус', dz_thCand:'Когда', dz_thActiune:'Действие', dz_thSituatia:'Ситуация тогда', dz_thMotiv:'Причина', dz_thCont:'Аккаунт', dz_stActiva:'активно', dz_stAscunsa:'скрыто', dz_stSchimbata:'изменилось после скрытия', dz_actAscunsa:'Скрыто', dz_actRestabilita:'Восстановлено', dz_ascunde:'Скрыть', dz_restabileste:'Восстановить', dz_vezi:'Открыть день', dz_jurnal:'Журнал', dz_jurnalTitlu:'Журнал предупреждений (скрытия и восстановления)', dz_jurnalGol:'Пока ни одно предупреждение не скрывалось и не восстанавливалось.', dz_motivPrompt:(d)=>`Скрыть предупреждение за ${d}? Оно больше не появится на Главной, но останется в журнале (Матчи → Проверка дней) и его можно восстановить в любой момент.\n\nПричина (необязательно, напр. «выходной»):`, dz_confirmRestabilire:(d)=>`Восстановить предупреждение за ${d}? Оно снова появится на Главной.`, dz_seIncarca:'Проверка дней…', al_typeZi:'Матчи', as_t_zi:'Матчи',
   au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', pl_saptamana:'Неделя', pl_blocata:'Заблокирована', pl_deschisa:'Открыта', pl_blocheaza:'Заблокировать', pl_deblocheaza:'Разблокировать', pl_confirmBlocare:(s)=>`Заблокировать неделю ${s}? После блокировки никто не сможет изменить её матчи, счёт и составы — ни вручную, ни из Google-таблицы, ни с сайта.`, pl_confirmDeblocare:(s)=>`ВНИМАНИЕ: неделя ${s} заблокирована. Разблокировка снова разрешит изменять её матчи, составы и выплаты (вручную, из таблицы и с сайта). Разблокировать?`, pl_blocataTitlu:'Неделя этого матча заблокирована. Разблокируйте её в разделе «Выплаты», чтобы вносить изменения.', al_typeSync:'Таблица', al_tabelNume:(n)=>`${n} имён из Google-таблицы ждут подтверждения (Настройки → Google-таблица). Составы с этими именами до тех пор не импортируются.`, tb_title:'Google-таблица (матчи, составы, рейтинг)', tb_sub:'Таблица — основной источник: результаты (лист Results), составы (листы PD_дд.мм.гггг), рейтинг и команда игроков (Player data). Сайт 3x3.bsktcup.com остаётся резервным. То, что вы меняете вручную в приложении, сохраняется — синхронизация не перезаписывает ручные изменения и не восстанавливает удалённые матчи. Заблокированные недели не меняются вообще.', tb_neconfigurat:'Таблица ещё не подключена — выполните шаги ниже.', tb_ultima:'Последняя синхронизация:', tb_niciodata:'Подключено, ещё не синхронизировано.', tb_meciuriTabel:'матчей в таблице', tb_conflicte:'ручных отличий сохранено', tb_loturiAsteapta:'составов ждут имён', tb_simuleaza:'Проверить (без изменений)', tb_conectare:'Подключение таблицы', tb_pas1:'В таблице: Расширения → Apps Script → <b>+ рядом с «Файлы» → Скрипт</b>, назовите его «bskt-registru-sync», вставьте скрипт в этот НОВЫЙ файл → Сохранить. <b>Не удаляйте и не меняйте уже существующие скрипты</b> (например, updatePlayerData).', tb_pas2:'Создайте секретный ключ и укажите его в Apps Script → Настройки проекта → Свойства скрипта: <b>CHEIE</b> = ключ ниже.', tb_pas3:'В Apps Script: Начать развёртывание → Новое развёртывание → Веб-приложение → Запуск от: Меня → Доступ: Все → Развернуть → разрешите доступ.', tb_pas4:'Скопируйте ссылку веб-приложения (…/exec) и сохраните её здесь:', tb_faraCheie:'ключ не создан', tb_arata:'Показать', tb_ascunde:'Скрыть', tb_genereazaCheie:'Создать ключ', tb_cheieNoua:'Новый ключ', tb_confirmCheieNoua:'Создать новый ключ? Старый перестанет работать: новый ключ нужно указать и в Apps Script (Свойства скрипта → CHEIE).', tb_numeTitlu:'Имена из таблицы для подтверждения', tb_numeSub:'Точно совпадающие имена связываются автоматически. Для остальных выберите игрока из реестра (предложение уже выбрано) или создайте нового. Выбор запоминается.', tb_numeNiciunul:'Нет имён для подтверждения.', tb_alegeJucator:'Выберите игрока из реестра', tb_leaga:'Связать', tb_jucatorNou:'Новый игрок', tb_numePrenume:'Укажите фамилию и имя нового игрока.', tb_confirmNou:(n)=>`Создать нового игрока «${n}»? Личную карточку (IDNP, документ и т. д.) заполните позже в его профиле.`, tb_legate:(n)=>`Связанные имена (${n}) — проверить или изменить`, tb_inTabel:'В таблице', tb_inRegistru:'В реестре', tb_st_auto:'автоматически', tb_st_confirmat:'подтверждено', tb_st_nou:'создан новый', tb_schimba:'Изменить', tb_eroare:'Синхронизация с таблицей не удалась:', tb_raport:'Синхронизация с таблицей', tb_raportSimulare:'Проверка — ничего не изменено', tb_simulareNota:'Это только проверка: показано, что изменилось бы. Ничего не сохранено.', tb_noi:'новых матчей', tb_actualizate:'обновлённых матчей', tb_loturiSchimbate:'заполненных составов', tb_r_nume_noi:'Новые имена для подтверждения', tb_r_conflicte:'Изменено вручную (сохранено)', tb_r_blocate:'В заблокированных неделях (без изменений)', tb_r_loturi_in_asteptare:'Составы, ожидающие подтверждения имён', tb_r_schimbari:'Изменения', tb_r_echipe_necunoscute:'Неизвестные команды', tb_r_erori:'Ошибки', tb_aplicatia:'приложение', tb_tabelul:'таблица', tb_nou:'новый', tb_inchide:'Закрыть', tb_ultimaTabel:'Последняя синхронизация с Google-таблицей:', tb_azi:'сегодня', tb_syncCuTabelul:'Синхронизировать с таблицей', tb_syncScurt:'Синхронизировать', tb_syncTitlu:'Сейчас взять матчи, составы и рейтинги из Google-таблицы', tb_tSincronizat:'Синхронизировано:', tb_tLaZi:'Всё совпадает с таблицей.', tb_tLoturi:(n)=>`составов: ${n}`, tb_tMeciuri:(n)=>`обновлено матчей: ${n}`, tb_tNume:(n)=>`имён для подтверждения: ${n} (Настройки)`, tb_tConflicte:(n)=>`ручных изменений сохранено: ${n}`, tb_tRaport:'Отчёт', tb_numeDeConfirmat:'имён для подтверждения', tb_badgeTabel:'Таблица', tb_dinTabelTitlu:'Результат и состав из Google-таблицы', tb_badgeManual:'изменён вручную', tb_manualTitlu:'Этот матч изменён вручную после синхронизации; таблица и сайт его больше не перезаписывают.', tb_preia:'Взять из таблицы', tb_confirmPreia:'Отменить ручные изменения этого матча и снова взять счёт и составы из таблицы?', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
   au_emailPh:'name@example.com', au_passPh:'••••••••',
   au_modeAdmin:'Администратор', au_modeLocatie:'Локация', au_pin:'PIN-код', au_pinPh:'••••••',
@@ -1250,6 +1252,92 @@ async function fetchAll(){
       startedAt:open.started_at,
     } : null;
   }
+  loadDayChecks().then(()=>{ if(['dashboard','meciuri'].includes(currentView)) render(); });
+}
+
+/* ── Day check: 24 matches with a result and full line-ups per finished game day ──
+   Hiding a warning writes to the append-only log zile_avertizari; it stays hidden only while the
+   day looks exactly as it did when hidden (same counts), so a later change brings it back. */
+let dayChecks = { rows:[], log:[], loaded:false };
+let dayCheckOpen = null;   // Meciuri panel: null = open automatically when there are active warnings
+async function loadDayChecks(){
+  try {
+    const [v, l] = await Promise.all([
+      sb.rpc('verificare_zile'),
+      sb.from('zile_avertizari').select('*').order('created_at', {ascending:false}).limit(1000),
+    ]);
+    if(v.error) throw v.error;
+    const adminById = Object.fromEntries((DB.administratori||[]).map(a=>[a.id, a]));
+    dayChecks = {
+      rows: (v.data||[]).map(r=>({ data:r.data, meciuri:r.meciuri, cuRezultat:r.cu_rezultat, loturiGoale:r.loturi_goale, asteptate:r.asteptate })),
+      log: (l.data||[]).map(r=>({ id:r.id, data:r.data, actiune:r.actiune, meciuri:r.meciuri, loturiGoale:r.loturi_goale, motiv:r.motiv,
+        cont: publicAdminName(adminById[r.administrator_id]), la:r.created_at })),
+      loaded: true,
+    };
+  } catch(e){ console.warn('verificare_zile', e); }
+}
+function dayProblems(){
+  return dayChecks.rows.filter(r=>r.cuRezultat < r.asteptate || r.loturiGoale > 0).map(r=>{
+    const last = dayChecks.log.find(x=>x.data===r.data);   // newest first
+    const hidden = last?.actiune==='ascunsa' && last.meciuri===r.cuRezultat && last.loturiGoale===r.loturiGoale;
+    return { ...r, hidden, changed: last?.actiune==='ascunsa' && !hidden, last };
+  }).sort((a,b)=>b.data.localeCompare(a.data));
+}
+function dayProblemText(r){
+  const parts = [];
+  if(r.cuRezultat < r.asteptate) parts.push(t('dz_meciuri')(r.cuRezultat, r.asteptate));
+  if(r.loturiGoale) parts.push(t('dz_loturi')(r.loturiGoale));
+  return parts.join(' · ');
+}
+async function hideDayWarning(day){
+  if(!isFullAdmin()) return;
+  const r = dayChecks.rows.find(x=>x.data===day); if(!r) return;
+  const motiv = prompt(t('dz_motivPrompt')(fmtDate(day)), '');
+  if(motiv===null) return;
+  const { error } = await sb.from('zile_avertizari').insert({ data:day, actiune:'ascunsa', meciuri:r.cuRezultat, loturi_goale:r.loturiGoale, motiv:motiv.trim()||null, administrator_id:currentAdminId });
+  if(error){ alert(t('err_save')+' '+error.message); return; }
+  await logAction(`A ascuns avertizarea pentru ziua ${fmtDate(day)} (${dayProblemText(r)})${motiv.trim()?` — motiv: ${motiv.trim()}`:''}`);
+  await loadDayChecks(); render();
+}
+async function restoreDayWarning(day){
+  if(!isFullAdmin()) return;
+  const r = dayChecks.rows.find(x=>x.data===day);
+  if(!confirm(t('dz_confirmRestabilire')(fmtDate(day)))) return;
+  const { error } = await sb.from('zile_avertizari').insert({ data:day, actiune:'restabilita', meciuri:r?.cuRezultat ?? null, loturi_goale:r?.loturiGoale ?? null, administrator_id:currentAdminId });
+  if(error){ alert(t('err_save')+' '+error.message); return; }
+  await logAction(`A restabilit avertizarea pentru ziua ${fmtDate(day)}`);
+  await loadDayChecks(); render();
+}
+function openDayLog(){ dayCheckOpen = true; navigate('meciuri'); }
+function renderDayCheckPanel(){
+  if(!dayChecks.loaded) return '';
+  const probs = dayProblems(), active = probs.filter(p=>!p.hidden), hidden = probs.filter(p=>p.hidden);
+  const open = dayCheckOpen ?? active.length > 0;
+  const badge = p => p.hidden ? `<span class="badge muted">${t('dz_stAscunsa')}</span>`
+    : `<span class="badge yellow">${t('dz_stActiva')}</span>${p.changed ? ` <span class="td-muted">(${t('dz_stSchimbata')})</span>` : ''}`;
+  const action = p => !isFullAdmin() ? '' : p.hidden
+    ? `<button class="btn-ghost btn-sm" onclick="restoreDayWarning('${p.data}')">${t('dz_restabileste')}</button>`
+    : `<button class="btn-ghost btn-sm" onclick="hideDayWarning('${p.data}')">${t('dz_ascunde')}</button>`;
+  const situatia = x => x.meciuri==null ? '—' : `${x.meciuri}/24 · ${t('dz_loturi')(x.loturiGoale||0)}`;
+  return `<details class="day-check ${active.length?'has-active':''}" ${open?'open':''} ontoggle="dayCheckOpen=this.open">
+    <summary><span class="day-check-title">${active.length ? '⚠ ' : '✓ '}${t('dz_title')}</span><span class="day-check-sum">${t('dz_rezumat')(active.length, hidden.length)}</span></summary>
+    <div class="view-sub" style="margin:8px 0 12px">${t('dz_sub')}</div>
+    ${probs.length ? `<div class="table-scroll"><table>
+      <thead><tr><th>${t('dz_thZi')}</th><th class="num">${t('dz_thMeciuri')}</th><th class="num">${t('dz_thLoturi')}</th><th>${t('dz_thStare')}</th><th></th></tr></thead>
+      <tbody>${probs.map(p=>`<tr class="${p.hidden?'day-hidden':''}">
+        <td class="td-name"><a href="#" onclick="event.preventDefault(); setMatchDay('${p.data}')">${fmtDate(p.data)}</a></td>
+        <td class="num ${p.cuRezultat<p.asteptate?'c-red':''}">${p.cuRezultat} / ${p.asteptate}</td>
+        <td class="num ${p.loturiGoale?'c-red':''}">${p.loturiGoale}</td>
+        <td>${badge(p)}</td><td style="text-align:right">${action(p)}</td></tr>`).join('')}</tbody>
+    </table></div>` : `<div class="alert-empty">${t('dz_niciuna')}</div>`}
+    <div class="day-check-log-title">${t('dz_jurnalTitlu')}</div>
+    ${dayChecks.log.length ? `<div class="table-scroll"><table>
+      <thead><tr><th>${t('dz_thCand')}</th><th>${t('dz_thZi')}</th><th>${t('dz_thActiune')}</th><th>${t('dz_thSituatia')}</th><th>${t('dz_thMotiv')}</th><th>${t('dz_thCont')}</th></tr></thead>
+      <tbody>${dayChecks.log.map(x=>`<tr><td class="td-muted">${fmtDateTime(x.la)}</td><td>${fmtDate(x.data)}</td>
+        <td><span class="badge ${x.actiune==='ascunsa'?'muted':'green'}">${t(x.actiune==='ascunsa'?'dz_actAscunsa':'dz_actRestabilita')}</span></td>
+        <td class="td-muted">${situatia(x)}</td><td>${esc(x.motiv||'—')}</td><td class="td-muted">${esc(x.cont)}</td></tr>`).join('')}</tbody>
+    </table></div>` : `<div class="alert-empty">${t('dz_jurnalGol')}</div>`}
+  </details>`;
 }
 
 async function refetchInventar(){
@@ -1709,6 +1797,9 @@ function buildAlerts(){
       : t('al_openTask')(t2.descriere) });
   });
   if(isFullAdmin() && tabelPending) alerts.unshift({ type:'sync', level:'yellow', text: t('al_tabelNume')(tabelPending) });
+  dayProblems().filter(p=>!p.hidden).reverse().forEach(p=>alerts.unshift({ type:'zi', level: p.cuRezultat===0 || p.loturiGoale ? 'red' : 'yellow',
+    text: t('dz_alert')(fmtDate(p.data), dayProblemText(p)),
+    actions: `<button class="btn-ghost btn-sm" onclick="goToMatchDay('${p.data}')">${t('dz_vezi')}</button>${isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="hideDayWarning('${p.data}')">${t('dz_ascunde')}</button>` : ''}<button class="btn-ghost btn-sm" onclick="openDayLog()">${t('dz_jurnal')}</button>` }));
   return alerts;
 }
 
@@ -2622,6 +2713,7 @@ function asistentProblems(){
   const today = todayISO(), out = [];
   const add = (level, type, text, go)=>out.push({ level, type, text, go });
   const names = (list, max=4)=>list.slice(0,max).join(', ') + (list.length>max ? ` +${list.length-max}` : '');
+  dayProblems().filter(p=>!p.hidden).forEach(p=>add(p.cuRezultat===0 || p.loturiGoale ? 'red' : 'yellow', 'zi', t('dz_alert')(fmtDate(p.data), dayProblemText(p)), `goToMatchDay('${p.data}')`));
   // pay: scored matches without a line-up → those players are not paid
   if(asDash?.rosterIds){
     const missing = DB.meciuri.filter(m=>winnerOf(m) && m.data>=asDash.from && !asDash.rosterIds.has(m.id));
@@ -2739,7 +2831,7 @@ function renderDashboard(){
 
   <div class="alerts-panel">
     <div class="alerts-panel-head">${t('da_alerts_title')}</div>
-    ${alerts.length ? alerts.map(a=>`<div class="alert-row"><span class="alert-dot ${a.level}"></span><span class="alert-type ${a.type}">${esc(t(`al_type${a.type[0].toUpperCase()+a.type.slice(1)}`))}</span><span class="alert-text">${esc(a.text)}</span></div>`).join('') : `<div class="alert-empty">${t('da_alerts_empty')}</div>`}
+    ${alerts.length ? alerts.map(a=>`<div class="alert-row"><span class="alert-dot ${a.level}"></span><span class="alert-type ${a.type}">${esc(t(`al_type${a.type[0].toUpperCase()+a.type.slice(1)}`))}</span><span class="alert-text">${esc(a.text)}</span>${a.actions ? `<span class="alert-actions">${a.actions}</span>` : ''}</div>`).join('') : `<div class="alert-empty">${t('da_alerts_empty')}</div>`}
   </div>
 
   ${isFullAdmin() ? renderAsistentLog() : ''}
@@ -3220,7 +3312,7 @@ async function openMeciuri(){
     matchDay = DB.meciuri.some(m=>m.data===today) || hasActiveShift() ? today : (matchDaysAvailable().find(d=>DB.meciuri.some(m=>m.data===d)) || today);
   }
   matchesLoading = true; render();
-  try { await Promise.all([reloadMatchesForDay(matchDay), loadLastSync(), loadSyncMeta(), recentLineups ? null : loadRecentLineups()]); } catch(e){ console.error(e); }
+  try { await Promise.all([reloadMatchesForDay(matchDay), loadLastSync(), loadSyncMeta(), recentLineups ? null : loadRecentLineups(), loadDayChecks()]); } catch(e){ console.error(e); }
   matchesLoading = false;
   if(currentView==='meciuri') render();
 }
@@ -3399,6 +3491,7 @@ function renderMeciuri(){
   return `
   <div class="view-head"><div class="view-title">${t('mt_title')}</div>${syncHeaderBtn()}</div>
   <div class="view-sub">${t('mt_sub')}</div>
+  ${renderDayCheckPanel()}
 
   <div class="add-form">
     <div class="form-grid" style="grid-template-columns:1fr auto">
