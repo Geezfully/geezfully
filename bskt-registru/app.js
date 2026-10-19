@@ -4975,7 +4975,8 @@ async function exportFisaPdf(){
   doc.text(L('fi_pdfSub'), M, 28);
   doc.setDrawColor(31,150,66); doc.setLineWidth(.8); doc.line(M, 32, M+40, 32);
   // photo box top-right
-  const px = W-M-32, py = 12;
+  const PW = 38.4, PH = 48;              // photo box (was 32×40, +20%)
+  const px = W-M-PW, py = 12;
   // freelancer contract number, large, centred in the white space between the title and the photo
   if(p.nrContract){
     doc.setFont('NotoSans','bold'); doc.setFontSize(18);
@@ -4985,10 +4986,10 @@ async function exportFisaPdf(){
     doc.setFont('NotoSans','bold'); doc.setFontSize(26); doc.setTextColor(25,20,20);
     doc.text(String(p.nrContract), cx, 31, { align:'center', maxWidth: px - 4 - left });
   }
-  doc.setDrawColor(200,190,185); doc.setLineWidth(.3); doc.rect(px, py, 32, 40);
+  doc.setDrawColor(200,190,185); doc.setLineWidth(.3); doc.rect(px, py, PW, PH);
   if(p.fotoPath){
-    try { const url = await photoUrl(p.fotoPath); if(url){ const dataUrl = await imageToDataUrl(url); doc.addImage(dataUrl, dataUrl.includes('image/png')?'PNG':'JPEG', px+.5, py+.5, 31, 39); } } catch(e){ console.warn('photo', e); }
-  } else { doc.setFontSize(7); doc.setTextColor(170,160,155); doc.text(L('fi_foto'), px+16, py+21, { align:'center' }); }
+    try { const url = await photoUrl(p.fotoPath); if(url){ const dataUrl = await imageToDataUrl(url); doc.addImage(dataUrl, dataUrl.includes('image/png')?'PNG':'JPEG', px+.5, py+.5, PW-1, PH-1); } } catch(e){ console.warn('photo', e); }
+  } else { doc.setFontSize(7); doc.setTextColor(170,160,155); doc.text(L('fi_foto'), px+PW/2, py+PH/2+1, { align:'center' }); }
 
   // rows of the paper form
   const R = keys => keys.map(k=>FISA_FIELDS.find(f=>f.key===k));
@@ -5006,9 +5007,9 @@ async function exportFisaPdf(){
   const measure = k => {
     doc.setFont('NotoSans','normal'); doc.setFontSize(10*k);
     return layout.map((cells, rowIdx)=>{
-      const colW = (rowIdx<2 ? inner-36 : inner) / cells.length;
+      const colW = (rowIdx<2 ? inner-(PW+4) : inner) / cells.length;
       const lines = cells.map(f=>{
-        const l = doc.splitTextToSize(fisaValue(p, f, lang) || ' ', colW-6);
+        const l = doc.splitTextToSize(fisaValue(p, f, lang) || ' ', colW-10);   // ends before the field's rule (x+colW-3) and the next number
         return l.length > MAX_LINES ? [...l.slice(0, MAX_LINES-1), l[MAX_LINES-1].replace(/.{0,2}$/,'…')] : l;
       });
       return { colW, lines, h: Math.max(...lines.map(l=>l.length)) * 4.6*k + 9*k };
