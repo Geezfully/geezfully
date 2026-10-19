@@ -835,7 +835,7 @@ Object.assign(I18N.ro, {
   pl_saptCurenta:'Săptămâna curentă', pl_saptTrecuta:'Săptămâna trecută', pl_lunaCurenta:'Luna curentă',
   pl_meciuri:'Meciuri jucate', pl_faraScor:'fără scor', pl_jucatori:'Jucători plătiți', pl_fondNet:'Fond net (MDL)', pl_brut:'Brut',
   pl_retinere:'Reținere 15%', pl_deduceri:'Deduceri', pl_deduceriSub:'spălătorie · daune · antrenamente', pl_maxim:'Plata maximă',
-  pl_tabel:'Plăți pe jucător', pl_none:'Nicio înregistrare în perioada aleasă.', pl_total:'TOTAL',
+  pl_tabel:'Plăți pe jucător', pl_none:'Nicio înregistrare în perioada aleasă.', pl_total:'TOTAL', pl_totalProgramat:'TOTAL PROGRAMAT', pl_progDetaliu:(z,m)=>`${z} ${z===1?'zi':'zile'} × ${m} meciuri/zi × 4 jucători`, pl_progOk:'Toate meciurile programate sunt înregistrate.', pl_progLipsa:(v,m)=>`Lipsesc ${v} victorii și ${v} înfrângeri (≈ ${m} meciuri) față de program — verificați zilele fără meciuri sau loturile incomplete.`, pl_progPeste:(v)=>`Cu ${v} victorii/înfrângeri peste program.`, pl_progFiltru:'Export filtrat — comparația cu programul e pentru toți jucătorii.',
   pl_th_jucator:'Jucător', pl_th_echipa:'Echipa', pl_th_m:'Meciuri', pl_th_v:'V', pl_th_i:'Î', pl_th_cap:'Căp.', pl_th_rez:'Rez.',
   pl_th_net:'Net', pl_th_ret:'Reținere', pl_th_brut:'Brut', pl_th_ded:'Deduceri', pl_th_dePlata:'De plătit', pl_th_rol:'Rol',
   pl_tarifeTitle:'Tarife în vigoare (net pe meci)', pl_tarifeSub:'Brut necesar = net ÷ 0,85; reținerea de 15% se calculează automat. Fiecare meci păstrează tariful din ziua lui.',
@@ -909,7 +909,7 @@ Object.assign(I18N.ru, {
   pl_saptCurenta:'Текущая неделя', pl_saptTrecuta:'Прошлая неделя', pl_lunaCurenta:'Текущий месяц',
   pl_meciuri:'Сыграно матчей', pl_faraScor:'без счёта', pl_jucatori:'Игроков к выплате', pl_fondNet:'Фонд нетто (MDL)', pl_brut:'Брутто',
   pl_retinere:'Удержание 15%', pl_deduceri:'Вычеты', pl_deduceriSub:'прачечная · ущерб · тренировки', pl_maxim:'Максимальная выплата',
-  pl_tabel:'Выплаты по игрокам', pl_none:'Нет записей за выбранный период.', pl_total:'ИТОГО',
+  pl_tabel:'Выплаты по игрокам', pl_none:'Нет записей за выбранный период.', pl_total:'ИТОГО', pl_totalProgramat:'ИТОГО ПО ПЛАНУ', pl_progDetaliu:(z,m)=>`${z} дн. × ${m} матчей/день × 4 игрока`, pl_progOk:'Все запланированные матчи записаны.', pl_progLipsa:(v,m)=>`Не хватает ${v} побед и ${v} поражений (≈ ${m} матчей) по сравнению с планом — проверьте дни без матчей или неполные составы.`, pl_progPeste:(v)=>`На ${v} побед/поражений больше плана.`, pl_progFiltru:'Экспорт с фильтром — сравнение с планом по всем игрокам.',
   pl_th_jucator:'Игрок', pl_th_echipa:'Команда', pl_th_m:'Матчи', pl_th_v:'П', pl_th_i:'Пор.', pl_th_cap:'Кап.', pl_th_rez:'Зап.',
   pl_th_net:'Нетто', pl_th_ret:'Удержание', pl_th_brut:'Брутто', pl_th_ded:'Вычеты', pl_th_dePlata:'К выплате', pl_th_rol:'Роль',
   pl_tarifeTitle:'Действующие ставки (нетто за матч)', pl_tarifeSub:'Брутто = нетто ÷ 0,85; удержание 15% считается автоматически. Каждый матч сохраняет ставку своего дня.',
@@ -4373,21 +4373,79 @@ async function recalcPlati(){
   await logAction(`A recalculat plățile meciurilor de la ${fmtDate(de)} (${data} rânduri)`);
   await openPlati();
 }
+// Schedule used for the "Total programat" check: most game days have 24 matches, 4 players per side,
+// so every scheduled match produces 4 player wins and 4 player losses.
+const MECIURI_PE_ZI = 24, JUCATORI_PE_ECHIPA = 4;
 function exportPlatiExcel(){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
   const { rows:all, days } = payRows();
   const rows = payFilteredRows(all);
+  const filtered = rows.length !== all.length;
   const r2 = v => Math.round((v||0)*100)/100;
+  const nDays = payView.days ? days.length : 0;
   const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(payView.days ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
     t('nav_spalatorie'), t('nav_daune'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
+  const C = { v:2, i:3, fl:5, net:6+nDays, coef:7+nDays, brut:8+nDays, ret:9+nDays, ramas:10+nDays, spal:11+nDays, daune:12+nDays, plata:13+nDays, obs:14+nDays };
   const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(payView.days ? days.map(d=>r.perDay[d]||0) : []),
     r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r2(r.dePlata), payObservation(r)]);
-  const nDays = payView.days ? days.length : 0;
-  const moneyIdx = new Set([6+nDays, 8+nDays, 9+nDays, 10+nDays, 11+nDays, 12+nDays, 13+nDays, ...Array.from({length:nDays},(_,k)=>6+k)]);
-  const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===2||i===3) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
-  const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_title')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], head, ...body, total]);
-  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?20 : i===4?26 : i===5?11 : h===t('pl_th_observatie')?48 : 13 }));
+  const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.plata, ...Array.from({length:nDays},(_,k)=>6+k)]);
+  const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===C.v||i===C.i) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
+
+  // "Total programat": days of the period that have already happened (today counts once it has a result)
+  const today = todayISO();
+  let last = payState.to < today ? payState.to : today;
+  if(last===today && !DB.meciuri.some(m=>m.data===today && winnerOf(m))) last = addDays(today, -1);
+  const zile = last < payState.from ? 0 : Math.round((Date.parse(last+'T00:00:00Z') - Date.parse(payState.from+'T00:00:00Z')) / 86400000) + 1;
+  const progV = zile * MECIURI_PE_ZI * JUCATORI_PE_ECHIPA;
+  const realV = all.reduce((s,r)=>s+r.v,0), realI = all.reduce((s,r)=>s+r.i,0);
+  const lipsa = progV - Math.min(realV, realI);
+  const progNote = (filtered ? t('pl_progFiltru')+' ' : '') + (lipsa>0 ? t('pl_progLipsa')(lipsa, Math.round(lipsa/JUCATORI_PE_ECHIPA)) : lipsa<0 ? t('pl_progPeste')(-lipsa) : t('pl_progOk'));
+  const prog = head.map((_,i)=> i===0 ? t('pl_totalProgramat') : i===1 ? t('pl_progDetaliu')(zile, MECIURI_PE_ZI) : (i===C.v||i===C.i) ? progV : i===C.obs ? progNote : '');
+
+  const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], total, prog, [], head, ...body, total, prog];
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?22 : i===4?26 : i===C.fl?12 : i===C.obs?52 : 14 }));
+  const R = { tot1:2, prog1:3, head:5, first:6, tot2:6+body.length, prog2:7+body.length };
+  ws['!rows'] = Array.from({length:aoa.length},(_,r)=>(r===R.tot1||r===R.tot2) ? {hpt:22} : (r===R.prog1||r===R.prog2) ? {hpt:48} : r===R.head ? {hpt:32} : {});
+  ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:Math.min(8, head.length-1)} }];
+
+  // palette (soft, readable when printed)
+  const border = { top:{style:'thin',color:{rgb:'D0D5DB'}}, bottom:{style:'thin',color:{rgb:'D0D5DB'}}, left:{style:'thin',color:{rgb:'D0D5DB'}}, right:{style:'thin',color:{rgb:'D0D5DB'}} };
+  const GREEN_TOTAL = { fill:'B9E3C4', font:'1D5A2E' }, PROG = { fill:'E8F5EC', font:'1D5A2E' };
+  const FL_DA = { fill:'C9EFD2', font:'1E6B34' }, FL_NU = { fill:'F6CFCB', font:'9B2C24' };
+  const BLUE = 'DCEAF8', BLUE_HEAD = '9CC3E8', YELLOW = 'FFF1C2', YELLOW_HEAD = 'F2D675';
+  const style = (r, c, extra={}) => {
+    const ref = XLSX.utils.encode_cell({r,c});
+    if(!ws[ref]) ws[ref] = { t:'s', v:'' };
+    const cell = ws[ref];
+    if(moneyIdx.has(c) && cell.t==='n') cell.z = '#,##0.00';
+    if(c===C.coef && cell.t==='n') cell.z = '0.00';
+    cell.s = { border, alignment:{ vertical:'center', ...(c===C.obs ? { horizontal:'center', wrapText:true } : {}) }, ...extra,
+               font:{ name:'Calibri', sz:11, ...(extra.font||{}) } };
+  };
+  for(let r=0; r<aoa.length; r++){
+    if(r===1 || r===4) continue;
+    for(let c=0; c<head.length; c++){
+      if(r===0){ if(c===0) ws.A1.s = { font:{ bold:true, sz:15, color:{rgb:'1F2933'} } }; continue; }
+      if(r===R.head){
+        const bg = c===C.brut ? BLUE_HEAD : c===C.ramas ? YELLOW_HEAD : '343D49';
+        style(r, c, { font:{ bold:true, color:{rgb: (c===C.brut||c===C.ramas) ? '1F2933' : 'FFFFFF'} }, fill:{ fgColor:{rgb:bg} },
+                      alignment:{ horizontal:'center', vertical:'center', wrapText:true } });
+      } else if(r===R.tot1 || r===R.tot2){
+        style(r, c, { font:{ bold:true, sz:12, color:{rgb:GREEN_TOTAL.font} }, fill:{ fgColor:{rgb:GREEN_TOTAL.fill} } });
+      } else if(r===R.prog1 || r===R.prog2){
+        style(r, c, { font:{ bold:c<=C.i, italic:c===1, color:{rgb: c===C.obs && lipsa>0 ? '9B2C24' : PROG.font} }, fill:{ fgColor:{rgb:PROG.fill} } });
+        if(c===C.obs) ws[XLSX.utils.encode_cell({r,c})].s.alignment = { horizontal:'center', vertical:'center', wrapText:true };
+      } else {
+        const fl = rows[r-R.first]?.freelancer;
+        const x = c===C.fl ? { font:{ bold:true, color:{rgb:(fl?FL_DA:FL_NU).font} }, fill:{ fgColor:{rgb:(fl?FL_DA:FL_NU).fill} }, alignment:{ horizontal:'center', vertical:'center' } }
+                : c===C.brut ? { fill:{ fgColor:{rgb:BLUE} } }
+                : c===C.ramas ? { fill:{ fgColor:{rgb:YELLOW} } } : {};
+        style(r, c, x);
+      }
+    }
+  }
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, t('pl_title').slice(0,30));
   XLSX.writeFile(wb, `bskt-plati_${payState.from}_${payState.to}.xlsx`);
