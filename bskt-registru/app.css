@@ -708,6 +708,7 @@
   .fisa-item .v { font-size:13px; overflow-wrap:anywhere; }
   .fisa-n { color:var(--gold); font-weight:700; margin-right:2px; }
   .span-2 { grid-column:span 2; }
+  .fd-edit-title { grid-column:1/-1; margin:14px 0 0; }
   .profile-edit-grid textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:7px; padding:8px 10px; font-family:inherit; font-size:13px; resize:vertical; }
   .check-line { display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 0; }
   .avatar-dot { display:inline-grid; place-items:center; width:22px; height:22px; border-radius:50%; background:var(--gold-dim); color:var(--gold); }

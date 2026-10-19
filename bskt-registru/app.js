@@ -849,6 +849,7 @@ Object.assign(I18N.ro, {
   sx_pmHint:'+/− = diferența medie de puncte a echipei în meciurile jucătorului', sx_rating:'Rating', sx_echipe:'Echipe',
   sx_capitan:'Căpitan', sx_capitani:'Căpitani',
   st_loading2:'Se încarcă…',
+  fd_title:'Date freelancer (contract și plată)', fd_beneficiar:'Beneficiar', fd_idno:'IDNO (î.i.)', fd_iban:'IBAN', fd_banca:'Banca', fd_bic:'BIC', fd_valuta:'Valuta', fd_nrContract:'Nr. contract', fd_dataContract:'Data contractului', fd_telefon:'Telefon (freelance)', fd_email:'E-mail (freelance)', fd_gol:'Nu sunt date de freelancer.',
   fi_title:'Fișa personală a sportivului', fi_btnPdf:'Fișa PDF', fi_foto:'Fotografie', fi_incarcaFoto:'Încarcă fotografie', fi_fotoMare:'Fotografia depășește 5 MB.',
   fi_completare:'Câmpuri completate', fi_da:'Da', fi_patronimic:'Patronimic',
   fi_numeComplet:'nume, prenume, patronimic', fi_locNastere:'locul nașterii', fi_domiciliu:'domiciliu, reședința', fi_idnp:'IDNP',
@@ -922,6 +923,7 @@ Object.assign(I18N.ru, {
   sx_pmHint:'+/− = средняя разница очков команды в матчах игрока', sx_rating:'Рейтинг', sx_echipe:'Команды',
   sx_capitan:'Капитан', sx_capitani:'Капитаны',
   st_loading2:'Загрузка…',
+  fd_title:'Данные фрилансера (договор и оплата)', fd_beneficiar:'Получатель', fd_idno:'IDNO (ИП)', fd_iban:'IBAN', fd_banca:'Банк', fd_bic:'BIC', fd_valuta:'Валюта', fd_nrContract:'№ договора', fd_dataContract:'Дата договора', fd_telefon:'Телефон (фриланс)', fd_email:'Эл. почта (фриланс)', fd_gol:'Нет данных фрилансера.',
   fi_title:'Личная карточка спортсмена', fi_btnPdf:'Карточка PDF', fi_foto:'Фото', fi_incarcaFoto:'Загрузить фото', fi_fotoMare:'Фото больше 5 МБ.',
   fi_completare:'Заполнено полей', fi_da:'Да', fi_patronimic:'Отчество',
   fi_numeComplet:'фамилия, имя, отчество', fi_locNastere:'место рождения', fi_domiciliu:'адрес проживания', fi_idnp:'IDNP',
@@ -2866,6 +2868,7 @@ function mapParticipant(p){
     comentarii:p.comentarii, rating:p.rating, fotoPath:p.foto_path,
     dataAvizMedical:p.data_aviz_medical, statut:p.statut, dataInregistrarii:p.data_inregistrarii,
     eligibilAntrenament:p.eligibil_antrenament, freelancer: p.freelancer!==false,
+    ...Object.fromEntries(FREELANCE_FIELDS.map(f=>[f.key, p[f.db] ?? null])),
   };
 }
 function mapMeci(m){
@@ -4714,6 +4717,15 @@ const FISA_DB_COLUMN = {
   altSport:'alt_sport', experientaCompetitii:'experienta_competitii', contactePariuri:'contacte_pariuri', experientaPariere:'experienta_pariere',
   caracteristica:'caracteristica', informatSecuritate:'informat_securitate', acordDatePersonale:'acord_date_personale', comentarii:'comentarii',
 };
+// Freelancer contract / payment details (admins only; the helper's participanti_asistent() never returns them)
+const FREELANCE_FIELDS = [
+  { key:'beneficiar', db:'beneficiar', label:'fd_beneficiar' }, { key:'idno', db:'idno', label:'fd_idno' },
+  { key:'iban', db:'iban', label:'fd_iban' }, { key:'banca', db:'banca', label:'fd_banca' }, { key:'bic', db:'bic', label:'fd_bic' },
+  { key:'valuta', db:'valuta', label:'fd_valuta' }, { key:'nrContract', db:'nr_contract', label:'fd_nrContract' },
+  { key:'dataContract', db:'data_contract', label:'fd_dataContract', type:'date' },
+  { key:'telefonFreelance', db:'telefon_freelance', label:'fd_telefon' }, { key:'emailFreelance', db:'email_freelance', label:'fd_email', type:'email' },
+];
+const hasFreelanceData = p => FREELANCE_FIELDS.some(f=>p[f.key]);
 function fisaValue(p, f, lang=LANG){
   const v = f.key==='numeComplet' ? [p.nume, p.prenume, p.patronimic].filter(Boolean).join(' ') : p[f.key];
   if(f.type==='date') return v ? fmtDate(v) : '';
@@ -4839,6 +4851,8 @@ function renderProfile(editing = false){
         <div class="field"><label>${t('pa_aviz')}</label><input id="ep-aviz" type="date" value="${esc(p.dataAvizMedical||'')}"></div>
         <div class="field"><label>${t('pa_dulap')}</label><input id="ep-dulap" value="${esc(p.nrDulap||'')}"></div>
         ${FISA_FIELDS.filter(f=>!f.virtual).map(f=>`<div class="field ${f.type==='long'?'span-2':''}"><label><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</label>${fisaInput(p, f)}</div>`).join('')}
+        <div class="profile-section-title fd-edit-title">${t('fd_title')}</div>
+        ${FREELANCE_FIELDS.map(f=>`<div class="field"><label>${t(f.label)}</label>${fisaInput(p, f)}</div>`).join('')}
       </div>
       <div class="profile-edit-actions">
         <button class="btn-ghost" onclick="renderProfile(false)">${t('btn_cancel')}</button>
@@ -4878,6 +4892,10 @@ function renderProfile(editing = false){
     ${isAsistent() ? `<div class="view-sub" style="margin:12px 0 0">${t('as_jucDatePersonale')}</div>` : `<section class="profile-section fisa-section">
       <div class="profile-section-title">${t('fi_title')}</div>
       <div class="fisa-grid">${FISA_FIELDS.map(f=>{ const v = fisaValue(p,f); return `<div class="fisa-item ${f.type==='long'?'span-2':''}"><div class="k"><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</div><div class="v ${v?'':'td-muted'}">${v?esc(v):'—'}</div></div>`; }).join('')}</div>
+    </section>
+    <section class="profile-section fisa-section">
+      <div class="profile-section-title">${t('fd_title')}</div>
+      ${hasFreelanceData(p) ? `<div class="fisa-grid">${FREELANCE_FIELDS.map(f=>{ const v = fisaValue(p,f); return `<div class="fisa-item"><div class="k">${t(f.label)}</div><div class="v ${v?'':'td-muted'}">${v?esc(v):'—'}</div></div>`; }).join('')}</div>` : `<div class="mini-empty">${t('fd_gol')}</div>`}
     </section>`}
 
     <div class="profile-history-grid">
@@ -4915,6 +4933,7 @@ async function saveParticipantProfile(){
     nr_dulap: document.getElementById('ep-dulap').value.trim() || null,
   };
   FISA_FIELDS.filter(f=>!f.virtual).forEach(f=>{ const v = readFisaInput(f); if(v!==undefined) row[FISA_DB_COLUMN[f.key]] = v; });
+  FREELANCE_FIELDS.forEach(f=>{ const v = readFisaInput(f); if(v!==undefined) row[f.db] = f.key==='iban' && v ? v.replace(/\s+/g,'').toUpperCase() : v; });
   if(!row.rol_echipa) row.rol_echipa = 'jucător';
   const saveBtn = document.querySelector('#profile-modal-body .profile-edit-actions .btn-primary');
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = t('btn_saving'); }
@@ -4978,7 +4997,7 @@ async function exportFisaPdf(){
     R(['caracteristica']), R(['informatSecuritate','acordDatePersonale']), R(['comentarii']),
   ];
   let y = 60;
-  layout.forEach((cells, rowIdx)=>{
+  const drawRow = (cells, rowIdx = 99)=>{
     const colW = (rowIdx<2 ? inner-36 : inner) / cells.length;
     doc.setFontSize(10);
     const lines = cells.map(f=>doc.splitTextToSize(fisaValue(p, f, lang) || ' ', colW-6));
@@ -4987,7 +5006,7 @@ async function exportFisaPdf(){
     cells.forEach((f, i)=>{
       const x = M + i*colW;
       doc.setFont('NotoSans','bold'); doc.setFontSize(9); doc.setTextColor(31,150,66);
-      if(i===0 || String(f.n).match(/^\d+$/)) doc.text(`${String(f.n).replace(/b|c/,'')}.`, x, y);
+      if(f.n!=null && (i===0 || String(f.n).match(/^\d+$/))) doc.text(`${String(f.n).replace(/b|c/,'')}.`, x, y);
       doc.setFont('NotoSans','normal'); doc.setFontSize(10); doc.setTextColor(25,20,20);
       doc.text(lines[i], x+6, y);
       const lineY = y + (lines[i].length-1)*4.6 + 2;
@@ -4996,7 +5015,16 @@ async function exportFisaPdf(){
       doc.text(doc.splitTextToSize(L(f.label), colW-8), x+6, lineY+3.6);
     });
     y += h;
-  });
+  };
+  layout.forEach(drawRow);
+  if(hasFreelanceData(p)){
+    if(y + 40 > 285){ doc.addPage(); y = 18; }
+    y += 4;
+    doc.setFont('NotoSans','bold'); doc.setFontSize(11); doc.setTextColor(25,20,20);
+    doc.text(L('fd_title'), M, y); y += 9;
+    const F = keys => keys.map(k=>FREELANCE_FIELDS.find(f=>f.key===k));
+    [F(['beneficiar','iban']), F(['idno','banca','bic','valuta']), F(['nrContract','dataContract']), F(['telefonFreelance','emailFreelance'])].forEach(r=>drawRow(r));
+  }
   doc.setFontSize(7.5); doc.setTextColor(150,140,135);
   doc.text(`BSKT Cup · ${L('fi_pdfGenerat')} ${fmtDate(todayISO())}`, M, 292);
   doc.save(`fisa-personala_${p.nume}_${p.prenume}.pdf`.replace(/\s+/g,'-'));
