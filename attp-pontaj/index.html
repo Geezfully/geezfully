@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-10-17-date-moldova-1">
+<meta name="attp-build" content="2026-10-20-token-expirat-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1422,7 +1422,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-10-17-date-moldova-1';
+const APP_BUILD = '2026-10-20-token-expirat-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1713,6 +1713,32 @@ async function serverNowISO(){
   return new Date(Date.now() + serverClockOffset).toISOString();
 }
 
+// supabase-js renews the login by the PC's clock. The location PC's clock runs a few minutes
+// slow, so it renewed every ~63 minutes for a 60-minute token: each hour had a few minutes in
+// which the server answered 401 "JWT expired". On 20 Oct a reload in that window left the
+// login screen saying "connecting… check the internet". The server is the judge instead: when
+// it says the token expired, renew once (shared by all requests waiting on it) and repeat the
+// same request with the new token. Auth endpoints are never retried, so this cannot loop.
+let authRefreshPromise = null;
+function refreshAuthOnce(){
+  if(!authRefreshPromise) authRefreshPromise = sb.auth.refreshSession().finally(()=>{ authRefreshPromise = null; });
+  return authRefreshPromise;
+}
+async function retryIfTokenExpired(response, input, init){
+  if(response.status !== 401) return response;
+  const url = typeof input === 'string' ? input : (input?.url || String(input || ''));
+  if(!/\/(rest|functions)\/v1\//.test(url)) return response;
+  let body = null;
+  try{ body = await response.clone().json(); }catch(_e){ return response; }
+  if(!/PGRST303|jwt expired/i.test(`${body?.code || ''} ${body?.message || ''} ${body?.msg || ''}`)) return response;
+  let session = null;
+  try{ const { data, error } = await refreshAuthOnce(); if(!error) session = data?.session; }catch(_e){}
+  if(!session?.access_token) return response;   // callers handle the 401 as before
+  const headers = new Headers(init?.headers || (input instanceof Request ? input.headers : undefined));
+  headers.set('Authorization', `Bearer ${session.access_token}`);
+  return fetch(input, { ...init, headers });
+}
+
 // fetch() rejects only when the server could not be reached at all (offline, DNS, dropped
 // connection) — that is exactly the case the register used to hide.
 async function monitoredFetch(input, init){
@@ -1720,7 +1746,7 @@ async function monitoredFetch(input, init){
   // exists; read it defensively so that first request is never broken by the monitor
   const state = ()=>{ try{ return { lost: connectionLostAt, user: currentAdminId }; }catch(_e){ return {}; } };
   try{
-    const response = await fetch(input, init);
+    const response = await retryIfTokenExpired(await fetch(input, init), input, init);
     if(state().lost && response.ok) setTimeout(retryConnection, 0);
     return response;
   }catch(error){
@@ -2050,15 +2076,30 @@ async function logout(){
 }
 
 // reia sesiunea dacă administratorul e deja autentificat (session persistă local)
-async function resumeSession(){
+async function resumeSession(afterRefresh=false){
   const { data:{ session } } = await sb.auth.getSession();
   if(!session) return;
-  const { data: profile, error: profileError } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
+  const { data: profile, error: profileError, status: profileStatus } = await sb.from('administratori').select('*').eq('id', session.user.id).single();
+  if(profileError && !profile && isAuthFailure({ error: profileError, status: profileStatus })){
+    // The saved login was refused. Renew it once; only if the server itself turns the renewal
+    // down is the login really over — then ask for a new one instead of claiming the internet
+    // is down. A renewal that could not reach the server falls through to "connecting…".
+    const { error: refreshError } = afterRefresh ? { error: { status: 401 } } : await sb.auth.refreshSession();
+    if(!refreshError) return resumeSession(true);
+    if(refreshError.status && refreshError.name !== 'AuthRetryableFetchError'){
+      const wasLocation = /@attp-pontaj\.internal$/i.test(session.user?.email || '');
+      try{ await sb.auth.signOut({ scope:'local' }); }catch(_error){}
+      setAuthMode(wasLocation ? 'locatie' : 'admin');
+      const msg = document.getElementById(wasLocation ? 'login-locatie-msg' : 'login-msg');
+      if(msg){ msg.textContent = t('au_sessionExpired'); msg.style.color = 'var(--yellow)'; }
+      return;
+    }
+  }
   if(profileError && !profile){
     // Without the profile the role is unknown; never guess "admin" for the location PC.
     const msg = document.getElementById('login-msg'), msgLoc = document.getElementById('login-locatie-msg');
     [msg, msgLoc].forEach(m=>{ if(m){ m.textContent = t('conn_waitTitle')+' '+t('conn_waitText'); m.style.color = 'var(--yellow)'; } });
-    setTimeout(resumeSession, CONNECTION_RETRY_MS);
+    setTimeout(()=>resumeSession(), CONNECTION_RETRY_MS);
     return;
   }
   [document.getElementById('login-msg'), document.getElementById('login-locatie-msg')].forEach(m=>{ if(m) m.textContent = ''; });
