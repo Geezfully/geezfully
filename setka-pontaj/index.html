@@ -3820,12 +3820,28 @@
     return `${root}/${playerImageSlug(player)}.webp`;
   }
 
+  // Prefer the small thumbnail, but fall back to the same full photo the
+  // profile card uses. Photos arrive in players/ from the ATTP site and nothing
+  // keeps player-thumbs/ in step, so a thumbnail-only lookup left people with a
+  // photo in their profile and bare initials in the table.
   function paintRowAvatars(){
     document.querySelectorAll('[data-row-avatar]').forEach(avatar => {
       const ref = rowAvatarCache.get(avatar.dataset.rowAvatar);
       if (!ref) return;
       const initials = avatar.textContent.trim();
-      avatar.innerHTML = `<img src="${participantThumbnailPath(ref)}" alt="" loading="eager" decoding="async" fetchpriority="low" onerror="this.parentElement.textContent='${escapeHtml(initials)}'">`;
+      const img = document.createElement('img');
+      img.alt = '';
+      img.loading = 'eager';
+      img.decoding = 'async';
+      img.fetchPriority = 'low';
+      const fallbacks = [participantImagePath(ref)];
+      img.onerror = () => {
+        const next = fallbacks.shift();
+        if (next) img.src = next;
+        else avatar.textContent = initials;
+      };
+      img.src = participantThumbnailPath(ref);
+      avatar.replaceChildren(img);
     });
   }
 
