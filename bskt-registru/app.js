@@ -426,6 +426,7 @@ ro: {
   ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
   ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
   fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
+  ac_btn:'Act de prestare (PDF)', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
   fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
   fl_reviewTitlu:'Verificați statutul de freelancer',
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
@@ -760,6 +761,7 @@ ru: {
   ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
   ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
   fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
+  ac_btn:'Акт оказания услуг (PDF)', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
   fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
   fl_reviewTitlu:'Проверьте статус фрилансера',
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
@@ -4203,6 +4205,7 @@ function payDetailHtml(r, colspan){
         </div>
         <div class="td-muted" style="font-size:12px;margin-top:8px">${t('pl_th_coef')} ${coefText(r.coef)} · ${t('pl_th_observatie')}: ${esc(payObservation(r))}</div>
         <button type="button" class="btn-profile" onclick="openProfile('${r.participantId}')"><span class="btn-profile-icon">${icon('participants')}</span><span>${t('pl_deschideProfil')}</span><span class="btn-profile-arrow">→</span></button>
+        ${isFullAdmin() && r.freelancer ? `<button type="button" class="btn-primary btn-sm pay-act-btn" onclick="event.stopPropagation(); downloadActPrestare('${r.participantId}', this)">⤓ ${t('ac_btn')}</button>` : ''}
       </div>
     </div>
   </td></tr>`;
@@ -4485,6 +4488,221 @@ async function recalcPlati(){
 // Schedule used for the "Total programat" check: most game days have 24 matches, 4 players per side,
 // so every scheduled match produces 4 player wins and 4 player losses.
 const MECIURI_PE_ZI = 24, JUCATORI_PE_ECHIPA = 4;
+/* ══════════════════════ ACT DE PRESTARE (PDF per freelancer) ══════════════════════
+   Same document and layout as Setka Pontaj's act (vector PDF, Liberation Sans), with the BSKT table:
+   one row per kind of match (role × win/loss × rate), "Arbitraj turnee", a yellow "Rețineri" block,
+   TOTAL SPRE PLATĂ = gross to pay and "inclusiv impozit 15%" = 15% of that total.
+   The beneficiary's signature + stamp is read from the private bucket acte-private (full admins only). */
+const ACT_TAX_RATE = 0.15;
+const ACT_SIGNATURE_PATH = 'semnatura-stampila-setka.png';
+const ACT_MONTHS = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+const ACT_MONTHS_SHORT = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec'];
+let actSignature = null;          // { dataUrl, w, h } once loaded
+let actFontsLoading = null;
+const actMoney = n => (Math.round((n||0)*100)/100).toLocaleString('ro-RO');
+function actLoadFonts(){
+  if(window.ACT_PDF_FONTS) return Promise.resolve();
+  if(!actFontsLoading) actFontsLoading = new Promise((ok, ko)=>{
+    const sc = document.createElement('script'); sc.src = 'act-pdf-fonts.js?v=1';
+    sc.onload = ()=> window.ACT_PDF_FONTS ? ok() : ko(new Error('fonturi PDF'));
+    sc.onerror = ()=>{ actFontsLoading = null; ko(new Error('fonturi PDF')); };
+    document.head.appendChild(sc);
+  });
+  return actFontsLoading;
+}
+async function actLoadSignature(){
+  if(actSignature) return actSignature;
+  const { data, error } = await sb.storage.from('acte-private').download(ACT_SIGNATURE_PATH);
+  if(error || !data) throw new Error(t('ac_faraSemnatura'));
+  const dataUrl = await new Promise((ok, ko)=>{ const fr = new FileReader(); fr.onload = ()=>ok(String(fr.result)); fr.onerror = ko; fr.readAsDataURL(data); });
+  const size = await new Promise((ok, ko)=>{ const im = new Image(); im.onload = ()=>ok({ w:im.naturalWidth, h:im.naturalHeight }); im.onerror = ko; im.src = dataUrl; });
+  actSignature = { dataUrl, ...size };
+  return actSignature;
+}
+function actBic(p){
+  if(p.bic) return p.bic;
+  const code = String(p.iban||'').replace(/\s/g,'').slice(4,6).toUpperCase();
+  return { AG:'AGRNMD2X', ML:'MOLDMD2X', VI:'VICBMD2X', FT:'FTMDMD2X' }[code] || '—';
+}
+// Everything printed on the act for one player and the selected Plăți period.
+function actData(participantId){
+  const p = participant(participantId);
+  const r = payRows().rows.find(x=>x.participantId===participantId);
+  if(!p || !r) return null;
+  const roleKey = x => x.rol==='căpitan' ? 'căpitan' : 'jucător';
+  const roles = new Set(r.items.map(it=>roleKey(it.r)));
+  // match rows: role × win/loss × gross rate (the rate changes over time, e.g. 06.10.2026)
+  const groups = new Map();
+  r.items.filter(it=>it.won!==null).forEach(it=>{
+    const rate = Math.round((it.r.sumaBruta||0)*100)/100;
+    const k = `${roleKey(it.r)}|${it.won?1:0}|${rate}`;
+    const g = groups.get(k) || { rol:roleKey(it.r), won:it.won, rate, n:0, sum:0, from:it.m.data, to:it.m.data };
+    g.n++; g.sum += it.r.sumaBruta||0; if(it.m.data<g.from) g.from = it.m.data; if(it.m.data>g.to) g.to = it.m.data;
+    groups.set(k, g);
+  });
+  const order = g => (g.rol==='căpitan'?0:2) + (g.won?0:1);
+  const list = [...groups.values()].sort((a,b)=>order(a)-order(b) || a.from.localeCompare(b.from));
+  const sameLabel = g => list.filter(x=>x.rol===g.rol && x.won===g.won).length > 1;
+  const rows = list.map(g=>({
+    label: `${g.won ? 'Meciuri câștigate' : 'Meciuri pierdute'}${roles.size>1 ? ` (${g.rol})` : ''}${sameLabel(g) ? ` · ${ddmm(g.from)}–${ddmm(g.to)}` : ''}`,
+    rate: g.rate, vol: g.n, fee: Math.round(g.sum*100)/100 }));
+  if(!rows.length) rows.push({ label:'Meciuri câștigate', rate:0, vol:0, fee:0 }, { label:'Meciuri pierdute', rate:0, vol:0, fee:0 });
+  // refereeing done by this player in the period (Arbitraj tab, matched by name)
+  const key = s => searchNorm(String(s||'')).split(/\s+/).filter(Boolean).sort().join(' ');
+  const ref = refereePayRows(payState.from, payState.to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));
+  const refRate = Math.round(refereeGross(TARIF_ARBITRI.ora)*100)/100;
+  const refHours = ref ? Math.round(ref.ore*100)/100 : 0;
+  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round(refereeGross(ref.net)*100)/100 : 0 });
+  const deductions = [[t('nav_spalatorie'), r.ded.spal], [t('nav_daune'), r.ded.daune]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
+  const total = Math.round((rows.reduce((s,x)=>s+x.fee,0) - deductions.reduce((s,x)=>s+x.value,0))*100)/100;
+  const from = payState.from, to = payState.to;
+  const [fy,fm,fd] = from.split('-').map(Number), [ty,tm,td] = to.split('-').map(Number);
+  const lastDay = new Date(Date.UTC(ty, tm, 0)).getUTCDate();
+  const fullMonth = fd===1 && fy===ty && fm===tm && td===lastDay;
+  const periodLabel = fullMonth ? `${ACT_MONTHS[fm-1]} ${fy}` : `${fmtDate(from)} – ${fmtDate(to)}`;
+  const roleLabel = [roles.has('căpitan')?'Căpitan':null, roles.has('jucător')?'Jucător':null].filter(Boolean).join(' / ') || 'Jucător';
+  const next = addDays(to, 1);
+  const contractDate = p.dataContract ? (([y,m,d])=>`${String(d).padStart(2,'0')} ${ACT_MONTHS_SHORT[m-1]} ${y}`)(p.dataContract.split('-').map(Number)) : '—';
+  return { p, rows, deductions, total, tax: Math.round(total*ACT_TAX_RATE*100)/100, periodLabel, roleLabel, contractDate,
+    nr: p.nrContract ? `${tm}/${p.nrContract}` : '', date: fmtDate(next) };
+}
+async function downloadActPrestare(participantId, btn){
+  if(!isFullAdmin()) return;
+  const p = participant(participantId);
+  if(!p) return;
+  if(!p.freelancer){ alert(t('ac_nuFreelancer')); return; }
+  const missing = [[!p.nrContract,'nr. contract'],[!p.dataContract,'data contractului'],[!p.idno,'IDNO'],[!p.iban,'IBAN']].filter(x=>x[0]).map(x=>x[1]);
+  if(missing.length){ alert(t('ac_lipsaDate')(missing.join(', '))); return; }
+  const label = btn?.textContent; if(btn){ btn.disabled = true; btn.textContent = t('ac_seGenereaza'); }
+  try {
+    if(!window.jspdf?.jsPDF) throw new Error(t('re_noPdf'));
+    const [, sig] = await Promise.all([actLoadFonts(), actLoadSignature()]);
+    const a = actData(participantId);
+    if(!a) throw new Error('—');
+    const pdf = actBuildPdf(a, sig);
+    pdf.save(`act-prestare_${p.nume}_${p.prenume}_${payState.from}_${payState.to}.pdf`.replace(/\s+/g,'-'));
+    await logAction(`A generat actul de prestare (PDF) pentru ${participantName(participantId)}, ${fmtDate(payState.from)}–${fmtDate(payState.to)}: ${actMoney(a.total)} MDL`);
+  } catch(e){
+    alert(e.message===t('ac_faraSemnatura') ? e.message : `${t('ac_eroare')} ${e.message||e}`);
+  } finally { if(btn){ btn.disabled = false; btn.textContent = label; } }
+}
+// Layout copied from Setka Pontaj's createNativeActPdf (A4 width, mm, Liberation Sans).
+function actBuildPdf(a, sig){
+  // A4 width; the height follows the content exactly like Setka's act (never shorter than wide, never taller than A4)
+  const pageWidth = 210, pageMargin = 7;
+  const contentBottom = 89 + 10 + a.rows.length*5.8 + (1 + Math.max(2, a.deductions.length))*5.4 + 2*5.8 + 12 + 13 + 59;
+  const pageHeight = Math.min(297, Math.max(pageWidth + 0.1, Math.ceil((contentBottom + pageMargin*2)*10)/10));
+  const pdf = new window.jspdf.jsPDF({ unit:'mm', format:[pageWidth, pageHeight], orientation:'portrait', compress:true, putOnlyUsedFonts:true });
+  [['LiberationSans-Regular.ttf','normal'],['LiberationSans-Bold.ttf','bold'],['LiberationSans-Italic.ttf','italic']].forEach(([f,style])=>{
+    pdf.addFileToVFS(f, window.ACT_PDF_FONTS[f]); pdf.addFont(f, 'LiberationSans', style);
+  });
+  const ink = [17,17,17], red = [235,20,20], line = [190,196,204], muted = [126,137,149];
+  const setFont = (style='normal', size=9, color=ink)=>{ pdf.setFont('LiberationSans', style); pdf.setFontSize(size); pdf.setTextColor(...color); };
+  const text = (value, x, y, o={})=>pdf.text(String(value ?? ''), x, y, o);
+  const centered = (value, x, y, width, o={})=>text(value, x + width/2, y, { align:'center', maxWidth:width-2, ...o });
+  const drawRect = (x, y, w, h, fill=null)=>{ pdf.setDrawColor(...line); pdf.setLineWidth(0.22); if(fill){ pdf.setFillColor(...fill); pdf.rect(x,y,w,h,'FD'); } else pdf.rect(x,y,w,h,'S'); };
+  const wrapped = (value, x, y, width, lh=4.1)=>{ pdf.splitTextToSize(String(value ?? ''), width).forEach((l,i)=>text(l, x, y + i*lh)); };
+
+  pdf.setFillColor(255,255,255); pdf.rect(0,0,pageWidth,pageHeight,'F');
+  drawRect(pageMargin, pageMargin, pageWidth - pageMargin*2, pageHeight - pageMargin*2);
+  pdf.setDrawColor(145,145,145); pdf.setLineWidth(0.28);
+  pdf.line(18,21,44,21); pdf.line(166,21,192,21);
+  setFont('bold', 11); centered('ACT DE PRESTARE A SERVICIILOR SPORTIVE', 45, 18.7, 120);
+  setFont('bold', 9); text('Nr.', 76, 25); pdf.line(82,25.5,101,25.5); centered(a.nr, 82, 25, 19);
+  setFont('normal', 9); text('din data de', 106, 25); pdf.line(126,25.5,148,25.5); centered(a.date, 126, 25, 22);
+
+  const sectionX = 18, bodyX = 26;
+  setFont('bold', 9); text('1', sectionX, 38);
+  setFont('normal', 9); text('1. Prezentul act este întocmit în temeiul Contractului de prestări servicii sportive nr.', bodyX, 38);
+  setFont('bold', 9, red); centered(a.p.nrContract || '—', bodyX, 47, 36);
+  setFont('normal', 9); centered('din', bodyX+36, 47, 17);
+  setFont('bold', 9, red); centered(a.contractDate, bodyX+53, 47, 39);
+  setFont('normal', 9); centered('și', bodyX+92, 47, 15);
+  setFont('bold', 9); centered('Anexei nr. 1 la contract', bodyX+107, 47, 59);
+
+  setFont('bold', 9); text('2', sectionX, 58);
+  setFont('normal', 9); text('Prestatorul a prestat servicii sportive în cadrul turneelor organizate de Beneficiar în perioada:', bodyX, 58);
+  drawRect(bodyX, 66, 50, 9); drawRect(125, 66, 67, 9);
+  setFont('bold', 9, red); centered(a.periodLabel, bodyX, 72, 50); centered(a.roleLabel, 125, 72, 67);
+
+  setFont('bold', 9); text('3', sectionX, 84); text('Detaliere:', bodyX, 84);
+  const tableX = bodyX, tableY = 89, headerHeight = 10, rowHeight = 5.8, blankRowHeight = 5.4, summaryRowHeight = 5.8;
+  const columns = [84, 31, 27, 24], tableWidth = columns.reduce((s,v)=>s+v,0);
+  drawRect(tableX, tableY, tableWidth, headerHeight);
+  let cx = tableX; columns.slice(0,-1).forEach(w=>{ cx += w; pdf.line(cx, tableY, cx, tableY+headerHeight); });
+  setFont('bold', 8);
+  text('Categoria calcul', tableX+2, tableY+6.3);
+  centered('Regim calcul', tableX+columns[0], tableY+4.2, columns[1]);
+  centered('(mdl)', tableX+columns[0], tableY+7.8, columns[1]);
+  centered('Volum servicii', tableX+columns[0]+columns[1], tableY+6.1, columns[2]);
+  centered('Onorariu (mdl)', tableX+columns[0]+columns[1]+columns[2], tableY+6.1, columns[3]);
+  a.rows.forEach((row, index)=>{
+    const y = tableY + headerHeight + index*rowHeight;
+    drawRect(tableX, y, tableWidth, rowHeight);
+    let x = tableX;
+    columns.slice(0,-1).forEach((w, ci)=>{
+      x += w; pdf.line(x, y, x, y+rowHeight);
+      if(ci===0 && index%2===1){ pdf.setFillColor(219,223,228); pdf.rect(tableX+columns[0], y, columns[1], rowHeight, 'F'); pdf.setDrawColor(...line); pdf.rect(tableX+columns[0], y, columns[1], rowHeight, 'S'); }
+    });
+    setFont('normal', 7.7); text(row.label, tableX+1.5, y+4, { maxWidth:columns[0]-3 });
+    setFont('bold', 7.7, muted); centered(actMoney(row.rate), tableX+columns[0], y+4, columns[1]);
+    setFont('bold', 7.7, red); centered(String(row.vol).replace('.',','), tableX+columns[0]+columns[1], y+4, columns[2]);
+    centered(actMoney(row.fee), tableX+columns[0]+columns[1]+columns[2], y+4, columns[3]);
+  });
+  let currentY = tableY + headerHeight + a.rows.length*rowHeight;
+  const feeX = tableX + columns[0] + columns[1] + columns[2];
+  // "Rețineri" header row (yellow, as in the paper act) + deductions, at least two lines below it
+  drawRect(tableX, currentY, tableWidth, blankRowHeight, [255,246,200]);
+  pdf.line(feeX, currentY, feeX, currentY+blankRowHeight);
+  setFont('normal', 7.7); text('Rețineri', tableX+1.5, currentY+3.7);
+  currentY += blankRowHeight;
+  for(let i=0; i<Math.max(2, a.deductions.length); i++){
+    drawRect(tableX, currentY, tableWidth, blankRowHeight);
+    pdf.line(feeX, currentY, feeX, currentY+blankRowHeight);
+    const d = a.deductions[i];
+    if(d){ setFont('normal', 7.7); text(d.label, tableX+1.5, currentY+3.7); setFont('bold', 7.7, red); centered('-'+actMoney(d.value), feeX, currentY+3.7, columns[3]); }
+    currentY += blankRowHeight;
+  }
+  const totalLabelWidth = columns[0] + columns[1] + columns[2];
+  drawRect(tableX, currentY, tableWidth, summaryRowHeight); pdf.line(feeX, currentY, feeX, currentY+summaryRowHeight);
+  setFont('bold', 8); text('TOTAL SPRE PLATĂ', tableX+totalLabelWidth-2, currentY+4, { align:'right' }); centered(actMoney(a.total), feeX, currentY+4, columns[3]);
+  currentY += summaryRowHeight;
+  drawRect(tableX, currentY, tableWidth, summaryRowHeight); pdf.line(feeX, currentY, feeX, currentY+summaryRowHeight);
+  setFont('italic', 8, red); text(`inclusiv impozit ${actMoney(ACT_TAX_RATE*100)}%`, tableX+totalLabelWidth-2, currentY+4, { align:'right' });
+  setFont('bold', 8, red); centered(actMoney(a.tax), feeX, currentY+4, columns[3]);
+  currentY += summaryRowHeight;
+
+  const paymentY = currentY + 12, partiesY = paymentY + 13, partiesHeight = 59;
+  setFont('bold', 9); text('4', sectionX, paymentY);
+  setFont('normal', 8.7); wrapped('Prezentul act constituie document justificativ pentru efectuarea plății prin transfer bancar la contul Prestatorului', bodyX, paymentY, 166, 4);
+
+  const beneficiaryX = bodyX, beneficiaryWidth = 72, providerNoX = 108, providerX = 116, providerWidth = 76;
+  setFont('bold', 9); text('5', sectionX, partiesY+4); text('6', providerNoX, partiesY+4);
+  drawRect(beneficiaryX, partiesY, beneficiaryWidth, partiesHeight); drawRect(providerX, partiesY, providerWidth, partiesHeight);
+  setFont('italic', 8); text('Beneficiar:', beneficiaryX+2, partiesY+5);
+  setFont('bold', 8); text('SRL SETKA-PRO', beneficiaryX+2, partiesY+10);
+  setFont('normal', 7.5); text('cod fiscal 1022600014457', beneficiaryX+2, partiesY+15); text('BIC: MOLDMD2X317', beneficiaryX+2, partiesY+20); text('IBAN: MD02ML0000000022518171022', beneficiaryX+2, partiesY+25);
+  setFont('bold', 7.5); text('Vladimir ZASTAVNITCHI', beneficiaryX+2, partiesY+30);
+  if(sig){
+    // as on Setka's act: shifted left to the page margin, never wider than the gap before the Prestator box
+    const markX = 10, maxW = providerX - markX - 4, maxH = 52;
+    const k = Math.min(maxW/sig.w, maxH/sig.h);
+    pdf.addImage(sig.dataUrl, 'PNG', markX, partiesY+15, sig.w*k, sig.h*k, 'beneficiary-mark', 'FAST');
+  }
+  setFont('italic', 8); text('Prestator:', providerX+2, partiesY+5);
+  const provider = [['', 'Antreprenor individual'], ['cod fiscal', a.p.idno||'—'], ['BIC:', actBic(a.p)], ['IBAN:', a.p.iban||'—']];
+  const providerRowY = partiesY + 8, providerRowHeight = 8.4;
+  provider.forEach((parts, index)=>{
+    const y = providerRowY + index*providerRowHeight;
+    pdf.setDrawColor(155,155,155); pdf.line(providerX+2, y+providerRowHeight, providerX+providerWidth-2, y+providerRowHeight);
+    if(index===0){ setFont('bold', 8); centered(parts[1], providerX+18, y+5.5, providerWidth-20); }
+    else { setFont('normal', 7.3); text(parts[0], providerX+2, y+5.5); setFont('normal', 7.3, index===2 ? ink : red); text(parts[1], providerX+20, y+5.5, { maxWidth:providerWidth-23 }); }
+  });
+  setFont('bold', 7.5); centered(String(a.p.nume||'—').toLocaleUpperCase('ro-RO'), providerX+2, partiesY+partiesHeight-3.5, (providerWidth-4)/2);
+  setFont('normal', 7.5); centered(a.p.prenume||'—', providerX+2+(providerWidth-4)/2, partiesY+partiesHeight-3.5, (providerWidth-4)/2);
+  return pdf;
+}
+
 function exportPlatiExcel(){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
   const { rows:all, days } = payRows();
