@@ -4205,7 +4205,7 @@ function payDetailHtml(r, colspan){
         </div>
         <div class="td-muted" style="font-size:12px;margin-top:8px">${t('pl_th_coef')} ${coefText(r.coef)} · ${t('pl_th_observatie')}: ${esc(payObservation(r))}</div>
         <button type="button" class="btn-profile" onclick="openProfile('${r.participantId}')"><span class="btn-profile-icon">${icon('participants')}</span><span>${t('pl_deschideProfil')}</span><span class="btn-profile-arrow">→</span></button>
-        ${isFullAdmin() && r.freelancer ? `<button type="button" class="btn-primary btn-sm pay-act-btn" onclick="event.stopPropagation(); downloadActPrestare('${r.participantId}', this)">⤓ ${t('ac_btn')}</button>` : ''}
+        ${isFullAdmin() ? `<button type="button" class="btn-primary btn-sm pay-act-btn" onclick="event.stopPropagation(); downloadActPrestare('${r.participantId}', this)">⤓ ${t('ac_btn')}</button>` : ''}
       </div>
     </div>
   </td></tr>`;
@@ -4232,7 +4232,7 @@ function payTableHtml(){
         <td class="pay-who"><span class="td-name">${esc(r.nume)}</span>${playerTeamsHtml(r.participantId, r.echipaIds)}</td>
         <td class="num c-green">${r.v}</td><td class="num c-red">${r.i}</td>
         <td class="td-muted pay-role">${payRoleText(r).split(' · ').map(x=>`<span>${esc(x)}</span>`).join('')}</td>
-        <td class="fl-cell">${freelancerBadge(r.freelancer)}${r.freelancer ? actButton(r.participantId, 'plati') : ''}</td>
+        <td class="fl-cell">${freelancerBadge(r.freelancer)}${actButton(r.participantId, 'plati')}</td>
         ${showDays ? days.map(d=>`<td class="num td-muted">${r.perDay[d]?money(r.perDay[d]):''}</td>`).join('') : ''}
         <td class="num">${money(r.net)}</td>
         ${showDays ? '' : `<td class="num td-muted pay-opt">${coefText(r.coef)}</td>`}
@@ -4521,6 +4521,7 @@ async function actLoadSignature(){
 }
 function actBic(p){
   if(p.bic) return p.bic;
+  if(!p.iban) return '—';
   const code = String(p.iban||'').replace(/\s/g,'').slice(4,6).toUpperCase();
   return { AG:'AGRNMD2X', ML:'MOLDMD2X', VI:'VICBMD2X', FT:'FTMDMD2X' }[code] || '—';
 }
@@ -4529,15 +4530,17 @@ function actData(participantId, from = payState.from, to = payState.to){
   const p = participant(participantId);
   const r = payRows({ from, to }).rows.find(x=>x.participantId===participantId);
   if(!p || !r) return null;
+  const fl = r.freelancer;
+  const pay = x => fl ? (x.sumaBruta||0) : (x.sumaNet||0);   // what the company pays per game (gross for freelancers, net otherwise)
   const roleKey = x => x.rol==='căpitan' ? 'căpitan' : 'jucător';
   const roles = new Set(r.items.map(it=>roleKey(it.r)));
   // match rows: role × win/loss × gross rate (the rate changes over time, e.g. 06.10.2026)
   const groups = new Map();
   r.items.filter(it=>it.won!==null).forEach(it=>{
-    const rate = Math.round((it.r.sumaBruta||0)*100)/100;
+    const rate = Math.round(pay(it.r)*100)/100;
     const k = `${roleKey(it.r)}|${it.won?1:0}|${rate}`;
     const g = groups.get(k) || { rol:roleKey(it.r), won:it.won, rate, n:0, sum:0, from:it.m.data, to:it.m.data };
-    g.n++; g.sum += it.r.sumaBruta||0; if(it.m.data<g.from) g.from = it.m.data; if(it.m.data>g.to) g.to = it.m.data;
+    g.n++; g.sum += pay(it.r); if(it.m.data<g.from) g.from = it.m.data; if(it.m.data>g.to) g.to = it.m.data;
     groups.set(k, g);
   });
   const order = g => (g.rol==='căpitan'?0:2) + (g.won?0:1);
@@ -4550,9 +4553,9 @@ function actData(participantId, from = payState.from, to = payState.to){
   // refereeing done by this player in the period (Arbitraj tab, matched by name)
   const key = s => searchNorm(String(s||'')).split(/\s+/).filter(Boolean).sort().join(' ');
   const ref = refereePayRows(from, to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));
-  const refRate = Math.round(refereeGross(TARIF_ARBITRI.ora)*100)/100;
+  const refRate = Math.round((fl ? refereeGross(TARIF_ARBITRI.ora) : TARIF_ARBITRI.ora)*100)/100;
   const refHours = ref ? Math.round(ref.ore*100)/100 : 0;
-  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round(refereeGross(ref.net)*100)/100 : 0 });
+  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round((fl ? refereeGross(ref.net) : ref.net)*100)/100 : 0 });
   const deductions = [[t('nav_spalatorie'), r.ded.spal], [t('nav_daune'), r.ded.daune]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
   const total = Math.round((rows.reduce((s,x)=>s+x.fee,0) - deductions.reduce((s,x)=>s+x.value,0))*100)/100;
   const [fy,fm,fd] = from.split('-').map(Number), [ty,tm,td] = to.split('-').map(Number);
@@ -4569,9 +4572,6 @@ async function downloadActPrestare(participantId, btn, from = payState?.from, to
   if(!isFullAdmin()) return;
   const p = participant(participantId);
   if(!p) return;
-  if(!p.freelancer){ alert(t('ac_nuFreelancer')); return; }
-  const missing = [[!p.nrContract,'nr. contract'],[!p.dataContract,'data contractului'],[!p.idno,'IDNO'],[!p.iban,'IBAN']].filter(x=>x[0]).map(x=>x[1]);
-  if(missing.length){ alert(t('ac_lipsaDate')(missing.join(', '))); return; }
   const label = btn?.textContent; if(btn){ btn.disabled = true; btn.textContent = t('ac_seGenereaza'); }
   try {
     if(!window.jspdf?.jsPDF) throw new Error(t('re_noPdf'));
@@ -5103,7 +5103,7 @@ function participantiRows(){
       <td>${p.categorieSportiva ? `<span class="badge muted">${esc(p.categorieSportiva)}</span>` : ''}</td>
       ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>`}
       <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>
-      <td class="fl-cell">${freelancerBadge(p.freelancer!==false)}${p.freelancer!==false ? actButton(p.id, 'jucatori') : ''}</td>
+      <td class="fl-cell">${freelancerBadge(p.freelancer!==false)}${actButton(p.id, 'jucatori')}</td>
       <td><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></td>
     </tr>`).join('');
 }
