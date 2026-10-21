@@ -426,7 +426,7 @@ ro: {
   ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
   ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
   fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
-  ac_btn:'Act de prestare (PDF)', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
+  ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
   fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
   fl_reviewTitlu:'Verificați statutul de freelancer',
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
@@ -761,7 +761,7 @@ ru: {
   ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
   ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
   fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
-  ac_btn:'Акт оказания услуг (PDF)', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
+  ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
   fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
   fl_reviewTitlu:'Проверьте статус фрилансера',
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
@@ -4094,8 +4094,8 @@ function deductionsFor(participantId, from, to){
   const antr = DB.treninguri.filter(r=>r.participantId===participantId && inR(r.data)).reduce((s,r)=>s+Number(r.sumaJucator||0),0);
   return { spal, daune, antr, total: spal+daune+antr };
 }
-function payRows(){
-  const { from, to } = payState;
+function payRows(range = payState){
+  const { from, to } = range;
   const matches = DB.meciuri.filter(m=>m.data>=from && m.data<=to);
   const days = [...new Set(matches.map(m=>m.data))].sort();
   const byPlayer = new Map();
@@ -4232,7 +4232,7 @@ function payTableHtml(){
         <td class="pay-who"><span class="td-name">${esc(r.nume)}</span>${playerTeamsHtml(r.participantId, r.echipaIds)}</td>
         <td class="num c-green">${r.v}</td><td class="num c-red">${r.i}</td>
         <td class="td-muted pay-role">${payRoleText(r).split(' · ').map(x=>`<span>${esc(x)}</span>`).join('')}</td>
-        <td>${freelancerBadge(r.freelancer)}</td>
+        <td class="fl-cell">${freelancerBadge(r.freelancer)}${r.freelancer ? actButton(r.participantId, 'plati') : ''}</td>
         ${showDays ? days.map(d=>`<td class="num td-muted">${r.perDay[d]?money(r.perDay[d]):''}</td>`).join('') : ''}
         <td class="num">${money(r.net)}</td>
         ${showDays ? '' : `<td class="num td-muted pay-opt">${coefText(r.coef)}</td>`}
@@ -4525,9 +4525,9 @@ function actBic(p){
   return { AG:'AGRNMD2X', ML:'MOLDMD2X', VI:'VICBMD2X', FT:'FTMDMD2X' }[code] || '—';
 }
 // Everything printed on the act for one player and the selected Plăți period.
-function actData(participantId){
+function actData(participantId, from = payState.from, to = payState.to){
   const p = participant(participantId);
-  const r = payRows().rows.find(x=>x.participantId===participantId);
+  const r = payRows({ from, to }).rows.find(x=>x.participantId===participantId);
   if(!p || !r) return null;
   const roleKey = x => x.rol==='căpitan' ? 'căpitan' : 'jucător';
   const roles = new Set(r.items.map(it=>roleKey(it.r)));
@@ -4549,13 +4549,12 @@ function actData(participantId){
   if(!rows.length) rows.push({ label:'Meciuri câștigate', rate:0, vol:0, fee:0 }, { label:'Meciuri pierdute', rate:0, vol:0, fee:0 });
   // refereeing done by this player in the period (Arbitraj tab, matched by name)
   const key = s => searchNorm(String(s||'')).split(/\s+/).filter(Boolean).sort().join(' ');
-  const ref = refereePayRows(payState.from, payState.to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));
+  const ref = refereePayRows(from, to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));
   const refRate = Math.round(refereeGross(TARIF_ARBITRI.ora)*100)/100;
   const refHours = ref ? Math.round(ref.ore*100)/100 : 0;
   rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round(refereeGross(ref.net)*100)/100 : 0 });
   const deductions = [[t('nav_spalatorie'), r.ded.spal], [t('nav_daune'), r.ded.daune]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
   const total = Math.round((rows.reduce((s,x)=>s+x.fee,0) - deductions.reduce((s,x)=>s+x.value,0))*100)/100;
-  const from = payState.from, to = payState.to;
   const [fy,fm,fd] = from.split('-').map(Number), [ty,tm,td] = to.split('-').map(Number);
   const lastDay = new Date(Date.UTC(ty, tm, 0)).getUTCDate();
   const fullMonth = fd===1 && fy===ty && fm===tm && td===lastDay;
@@ -4566,7 +4565,7 @@ function actData(participantId){
   return { p, rows, deductions, total, tax: Math.round(total*ACT_TAX_RATE*100)/100, periodLabel, roleLabel, contractDate,
     nr: p.nrContract ? `${tm}/${p.nrContract}` : '', date: fmtDate(next) };
 }
-async function downloadActPrestare(participantId, btn){
+async function downloadActPrestare(participantId, btn, from = payState?.from, to = payState?.to){
   if(!isFullAdmin()) return;
   const p = participant(participantId);
   if(!p) return;
@@ -4576,15 +4575,73 @@ async function downloadActPrestare(participantId, btn){
   const label = btn?.textContent; if(btn){ btn.disabled = true; btn.textContent = t('ac_seGenereaza'); }
   try {
     if(!window.jspdf?.jsPDF) throw new Error(t('re_noPdf'));
-    const [, sig] = await Promise.all([actLoadFonts(), actLoadSignature()]);
-    const a = actData(participantId);
-    if(!a) throw new Error('—');
+    if(!from || !to) ({ from, to } = actDefaultPeriod());
+    const [, sig] = await Promise.all([actLoadFonts(), actLoadSignature(), loadRosters(from, to)]);
+    const a = actData(participantId, from, to);
+    if(!a){ alert(t('ac_faraMeciuri')(`${p.nume} ${p.prenume}`, fmtDate(from), fmtDate(to))); return; }
     const pdf = actBuildPdf(a, sig);
-    pdf.save(`act-prestare_${p.nume}_${p.prenume}_${payState.from}_${payState.to}.pdf`.replace(/\s+/g,'-'));
-    await logAction(`A generat actul de prestare (PDF) pentru ${participantName(participantId)}, ${fmtDate(payState.from)}–${fmtDate(payState.to)}: ${actMoney(a.total)} MDL`);
+    pdf.save(`act-prestare_${p.nume}_${p.prenume}_${from}_${to}.pdf`.replace(/\s+/g,'-'));
+    await logAction(`A generat actul de prestare (PDF) pentru ${participantName(participantId)}, ${fmtDate(from)}–${fmtDate(to)}: ${actMoney(a.total)} MDL`);
   } catch(e){
     alert(e.message===t('ac_faraSemnatura') ? e.message : `${t('ac_eroare')} ${e.message||e}`);
   } finally { if(btn){ btn.disabled = false; btn.textContent = label; } }
+}
+// "⤓ Act" next to the freelancer badge — one click, no need to open the player first
+function actButton(participantId, where){
+  if(!isFullAdmin()) return '';
+  const onclick = where==='plati' ? `downloadActPrestare('${participantId}', this)` : `openActDialog('${participantId}')`;
+  return `<button type="button" class="act-mini-btn" title="${esc(t('ac_btn'))}" onclick="event.stopPropagation(); ${onclick}">⤓ ${t('ac_scurt')}</button>`;
+}
+// last finished half-month: on the 1st–15th that is 16.–end of last month, from the 16th it is 1–15 of this month
+function actDefaultPeriod(){
+  const today = todayISO(), [y,m,d] = today.split('-').map(Number);
+  const iso = (yy,mm,dd)=>`${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  if(d >= 16) return { from: iso(y,m,1), to: iso(y,m,15) };
+  const py = m===1 ? y-1 : y, pm = m===1 ? 12 : m-1, last = new Date(Date.UTC(py, pm, 0)).getUTCDate();
+  return { from: iso(py,pm,16), to: iso(py,pm,last) };
+}
+let actDialogPid = null;
+function openActDialog(participantId){
+  const p = participant(participantId); if(!p) return;
+  actDialogPid = participantId;
+  const iso = (yy,mm,dd)=>`${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  const [y,m] = todayISO().split('-').map(Number);
+  const py = m===1 ? y-1 : y, pm = m===1 ? 12 : m-1;
+  const lastOf = (yy,mm)=>new Date(Date.UTC(yy, mm, 0)).getUTCDate();
+  const opts = [
+    { from: iso(y,m,1), to: iso(y,m,15), label: `01–15 ${ACT_MONTHS[m-1]} ${y}` },
+    { from: iso(y,m,16), to: iso(y,m,lastOf(y,m)), label: `16–${lastOf(y,m)} ${ACT_MONTHS[m-1]} ${y}` },
+    { from: iso(y,m,1), to: iso(y,m,lastOf(y,m)), label: `${t('ac_lunaIntreaga')} ${ACT_MONTHS[m-1]} ${y}` },
+    { from: iso(py,pm,16), to: iso(py,pm,lastOf(py,pm)), label: `16–${lastOf(py,pm)} ${ACT_MONTHS[pm-1]} ${py}` },
+    { from: iso(py,pm,1), to: iso(py,pm,lastOf(py,pm)), label: `${t('ac_lunaIntreaga')} ${ACT_MONTHS[pm-1]} ${py}` },
+  ];
+  const def = actDefaultPeriod();
+  document.getElementById('act-period-title').textContent = `${t('ac_btn')} — ${p.nume} ${p.prenume}`;
+  document.getElementById('act-period-body').innerHTML = `
+    <div class="act-period-options">${opts.map(o=>`<label class="act-period-opt"><input type="radio" name="act-per" value="${o.from}|${o.to}" ${o.from===def.from && o.to===def.to ? 'checked' : ''} onchange="actPeriodPicked()"> <span>${esc(o.label)}</span></label>`).join('')}
+      <label class="act-period-opt"><input type="radio" name="act-per" value="custom" onchange="actPeriodPicked()"> <span>${t('ac_altaPerioada')}</span></label>
+    </div>
+    <div class="act-period-custom" id="act-period-custom" style="display:none">
+      <div class="field"><label>${t('ac_de')}</label><input type="date" id="act-per-from" value="${def.from}"></div>
+      <div class="field"><label>${t('ac_pana')}</label><input type="date" id="act-per-to" value="${def.to}"></div>
+    </div>
+    <div class="profile-edit-actions">
+      <button class="btn-ghost" onclick="closeModal('act-period-modal')">${t('btn_cancel')}</button>
+      <button class="btn-primary" id="act-period-go" onclick="actPeriodDownload(this)">⤓ ${t('ac_descarca')}</button>
+    </div>`;
+  openModal('act-period-modal');
+}
+function actPeriodPicked(){
+  const v = document.querySelector('input[name="act-per"]:checked')?.value;
+  document.getElementById('act-period-custom').style.display = v==='custom' ? '' : 'none';
+}
+async function actPeriodDownload(btn){
+  const v = document.querySelector('input[name="act-per"]:checked')?.value; if(!v) return;
+  let from, to;
+  if(v==='custom'){ from = document.getElementById('act-per-from').value; to = document.getElementById('act-per-to').value; if(!from || !to) return; if(from > to) [from, to] = [to, from]; }
+  else [from, to] = v.split('|');
+  await downloadActPrestare(actDialogPid, btn, from, to);
+  closeModal('act-period-modal');
 }
 // Layout copied from Setka Pontaj's createNativeActPdf (A4 width, mm, Liberation Sans).
 function actBuildPdf(a, sig){
@@ -5046,7 +5103,7 @@ function participantiRows(){
       <td>${p.categorieSportiva ? `<span class="badge muted">${esc(p.categorieSportiva)}</span>` : ''}</td>
       ${isAsistent() ? '' : `<td class="td-muted">${esc(p.telefon)}</td>`}
       <td class="td-muted">${fmtDate(p.dataAvizMedical)}</td>
-      <td>${freelancerBadge(p.freelancer!==false)}</td>
+      <td class="fl-cell">${freelancerBadge(p.freelancer!==false)}${p.freelancer!==false ? actButton(p.id, 'jucatori') : ''}</td>
       <td><span class="badge ${p.statut==='activ'?'green':'muted'}">${trEnum(p.statut)}</span></td>
     </tr>`).join('');
 }

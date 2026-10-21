@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
-<link rel="stylesheet" href="app.css?v=20261021-1">
+<link rel="stylesheet" href="app.css?v=20261021-3">
 </head>
 <body>
 
@@ -162,6 +162,17 @@
   </div>
 </div>
 
+<!-- ══ ACT DE PRESTARE: alegerea perioadei (din Jucători) ══ -->
+<div class="modal-overlay" id="act-period-modal">
+  <div class="modal-box act-period-box">
+    <div class="modal-head">
+      <div class="modal-title" id="act-period-title">Act de prestare</div>
+      <div class="modal-head-actions"><button class="modal-close" onclick="closeModal('act-period-modal')">✕</button></div>
+    </div>
+    <div class="modal-body" id="act-period-body"></div>
+  </div>
+</div>
+
 <!-- ══ ARBITRU PROFILE MODAL ══ -->
 <div class="modal-overlay" id="arbitru-modal">
   <div class="modal-box profile-modal-box">
@@ -219,6 +230,6 @@
   </div>
 </aside>
 
-<script src="app.js?v=20261021-1"></script>
+<script src="app.js?v=20261021-3"></script>
 </body>
 </html>
