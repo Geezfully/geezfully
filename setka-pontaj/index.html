@@ -6,7 +6,7 @@
 <title>Pontaj — SETKA-PRO</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://ufkeqoeyrhwvvvtiopyt.supabase.co wss://ufkeqoeyrhwvvvtiopyt.supabase.co https://bghrgacqcqwdiqegkowd.supabase.co; img-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; media-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://ufkeqoeyrhwvvvtiopyt.supabase.co wss://ufkeqoeyrhwvvvtiopyt.supabase.co https://bghrgacqcqwdiqegkowd.supabase.co; img-src 'self' data: blob: https://tabletennis.setkacup.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; media-src 'none'; upgrade-insecure-requests">
 <link rel="icon" type="image/png" sizes="64x64" href="./favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -1611,6 +1611,7 @@
     'Locul II': '2 место',
     'Date Setka Cup prin ATTP': 'Данные Setka Cup через ATTP',
     'Date MTTF': 'Данные MTTF',
+    'Date Setka Cup': 'Данные Setka Cup',
     'Rating MTTF · meciuri Setka Cup prin ATTP': 'Рейтинг MTTF · матчи Setka Cup через ATTP',
     'Căutare după nume': 'Поиск по имени',
     'Nu există momentan statistici sau fotografie pentru ': 'Пока нет статистики или фото для ',
@@ -1865,7 +1866,8 @@
     if (typeof refModal !== 'undefined' && refModal.classList.contains('show') && editingRefId) {
       const ref = referees.find(r => r.id === editingRefId);
       if (ref && playerProfileCache.has(editingRefId)) {
-        renderPlayerProfile(document.getElementById('refPlayerCard'), ref, playerProfileCache.get(editingRefId) || null);
+        const cached = playerProfileCache.get(editingRefId);
+        renderPlayerProfile(document.getElementById('refPlayerCard'), ref, cached.player, cached.mttf, cached.setka);
       }
     }
     if (typeof studioTableModal !== 'undefined' && studioTableModal.classList.contains('show')) openStudioTable();
@@ -2114,6 +2116,9 @@
     (rc || []).forEach(r => rateCategories[r.category] = r);
     if (gr) globalRates = gr;
     renderRefList();
+    // Not awaited: avatars repaint once the photo sources arrive, and the
+    // table never waits on the ATTP site to render.
+    loadPhotoSources().then(paintRowAvatars);
   }
 
   async function loadPeriod(){
@@ -3810,37 +3815,97 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  function attpImagesRoot(){
+    return location.protocol === 'file:' ? '../geezfully/attp/images' : '../attp/images';
+  }
+
   function participantImagePath(player){
-    const root = location.protocol === 'file:' ? '../geezfully/attp/images/players' : '../attp/images/players';
-    return `${root}/${playerImageSlug(player)}.webp`;
+    return `${attpImagesRoot()}/players/${playerImageSlug(player)}.webp`;
   }
 
   function participantThumbnailPath(player){
-    const root = location.protocol === 'file:' ? '../geezfully/attp/images/player-thumbs' : '../attp/images/player-thumbs';
-    return `${root}/${playerImageSlug(player)}.webp`;
+    return `${attpImagesRoot()}/player-thumbs/${playerImageSlug(player)}.webp`;
   }
 
-  // Prefer the small thumbnail, but fall back to the same full photo the
-  // profile card uses. Photos arrive in players/ from the ATTP site and nothing
-  // keeps player-thumbs/ in step, so a thumbnail-only lookup left people with a
-  // photo in their profile and bare initials in the table.
+  // Same order the ATTP site uses to find a portrait, so a person looks the
+  // same everywhere:
+  //   1. the photo recorded on their ATTP player record — survives spelling
+  //      differences between the two rosters (Evghenii vs Evgheni);
+  //   2. the file named after the participant here;
+  //   3. their live Setka Cup photo, via the token SETKA-PRO caches itself;
+  //   4. initials.
+  // Rows try the light thumbnail of each local file first.
+  const photoSources = { attpPhoto: new Map(), setkaToken: new Map() };
+
+  async function loadPhotoSources(){
+    try {
+      const { data: links, error } = await db.from('setka_referee_links')
+        .select('referee_id, setka_player_id, photo_token:setka_profile->>photo_token')
+        .eq('match_status', 'confirmed');
+      if (error) throw error;
+      photoSources.setkaToken.clear();
+      const refBySetkaId = new Map();
+      (links || []).forEach(link => {
+        if (link.photo_token) photoSources.setkaToken.set(link.referee_id, link.photo_token);
+        if (link.setka_player_id) refBySetkaId.set(link.setka_player_id, link.referee_id);
+      });
+      if (refBySetkaId.size) {
+        const { data: players, error: attpError } = await attpDb.from('players')
+          .select('setka_cup_player_id, photo_url')
+          .in('setka_cup_player_id', [...refBySetkaId.keys()]);
+        if (attpError) throw attpError;
+        photoSources.attpPhoto.clear();
+        (players || []).forEach(player => {
+          const refId = refBySetkaId.get(player.setka_cup_player_id);
+          if (refId && player.photo_url?.startsWith('images/players/')) photoSources.attpPhoto.set(refId, player.photo_url);
+        });
+      }
+    } catch (err) {
+      // Photos are a nicety: on failure the file-name guess still works.
+      console.error('Photo sources failed to load', err);
+    }
+  }
+
+  function setkaPhotoUrl(token, size){
+    return token ? `https://tabletennis.setkacup.com/api/Image/setka/${size}/${token}.jpeg` : null;
+  }
+
+  function photoChain(ref, small){
+    const own = photoSources.attpPhoto.get(ref.id);
+    const ownFile = own ? own.slice('images/players/'.length) : null;
+    const chain = [
+      small && ownFile ? `${attpImagesRoot()}/player-thumbs/${ownFile}` : null,
+      ownFile ? `${attpImagesRoot()}/players/${ownFile}` : null,
+      small ? participantThumbnailPath(ref) : null,
+      participantImagePath(ref),
+      setkaPhotoUrl(photoSources.setkaToken.get(ref.id), small ? '90x90' : '280x280'),
+    ].filter(Boolean);
+    return [...new Set(chain)];
+  }
+
+  // Walks the chain on each load error; runs out to the initials.
+  function photoElement(chain, alt, onEmpty){
+    const img = document.createElement('img');
+    img.alt = alt;
+    img.decoding = 'async';
+    const rest = chain.slice();
+    img.onerror = () => {
+      const next = rest.shift();
+      if (next) img.src = next;
+      else onEmpty();
+    };
+    img.src = rest.shift();
+    return img;
+  }
+
   function paintRowAvatars(){
     document.querySelectorAll('[data-row-avatar]').forEach(avatar => {
       const ref = rowAvatarCache.get(avatar.dataset.rowAvatar);
       if (!ref) return;
-      const initials = avatar.textContent.trim();
-      const img = document.createElement('img');
-      img.alt = '';
+      const initials = `${ref.first_name?.[0] || ''}${ref.last_name?.[0] || ''}`.toUpperCase();
+      const img = photoElement(photoChain(ref, true), '', () => { avatar.textContent = initials; });
       img.loading = 'eager';
-      img.decoding = 'async';
       img.fetchPriority = 'low';
-      const fallbacks = [participantImagePath(ref)];
-      img.onerror = () => {
-        const next = fallbacks.shift();
-        if (next) img.src = next;
-        else avatar.textContent = initials;
-      };
-      img.src = participantThumbnailPath(ref);
       avatar.replaceChildren(img);
     });
   }
@@ -3854,15 +3919,17 @@
     paintRowAvatars();
   }
 
-  function renderPlayerProfile(card, ref, player, mttf){
-    if (!player && !mttf) {
+  function renderPlayerProfile(card, ref, player, mttf, setka){
+    if (!player && !mttf && !setka) {
       const initials = `${ref.first_name?.[0] || ''}${ref.last_name?.[0] || ''}`.toUpperCase();
       card.innerHTML = `<div class="ref-player-avatar">${escapeHtml(initials)}</div>
         <div class="ref-player-status"><strong>${t('Profil sportiv indisponibil')}</strong><br>${tName('Nu există momentan statistici sau fotografie pentru ', 'Пока нет статистики или фото для ', escapeHtml(ref.first_name) + ' ' + escapeHtml(ref.last_name))}.</div>
         <div class="ref-player-source">Căutare după nume</div>`;
       return;
     }
-    const stats = player?.setka_cup_cache;
+    // ATTP's cache stays first; SETKA-PRO's own Setka copy fills in for anyone
+    // the ATTP site doesn't list. Both have the same shape.
+    const stats = player?.setka_cup_cache || setka;
     const finished = Array.isArray(stats?.tournament_stats)
       ? stats.tournament_stats.filter(row => row && row.status === 'finished')
       : [];
@@ -3871,14 +3938,13 @@
     const matches = Number(stats?.total_matches || 0);
     const winRate = matches ? Math.round((wins / matches) * 100) : 0;
     const initials = `${ref.first_name?.[0] || ''}${ref.last_name?.[0] || ''}`.toUpperCase();
-    const imagePath = participantImagePath(ref);
     // Setka Cup's rating stays the primary source (MTTF's own rating scale
     // isn't useful to us) — MTTF only fills in when Setka has genuinely
     // nothing for this person (no ATTP row / no confirmed Setka match at all).
     const rating = stats?.rating_sc ?? mttf?.ranking ?? '—';
-    const city = player?.city || mttf?.city || 'Localitate nespecificată';
-    const sourceLabel = player ? 'Date Setka Cup prin ATTP' : mttf ? 'Date MTTF' : 'Date Setka Cup prin ATTP';
-    card.innerHTML = `<div class="ref-player-avatar"><img src="${imagePath}" alt="${escapeHtml(ref.first_name)} ${escapeHtml(ref.last_name)}" onerror="this.parentElement.textContent='${escapeHtml(initials)}'"></div>
+    const city = player?.city || setka?.city || mttf?.city || 'Localitate nespecificată';
+    const sourceLabel = player ? 'Date Setka Cup prin ATTP' : setka ? 'Date Setka Cup' : mttf ? 'Date MTTF' : 'Date Setka Cup prin ATTP';
+    card.innerHTML = `<div class="ref-player-avatar"></div>
       <div class="ref-player-location">${escapeHtml(city)}</div>
       <div class="ref-player-rating"><small>Rating</small> ${rating}</div>
       <div class="ref-player-stats">
@@ -3893,12 +3959,14 @@
         <span><b>${placeCount(3)}</b>Locul III</span>
       </div>
       <div class="ref-player-source">${sourceLabel}</div>`;
+    const avatar = card.querySelector('.ref-player-avatar');
+    avatar.append(photoElement(photoChain(ref, false), `${ref.first_name} ${ref.last_name}`, () => { avatar.textContent = initials; }));
   }
 
   async function loadPlayerProfile(refId, ref, card){
     if (playerProfileCache.has(refId)) {
       const cached = playerProfileCache.get(refId);
-      renderPlayerProfile(card, ref, cached.player, cached.mttf);
+      renderPlayerProfile(card, ref, cached.player, cached.mttf, cached.setka);
       return;
     }
     try {
@@ -3906,7 +3974,7 @@
       // Both calls are reads. The shared Setka player ID is the only value used
       // to connect the pontaj participant with the public ATTP player profile.
       const { data: link, error: linkError } = await db.from('setka_referee_links')
-        .select('setka_player_id, match_status')
+        .select('setka_player_id, match_status, setka_profile')
         .eq('referee_id', refId)
         .maybeSingle();
       if (linkError) throw linkError;
@@ -3946,8 +4014,12 @@
       if (mttfError) throw mttfError;
       if (mttfLink?.match_status === 'confirmed') mttf = mttfLink;
 
-      playerProfileCache.set(refId, { player: player || null, mttf });
-      renderPlayerProfile(card, ref, player || null, mttf);
+      // Only trusted if it was fetched for the Setka profile linked right now.
+      const setka = link?.match_status === 'confirmed' && link.setka_profile?.setka_player_id === link.setka_player_id
+        ? link.setka_profile : null;
+
+      playerProfileCache.set(refId, { player: player || null, mttf, setka });
+      renderPlayerProfile(card, ref, player || null, mttf, setka);
     } catch (error) {
       console.error('Player profile load failed', error);
       card.innerHTML = '<div class="ref-player-status">Statisticile nu au putut fi încărcate momentan.</div>';
