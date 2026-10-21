@@ -10,7 +10,7 @@
 //   same convention as the matches imported from the Excel
 // - an unplayed fixture that vanishes from the schedule while still in the future is deleted (unless it has a roster)
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { DOMParser, type Element } from "jsr:@b-fuze/deno-dom";
+import { DOMParser, type Element } from "jsr:@b-fuze/deno-dom@0.1.48";   // pinned: an unpinned import picked 0.1.56 on 21.10.2026, which crashes on Supabase
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -237,7 +237,14 @@ Deno.serve(async (req) => {
     // a slot the owners' sheet already fills with a DIFFERENT game: the site's version is not added (fallback only)
     const sheetSlotTaken = (day: string, ora: string, a: string, b: string) => existing.some(m => m.sursa === "tabel" && m.data === day &&
       String(m.ora ?? "").slice(0, 5) === ora && !((m.echipa_a_id === a && m.echipa_b_id === b) || (m.echipa_a_id === b && m.echipa_b_id === a)));
-    const skipped = { tabel: 0, manual: 0, blocat: 0, sters: 0, ocupat_tabel: 0, curatate: 0 };
+    // the site sometimes lists a sheet game at the wrong time (20.10.2026: #569 at 01:00 shown as 04:00): same session
+    // day, same two teams, same final score → it is the sheet's game, not a new one (teams can meet twice a night,
+    // so the score is what tells them apart)
+    const sheetHasSameGame = (day: string, a: string, b: string, sa: number | null, sb: number | null) => sa != null && sb != null &&
+      existing.some(m => m.sursa === "tabel" && m.data === day &&
+        ((m.echipa_a_id === a && m.echipa_b_id === b && m.scor_a === sa && m.scor_b === sb) ||
+         (m.echipa_a_id === b && m.echipa_b_id === a && m.scor_a === sb && m.scor_b === sa)));
+    const skipped = { tabel: 0, manual: 0, blocat: 0, sters: 0, ocupat_tabel: 0, dublura_tabel: 0, curatate: 0 };
 
     for (const w of wanted) {
       if (deleted.has(`site:${w.key}`)) { skipped.sters++; continue; }
@@ -275,6 +282,7 @@ Deno.serve(async (req) => {
       }
       if (isLocked(w.data)) { skipped.blocat++; continue; }
       if (sheetSlotTaken(w.data, w.ora, w.a, w.b)) { skipped.ocupat_tabel++; continue; }
+      if (sheetHasSameGame(w.data, w.a, w.b, w.sa, w.sb)) { skipped.dublura_tabel++; continue; }
       const { error } = await admin.from("meciuri").insert({
         data: w.data, ora: w.ora, echipa_a_id: w.a, echipa_b_id: w.b, scor_a: w.sa, scor_b: w.sb,
         sursa: "bsktcup", id_extern: w.key, sincronizat_la: stamp,
@@ -283,10 +291,12 @@ Deno.serve(async (req) => {
       if (error) throw error;
       stats.inserate++;
     }
-    // site-only games sitting in a slot where the sheet has a different game were the site's mistakes: remove them,
-    // unless someone gave them a line-up, edited them by hand, or the week is locked
+    // site-only games sitting in a slot where the sheet has a different game, or repeating a sheet game at another time,
+    // were the site's mistakes: remove them, unless someone gave them a line-up, edited them by hand, or the week is locked
     for (const m of existing) {
-      if (m.sursa !== "bsktcup" || !sheetSlotTaken(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id)) continue;
+      if (m.sursa !== "bsktcup") continue;
+      if (!sheetSlotTaken(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id) &&
+          !sheetHasSameGame(m.data, m.echipa_a_id, m.echipa_b_id, m.scor_a, m.scor_b)) continue;
       if (changedByHand(m) || isLocked(m.data)) continue;
       const { count } = await admin.from("meci_jucatori").select("id", { count: "exact", head: true }).eq("meci_id", m.id);
       if (count) continue;
