@@ -1,0 +1,25 @@
+-- Referee personal file ("Fișa personală a arbitrului"): identity/document data like players, the referee
+-- questionnaire fields (category, experience, roles, availability, languages) and the freelancer payment block.
+alter table public.arbitri
+  add column if not exists patronimic text,
+  add column if not exists loc_nastere text,
+  add column if not exists telegram text,
+  add column if not exists serie_act text,
+  add column if not exists categorie_arbitru text,
+  add column if not exists experienta_arbitraj text,
+  add column if not exists experienta_3x3 text,
+  add column if not exists functii text,
+  add column if not exists disponibilitate text,
+  add column if not exists zile_saptamana text,
+  add column if not exists limbi text,
+  add column if not exists informat_securitate boolean not null default false,
+  add column if not exists acord_date_personale boolean not null default false,
+  add column if not exists comentarii text,
+  add column if not exists beneficiar text,
+  add column if not exists idno text,
+  add column if not exists iban text,
+  add column if not exists banca text,
+  add column if not exists bic text,
+  add column if not exists valuta text,
+  add column if not exists nr_contract text,
+  add column if not exists data_contract date;

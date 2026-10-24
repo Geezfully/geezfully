@@ -134,7 +134,7 @@ const I18N = {
 ro: {
   au_sub:'Registru electronic · BSKT Cup 3×3', au_email:'E-mail', au_pass:'Parolă', au_login:'Autentificare',
   dz_title:'Verificarea zilelor (24 meciuri/zi)', dz_sub:'Fiecare zi încheiată trebuie să aibă 24 de meciuri cu rezultat și loturi pe ambele părți. Zilele cu probleme apar ca avertizare pe Tabloul de bord. O avertizare ascunsă nu mai apare, dar rămâne aici în jurnal și poate fi restabilită oricând.', dz_meciuri:(n,a)=>`${n} din ${a} meciuri cu rezultat`, dz_loturi:(n)=>`${n} ${n===1?'lot gol':'loturi goale'}`, dz_alert:(d,txt)=>`Ziua ${d}: ${txt}.`, dz_rezumat:(a,h)=>`${a} ${a===1?'avertizare activă':'avertizări active'} · ${h} ${h===1?'ascunsă':'ascunse'}`, dz_niciuna:'Toate zilele încheiate au 24 de meciuri cu rezultat și loturi complete.', dz_zileProbleme:'Zile cu probleme', dz_thZi:'Ziua', dz_thMeciuri:'Meciuri cu rezultat', dz_thLoturi:'Loturi goale', dz_thStare:'Stare', dz_thCand:'Când', dz_thActiune:'Acțiune', dz_thSituatia:'Situația atunci', dz_thMotiv:'Motiv', dz_thCont:'Cont', dz_stActiva:'activă', dz_stAscunsa:'ascunsă', dz_stSchimbata:'s-a schimbat după ascundere', dz_actAscunsa:'Ascunsă', dz_actRestabilita:'Restabilită', dz_ascunde:'Ascunde', dz_restabileste:'Restabilește', dz_vezi:'Vezi ziua', dz_jurnal:'Jurnal', dz_toate:'Toate verificările', dz_maiMulte:(n)=>`încă ${n}`, nav_verificare:'Verificare zile', dz_jurnalTitlu:'Jurnalul avertizărilor (ascunderi și restabiliri)', dz_jurnalGol:'Nicio avertizare ascunsă sau restabilită încă.', dz_motivPrompt:(d)=>`Ascundeți avertizarea pentru ${d}? Nu va mai apărea pe Tabloul de bord, dar rămâne în jurnal (Meciuri → Verificarea zilelor) și poate fi restabilită oricând.\n\nMotiv (opțional, ex. „zi liberă”):`, dz_confirmRestabilire:(d)=>`Restabiliți avertizarea pentru ${d}? Va apărea din nou pe Tabloul de bord.`, dz_seIncarca:'Se verifică zilele…', al_typeZi:'Meciuri', as_t_zi:'Meciuri',
-  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', pl_saptamana:'Săptămâna', pl_blocata:'Blocată', pl_deschisa:'Deschisă', pl_blocheaza:'Blochează', pl_deblocheaza:'Deblochează', pl_confirmBlocare:(s)=>`Blocați săptămâna ${s}? După blocare, nimeni nu mai poate modifica meciurile, scorurile și loturile ei — nici manual, nici tabelul Google, nici site-ul.`, pl_confirmDeblocare:(s)=>`ATENȚIE: săptămâna ${s} este blocată. Deblocarea permite din nou modificări ale meciurilor, loturilor și plăților ei (manual, din tabel și de pe site). Deblocați?`, pl_blocataTitlu:'Săptămâna acestui meci este blocată. Deblocați-o din Plăți pentru a face modificări.', al_typeSync:'Tabel', al_tabelNume:(n)=>`${n} nume din tabelul Google așteaptă confirmare (Setări → Tabel Google). Loturile cu aceste nume nu se importă până atunci.`, tb_title:'Tabel Google (meciuri, loturi, rating)', tb_sub:'Tabelul este sursa principală: rezultatele (foaia Results), loturile (foile PD_zz.ll.aaaa), ratingul și echipa jucătorilor (Player data). Site-ul 3x3.bsktcup.com rămâne rezervă. Ce modificați manual în aplicație rămâne așa — sincronizarea nu suprascrie modificările manuale și nu recreează meciurile șterse. Săptămânile blocate nu se modifică deloc.', tb_neconfigurat:'Tabelul nu este conectat încă — urmați pașii de mai jos.', tb_ultima:'Ultima sincronizare:', tb_niciodata:'Conectat, încă nesincronizat.', tb_meciuriTabel:'meciuri în tabel', tb_conflicte:'diferențe păstrate manual', tb_loturiAsteapta:'loturi așteaptă nume', tb_simuleaza:'Simulează (fără modificări)', tb_conectare:'Conectarea tabelului', tb_pas1:'În tabel: Extensii → Apps Script → <b>+ lângă „Fișiere” → Script</b>, numiți-l „bskt-registru-sync”, lipiți scriptul în acest fișier NOU → Salvare. <b>Nu ștergeți și nu modificați scripturile care există deja</b> (de ex. updatePlayerData).', tb_pas2:'Generați cheia secretă și puneți-o în Apps Script → Setări proiect → Proprietăți script: <b>CHEIE</b> = cheia de mai jos.', tb_pas3:'În Apps Script: Implementare → Implementare nouă → Aplicație web → Execută ca: Eu → Acces: Oricine → Implementare → autorizați.', tb_pas4:'Copiați linkul aplicației web (…/exec) și salvați-l aici:', tb_faraCheie:'nicio cheie generată', tb_arata:'Arată', tb_ascunde:'Ascunde', tb_genereazaCheie:'Generează cheia', tb_cheieNoua:'Cheie nouă', tb_confirmCheieNoua:'Generați o cheie nouă? Cea veche nu va mai funcționa: trebuie pusă și cheia nouă în Apps Script (Proprietăți script → CHEIE).', tb_numeTitlu:'Nume din tabel de confirmat', tb_numeSub:'Numele potrivite exact se leagă automat. Pentru celelalte alegeți jucătorul din registru (propunerea e deja selectată) sau creați un jucător nou. Alegerea se memorează.', tb_numeNiciunul:'Niciun nume de confirmat.', tb_alegeJucator:'Alegeți jucătorul din registru', tb_leaga:'Leagă', tb_jucatorNou:'Jucător nou', tb_numePrenume:'Completați numele și prenumele jucătorului nou.', tb_confirmNou:(n)=>`Creați jucătorul nou „${n}”? Fișa personală (IDNP, act etc.) se completează ulterior din profilul lui.`, tb_legate:(n)=>`Nume legate (${n}) — verificați sau schimbați`, tb_inTabel:'În tabel', tb_inRegistru:'În registru', tb_st_auto:'automat', tb_st_confirmat:'confirmat', tb_st_nou:'creat nou', tb_schimba:'Schimbă', tb_eroare:'Sincronizarea cu tabelul a eșuat:', tb_raport:'Sincronizare cu tabelul', tb_raportSimulare:'Simulare — nimic nu a fost modificat', tb_simulareNota:'Aceasta este doar o simulare: arată ce s-ar schimba. Nimic nu a fost salvat.', tb_noi:'meciuri noi', tb_actualizate:'meciuri actualizate', tb_loturiSchimbate:'loturi completate', tb_r_nume_noi:'Nume noi de confirmat', tb_r_conflicte:'Modificate manual (păstrate)', tb_r_blocate:'În săptămâni blocate (neschimbate)', tb_r_loturi_in_asteptare:'Loturi care așteaptă confirmarea unor nume', tb_r_schimbari:'Schimbări', tb_r_echipe_necunoscute:'Echipe necunoscute', tb_r_erori:'Erori', tb_aplicatia:'aplicația', tb_tabelul:'tabelul', tb_nou:'nou', tb_inchide:'Închide', tb_ultimaTabel:'Ultima sincronizare cu tabelul Google:', tb_azi:'azi', tb_syncCuTabelul:'Sincronizează cu tabelul', tb_syncScurt:'Sincronizează', tb_syncTitlu:'Preia acum meciurile, loturile și ratingurile din tabelul Google', tb_tSincronizat:'Sincronizat:', tb_tLaZi:'Totul este la zi cu tabelul.', tb_tLoturi:(n)=>`${n} ${n===1?'lot':'loturi'}`, tb_tMeciuri:(n)=>`${n} ${n===1?'meci actualizat':'meciuri actualizate'}`, tb_tNume:(n)=>`${n} nume de confirmat (Setări)`, tb_tConflicte:(n)=>`${n} ${n===1?'modificare manuală păstrată':'modificări manuale păstrate'}`, tb_tRaport:'Raport', tb_numeDeConfirmat:'nume de confirmat', tb_badgeTabel:'Tabel', tb_dinTabelTitlu:'Rezultat și lot din tabelul Google', tb_badgeManual:'modificat manual', tb_manualTitlu:'Acest meci a fost modificat manual după sincronizare; tabelul și site-ul nu îl mai suprascriu.', tb_preia:'Preia din tabel', tb_confirmPreia:'Renunțați la modificările manuale ale acestui meci și preluați din nou scorul și loturile din tabel?', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
+  au_loading:'Se autentifică…', au_needBoth:'Introduceți e-mail și parolă.', au_badCreds:'E-mail sau parolă incorectă.', au_noAccess:'Acest cont nu are acces la registru.', pl_saptamana:'Săptămâna', pl_blocata:'Blocată', pl_deschisa:'Deschisă', pl_blocheaza:'Blochează', pl_deblocheaza:'Deblochează', pl_maiVechi:'mai vechi', pl_ascundeVechi:'ascunde', pl_saptVechiTitlu:'Săptămânile mai vechi din perioada aleasă', pl_confirmBlocare:(s)=>`Blocați săptămâna ${s}? După blocare, nimeni nu mai poate modifica meciurile, scorurile și loturile ei — nici manual, nici tabelul Google, nici site-ul.`, pl_confirmDeblocare:(s)=>`ATENȚIE: săptămâna ${s} este blocată. Deblocarea permite din nou modificări ale meciurilor, loturilor și plăților ei (manual, din tabel și de pe site). Deblocați?`, pl_blocataTitlu:'Săptămâna acestui meci este blocată. Deblocați-o din Plăți pentru a face modificări.', al_typeSync:'Tabel', al_tabelNume:(n)=>`${n} nume din tabelul Google așteaptă confirmare (Setări → Tabel Google). Loturile cu aceste nume nu se importă până atunci.`, tb_title:'Tabel Google (meciuri, loturi, rating)', tb_sub:'Tabelul este sursa principală: rezultatele (foaia Results), loturile (foile PD_zz.ll.aaaa), ratingul și echipa jucătorilor (Player data). Site-ul 3x3.bsktcup.com rămâne rezervă. Ce modificați manual în aplicație rămâne așa — sincronizarea nu suprascrie modificările manuale și nu recreează meciurile șterse. Săptămânile blocate nu se modifică deloc.', tb_neconfigurat:'Tabelul nu este conectat încă — urmați pașii de mai jos.', tb_ultima:'Ultima sincronizare:', tb_niciodata:'Conectat, încă nesincronizat.', tb_meciuriTabel:'meciuri în tabel', tb_conflicte:'diferențe păstrate manual', tb_loturiAsteapta:'loturi așteaptă nume', tb_simuleaza:'Simulează (fără modificări)', tb_conectare:'Conectarea tabelului', tb_pas1:'În tabel: Extensii → Apps Script → <b>+ lângă „Fișiere” → Script</b>, numiți-l „bskt-registru-sync”, lipiți scriptul în acest fișier NOU → Salvare. <b>Nu ștergeți și nu modificați scripturile care există deja</b> (de ex. updatePlayerData).', tb_pas2:'Generați cheia secretă și puneți-o în Apps Script → Setări proiect → Proprietăți script: <b>CHEIE</b> = cheia de mai jos.', tb_pas3:'În Apps Script: Implementare → Implementare nouă → Aplicație web → Execută ca: Eu → Acces: Oricine → Implementare → autorizați.', tb_pas4:'Copiați linkul aplicației web (…/exec) și salvați-l aici:', tb_faraCheie:'nicio cheie generată', tb_arata:'Arată', tb_ascunde:'Ascunde', tb_genereazaCheie:'Generează cheia', tb_cheieNoua:'Cheie nouă', tb_confirmCheieNoua:'Generați o cheie nouă? Cea veche nu va mai funcționa: trebuie pusă și cheia nouă în Apps Script (Proprietăți script → CHEIE).', tb_numeTitlu:'Nume din tabel de confirmat', tb_numeSub:'Numele potrivite exact se leagă automat. Pentru celelalte alegeți jucătorul din registru (propunerea e deja selectată) sau creați un jucător nou. Alegerea se memorează.', tb_numeNiciunul:'Niciun nume de confirmat.', tb_alegeJucator:'Alegeți jucătorul din registru', tb_leaga:'Leagă', tb_jucatorNou:'Jucător nou', tb_numePrenume:'Completați numele și prenumele jucătorului nou.', tb_confirmNou:(n)=>`Creați jucătorul nou „${n}”? Fișa personală (IDNP, act etc.) se completează ulterior din profilul lui.`, tb_legate:(n)=>`Nume legate (${n}) — verificați sau schimbați`, tb_inTabel:'În tabel', tb_inRegistru:'În registru', tb_st_auto:'automat', tb_st_confirmat:'confirmat', tb_st_nou:'creat nou', tb_schimba:'Schimbă', tb_eroare:'Sincronizarea cu tabelul a eșuat:', tb_raport:'Sincronizare cu tabelul', tb_raportSimulare:'Simulare — nimic nu a fost modificat', tb_simulareNota:'Aceasta este doar o simulare: arată ce s-ar schimba. Nimic nu a fost salvat.', tb_noi:'meciuri noi', tb_actualizate:'meciuri actualizate', tb_loturiSchimbate:'loturi completate', tb_r_nume_noi:'Nume noi de confirmat', tb_r_conflicte:'Modificate manual (păstrate)', tb_r_blocate:'În săptămâni blocate (neschimbate)', tb_r_loturi_in_asteptare:'Loturi care așteaptă confirmarea unor nume', tb_r_schimbari:'Schimbări', tb_r_echipe_necunoscute:'Echipe necunoscute', tb_r_erori:'Erori', tb_aplicatia:'aplicația', tb_tabelul:'tabelul', tb_nou:'nou', tb_inchide:'Închide', tb_ultimaTabel:'Ultima sincronizare cu tabelul Google:', tb_azi:'azi', tb_syncCuTabelul:'Sincronizează cu tabelul', tb_syncScurt:'Sincronizează', tb_syncTitlu:'Preia acum meciurile, loturile și ratingurile din tabelul Google', tb_tSincronizat:'Sincronizat:', tb_tLaZi:'Totul este la zi cu tabelul.', tb_tLoturi:(n)=>`${n} ${n===1?'lot':'loturi'}`, tb_tMeciuri:(n)=>`${n} ${n===1?'meci actualizat':'meciuri actualizate'}`, tb_tNume:(n)=>`${n} nume de confirmat (Setări)`, tb_tConflicte:(n)=>`${n} ${n===1?'modificare manuală păstrată':'modificări manuale păstrate'}`, tb_tRaport:'Raport', tb_numeDeConfirmat:'nume de confirmat', tb_badgeTabel:'Tabel', tb_dinTabelTitlu:'Rezultat și lot din tabelul Google', tb_badgeManual:'modificat manual', tb_manualTitlu:'Acest meci a fost modificat manual după sincronizare; tabelul și site-ul nu îl mai suprascriu.', tb_preia:'Preia din tabel', tb_confirmPreia:'Renunțați la modificările manuale ale acestui meci și preluați din nou scorul și loturile din tabel?', iv2_title:'Creează-ți contul', iv2_nume:'Nume afișat', iv2_numePh:'ex. Ion Popescu', iv2_passPh:'minim 8 caractere', iv2_pass2:'Confirmă parola', iv2_btn:'Creează contul', iv2_checking:'Se verifică linkul…', iv2_role:(rol,exp)=>`Acces: ${rol} · linkul expiră la ${exp}`, iv2_errInvalid:'Linkul nu este valid. Cereți administratorului un link nou.', iv2_errUsed:'Acest link a fost deja folosit. Fiecare link creează un singur cont.', iv2_errExpired:'Linkul a expirat. Cereți administratorului un link nou.', iv2_errCancelled:'Linkul a fost anulat de administrator.', iv2_errEmailExists:'Există deja un cont cu acest e-mail. Autentificați-vă cu el sau folosiți alt e-mail.', iv2_errEmail:'Introduceți o adresă de e-mail validă.', iv2_errPassword:'Parola trebuie să aibă cel puțin 8 caractere.', iv2_errName:'Introduceți numele (cel puțin 2 caractere).', iv2_errMismatch:'Parolele nu coincid.', iv2_errServer:'Eroare la server. Încercați din nou peste câteva minute.', iv2_creating:'Se creează contul…', iv2_done:'Contul a fost creat. Se intră în registru…', iv2_doneLogin:'Contul a fost creat. Autentificați-vă cu e-mailul și parola alese.', st_inv_title:'Linkuri de înregistrare', st_inv_sub:'Generați un link de unică folosință și trimiteți-l persoanei: își alege numele, e-mailul și parola și primește contul cu rolul ales. Linkul funcționează o singură dată și expiră după perioada aleasă.', st_inv_rol:'Rol', st_inv_rolAsistent:'Asistent (vede registrul, completează loturi)', st_inv_rolAdmin:'Administrator (acces complet)', st_inv_rolAsistentScurt:'Asistent', st_inv_rolAdminScurt:'Administrator', st_inv_limba:'Limba paginii', st_inv_zile:'Valabil', st_inv_btn:'Generează link', st_inv_copy:'Copiază', st_inv_copied:'Copiat ✓', st_inv_once:'Copiați linkul acum: din motive de securitate nu mai poate fi afișat după ce părăsiți pagina. Dacă îl pierdeți, anulați-l și generați altul.', st_inv_thCreat:'Creat', st_inv_thExpira:'Expiră', st_inv_thCont:'Cont creat', st_inv_activa:'activ', st_inv_folosita:'folosit', st_inv_expirata:'expirat', st_inv_anulata:'anulat', st_inv_anuleaza:'Anulează', st_inv_none:'Niciun link generat încă.', st_inv_confirmAdmin:'Linkul va crea un cont de ADMINISTRATOR cu acces complet (plăți, setări, corecții). Continuați?', st_inv_confirmAnulare:'Anulați acest link? Nu va mai putea fi folosit.',
   au_emailPh:'nume@exemplu.com', au_passPh:'••••••••',
   au_modeAdmin:'Administrator', au_modeLocatie:'Locație', au_pin:'Cod PIN', au_pinPh:'••••••',
   au_pinNeed:'Introduceți codul PIN.', au_pinWrong:'PIN incorect.',
@@ -468,7 +468,7 @@ ro: {
 ru: {
   au_sub:'Электронный журнал · BSKT Cup 3×3', au_email:'Эл. почта', au_pass:'Пароль', au_login:'Войти',
   dz_title:'Проверка дней (24 матча в день)', dz_sub:'В каждый завершённый день должно быть 24 матча с результатом и составы у обеих команд. Дни с проблемами показываются как предупреждение на Главной. Скрытое предупреждение больше не появляется, но остаётся здесь в журнале и может быть восстановлено в любой момент.', dz_meciuri:(n,a)=>`${n} из ${a} матчей с результатом`, dz_loturi:(n)=>`пустых составов: ${n}`, dz_alert:(d,txt)=>`День ${d}: ${txt}.`, dz_rezumat:(a,h)=>`активных предупреждений: ${a} · скрытых: ${h}`, dz_niciuna:'Во все завершённые дни 24 матча с результатом и полными составами.', dz_zileProbleme:'Дни с проблемами', dz_thZi:'День', dz_thMeciuri:'Матчей с результатом', dz_thLoturi:'Пустых составов', dz_thStare:'Статус', dz_thCand:'Когда', dz_thActiune:'Действие', dz_thSituatia:'Ситуация тогда', dz_thMotiv:'Причина', dz_thCont:'Аккаунт', dz_stActiva:'активно', dz_stAscunsa:'скрыто', dz_stSchimbata:'изменилось после скрытия', dz_actAscunsa:'Скрыто', dz_actRestabilita:'Восстановлено', dz_ascunde:'Скрыть', dz_restabileste:'Восстановить', dz_vezi:'Открыть день', dz_jurnal:'Журнал', dz_toate:'Все проверки', dz_maiMulte:(n)=>`ещё ${n}`, nav_verificare:'Проверка дней', dz_jurnalTitlu:'Журнал предупреждений (скрытия и восстановления)', dz_jurnalGol:'Пока ни одно предупреждение не скрывалось и не восстанавливалось.', dz_motivPrompt:(d)=>`Скрыть предупреждение за ${d}? Оно больше не появится на Главной, но останется в журнале (Матчи → Проверка дней) и его можно восстановить в любой момент.\n\nПричина (необязательно, напр. «выходной»):`, dz_confirmRestabilire:(d)=>`Восстановить предупреждение за ${d}? Оно снова появится на Главной.`, dz_seIncarca:'Проверка дней…', al_typeZi:'Матчи', as_t_zi:'Матчи',
-  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', pl_saptamana:'Неделя', pl_blocata:'Заблокирована', pl_deschisa:'Открыта', pl_blocheaza:'Заблокировать', pl_deblocheaza:'Разблокировать', pl_confirmBlocare:(s)=>`Заблокировать неделю ${s}? После блокировки никто не сможет изменить её матчи, счёт и составы — ни вручную, ни из Google-таблицы, ни с сайта.`, pl_confirmDeblocare:(s)=>`ВНИМАНИЕ: неделя ${s} заблокирована. Разблокировка снова разрешит изменять её матчи, составы и выплаты (вручную, из таблицы и с сайта). Разблокировать?`, pl_blocataTitlu:'Неделя этого матча заблокирована. Разблокируйте её в разделе «Выплаты», чтобы вносить изменения.', al_typeSync:'Таблица', al_tabelNume:(n)=>`${n} имён из Google-таблицы ждут подтверждения (Настройки → Google-таблица). Составы с этими именами до тех пор не импортируются.`, tb_title:'Google-таблица (матчи, составы, рейтинг)', tb_sub:'Таблица — основной источник: результаты (лист Results), составы (листы PD_дд.мм.гггг), рейтинг и команда игроков (Player data). Сайт 3x3.bsktcup.com остаётся резервным. То, что вы меняете вручную в приложении, сохраняется — синхронизация не перезаписывает ручные изменения и не восстанавливает удалённые матчи. Заблокированные недели не меняются вообще.', tb_neconfigurat:'Таблица ещё не подключена — выполните шаги ниже.', tb_ultima:'Последняя синхронизация:', tb_niciodata:'Подключено, ещё не синхронизировано.', tb_meciuriTabel:'матчей в таблице', tb_conflicte:'ручных отличий сохранено', tb_loturiAsteapta:'составов ждут имён', tb_simuleaza:'Проверить (без изменений)', tb_conectare:'Подключение таблицы', tb_pas1:'В таблице: Расширения → Apps Script → <b>+ рядом с «Файлы» → Скрипт</b>, назовите его «bskt-registru-sync», вставьте скрипт в этот НОВЫЙ файл → Сохранить. <b>Не удаляйте и не меняйте уже существующие скрипты</b> (например, updatePlayerData).', tb_pas2:'Создайте секретный ключ и укажите его в Apps Script → Настройки проекта → Свойства скрипта: <b>CHEIE</b> = ключ ниже.', tb_pas3:'В Apps Script: Начать развёртывание → Новое развёртывание → Веб-приложение → Запуск от: Меня → Доступ: Все → Развернуть → разрешите доступ.', tb_pas4:'Скопируйте ссылку веб-приложения (…/exec) и сохраните её здесь:', tb_faraCheie:'ключ не создан', tb_arata:'Показать', tb_ascunde:'Скрыть', tb_genereazaCheie:'Создать ключ', tb_cheieNoua:'Новый ключ', tb_confirmCheieNoua:'Создать новый ключ? Старый перестанет работать: новый ключ нужно указать и в Apps Script (Свойства скрипта → CHEIE).', tb_numeTitlu:'Имена из таблицы для подтверждения', tb_numeSub:'Точно совпадающие имена связываются автоматически. Для остальных выберите игрока из реестра (предложение уже выбрано) или создайте нового. Выбор запоминается.', tb_numeNiciunul:'Нет имён для подтверждения.', tb_alegeJucator:'Выберите игрока из реестра', tb_leaga:'Связать', tb_jucatorNou:'Новый игрок', tb_numePrenume:'Укажите фамилию и имя нового игрока.', tb_confirmNou:(n)=>`Создать нового игрока «${n}»? Личную карточку (IDNP, документ и т. д.) заполните позже в его профиле.`, tb_legate:(n)=>`Связанные имена (${n}) — проверить или изменить`, tb_inTabel:'В таблице', tb_inRegistru:'В реестре', tb_st_auto:'автоматически', tb_st_confirmat:'подтверждено', tb_st_nou:'создан новый', tb_schimba:'Изменить', tb_eroare:'Синхронизация с таблицей не удалась:', tb_raport:'Синхронизация с таблицей', tb_raportSimulare:'Проверка — ничего не изменено', tb_simulareNota:'Это только проверка: показано, что изменилось бы. Ничего не сохранено.', tb_noi:'новых матчей', tb_actualizate:'обновлённых матчей', tb_loturiSchimbate:'заполненных составов', tb_r_nume_noi:'Новые имена для подтверждения', tb_r_conflicte:'Изменено вручную (сохранено)', tb_r_blocate:'В заблокированных неделях (без изменений)', tb_r_loturi_in_asteptare:'Составы, ожидающие подтверждения имён', tb_r_schimbari:'Изменения', tb_r_echipe_necunoscute:'Неизвестные команды', tb_r_erori:'Ошибки', tb_aplicatia:'приложение', tb_tabelul:'таблица', tb_nou:'новый', tb_inchide:'Закрыть', tb_ultimaTabel:'Последняя синхронизация с Google-таблицей:', tb_azi:'сегодня', tb_syncCuTabelul:'Синхронизировать с таблицей', tb_syncScurt:'Синхронизировать', tb_syncTitlu:'Сейчас взять матчи, составы и рейтинги из Google-таблицы', tb_tSincronizat:'Синхронизировано:', tb_tLaZi:'Всё совпадает с таблицей.', tb_tLoturi:(n)=>`составов: ${n}`, tb_tMeciuri:(n)=>`обновлено матчей: ${n}`, tb_tNume:(n)=>`имён для подтверждения: ${n} (Настройки)`, tb_tConflicte:(n)=>`ручных изменений сохранено: ${n}`, tb_tRaport:'Отчёт', tb_numeDeConfirmat:'имён для подтверждения', tb_badgeTabel:'Таблица', tb_dinTabelTitlu:'Результат и состав из Google-таблицы', tb_badgeManual:'изменён вручную', tb_manualTitlu:'Этот матч изменён вручную после синхронизации; таблица и сайт его больше не перезаписывают.', tb_preia:'Взять из таблицы', tb_confirmPreia:'Отменить ручные изменения этого матча и снова взять счёт и составы из таблицы?', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
+  au_loading:'Вход…', au_needBoth:'Введите эл. почту и пароль.', au_badCreds:'Неверная эл. почта или пароль.', au_noAccess:'У этой учётной записи нет доступа к реестру.', pl_saptamana:'Неделя', pl_blocata:'Заблокирована', pl_deschisa:'Открыта', pl_blocheaza:'Заблокировать', pl_deblocheaza:'Разблокировать', pl_maiVechi:'старше', pl_ascundeVechi:'скрыть', pl_saptVechiTitlu:'Более старые недели выбранного периода', pl_confirmBlocare:(s)=>`Заблокировать неделю ${s}? После блокировки никто не сможет изменить её матчи, счёт и составы — ни вручную, ни из Google-таблицы, ни с сайта.`, pl_confirmDeblocare:(s)=>`ВНИМАНИЕ: неделя ${s} заблокирована. Разблокировка снова разрешит изменять её матчи, составы и выплаты (вручную, из таблицы и с сайта). Разблокировать?`, pl_blocataTitlu:'Неделя этого матча заблокирована. Разблокируйте её в разделе «Выплаты», чтобы вносить изменения.', al_typeSync:'Таблица', al_tabelNume:(n)=>`${n} имён из Google-таблицы ждут подтверждения (Настройки → Google-таблица). Составы с этими именами до тех пор не импортируются.`, tb_title:'Google-таблица (матчи, составы, рейтинг)', tb_sub:'Таблица — основной источник: результаты (лист Results), составы (листы PD_дд.мм.гггг), рейтинг и команда игроков (Player data). Сайт 3x3.bsktcup.com остаётся резервным. То, что вы меняете вручную в приложении, сохраняется — синхронизация не перезаписывает ручные изменения и не восстанавливает удалённые матчи. Заблокированные недели не меняются вообще.', tb_neconfigurat:'Таблица ещё не подключена — выполните шаги ниже.', tb_ultima:'Последняя синхронизация:', tb_niciodata:'Подключено, ещё не синхронизировано.', tb_meciuriTabel:'матчей в таблице', tb_conflicte:'ручных отличий сохранено', tb_loturiAsteapta:'составов ждут имён', tb_simuleaza:'Проверить (без изменений)', tb_conectare:'Подключение таблицы', tb_pas1:'В таблице: Расширения → Apps Script → <b>+ рядом с «Файлы» → Скрипт</b>, назовите его «bskt-registru-sync», вставьте скрипт в этот НОВЫЙ файл → Сохранить. <b>Не удаляйте и не меняйте уже существующие скрипты</b> (например, updatePlayerData).', tb_pas2:'Создайте секретный ключ и укажите его в Apps Script → Настройки проекта → Свойства скрипта: <b>CHEIE</b> = ключ ниже.', tb_pas3:'В Apps Script: Начать развёртывание → Новое развёртывание → Веб-приложение → Запуск от: Меня → Доступ: Все → Развернуть → разрешите доступ.', tb_pas4:'Скопируйте ссылку веб-приложения (…/exec) и сохраните её здесь:', tb_faraCheie:'ключ не создан', tb_arata:'Показать', tb_ascunde:'Скрыть', tb_genereazaCheie:'Создать ключ', tb_cheieNoua:'Новый ключ', tb_confirmCheieNoua:'Создать новый ключ? Старый перестанет работать: новый ключ нужно указать и в Apps Script (Свойства скрипта → CHEIE).', tb_numeTitlu:'Имена из таблицы для подтверждения', tb_numeSub:'Точно совпадающие имена связываются автоматически. Для остальных выберите игрока из реестра (предложение уже выбрано) или создайте нового. Выбор запоминается.', tb_numeNiciunul:'Нет имён для подтверждения.', tb_alegeJucator:'Выберите игрока из реестра', tb_leaga:'Связать', tb_jucatorNou:'Новый игрок', tb_numePrenume:'Укажите фамилию и имя нового игрока.', tb_confirmNou:(n)=>`Создать нового игрока «${n}»? Личную карточку (IDNP, документ и т. д.) заполните позже в его профиле.`, tb_legate:(n)=>`Связанные имена (${n}) — проверить или изменить`, tb_inTabel:'В таблице', tb_inRegistru:'В реестре', tb_st_auto:'автоматически', tb_st_confirmat:'подтверждено', tb_st_nou:'создан новый', tb_schimba:'Изменить', tb_eroare:'Синхронизация с таблицей не удалась:', tb_raport:'Синхронизация с таблицей', tb_raportSimulare:'Проверка — ничего не изменено', tb_simulareNota:'Это только проверка: показано, что изменилось бы. Ничего не сохранено.', tb_noi:'новых матчей', tb_actualizate:'обновлённых матчей', tb_loturiSchimbate:'заполненных составов', tb_r_nume_noi:'Новые имена для подтверждения', tb_r_conflicte:'Изменено вручную (сохранено)', tb_r_blocate:'В заблокированных неделях (без изменений)', tb_r_loturi_in_asteptare:'Составы, ожидающие подтверждения имён', tb_r_schimbari:'Изменения', tb_r_echipe_necunoscute:'Неизвестные команды', tb_r_erori:'Ошибки', tb_aplicatia:'приложение', tb_tabelul:'таблица', tb_nou:'новый', tb_inchide:'Закрыть', tb_ultimaTabel:'Последняя синхронизация с Google-таблицей:', tb_azi:'сегодня', tb_syncCuTabelul:'Синхронизировать с таблицей', tb_syncScurt:'Синхронизировать', tb_syncTitlu:'Сейчас взять матчи, составы и рейтинги из Google-таблицы', tb_tSincronizat:'Синхронизировано:', tb_tLaZi:'Всё совпадает с таблицей.', tb_tLoturi:(n)=>`составов: ${n}`, tb_tMeciuri:(n)=>`обновлено матчей: ${n}`, tb_tNume:(n)=>`имён для подтверждения: ${n} (Настройки)`, tb_tConflicte:(n)=>`ручных изменений сохранено: ${n}`, tb_tRaport:'Отчёт', tb_numeDeConfirmat:'имён для подтверждения', tb_badgeTabel:'Таблица', tb_dinTabelTitlu:'Результат и состав из Google-таблицы', tb_badgeManual:'изменён вручную', tb_manualTitlu:'Этот матч изменён вручную после синхронизации; таблица и сайт его больше не перезаписывают.', tb_preia:'Взять из таблицы', tb_confirmPreia:'Отменить ручные изменения этого матча и снова взять счёт и составы из таблицы?', iv2_title:'Создайте учётную запись', iv2_nume:'Отображаемое имя', iv2_numePh:'напр. Иван Попеску', iv2_passPh:'минимум 8 символов', iv2_pass2:'Повторите пароль', iv2_btn:'Создать учётную запись', iv2_checking:'Проверка ссылки…', iv2_role:(rol,exp)=>`Доступ: ${rol} · ссылка действует до ${exp}`, iv2_errInvalid:'Ссылка недействительна. Попросите администратора прислать новую.', iv2_errUsed:'Эта ссылка уже использована. Каждая ссылка создаёт только одну учётную запись.', iv2_errExpired:'Срок действия ссылки истёк. Попросите администратора прислать новую.', iv2_errCancelled:'Ссылка отменена администратором.', iv2_errEmailExists:'Учётная запись с этой почтой уже существует. Войдите с ней или используйте другую почту.', iv2_errEmail:'Введите корректный адрес эл. почты.', iv2_errPassword:'Пароль должен содержать не менее 8 символов.', iv2_errName:'Введите имя (не менее 2 символов).', iv2_errMismatch:'Пароли не совпадают.', iv2_errServer:'Ошибка сервера. Попробуйте ещё раз через несколько минут.', iv2_creating:'Создание учётной записи…', iv2_done:'Учётная запись создана. Вход в реестр…', iv2_doneLogin:'Учётная запись создана. Войдите, используя выбранные почту и пароль.', st_inv_title:'Ссылки для регистрации', st_inv_sub:'Создайте одноразовую ссылку и отправьте её человеку: он вводит имя, почту и пароль и получает учётную запись с выбранной ролью. Ссылка работает один раз и истекает через выбранный срок.', st_inv_rol:'Роль', st_inv_rolAsistent:'Ассистент (видит реестр, заполняет составы)', st_inv_rolAdmin:'Администратор (полный доступ)', st_inv_rolAsistentScurt:'Ассистент', st_inv_rolAdminScurt:'Администратор', st_inv_limba:'Язык страницы', st_inv_zile:'Действует', st_inv_btn:'Создать ссылку', st_inv_copy:'Копировать', st_inv_copied:'Скопировано ✓', st_inv_once:'Скопируйте ссылку сейчас: из соображений безопасности после ухода со страницы её нельзя будет показать снова. Если потеряете — отмените её и создайте новую.', st_inv_thCreat:'Создана', st_inv_thExpira:'Истекает', st_inv_thCont:'Созданная учётная запись', st_inv_activa:'активна', st_inv_folosita:'использована', st_inv_expirata:'истекла', st_inv_anulata:'отменена', st_inv_anuleaza:'Отменить', st_inv_none:'Ссылок пока нет.', st_inv_confirmAdmin:'Ссылка создаст учётную запись АДМИНИСТРАТОРА с полным доступом (выплаты, настройки, исправления). Продолжить?', st_inv_confirmAnulare:'Отменить эту ссылку? Ею больше нельзя будет воспользоваться.',
   au_emailPh:'name@example.com', au_passPh:'••••••••',
   au_modeAdmin:'Администратор', au_modeLocatie:'Локация', au_pin:'PIN-код', au_pinPh:'••••••',
   au_pinNeed:'Введите PIN-код.', au_pinWrong:'Неверный PIN-код.',
@@ -836,7 +836,7 @@ Object.assign(I18N.ro, {
   mt_unCapitan:'O echipă poate avea un singur căpitan în meci.', mt_dublura:'Același jucător apare de două ori în meci.',
   mt_egal:'În 3×3 nu există egalitate — corectați scorul.', mt_confirmDelete:(n)=>`Ștergeți meciul #${n??''} împreună cu loturile și plățile lui?`,
   pl_title:'Plăți', pl_sub:'Remunerarea echipelor — net și brut (15%). Pentru freelanceri compania plătește brutul necesar (jucătorul achită reținerea de 15% și rămâne cu netul); pentru ceilalți plătește netul. Deducerile (spălătorie, daune) se scad din suma de plată.',
-  pl_saptCurenta:'Săptămâna curentă', pl_saptTrecuta:'Săptămâna trecută', pl_lunaCurenta:'Luna curentă',
+   pe_btn:'Descarcă Excel', pe_btnSub:'alegi perioada și cine intră', pe_title:'Descarcă plățile în Excel', pe_perioada:'Perioada', pe_lunaTrecuta:'Luna trecută', pe_perioadaAfisata:'Perioada de pe ecran', pe_cine:'Cine intră în document', pe_toti:'Toți', pe_doarFl:'Doar freelanceri', pe_faraFl:'Doar non-freelanceri', pe_echipa:'Echipă', pe_toateEchipele:'Toate echipele', pe_jucator:'Jucător', pe_totiJucatorii:'Toți jucătorii', pe_doarDed:'Doar cei cu rețineri (spălătorie, daune, antrenamente)', pe_document:'Cum arată documentul', pe_coloaneZile:'O coloană cu suma pentru fiecare zi', pe_sortare:'Ordinea rândurilor', pe_sNume:'Alfabetic', pe_sEchipa:'Pe echipe', pe_sPlata:'Suma de plată ↓', pe_sMeciuri:'Nr. de meciuri ↓', pe_inDocument:'În document', pe_jucatori:(n)=>`${n} ${n===1?'jucător':'jucători'}`, pe_meciuri:(n)=>`${n} ${n===1?'meci':'meciuri'}`, pe_dePlata:'de plată', pe_gol:'Niciun jucător nu corespunde filtrelor — alege altă perioadă sau alt filtru.', pe_calc:'Se calculează…', pe_faraScor:(n)=>n===1?'1 meci fără scor în perioadă — nu intră la plată până nu are rezultat.':`${n} meciuri fără scor în perioadă — nu intră la plată până nu au rezultat.`, pe_descarca:'Descarcă Excel', pe_fFl:'doar freelanceri', pe_fNonFl:'doar non-freelanceri', pe_fDed:'doar cu rețineri', pl_saptCurenta:'Săptămâna curentă', pl_saptTrecuta:'Săptămâna trecută', pl_lunaCurenta:'Luna curentă',
   pl_meciuri:'Meciuri jucate', pl_faraScor:'fără scor', pl_jucatori:'Jucători plătiți', pl_fondNet:'Fond net (MDL)', pl_brut:'Brut',
   pl_retinere:'Reținere 15%', pl_deduceri:'Deduceri', pl_deduceriSub:'spălătorie · daune · antrenamente', pl_maxim:'Plata maximă',
   pl_tabel:'Plăți pe jucător', pl_none:'Nicio înregistrare în perioada aleasă.', pl_total:'TOTAL', pl_totalProgramat:'TOTAL PROGRAMAT', pl_progDetaliu:(z,m)=>`${z} ${z===1?'zi':'zile'} × ${m} meciuri/zi × 4 jucători`, pl_progOk:'Toate meciurile programate sunt înregistrate.', pl_progLipsa:(v,m)=>`Lipsesc ${v} victorii și ${v} înfrângeri (≈ ${m} meciuri) față de program — verificați zilele fără meciuri sau loturile incomplete.`, pl_progPeste:(v)=>`Cu ${v} victorii/înfrângeri peste program.`, pl_progFiltru:'Export filtrat — comparația cu programul e pentru toți jucătorii.',
@@ -869,7 +869,7 @@ Object.assign(I18N.ro, {
   fi_experienta:'experiența competiții sportive / profesioniste', fi_contactePariuri:'contacte implicate în pariuri pe sport', fi_experientaPariere:'experiența personală pariere pe sport',
   fi_caracteristica:'caracteristica generală a jucătorului (de la agentul sportiv sau recomandator)',
   fi_informat:'informat despre cerințele și regulile de securitate în activitatea sportivă', fi_acord:'și-a exprimat acordul pentru prelucrarea datelor cu caracter personal',
-  fi_comentarii:'comentarii', fi_pdfTitlu:'FIȘA PERSONALĂ', fi_pdfSub:'a sportivului · BSKT Cup 3×3', fi_pdfGenerat:'generat la',
+  fi_comentarii:'comentarii', fi_pdfTitlu:'FIȘA PERSONALĂ', fi_pdfSub:'a sportivului · BSKT Cup 3×3', fi_pdfGenerat:'generat la', ar_fisaTitle:'Fișa personală a arbitrului', ar_pdfSub:'a arbitrului · BSKT Cup 3×3', ar_telegram:'Telegram', ar_categorie:'categoria de arbitru (FIBA, națională, fără categorie…)', ar_experienta:'experiența de arbitraj', ar_experienta3x3:'experiență în 3×3', ar_functii:'funcții pe care le poate îndeplini (arbitru pe teren, secretar, cronometru)', ar_disponibilitate:'disponibilitate obișnuită (zile și ore)', ar_zile:'câte zile pe săptămână', ar_limbi:'limbi vorbite',
   stx_personal:'Personal de serviciu', stx_personalSub:'Numele dintre care se alege la pornirea unui schimb pe contul de locație.',
   stx_numeAngajat:'Nume și prenume', stx_numeAngajatPh:'ex. Popescu Ion', stx_scoate:'Scoate', stx_personalNone:'Niciun angajat adăugat încă — adăugați cel puțin unul pentru a putea porni schimburi.',
   stx_confirmDezactivare:(n)=>`Scoateți ${n} din personalul de serviciu? Istoricul rămâne în registru.`,
@@ -910,7 +910,7 @@ Object.assign(I18N.ru, {
   mt_unCapitan:'У команды в матче может быть только один капитан.', mt_dublura:'Один и тот же игрок указан дважды.',
   mt_egal:'В 3×3 ничьих нет — исправьте счёт.', mt_confirmDelete:(n)=>`Удалить матч #${n??''} вместе с составами и выплатами?`,
   pl_title:'Выплаты', pl_sub:'Вознаграждение команд — нетто и брутто (15%). Фрилансерам компания выплачивает необходимое брутто (игрок платит 15% и остаётся с нетто); остальным — нетто. Вычеты (прачечная, ущерб) вычитаются из суммы к выплате.',
-  pl_saptCurenta:'Текущая неделя', pl_saptTrecuta:'Прошлая неделя', pl_lunaCurenta:'Текущий месяц',
+   pe_btn:'Скачать Excel', pe_btnSub:'выберите период и кого включить', pe_title:'Скачать выплаты в Excel', pe_perioada:'Период', pe_lunaTrecuta:'Прошлый месяц', pe_perioadaAfisata:'Период на экране', pe_cine:'Кто попадает в документ', pe_toti:'Все', pe_doarFl:'Только фрилансеры', pe_faraFl:'Только не фрилансеры', pe_echipa:'Команда', pe_toateEchipele:'Все команды', pe_jucator:'Игрок', pe_totiJucatorii:'Все игроки', pe_doarDed:'Только с удержаниями (прачечная, ущерб, тренировки)', pe_document:'Вид документа', pe_coloaneZile:'Отдельная колонка с суммой за каждый день', pe_sortare:'Порядок строк', pe_sNume:'По алфавиту', pe_sEchipa:'По командам', pe_sPlata:'Сумма к выплате ↓', pe_sMeciuri:'Кол-во матчей ↓', pe_inDocument:'В документе', pe_jucatori:(n)=>`игроков: ${n}`, pe_meciuri:(n)=>`матчей: ${n}`, pe_dePlata:'к выплате', pe_gol:'Нет игроков по этим фильтрам — выберите другой период или фильтр.', pe_calc:'Считаем…', pe_faraScor:(n)=>`матчей без счёта в периоде: ${n} — не оплачиваются, пока нет результата.`, pe_descarca:'Скачать Excel', pe_fFl:'только фрилансеры', pe_fNonFl:'только не фрилансеры', pe_fDed:'только с удержаниями', pl_saptCurenta:'Текущая неделя', pl_saptTrecuta:'Прошлая неделя', pl_lunaCurenta:'Текущий месяц',
   pl_meciuri:'Сыграно матчей', pl_faraScor:'без счёта', pl_jucatori:'Игроков к выплате', pl_fondNet:'Фонд нетто (MDL)', pl_brut:'Брутто',
   pl_retinere:'Удержание 15%', pl_deduceri:'Вычеты', pl_deduceriSub:'прачечная · ущерб · тренировки', pl_maxim:'Максимальная выплата',
   pl_tabel:'Выплаты по игрокам', pl_none:'Нет записей за выбранный период.', pl_total:'ИТОГО', pl_totalProgramat:'ИТОГО ПО ПЛАНУ', pl_progDetaliu:(z,m)=>`${z} дн. × ${m} матчей/день × 4 игрока`, pl_progOk:'Все запланированные матчи записаны.', pl_progLipsa:(v,m)=>`Не хватает ${v} побед и ${v} поражений (≈ ${m} матчей) по сравнению с планом — проверьте дни без матчей или неполные составы.`, pl_progPeste:(v)=>`На ${v} побед/поражений больше плана.`, pl_progFiltru:'Экспорт с фильтром — сравнение с планом по всем игрокам.',
@@ -943,7 +943,7 @@ Object.assign(I18N.ru, {
   fi_experienta:'опыт спортивных / профессиональных соревнований', fi_contactePariuri:'связи, вовлечённые в спортивные ставки', fi_experientaPariere:'личный опыт ставок на спорт',
   fi_caracteristica:'общая характеристика игрока (от агента или рекомендателя)',
   fi_informat:'ознакомлен с требованиями и правилами безопасности', fi_acord:'дал согласие на обработку персональных данных',
-  fi_comentarii:'комментарии', fi_pdfTitlu:'ЛИЧНАЯ КАРТОЧКА', fi_pdfSub:'спортсмена · BSKT Cup 3×3', fi_pdfGenerat:'создано',
+  fi_comentarii:'комментарии', fi_pdfTitlu:'ЛИЧНАЯ КАРТОЧКА', fi_pdfSub:'спортсмена · BSKT Cup 3×3', fi_pdfGenerat:'создано', ar_fisaTitle:'Личная карточка судьи', ar_pdfSub:'судьи · BSKT Cup 3×3', ar_telegram:'Telegram', ar_categorie:'судейская категория (FIBA, национальная, без категории…)', ar_experienta:'опыт судейства', ar_experienta3x3:'опыт в 3×3', ar_functii:'функции, которые может выполнять (судья на площадке, секретарь, секундомер)', ar_disponibilitate:'обычная доступность (дни и часы)', ar_zile:'сколько дней в неделю', ar_limbi:'языки',
   stx_personal:'Дежурный персонал', stx_personalSub:'Имена, из которых выбирают при начале смены на аккаунте локации.',
   stx_numeAngajat:'Фамилия и имя', stx_numeAngajatPh:'напр. Попеску Ион', stx_scoate:'Убрать', stx_personalNone:'Сотрудники ещё не добавлены — добавьте хотя бы одного, чтобы начинать смены.',
   stx_confirmDezactivare:(n)=>`Убрать ${n} из дежурного персонала? История останется в реестре.`,
@@ -1194,12 +1194,7 @@ async function fetchAll(){
     echipe: (echipeR.data||[]).map(e=>({ id:e.id, nume:e.nume, culoare:e.culoare, activ:e.activ, logoUrl:e.logo_url, slugExtern:e.slug_extern })),
     tarife: (tarifeR.data||[]).map(mapTarif),
     meciuri: meciuriRows.map(mapMeci),
-    arbitri: (arbitriR.data||[]).map(a=>({
-      id:a.id, nrDulap:a.nr_dulap, nume:a.nume, prenume:a.prenume, dataNasterii:a.data_nasterii,
-      adresa:a.adresa, telefon:a.telefon, email:a.email, dataAvizMedical:a.data_aviz_medical,
-      statut:a.statut, dataInregistrarii:a.data_inregistrarii, freelancer: a.freelancer!==false,
-      idnp:a.idnp, nrAct:a.nr_act, dataEmiteriiAct:a.data_emiterii_act,
-    })),
+    arbitri: (arbitriR.data||[]).map(mapArbitru),
     intarzieri: (intarzieriR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, arbitru:r.arbitru, data:r.data, minuteIntarziere:r.minute_intarziere, motiv:r.motiv, createdAt:r.created_at})),
     vestimentatie: (vestimentatieR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, arbitru:r.arbitru, inventarId:r.inventar_id, tip:r.tip, culoare:r.culoare, marime:r.marime, cantitate:r.cantitate, dataReturnare:r.data_returnare, stareReturnare:r.stare_returnare})),
     serviciu: (serviciuR.data||[]).map(r=>({
@@ -1611,7 +1606,7 @@ function icon(name, className='ui-icon'){
 }
 function buttonIconName(button){
   if(button.querySelector('svg')) return null;
-  if(button.matches('.toggle-btn,.category-filter-chip,.badge,.lang-btn,.te-swatch,.mcal-step,.mcal-nav,.mcal-cell,.mcal-trigger,.mcal-link,.mcal-foot button')) return null;
+  if(button.matches('.toggle-btn,.pe-chip,.category-filter-chip,.badge,.lang-btn,.te-swatch,.mcal-step,.mcal-nav,.mcal-cell,.mcal-trigger,.mcal-link,.mcal-foot button')) return null;
   const action=(button.getAttribute('onclick')||'').toLowerCase();
   const label=(button.textContent||'').trim().toLowerCase();
   if(button.matches('.modal-close') || /closemodal|cancel|anulează|отмена/.test(action+' '+label)) return 'close';
@@ -4075,7 +4070,7 @@ async function setPayRange(from, to){
   if(from > to) [from, to] = [to, from];
   payState = { from, to };
   const lbl = document.querySelector('.pay-period-label'); if(lbl) lbl.textContent = payPeriodLabel(from, to);
-  const wl = document.querySelector('.week-locks'); if(wl) wl.outerHTML = renderWeekLocks(from, to);
+  const wl = document.querySelector('.week-locks-wrap'); if(wl) wl.outerHTML = renderWeekLocks(from, to);
   const ins = document.querySelectorAll('.pay-period-dates input');
   ins.forEach((el,i)=>{ const v = i===0 ? from : to; if(el.value!==v && document.activeElement!==el) el.value = v; });
   await openPlati();
@@ -4094,14 +4089,16 @@ function deductionsFor(participantId, from, to){
   const antr = DB.treninguri.filter(r=>r.participantId===participantId && inR(r.data)).reduce((s,r)=>s+Number(r.sumaJucator||0),0);
   return { spal, daune, antr, total: spal+daune+antr };
 }
-function payRows(range = payState){
+// teamId (Excel export by team): only the games the player played FOR that team, so the team files add up to the
+// whole; a player's deductions are not per team and go only to the team he played most games for in the period.
+function payRows(range = payState, teamId = null){
   const { from, to } = range;
   const matches = DB.meciuri.filter(m=>m.data>=from && m.data<=to);
   const days = [...new Set(matches.map(m=>m.data))].sort();
   const byPlayer = new Map();
   matches.forEach(m=>{
     const w = winnerOf(m);
-    rosterOf(m.id).forEach(r=>{
+    rosterOf(m.id, teamId || undefined).forEach(r=>{
       let e = byPlayer.get(r.participantId);
       if(!e){ e = { participantId:r.participantId, echipe:new Set(), echipaIds:new Set(), meciuri:0, v:0, i:0, cap:0, rez:0, jucator:0, net:0, ret:0, brut:0, coefSum:0, coefN:0, perDay:{}, items:[] }; byPlayer.set(r.participantId, e); }
       e.echipe.add(echipaName(r.echipaId)); e.echipaIds.add(r.echipaId);
@@ -4117,8 +4114,13 @@ function payRows(range = payState){
       e.items.push({ m, r, won: w ? w===r.echipaId : null });
     });
   });
+  const mainTeam = pid => {
+    const n = new Map();
+    matches.forEach(m=>rosterOf(m.id).forEach(r=>{ if(r.participantId===pid) n.set(r.echipaId, (n.get(r.echipaId)||0)+1); }));
+    return [...n.entries()].sort((a,b)=>b[1]-a[1] || echipaName(a[0]).localeCompare(echipaName(b[0]),'ro'))[0]?.[0];
+  };
   const rows = [...byPlayer.values()].map(e=>{
-    const ded = deductionsFor(e.participantId, from, to);
+    const ded = !teamId || mainTeam(e.participantId)===teamId ? deductionsFor(e.participantId, from, to) : { spal:0, daune:0, antr:0, total:0 };
     e.items.sort((a,b)=>(a.m.data+String(a.m.nr||0).padStart(6,'0')).localeCompare(b.m.data+String(b.m.nr||0).padStart(6,'0')));
     // freelancer: the company pays the GROSS ("Brut necesar") and the player pays the 15% tax;
     // not a freelancer: the company pays the net (brut = net, no withholding on our side)
@@ -4363,7 +4365,10 @@ function renderPlati(){
       <input type="date" value="${payState.to}" onchange="setPayRange(payState.from, this.value)" aria-label="${esc(t('re_pana_la'))}">
     </div>
     <div class="pay-presets">${presets.map(([k,l])=>`<button type="button" class="toggle-btn" onclick="payPreset('${k}')">${t(l)}</button>`).join('')}</div>
-    <button class="btn-primary btn-sm pay-export" onclick="exportPlatiExcel()">${t('re_excel')}</button>
+    <button type="button" class="pay-export pay-export-big" onclick="openPlatiExport()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>
+      <span><b>${t('pe_btn')}</b><small>${t('pe_btnSub')}</small></span>
+    </button>
   </div>
   ${renderWeekLocks(payState.from, payState.to)}
   ${syncStrip()}
@@ -4760,34 +4765,158 @@ function actBuildPdf(a, sig){
   return pdf;
 }
 
-function exportPlatiExcel(){
+/* ── Plăți → Excel: dialog with period + filters, live preview of what goes into the file ── */
+let payExport = null;
+function openPlatiExport(){
+  if(!payState) payState = defaultPayRange();
+  payExport = { from:payState.from, to:payState.to, fl:'toti', team:payView.team||'', player:'', ded:false, days:!!payView.days,
+                sort:['nume','echipa','dePlata','meciuri'].includes(payView.sort) ? payView.sort : 'nume', loading:false };
+  openModal('plati-export-modal');
+  payExportLoad();
+}
+// rows of the chosen period after the dialog's filters (all = before filters, for the "Total programat" note)
+function payExportRows(){
+  const o = payExport;
+  const { rows:all, days, matches } = payRows({ from:o.from, to:o.to });
+  const scoped = o.team ? payRows({ from:o.from, to:o.to }, o.team).rows : all;
+  const sorters = { nume:(a,b)=>a.nume.localeCompare(b.nume,'ro'), echipa:(a,b)=>a.echipe.localeCompare(b.echipe) || a.nume.localeCompare(b.nume,'ro'),
+                    dePlata:(a,b)=>b.dePlata-a.dePlata, meciuri:(a,b)=>b.meciuri-a.meciuri || a.nume.localeCompare(b.nume,'ro') };
+  const rows = scoped.filter(r=>(o.fl==='toti' || (o.fl==='da') === r.freelancer)
+                           && (!o.player || r.participantId===o.player) && (!o.ded || r.ded.total>0)).sort(sorters[o.sort]);
+  return { rows, all, days, matches: o.team ? matches.filter(m=>m.echipaAId===o.team || m.echipaBId===o.team) : matches };
+}
+// line-ups of the chosen period are fetched first; only the latest request redraws (fast period changes)
+async function payExportLoad(){
+  const o = payExport; if(!o) return;
+  const req = o.req = (o.req||0) + 1;
+  o.loading = true; renderPlatiExport();
+  try { await loadRosters(o.from, o.to); } catch(e){ console.error(e); alert(t('err_load')+' '+e.message); }
+  if(payExport!==o || o.req!==req) return;
+  o.loading = false; renderPlatiExport();
+}
+function payExportSet(key, value){
+  if(!payExport) return;
+  if(key==='from' || key==='to'){
+    if(!isCompleteDate(value)) return;
+    payExport[key] = value;
+    if(payExport.from > payExport.to) [payExport.from, payExport.to] = [payExport.to, payExport.from];
+    payExportLoad(); return;
+  }
+  payExport[key] = value;
+  renderPlatiExport();
+}
+function payExportPreset(kind){
+  const today = todayISO(), month = today.slice(0,8)+'01';
+  const r = kind==='month' ? [month, addDays(addMonths(month,1),-1)]
+          : kind==='lastMonth' ? [addMonths(month,-1), addDays(month,-1)]
+          : kind==='week' ? [weekStart(today), addDays(weekStart(today),6)]
+          : kind==='lastWeek' ? [addDays(weekStart(today),-7), addDays(weekStart(today),-1)]
+          : [payState.from, payState.to];
+  payExport.from = r[0]; payExport.to = r[1];
+  payExportLoad();
+}
+function payExportPresetActive(kind){
+  const today = todayISO(), month = today.slice(0,8)+'01', o = payExport;
+  const r = { month:[month, addDays(addMonths(month,1),-1)], lastMonth:[addMonths(month,-1), addDays(month,-1)],
+              week:[weekStart(today), addDays(weekStart(today),6)], lastWeek:[addDays(weekStart(today),-7), addDays(weekStart(today),-1)] }[kind];
+  return r && r[0]===o.from && r[1]===o.to;
+}
+function renderPlatiExport(){
+  const box = document.getElementById('plati-export-body'); if(!box || !payExport) return;
+  const o = payExport;
+  const presets = [['month','pl_lunaCurenta'],['lastMonth','pe_lunaTrecuta'],['week','pl_saptCurenta'],['lastWeek','pl_saptTrecuta']];
+  const seg = (key, opts) => `<div class="toggle-group pe-seg">${opts.map(([v,l])=>`<button type="button" class="toggle-btn ${o[key]===v?'active':''}" onclick="payExportSet('${key}','${v}')">${t(l)}</button>`).join('')}</div>`;
+  const { all } = o.loading ? { all:[] } : payExportRows();
+  const teams = DB.echipe.filter(e=>e.activ!==false || e.id===o.team).sort((a,b)=>a.nume.localeCompare(b.nume,'ro'));
+  const players = all.filter(r=>!o.team || r.echipaIds.includes(o.team));
+  if(o.player && !o.loading && !players.some(r=>r.participantId===o.player)) o.player = '';
+  box.innerHTML = `
+    <div class="pe-section">
+      <div class="pe-label">${t('pe_perioada')} <span class="pe-period">${esc(payPeriodLabel(o.from, o.to))}</span></div>
+      <div class="pe-presets">${presets.map(([k,l])=>`<button type="button" class="pe-chip ${payExportPresetActive(k)?'active':''}" onclick="payExportPreset('${k}')">${t(l)}</button>`).join('')}
+        ${o.from!==payState.from || o.to!==payState.to ? `<button type="button" class="pe-chip" onclick="payExportPreset('screen')">${t('pe_perioadaAfisata')}</button>` : ''}</div>
+      <div class="pe-dates">
+        <label class="field"><span>${t('re_de_la')}</span><input type="date" value="${o.from}" onchange="payExportSet('from', this.value)"></label>
+        <label class="field"><span>${t('re_pana_la')}</span><input type="date" value="${o.to}" onchange="payExportSet('to', this.value)"></label>
+      </div>
+    </div>
+    <div class="pe-section">
+      <div class="pe-label">${t('pe_cine')}</div>
+      ${seg('fl', [['toti','pe_toti'],['da','pe_doarFl'],['nu','pe_faraFl']])}
+      <div class="pe-grid">
+        <label class="field"><span>${t('pe_echipa')}</span><select onchange="payExportSet('team', this.value)">
+          <option value="">${t('pe_toateEchipele')}</option>${teams.map(e=>`<option value="${e.id}" ${e.id===o.team?'selected':''}>${esc(e.nume)}</option>`).join('')}</select></label>
+        <label class="field"><span>${t('pe_jucator')}</span><select onchange="payExportSet('player', this.value)" ${o.loading?'disabled':''}>
+          <option value="">${t('pe_totiJucatorii')}</option>${players.map(r=>`<option value="${r.participantId}" ${r.participantId===o.player?'selected':''}>${esc(r.nume)}</option>`).join('')}</select></label>
+      </div>
+      <label class="check-box pe-check"><input type="checkbox" ${o.ded?'checked':''} onchange="payExportSet('ded', this.checked)"><span>${t('pe_doarDed')}</span></label>
+    </div>
+    <div class="pe-section">
+      <div class="pe-label">${t('pe_document')}</div>
+      <div class="pe-grid">
+        <label class="field"><span>${t('pe_sortare')}</span><select onchange="payExportSet('sort', this.value)">
+          ${[['nume','pe_sNume'],['echipa','pe_sEchipa'],['dePlata','pe_sPlata'],['meciuri','pe_sMeciuri']].map(([v,l])=>`<option value="${v}" ${o.sort===v?'selected':''}>${t(l)}</option>`).join('')}</select></label>
+        <label class="check-box pe-check"><input type="checkbox" ${o.days?'checked':''} onchange="payExportSet('days', this.checked)"><span>${t('pe_coloaneZile')}</span></label>
+      </div>
+    </div>
+    <div id="plati-export-preview"></div>
+    <div class="pe-actions">
+      <button type="button" class="btn-ghost" onclick="closeModal('plati-export-modal')">${t('btn_cancel')}</button>
+      <button type="button" class="btn-primary pe-download" id="pe-download" onclick="downloadPlatiExport()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>${t('pe_descarca')}</button>
+    </div>`;
+  renderPlatiExportPreview();
+}
+function renderPlatiExportPreview(){
+  const box = document.getElementById('plati-export-preview'), btn = document.getElementById('pe-download');
+  if(!box || !payExport) return;
+  if(payExport.loading){ box.innerHTML = `<div class="pe-preview muted">${t('pe_calc')}</div>`; if(btn) btn.disabled = true; return; }
+  const { rows, matches } = payExportRows();
+  const scored = matches.filter(m=>winnerOf(m)).length, unscored = matches.length - scored;
+  const sum = rows.reduce((s,r)=>s+r.dePlata, 0);
+  if(btn) btn.disabled = !rows.length;
+  box.innerHTML = rows.length ? `<div class="pe-preview">
+      <div class="pe-prev-k">${t('pe_inDocument')}</div>
+      <div class="pe-prev-v">${t('pe_jucatori')(rows.length)} · ${t('pe_meciuri')(scored)} · <b>${money(sum)} MDL</b> ${t('pe_dePlata')}</div>
+      ${unscored ? `<div class="pe-prev-warn">${t('pe_faraScor')(unscored)}</div>` : ''}
+    </div>` : `<div class="pe-preview empty">${t('pe_gol')}</div>`;
+}
+function downloadPlatiExport(){
+  const o = payExport; if(!o || o.loading) return;
+  const { rows, all, days } = payExportRows();
+  if(!rows.length) return;
+  const tags = [o.fl==='da' ? t('pe_fFl') : o.fl==='nu' ? t('pe_fNonFl') : '', o.team ? echipaName(o.team) : '', o.player ? participantName(o.player) : '', o.ded ? t('pe_fDed') : ''].filter(Boolean);
+  const slug = s => searchNorm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  exportPlatiExcel({ from:o.from, to:o.to, rows, all, days, showDays:o.days, note:tags.join(' · '),
+                     file:`bskt-plati_${o.from}_${o.to}${tags.length ? '_'+tags.map(slug).join('_') : ''}.xlsx` });
+  closeModal('plati-export-modal');
+}
+function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
-  const { rows:all, days } = payRows();
-  const rows = payFilteredRows(all);
   const filtered = rows.length !== all.length;
   const r2 = v => Math.round((v||0)*100)/100;
-  const nDays = payView.days ? days.length : 0;
-  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(payView.days ? days.map(ddmm) : []),
+  const nDays = showDays ? days.length : 0;
+  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(showDays ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
-    t('nav_spalatorie'), t('nav_daune'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
-  const C = { v:2, i:3, fl:5, net:6+nDays, coef:7+nDays, brut:8+nDays, ret:9+nDays, ramas:10+nDays, spal:11+nDays, daune:12+nDays, plata:13+nDays, obs:14+nDays };
-  const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(payView.days ? days.map(d=>r.perDay[d]||0) : []),
-    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r2(r.dePlata), payObservation(r)]);
-  const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.plata, ...Array.from({length:nDays},(_,k)=>6+k)]);
+    t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
+  const C = { v:2, i:3, fl:5, net:6+nDays, coef:7+nDays, brut:8+nDays, ret:9+nDays, ramas:10+nDays, spal:11+nDays, daune:12+nDays, antr:13+nDays, plata:14+nDays, obs:15+nDays };
+  const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(showDays ? days.map(d=>r.perDay[d]||0) : []),
+    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]);
+  const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.antr, C.plata, ...Array.from({length:nDays},(_,k)=>6+k)]);
   const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===C.v||i===C.i) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
 
   // "Total programat": days of the period that have already happened (today counts once it has a result)
   const today = todayISO();
-  let last = payState.to < today ? payState.to : today;
+  let last = to < today ? to : today;
   if(last===today && !DB.meciuri.some(m=>m.data===today && winnerOf(m))) last = addDays(today, -1);
-  const zile = last < payState.from ? 0 : Math.round((Date.parse(last+'T00:00:00Z') - Date.parse(payState.from+'T00:00:00Z')) / 86400000) + 1;
+  const zile = last < from ? 0 : Math.round((Date.parse(last+'T00:00:00Z') - Date.parse(from+'T00:00:00Z')) / 86400000) + 1;
   const progV = zile * MECIURI_PE_ZI * JUCATORI_PE_ECHIPA;
   const realV = all.reduce((s,r)=>s+r.v,0), realI = all.reduce((s,r)=>s+r.i,0);
   const lipsa = progV - Math.min(realV, realI);
   const progNote = (filtered ? t('pl_progFiltru')+' ' : '') + (lipsa>0 ? t('pl_progLipsa')(lipsa, Math.round(lipsa/JUCATORI_PE_ECHIPA)) : lipsa<0 ? t('pl_progPeste')(-lipsa) : t('pl_progOk'));
   const prog = head.map((_,i)=> i===0 ? t('pl_totalProgramat') : i===1 ? t('pl_progDetaliu')(zile, MECIURI_PE_ZI) : (i===C.v||i===C.i) ? progV : i===C.obs ? progNote : '');
 
-  const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [], total, prog, [], head, ...body, total, prog];
+  const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(from)} – ${fmtDate(to)}${note ? ' · '+note : ''}`], [], total, prog, [], head, ...body, total, prog];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?22 : i===4?26 : i===C.fl?12 : i===C.obs?52 : 14 }));
   const R = { tot1:2, prog1:3, head:5, first:6, tot2:6+body.length, prog2:7+body.length };
@@ -4832,7 +4961,7 @@ function exportPlatiExcel(){
   }
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, t('pl_title').slice(0,30));
-  XLSX.writeFile(wb, `bskt-plati_${payState.from}_${payState.to}.xlsx`);
+  XLSX.writeFile(wb, file);
 }
 
 /* ══════════════════════ STATISTICI ══════════════════════ */
@@ -5169,6 +5298,37 @@ const FISA_DB_COLUMN = {
   beneficiar:'beneficiar', idno:'idno', iban:'iban', banca:'banca', bic:'bic', valuta:'valuta', nrContract:'nr_contract', dataContract:'data_contract',
   telefonFreelance:'telefon_freelance', emailFreelance:'email_freelance',
 };
+// Referee personal file: identity + document (as for players), the referee questionnaire, freelancer payment block
+const ARB_FISA_FIELDS = [
+  { n:1, key:'numeComplet', label:'fi_numeComplet', virtual:true },
+  { n:2, key:'dataNasterii', label:'pa_nastere', type:'date' }, { n:'2b', key:'locNastere', label:'fi_locNastere' },
+  { n:3, key:'adresa', label:'fi_domiciliu' }, { n:4, key:'idnp', label:'fi_idnp' },
+  { n:5, key:'telefon', label:'fi_telefon' }, { n:'5b', key:'telegram', label:'ar_telegram' }, { n:6, key:'email', label:'pa_email', type:'email' },
+  { n:7, key:'serieAct', label:'fi_serieAct' }, { n:'7b', key:'nrAct', label:'fi_nrAct' }, { n:'7c', key:'dataEmiteriiAct', label:'fi_dataEmiterii', type:'date' },
+  { n:8, key:'categorieArbitru', label:'ar_categorie' }, { n:9, key:'experientaArbitraj', label:'ar_experienta' }, { n:10, key:'experienta3x3', label:'ar_experienta3x3' },
+  { n:11, key:'functii', label:'ar_functii', type:'long' },
+  { n:12, key:'disponibilitate', label:'ar_disponibilitate', type:'long' }, { n:13, key:'zileSaptamana', label:'ar_zile' }, { n:14, key:'limbi', label:'ar_limbi' },
+  { n:15, key:'informatSecuritate', label:'fi_informat', type:'bool' }, { n:16, key:'acordDatePersonale', label:'fi_acord', type:'bool' },
+  { n:17, key:'comentarii', label:'fi_comentarii', type:'long' },
+  { n:18, key:'freelancer', label:'fd_freelancer', type:'bool', virtual:true },
+  { n:19, key:'beneficiar', label:'fd_beneficiar' }, { n:20, key:'idno', label:'fd_idno' }, { n:21, key:'iban', label:'fd_iban' },
+  { n:22, key:'banca', label:'fd_banca' }, { n:23, key:'bic', label:'fd_bic' }, { n:24, key:'valuta', label:'fd_valuta' },
+  { n:25, key:'nrContract', label:'fd_nrContract' }, { n:26, key:'dataContract', label:'fd_dataContract', type:'date' },
+];
+const ARB_FISA_DB_COLUMN = {
+  dataNasterii:'data_nasterii', locNastere:'loc_nastere', adresa:'adresa', idnp:'idnp', telefon:'telefon', telegram:'telegram', email:'email',
+  serieAct:'serie_act', nrAct:'nr_act', dataEmiteriiAct:'data_emiterii_act', categorieArbitru:'categorie_arbitru',
+  experientaArbitraj:'experienta_arbitraj', experienta3x3:'experienta_3x3', functii:'functii', disponibilitate:'disponibilitate',
+  zileSaptamana:'zile_saptamana', limbi:'limbi', informatSecuritate:'informat_securitate', acordDatePersonale:'acord_date_personale',
+  comentarii:'comentarii', beneficiar:'beneficiar', idno:'idno', iban:'iban', banca:'banca', bic:'bic', valuta:'valuta',
+  nrContract:'nr_contract', dataContract:'data_contract',
+};
+function mapArbitru(a){
+  const out = { id:a.id, nrDulap:a.nr_dulap, nume:a.nume, prenume:a.prenume, patronimic:a.patronimic, dataAvizMedical:a.data_aviz_medical,
+    statut:a.statut, dataInregistrarii:a.data_inregistrarii, freelancer: a.freelancer!==false, fotoPath:a.foto_path };
+  Object.entries(ARB_FISA_DB_COLUMN).forEach(([k, c])=>{ out[k] = a[c]; });
+  return out;
+}
 function fisaValue(p, f, lang=LANG){
   const v = f.key==='numeComplet' ? [p.nume, p.prenume, p.patronimic].filter(Boolean).join(' ') : p[f.key];
   if(f.type==='date') return v ? fmtDate(v) : '';
@@ -5177,8 +5337,8 @@ function fisaValue(p, f, lang=LANG){
   if(f.type==='bool') return v ? (lang==='ru'?'Да':'Da') : (lang==='ru'?'Нет':'Nu');
   return v==null ? '' : String(v);
 }
-function fisaInput(p, f){
-  const id = `ep-${f.key}`, v = p[f.key];
+function fisaInput(p, f, pre='ep'){
+  const id = `${pre}-${f.key}`, v = p[f.key];
   if(f.type==='date') return `<input id="${id}" type="date" value="${esc(v||'')}">`;
   if(f.type==='number') return `<input id="${id}" type="number" min="0" value="${esc(v??'')}">`;
   if(f.type==='nr') return `<select id="${id}"><option value="">—</option>${[1,2,3,4].map(n=>`<option ${v===n?'selected':''}>${n}</option>`).join('')}</select>`;
@@ -5190,8 +5350,8 @@ function fisaInput(p, f){
   if(f.type==='long') return `<textarea id="${id}" rows="2">${esc(v||'')}</textarea>`;
   return `<input id="${id}" type="${f.type==='email'?'email':'text'}" value="${esc(v||'')}">`;
 }
-function readFisaInput(f){
-  const el = document.getElementById(`ep-${f.key}`); if(!el) return undefined;
+function readFisaInput(f, pre='ep'){
+  const el = document.getElementById(`${pre}-${f.key}`); if(!el) return undefined;
   if(f.type==='bool') return el.checked;
   const v = el.value.trim();
   if(v==='') return null;
@@ -5405,6 +5565,41 @@ async function imageToDataUrl(url){
 async function exportFisaPdf(){
   if(isAsistent()) return;
   const p = participant(currentProfileId); if(!p) return;
+  const R = keys => keys.map(k=>FISA_FIELDS.find(f=>f.key===k));
+  const ok = await drawFisaPdf(p, {
+    sub:'fi_pdfSub', file:'fisa-personala',
+    layout: [
+      R(['numeComplet']), R(['dataNasterii','locNastere']), R(['adresa','idnp']),
+      R(['telefon','contactRezerva','persoanaContact','email']), R(['serieAct','nrAct','dataEmiteriiAct','stagiuSportivAni']),
+      R(['locMunca','functia','profilActivitate']), R(['club','echipaId','nrEchipa']), R(['rolEchipa','clasament','categorieSportiva']),
+      R(['primulAntrenor','recomandator','garantIntegritate']), R(['inaltimeCm','greutateKg','marime']), R(['rezultateSport']),
+      R(['traumatisme','contraindicatii','altSport']), R(['experientaCompetitii','contactePariuri','experientaPariere']),
+      R(['caracteristica']), R(['informatSecuritate','acordDatePersonale']), R(['comentarii']),
+      R(['freelancer','beneficiar','idno']), R(['iban','banca','bic']), R(['valuta','nrContract','dataContract']), R(['telefonFreelance','emailFreelance']),
+    ],
+  });
+  if(!ok) return;
+  await logAction(`A exportat fișa personală (PDF) pentru ${participantName(p.id)}`);
+}
+async function exportArbitruFisaPdf(){
+  if(isAsistent()) return;
+  const a = arbitru(currentArbitruId); if(!a) return;
+  const R = keys => keys.map(k=>ARB_FISA_FIELDS.find(f=>f.key===k));
+  const ok = await drawFisaPdf(a, {
+    sub:'ar_pdfSub', file:'fisa-arbitru',
+    layout: [
+      R(['numeComplet']), R(['dataNasterii','locNastere']), R(['adresa','idnp']),
+      R(['telefon','telegram','email']), R(['serieAct','nrAct','dataEmiteriiAct']),
+      R(['categorieArbitru','experientaArbitraj','experienta3x3']), R(['functii']), R(['disponibilitate']),
+      R(['zileSaptamana','limbi']), R(['informatSecuritate','acordDatePersonale']), R(['comentarii']),
+      R(['freelancer','beneficiar','idno']), R(['iban','banca','bic']), R(['valuta','nrContract','dataContract']),
+    ],
+  });
+  if(!ok) return;
+  await logAction(`A exportat fișa personală (PDF) a arbitrului ${a.nume} ${a.prenume}`);
+}
+// A4 one-page form: numbered fields, value over a rule, caption below; photo box top-right
+async function drawFisaPdf(p, { sub, file, layout }){
   if(!window.jspdf?.jsPDF){ alert(t('re_noPdf')); return; }
   const lang = LANG;
   const L = key => t(key, lang);
@@ -5414,7 +5609,7 @@ async function exportFisaPdf(){
   doc.setFont('NotoSans','bold'); doc.setFontSize(18); doc.setTextColor(25,20,20);
   doc.text(L('fi_pdfTitlu'), M, 22);
   doc.setFont('NotoSans','normal'); doc.setFontSize(10); doc.setTextColor(110,100,95);
-  doc.text(L('fi_pdfSub'), M, 28);
+  doc.text(L(sub), M, 28);
   doc.setDrawColor(31,150,66); doc.setLineWidth(.8); doc.line(M, 32, M+40, 32);
   // photo box top-right
   const PW = 38.4, PH = 48;              // photo box (was 32×40, +20%)
@@ -5433,17 +5628,6 @@ async function exportFisaPdf(){
     try { const url = await photoUrl(p.fotoPath); if(url){ const dataUrl = await imageToDataUrl(url); doc.addImage(dataUrl, dataUrl.includes('image/png')?'PNG':'JPEG', px+.5, py+.5, PW-1, PH-1); } } catch(e){ console.warn('photo', e); }
   } else { doc.setFontSize(7); doc.setTextColor(170,160,155); doc.text(L('fi_foto'), px+PW/2, py+PH/2+1, { align:'center' }); }
 
-  // rows of the paper form
-  const R = keys => keys.map(k=>FISA_FIELDS.find(f=>f.key===k));
-  const layout = [
-    R(['numeComplet']), R(['dataNasterii','locNastere']), R(['adresa','idnp']),
-    R(['telefon','contactRezerva','persoanaContact','email']), R(['serieAct','nrAct','dataEmiteriiAct','stagiuSportivAni']),
-    R(['locMunca','functia','profilActivitate']), R(['club','echipaId','nrEchipa']), R(['rolEchipa','clasament','categorieSportiva']),
-    R(['primulAntrenor','recomandator','garantIntegritate']), R(['inaltimeCm','greutateKg','marime']), R(['rezultateSport']),
-    R(['traumatisme','contraindicatii','altSport']), R(['experientaCompetitii','contactePariuri','experientaPariere']),
-    R(['caracteristica']), R(['informatSecuritate','acordDatePersonale']), R(['comentarii']),
-    R(['freelancer','beneficiar','idno']), R(['iban','banca','bic']), R(['valuta','nrContract','dataContract']), R(['telefonFreelance','emailFreelance']),
-  ];
   // The whole form stays on ONE page: measure at full size and shrink type and spacing until it fits above the footer.
   const Y0 = 60, YMAX = 286, MAX_LINES = 6;
   const measure = k => {
@@ -5477,8 +5661,8 @@ async function exportFisaPdf(){
   });
   doc.setFontSize(7.5); doc.setTextColor(150,140,135);
   doc.text(`BSKT Cup · ${L('fi_pdfGenerat')} ${fmtDate(todayISO())}`, M, 292);
-  doc.save(`fisa-personala_${p.nume}_${p.prenume}.pdf`.replace(/\s+/g,'-'));
-  await logAction(`A exportat fișa personală (PDF) pentru ${participantName(p.id)}`);
+  doc.save(`${file}_${p.nume}_${p.prenume}.pdf`.replace(/\s+/g,'-'));
+  return true;
 }
 
 /* ══════════════════════ SETĂRI BSKT ══════════════════════ */
@@ -6832,11 +7016,7 @@ async function addArbitru(){
   };
   const { data, error } = await sb.from('arbitri').insert(row).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
-  DB.arbitri.unshift({
-    id:data.id, nrDulap:data.nr_dulap, nume:data.nume, prenume:data.prenume, dataNasterii:data.data_nasterii,
-    adresa:data.adresa, telefon:data.telefon, email:data.email, dataAvizMedical:data.data_aviz_medical,
-    statut:data.statut, dataInregistrarii:data.data_inregistrarii,
-  });
+  DB.arbitri.unshift(mapArbitru(data));
   await logAction(`A înregistrat arbitru nou: ${nume} ${prenume}`);
   render();
 }
@@ -6854,9 +7034,18 @@ function renderArbitruProfile(editing = false){
   const deleteBtn = document.getElementById('arbitru-delete-btn');
   deleteBtn.style.display = (editing || !isFullAdmin()) ? 'none' : '';
   deleteBtn.title = t('arb_deleteTitle');
+  const pdfBtn = document.getElementById('arbitru-pdf-btn');
+  if(pdfBtn) pdfBtn.style.display = (editing || isAsistent()) ? 'none' : '';
 
+  const head = `<div class="profile-hero">
+      <div class="profile-photo" id="arbitru-photo">${icon('participants')}</div>
+      <div>
+        <div class="profile-hero-name">${esc(a.nume)} ${esc(a.prenume)}</div>
+        ${editing ? `<label class="btn-ghost btn-sm upload-btn">${t('fi_incarcaFoto')}<input type="file" accept="image/jpeg,image/png,image/webp" onchange="uploadArbitruPhoto(this)" hidden></label>` : ''}
+      </div>
+    </div>`;
   if(editing){
-    document.getElementById('arbitru-modal-body').innerHTML = `
+    document.getElementById('arbitru-modal-body').innerHTML = head + `
       <div class="profile-edit-grid">
         <div class="field"><label>${t('pa_dulap')}</label><input id="eab-dulap" value="${esc(a.nrDulap)}" placeholder="${t('pa_dulapPh')}"></div>
         <div class="field"><label>${t('th_statut')}</label><select id="eab-statut">
@@ -6866,21 +7055,17 @@ function renderArbitruProfile(editing = false){
         <div class="field"><label>${t('fl_label')}</label><select id="eab-freelancer">
           <option value="1" ${a.freelancer!==false?'selected':''}>${t('fl_daLung')}</option>
           <option value="0" ${a.freelancer===false?'selected':''}>${t('fl_nuLung')}</option></select></div>
+        <div class="field"><label>${t('pa_aviz')}</label><input id="eab-aviz" type="date" value="${esc(a.dataAvizMedical)}"></div>
         <div class="field"><label>${t('pa_nume')}</label><input id="eab-nume" value="${esc(a.nume)}"></div>
         <div class="field"><label>${t('pa_prenume')}</label><input id="eab-prenume" value="${esc(a.prenume)}"></div>
-        <div class="field"><label>${t('pa_nastere')}</label><input id="eab-nastere" type="date" value="${esc(a.dataNasterii)}"></div>
-        <div class="field"><label>${t('pa_telefon')}</label><input id="eab-telefon" value="${esc(a.telefon)}"></div>
-        <div class="field"><label>${t('pa_email')}</label><input id="eab-email" type="email" value="${esc(a.email)}"></div>
-        <div class="field"><label>${t('pa_adresa')}</label><input id="eab-adresa" value="${esc(a.adresa)}"></div>
-        <div class="field"><label>${t('fi_idnp')}</label><input id="eab-idnp" inputmode="numeric" maxlength="13" value="${esc(a.idnp)}"></div>
-        <div class="field"><label>${t('fi_nrAct')}</label><input id="eab-nract" value="${esc(a.nrAct)}"></div>
-        <div class="field"><label>${t('fi_dataEmiterii')}</label><input id="eab-emis" type="date" value="${esc(a.dataEmiteriiAct)}"></div>
-        <div class="field"><label>${t('pa_aviz')}</label><input id="eab-aviz" type="date" value="${esc(a.dataAvizMedical)}"></div>
+        <div class="field"><label>${t('fi_patronimic')}</label><input id="eab-patronimic" value="${esc(a.patronimic||'')}"></div>
+        ${ARB_FISA_FIELDS.filter(f=>!f.virtual).map(f=>`<div class="field ${f.type==='long'?'span-2':''}"><label><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</label>${fisaInput(a, f, 'eab')}</div>`).join('')}
       </div>
       <div class="profile-edit-actions">
         <button class="btn-ghost" onclick="renderArbitruProfile(false)">${t('btn_cancel')}</button>
         <button class="btn-primary" onclick="saveArbitruProfile()">${t('btn_save')}</button>
       </div>`;
+    fillArbitruPhoto(a);
     return;
   }
 
@@ -6894,19 +7079,38 @@ function renderArbitruProfile(editing = false){
     <div class="view-sub" style="margin:14px 0 0">${t('as_arbDatePersonale')}</div>`;
     return;
   }
-  document.getElementById('arbitru-modal-body').innerHTML = `
+  document.getElementById('arbitru-modal-body').innerHTML = head + `
     <div class="profile-grid">
       <div><div class="k">${t('pa_dulap')}</div><div class="v">${esc(a.nrDulap)||'—'}</div></div>
       <div><div class="k">${t('th_statut')}</div><div class="v"><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></div></div>
       <div><div class="k">${t('fl_label')}</div><div class="v">${freelancerBadge(a.freelancer!==false)}</div></div>
-      <div><div class="k">${t('pa_nastere')}</div><div class="v">${fmtDate(a.dataNasterii)}</div></div>
-      <div><div class="k">${t('pa_adresa')}</div><div class="v">${esc(a.adresa)||'—'}</div></div>
-      <div><div class="k">${t('fi_idnp')}</div><div class="v">${esc(a.idnp)||'—'}</div></div>
-      <div><div class="k">${t('fi_nrAct')}</div><div class="v">${esc(a.nrAct)||'—'}${a.dataEmiteriiAct?` <span class="td-muted">· ${fmtDate(a.dataEmiteriiAct)}</span>`:''}</div></div>
-      <div><div class="k">${t('pa_telefon')}</div><div class="v">${esc(a.telefon)||'—'}</div></div>
-      <div><div class="k">${t('pa_email')}</div><div class="v">${esc(a.email)||'—'}</div></div>
       <div><div class="k">${t('pa_aviz')}</div><div class="v">${fmtDate(a.dataAvizMedical)||'—'}</div></div>
-    </div>`;
+      <div><div class="k">${t('fi_completare')}</div><div class="v">${ARB_FISA_FIELDS.filter(f=>fisaValue(a,f)!=='' && f.type!=='bool').length}/${ARB_FISA_FIELDS.filter(f=>f.type!=='bool').length}</div></div>
+    </div>
+    <section class="profile-section fisa-section">
+      <div class="profile-section-title">${t('ar_fisaTitle')}</div>
+      <div class="fisa-grid">${ARB_FISA_FIELDS.map(f=>{ const v = fisaValue(a,f); return `<div class="fisa-item ${f.type==='long'?'span-2':''}"><div class="k"><span class="fisa-n">${String(f.n).replace(/b|c/,'')}.</span> ${t(f.label)}</div><div class="v ${v?'':'td-muted'}">${v?esc(v):'—'}</div></div>`; }).join('')}</div>
+    </section>`;
+  fillArbitruPhoto(a);
+}
+async function fillArbitruPhoto(a){
+  const box = document.getElementById('arbitru-photo'); if(!box || !a.fotoPath) return;
+  const url = await photoUrl(a.fotoPath);
+  if(url && document.getElementById('arbitru-photo')===box) box.innerHTML = `<img src="${esc(url)}" alt="">`;
+}
+async function uploadArbitruPhoto(input){
+  const a = arbitru(currentArbitruId); const file = input.files?.[0];
+  if(!a || !file) return;
+  if(file.size > 5*1024*1024){ alert(t('fi_fotoMare')); return; }
+  const ext = (file.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+  const path = `${a.id}/${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('fotografii').upload(path, file, { contentType:file.type, upsert:false });
+  if(error){ alert(t('err_save')+' '+error.message); return; }
+  const { error:uErr } = await sb.from('arbitri').update({ foto_path:path }).eq('id', a.id);
+  if(uErr){ alert(t('err_update')+' '+uErr.message); return; }
+  a.fotoPath = path;
+  await logAction(`A încărcat fotografia arbitrului ${a.nume} ${a.prenume}`);
+  renderArbitruProfile(true);
 }
 async function saveArbitruProfile(){
   const a = arbitru(currentArbitruId); if(!a) return;
@@ -6916,17 +7120,14 @@ async function saveArbitruProfile(){
   const row = {
     nr_dulap: document.getElementById('eab-dulap').value.trim() || null,
     nume, prenume,
-    data_nasterii: document.getElementById('eab-nastere').value || null,
-    telefon: document.getElementById('eab-telefon').value.trim() || null,
-    email: document.getElementById('eab-email').value.trim() || null,
-    adresa: document.getElementById('eab-adresa').value.trim() || null,
-    idnp: document.getElementById('eab-idnp').value.trim() || null,
-    nr_act: document.getElementById('eab-nract').value.trim().toUpperCase() || null,
-    data_emiterii_act: document.getElementById('eab-emis').value || null,
+    patronimic: document.getElementById('eab-patronimic').value.trim() || null,
     data_aviz_medical: document.getElementById('eab-aviz').value || null,
     statut: document.getElementById('eab-statut').value,
     freelancer: document.getElementById('eab-freelancer').value==='1',
   };
+  ARB_FISA_FIELDS.filter(f=>!f.virtual).forEach(f=>{ const v = readFisaInput(f, 'eab'); if(v!==undefined) row[ARB_FISA_DB_COLUMN[f.key]] = v; });
+  if(row.nr_act) row.nr_act = row.nr_act.toUpperCase();
+  if(row.iban) row.iban = row.iban.replace(/\s+/g,'').toUpperCase();
   const saveBtn = document.querySelector('#arbitru-modal-body .btn-primary');
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = t('btn_saving'); }
   const { data, error } = await sb.from('arbitri').update(row).eq('id', a.id).select().single();
@@ -6935,11 +7136,7 @@ async function saveArbitruProfile(){
     if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = t('btn_save'); }
     return;
   }
-  Object.assign(a, {
-    nrDulap:data.nr_dulap, nume:data.nume, prenume:data.prenume, dataNasterii:data.data_nasterii,
-    adresa:data.adresa, telefon:data.telefon, email:data.email, dataAvizMedical:data.data_aviz_medical,
-    statut:data.statut, freelancer:data.freelancer!==false, idnp:data.idnp, nrAct:data.nr_act, dataEmiteriiAct:data.data_emiterii_act,
-  });
+  Object.assign(a, mapArbitru(data));
   await logAction(`A actualizat profilul arbitrului ${data.nume} ${data.prenume}`);
   render();
   renderArbitruProfile(false);
@@ -8024,15 +8221,33 @@ function showToast(html, opts={}){
 function hideToast(){ document.getElementById('app-toast')?.classList.remove('visible'); }
 function isWeekLocked(day){ return !!day && LOCKED_WEEKS.has(weekStart(day)); }
 function weekLabel(luni){ return `${ddmm(luni)}–${ddmm(addDays(luni,6))}`; }
+// One row with the 4 most recent weeks of the period; older ones sit behind "+N mai vechi" (opens a second row).
+const WEEK_LOCKS_VISIBLE = 4;
+let weekLocksShowOlder = false;
 function renderWeekLocks(from, to){
   const weeks = [], last = weekStart(todayISO());   // weeks that haven't started yet have nothing to lock
-  for(let w = weekStart(from); w <= to && w <= last && weeks.length < 8; w = addDays(w,7)) weeks.push(w);
-  return `<div class="week-locks">${weeks.map(w=>{ const locked = LOCKED_WEEKS.has(w);
+  for(let w = weekStart(from); w <= to && w <= last && weeks.length < 60; w = addDays(w,7)) weeks.push(w);
+  const shown = weeks.slice(-WEEK_LOCKS_VISIBLE), older = weeks.slice(0, -WEEK_LOCKS_VISIBLE);
+  const card = w => { const locked = LOCKED_WEEKS.has(w);
     return `<div class="week-lock ${locked?'locked':''}">
-      <span class="week-lock-label">${t('pl_saptamana')} ${weekLabel(w)}</span>
-      <span class="badge ${locked?'gold':'muted'}">${t(locked?'pl_blocata':'pl_deschisa')}</span>
+      <div class="week-lock-text">
+        <span class="week-lock-label" title="${esc(t('pl_saptamana')+' '+weekLabel(w))}">${weekLabel(w)}</span>
+        <span class="week-lock-state">${t(locked?'pl_blocata':'pl_deschisa')}</span>
+      </div>
       ${isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="toggleWeekLock('${w}', ${!locked})">${t(locked?'pl_deblocheaza':'pl_blocheaza')}</button>` : ''}
-    </div>`; }).join('')}</div>`;
+    </div>`; };
+  if(!weeks.length) return `<div class="week-locks-wrap"></div>`;
+  return `<div class="week-locks-wrap">
+    <div class="week-locks">
+      ${older.length ? `<button type="button" class="week-older-btn ${weekLocksShowOlder?'open':''}" onclick="toggleOlderWeeks()" title="${esc(t('pl_saptVechiTitlu'))}"><b>+${older.length}</b><small>${t(weekLocksShowOlder?'pl_ascundeVechi':'pl_maiVechi')}</small></button>` : ''}
+      ${shown.map(card).join('')}
+    </div>
+    ${older.length && weekLocksShowOlder ? `<div class="week-locks week-locks-older">${older.slice().reverse().map(card).join('')}</div>` : ''}
+  </div>`;
+}
+function toggleOlderWeeks(){
+  weekLocksShowOlder = !weekLocksShowOlder;
+  const wl = document.querySelector('.week-locks-wrap'); if(wl && payState) wl.outerHTML = renderWeekLocks(payState.from, payState.to);
 }
 async function toggleWeekLock(luni, lock){
   if(!confirm(t(lock ? 'pl_confirmBlocare' : 'pl_confirmDeblocare')(weekLabel(luni)))) return;
