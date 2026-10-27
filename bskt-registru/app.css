@@ -611,7 +611,7 @@
   .pay-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
   .pay-tab-count { font-size:11px; background:var(--surface2); color:var(--muted); border-radius:20px; padding:1px 7px; }
   .pay-tab.active .pay-tab-count { background:var(--gold-dim); color:var(--gold); }
-  .pay-toolbar { display:grid; grid-template-columns:minmax(180px,2fr) 1fr 1fr auto auto; gap:8px; padding:12px 14px; border-bottom:1px solid var(--border); align-items:center; }
+  .pay-toolbar { display:grid; grid-template-columns:minmax(180px,2fr) auto 1fr 1fr auto auto; gap:8px; padding:12px 14px; border-bottom:1px solid var(--border); align-items:center; }
   .pay-toolbar select { background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:8px 10px; font:inherit; font-size:13px; min-width:0; }
   .pay-days-toggle { white-space:nowrap; padding:0; font-size:12.5px; color:var(--muted); }
   .pay-row { cursor:pointer; }
@@ -681,7 +681,7 @@
   @media (max-width: 760px){
     .pay-summary { grid-template-columns:1fr; }
     .pay-sum-chain { grid-template-columns:1fr 1fr; }
-    .pay-toolbar { grid-template-columns:1fr 1fr; } .pay-toolbar .search-bar { grid-column:1 / -1; }
+    .pay-toolbar { grid-template-columns:1fr 1fr; } .pay-toolbar .search-bar, .pay-toolbar .fl-seg { grid-column:1 / -1; }
     .pay-detail-grid { grid-template-columns:1fr; }
     .pay-match { grid-template-columns:70px 1fr 54px; } .pay-match > span:nth-child(3) { display:none; }
     .pay-export { margin-left:0; }
@@ -1161,3 +1161,16 @@ body.role-asistent .upload-btn{display:none !important}
   .pe-seg { flex-direction:column; }
   .pe-actions > * { flex:1; justify-content:center; }
 }
+
+/* Plăți: All / Freelanceri / Non-freelanceri switch */
+.fl-seg { display:inline-flex; gap:4px; padding:4px; border-radius:12px; background:var(--bg); border:1px solid rgba(var(--accent-rgb),.45); box-shadow:0 0 0 3px rgba(var(--accent-rgb),.08); }
+.fl-seg-btn { display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border:0; border-radius:9px; background:transparent; color:var(--muted); font:600 13.5px/1 inherit; cursor:pointer; white-space:nowrap; }
+.fl-seg-btn:hover { color:var(--text); background:rgba(255,255,255,.05); }
+.fl-seg-btn.on { background:var(--gold); color:#0e1210; }
+.fl-seg-btn.da:not(.on) .fl-seg-dot { background:var(--green); }
+.fl-seg-btn.nu:not(.on) .fl-seg-dot { background:var(--red); }
+.fl-seg-btn.on .fl-seg-dot { background:#0e1210; }
+.fl-seg-dot { width:8px; height:8px; border-radius:50%; }
+.fl-seg-n { font-size:11.5px; padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.08); color:inherit; }
+.fl-seg-btn.on .fl-seg-n { background:rgba(0,0,0,.18); }
+@media (max-width: 680px){ .fl-seg { display:flex; } .fl-seg-btn { flex:1; justify-content:center; padding:11px 8px; } }

@@ -425,7 +425,7 @@ ro: {
   ar2_obsLipsa:(n)=>`${n} ${n===1?'zi':'zile'} fără ore completate`,
   ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
   ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
-  fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
+  fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_toti:'Toți', fl_doarDa:'Freelanceri', fl_doarNu:'Non-freelanceri', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
   ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
   fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
   fl_reviewTitlu:'Verificați statutul de freelancer',
@@ -760,7 +760,7 @@ ru: {
   ar2_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} без указанных часов`,
   ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
   ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
-  fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
+  fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_toti:'Все', fl_doarDa:'Фрилансеры', fl_doarNu:'Не фрилансеры', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
   ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
   fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
   fl_reviewTitlu:'Проверьте статус фрилансера',
@@ -4153,10 +4153,11 @@ function payObservation(r){
 }
 function coefText(c){ return c==null ? '—' : c.toLocaleString('ro-RO',{minimumFractionDigits:2, maximumFractionDigits:2})+'x'; }
 // view options of the Plăți page (kept while navigating)
-let payView = { tab:'jucatori', q:'', team:'', sort:'nume', days:false, open:new Set() };
+let payView = { tab:'jucatori', q:'', team:'', fl:'all', sort:'nume', days:false, open:new Set() };
 function payFilteredRows(rows){
   const q = searchNorm(payView.q);
-  let out = rows.filter(r=>(!q || searchNorm(`${r.nume} ${r.echipe}`).includes(q)) && (!payView.team || r.echipaIds.includes(payView.team)));
+  let out = rows.filter(r=>(!q || searchNorm(`${r.nume} ${r.echipe}`).includes(q)) && (!payView.team || r.echipaIds.includes(payView.team))
+    && (payView.fl==='all' || (payView.fl==='da') === !!r.freelancer));
   const sorters = {
     nume:(a,b)=>a.nume.localeCompare(b.nume,'ro'),
     net:(a,b)=>b.net-a.net, brut:(a,b)=>b.brut-a.brut, dePlata:(a,b)=>b.dePlata-a.dePlata, meciuri:(a,b)=>b.meciuri-a.meciuri || a.nume.localeCompare(b.nume,'ro'),
@@ -4164,6 +4165,14 @@ function payFilteredRows(rows){
     echipa:(a,b)=>a.echipe.localeCompare(b.echipe) || a.nume.localeCompare(b.nume,'ro'),
   };
   return out.sort(sorters[payView.sort]||sorters.nume);
+}
+// All / Freelanceri / Non-freelanceri — a prominent segmented switch in the Plăți toolbar, with live counts
+function payFlFilterHtml(){
+  const rows = payRows().rows, nDa = rows.filter(r=>r.freelancer).length;
+  const opt = (v, label, n, dot='') => `<button type="button" class="fl-seg-btn ${payView.fl===v?'on':''} ${dot}" aria-pressed="${payView.fl===v}" onclick="paySet('fl','${v}')">${dot?'<span class="fl-seg-dot"></span>':''}${esc(label)}<span class="fl-seg-n">${n}</span></button>`;
+  return `<div class="fl-seg" role="group" aria-label="${esc(t('fl_label'))}">
+    ${opt('all', t('fl_toti'), rows.length)}${opt('da', t('fl_doarDa'), nDa, 'da')}${opt('nu', t('fl_doarNu'), rows.length - nDa, 'nu')}
+  </div>`;
 }
 function setPayTab(tab){ payView.tab = tab; renderPlatiBodyOnly(); }
 function payToggle(pid){ payView.open.has(pid) ? payView.open.delete(pid) : payView.open.add(pid); refreshPayTable(); }
@@ -4406,6 +4415,7 @@ function renderPlatiBody(){
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input placeholder="${esc(t('pl_cauta'))}" value="${esc(payView.q)}" oninput="paySet('q', this.value)">
       </div>
+      ${payFlFilterHtml()}
       <select onchange="paySet('team', this.value)"><option value="">${t('pa_toateEchipele')}</option>${teamsInPeriod.map(id=>`<option value="${id}" ${payView.team===id?'selected':''}>${esc(echipaName(id))}</option>`).join('')}</select>
       <select onchange="paySet('sort', this.value)">${[['nume','pl_sortNume'],['dePlata','pl_sortDePlata'],['brut','pl_sortBrut'],['net','pl_sortNet'],['meciuri','pl_sortMeciuri'],['ded','pl_sortDed'],['echipa','pl_sortEchipa']].map(([k,l])=>`<option value="${k}" ${payView.sort===k?'selected':''}>${t(l)}</option>`).join('')}</select>
       <label class="check-line pay-days-toggle"><input type="checkbox" ${payView.days?'checked':''} onchange="paySet('days', this.checked)"> ${t('pl_arataZile')}</label>
