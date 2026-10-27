@@ -4911,13 +4911,16 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
   const filtered = rows.length !== all.length;
   const r2 = v => Math.round((v||0)*100)/100;
   const nDays = showDays ? days.length : 0;
-  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), ...(showDays ? days.map(ddmm) : []),
+  // identity + bank for paying (IDNP = person, IDNO = sole-trader company of a freelancer); kept as text so Excel shows every digit
+  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), 'IDNP', 'IDNO', t('fd_banca'), ...(showDays ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
     t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
-  const C = { v:2, i:3, fl:5, net:6+nDays, coef:7+nDays, brut:8+nDays, ret:9+nDays, ramas:10+nDays, spal:11+nDays, daune:12+nDays, antr:13+nDays, plata:14+nDays, obs:15+nDays };
-  const body = rows.map(r=>[r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'), ...(showDays ? days.map(d=>r.perDay[d]||0) : []),
-    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]);
-  const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.antr, C.plata, ...Array.from({length:nDays},(_,k)=>6+k)]);
+  const C = { v:2, i:3, fl:5, idnp:6, idno:7, banca:8, net:9+nDays, coef:10+nDays, brut:11+nDays, ret:12+nDays, ramas:13+nDays, spal:14+nDays, daune:15+nDays, antr:16+nDays, plata:17+nDays, obs:18+nDays };
+  const bankOf = p => p?.banca || ({ AG:'MAIB', ML:'MICB', VI:'Victoriabank', FT:'FinComBank', EX:'EXIMBANK', MO:'OTP Bank', EN:'Energbank', CO:'Comertbank' })[String(p?.iban||'').replace(/\s/g,'').slice(4,6).toUpperCase()] || '';
+  const body = rows.map(r=>{ const p = participant(r.participantId); return [r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'),
+    String(p?.idnp||''), String(p?.idno||''), bankOf(p), ...(showDays ? days.map(d=>r.perDay[d]||0) : []),
+    r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]; });
+  const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.antr, C.plata, ...Array.from({length:nDays},(_,k)=>C.banca+1+k)]);
   const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===C.v||i===C.i) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
 
   // "Total programat": days of the period that have already happened (today counts once it has a result)
@@ -4933,7 +4936,7 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
 
   const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(from)} – ${fmtDate(to)}${note ? ' · '+note : ''}`], [], total, prog, [], head, ...body, total, prog];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?22 : i===4?26 : i===C.fl?12 : i===C.obs?52 : 14 }));
+  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?22 : i===4?26 : i===C.fl?12 : (i===C.idnp||i===C.idno)?16 : i===C.banca?13 : i===C.obs?52 : 14 }));
   const R = { tot1:2, prog1:3, head:5, first:6, tot2:6+body.length, prog2:7+body.length };
   ws['!rows'] = Array.from({length:aoa.length},(_,r)=>(r===R.tot1||r===R.tot2) ? {hpt:22} : (r===R.prog1||r===R.prog2) ? {hpt:48} : r===R.head ? {hpt:32} : {});
   ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:Math.min(8, head.length-1)} }];
