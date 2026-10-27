@@ -300,7 +300,7 @@
   th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 500; padding: 10px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
   td { padding: 11px 16px; font-size: 13.5px; border-bottom: 1px solid var(--surface2); white-space: nowrap; }
   tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: var(--surface2); cursor: default; }
+  @media (hover: hover){ tbody tr:hover td { background: var(--surface2); cursor: default; } }
   tbody tr.clickable:hover td { cursor: pointer; }
   .td-name { color: var(--text); font-weight: 500; cursor: pointer; }
   .td-name:hover { color: var(--gold); text-decoration: underline; }
@@ -662,7 +662,7 @@
   .lineup-source { font-size:11.5px; color:var(--muted); margin:-2px 0 2px; }
   .match-noroster { margin:0 14px 12px; padding:8px 12px; border-radius:8px; font-size:12.5px; color:var(--yellow); background:rgba(232,181,58,.08); border:1px solid rgba(232,181,58,.3); display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
   .pay-amount-note { font-size:11.5px; color:var(--muted); white-space:nowrap; }
-  .pay-row:hover td { background:rgba(255,255,255,.025); }
+  @media (hover: hover){ .pay-row:hover td { background:rgba(255,255,255,.025); } }
   .pay-row.open td { background:var(--gold-dim); }
   .pay-caret-col { width:28px; padding-right:0 !important; }
   .pay-caret { display:inline-block; color:var(--muted); font-size:18px; transition:transform .15s; }
@@ -1160,6 +1160,48 @@ body.role-asistent .upload-btn{display:none !important}
   .pe-dates, .pe-grid { grid-template-columns:1fr; }
   .pe-seg { flex-direction:column; }
   .pe-actions > * { flex:1; justify-content:center; }
+}
+
+/* ══ Phones: cleanup pass (26.10) ══ */
+.m-more-btn { display:none; }
+@media (max-width: 680px){
+  /* long text cells (journal actions, descriptions) use the full card width */
+  main table.m-cards td.m-wide { grid-column:1 / -1; }
+  /* activity lists: no fixed-height box on a phone — latest rows + "Arată toate" */
+  .recent-actions-scroll { height:auto !important; }
+  .recent-actions-scroll:not(.m-all) tbody tr:nth-child(n+16) { display:none; }
+  .m-more-btn { display:block; width:100%; margin:2px 0 14px; }
+  /* period shortcuts look like buttons, not loose text */
+  .pay-presets { gap:8px; }
+  .pay-presets .toggle-btn { background:var(--surface); border:1px solid var(--border); border-radius:999px; color:var(--text); padding:8px 14px; }
+  /* pop-ups fill the screen like a native sheet; the header with ✕ stays on top while scrolling */
+  .modal-overlay { padding:0; align-items:flex-start; }
+  .modal-overlay > .modal-box { max-width:none !important; min-height:100%; border-radius:0; border:0; }
+  .modal-body { max-height:none; overflow:visible; }
+  .modal-head { position:sticky; top:0; z-index:3; background:var(--surface); }
+  .modal-head-actions > .btn-danger { flex:0 0 auto; }
+  /* team rosters: rows big enough to tap */
+  .mini-row.clickable { min-height:44px; }
+  .team-name.clickable { min-height:36px; display:flex; align-items:center; }
+}
+
+.m-only { display:none; }
+@media (max-width: 680px){
+  .m-hide { display:none !important; }
+  .m-only { display:inline; }
+  /* sync box on a phone: one slim row — status left, button right */
+  .sync-strip { flex-direction:row !important; flex-wrap:nowrap; justify-content:space-between; gap:10px; padding:8px 8px 8px 14px; margin:12px 0 14px; }
+  .sync-strip-text { font-size:13px; min-width:0; }
+  .sync-strip-btn { width:auto !important; flex:none; padding:9px 14px; font-size:14px; }
+  /* ranking column: "#1" as a small tag above the name instead of a separate field */
+  main table.m-cards td[data-label="#"] { grid-column:1 / -1; padding-bottom:0; color:var(--muted); font-size:12px; font-weight:600; }
+  main table.m-cards td[data-label="#"]::before { content:'#'; display:inline; margin:0; font-size:12px; letter-spacing:0; text-transform:none; }
+}
+@media (max-width: 680px){
+  /* edit forms in pop-ups: Save / Cancel stay reachable at the bottom of the screen instead of after a long scroll */
+  .modal-body .profile-edit-actions, .modal-body .pe-actions { position:sticky; bottom:0; z-index:2; margin:16px -16px -26px; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:var(--surface); border-top:1px solid var(--border); display:flex; gap:10px; }
+  .modal-body .profile-edit-actions > *, .modal-body .pe-actions > * { flex:1 1 0; justify-content:center; }
 }
 
 /* Plăți: All / Freelanceri / Non-freelanceri switch */
