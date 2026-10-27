@@ -839,7 +839,7 @@ Object.assign(I18N.ro, {
    pe_btn:'Descarcă Excel', pe_btnSub:'alegi perioada și cine intră', pe_title:'Descarcă plățile în Excel', pe_perioada:'Perioada', pe_lunaTrecuta:'Luna trecută', pe_perioadaAfisata:'Perioada de pe ecran', pe_cine:'Cine intră în document', pe_toti:'Toți', pe_doarFl:'Doar freelanceri', pe_faraFl:'Doar non-freelanceri', pe_echipa:'Echipă', pe_toateEchipele:'Toate echipele', pe_jucator:'Jucător', pe_totiJucatorii:'Toți jucătorii', pe_doarDed:'Doar cei cu rețineri (spălătorie, daune, antrenamente)', pe_document:'Cum arată documentul', pe_coloaneZile:'O coloană cu suma pentru fiecare zi', pe_sortare:'Ordinea rândurilor', pe_sNume:'Alfabetic', pe_sEchipa:'Pe echipe', pe_sPlata:'Suma de plată ↓', pe_sMeciuri:'Nr. de meciuri ↓', pe_inDocument:'În document', pe_jucatori:(n)=>`${n} ${n===1?'jucător':'jucători'}`, pe_meciuri:(n)=>`${n} ${n===1?'meci':'meciuri'}`, pe_dePlata:'de plată', pe_gol:'Niciun jucător nu corespunde filtrelor — alege altă perioadă sau alt filtru.', pe_calc:'Se calculează…', pe_faraScor:(n)=>n===1?'1 meci fără scor în perioadă — nu intră la plată până nu are rezultat.':`${n} meciuri fără scor în perioadă — nu intră la plată până nu au rezultat.`, pe_descarca:'Descarcă Excel', pe_fFl:'doar freelanceri', pe_fNonFl:'doar non-freelanceri', pe_fDed:'doar cu rețineri', pl_saptCurenta:'Săptămâna curentă', pl_saptTrecuta:'Săptămâna trecută', pl_lunaCurenta:'Luna curentă',
   pl_meciuri:'Meciuri jucate', pl_faraScor:'fără scor', pl_jucatori:'Jucători plătiți', pl_fondNet:'Fond net (MDL)', pl_brut:'Brut',
   pl_retinere:'Reținere 15%', pl_deduceri:'Deduceri', pl_deduceriSub:'spălătorie · daune · antrenamente', pl_maxim:'Plata maximă',
-  pl_tabel:'Plăți pe jucător', pl_none:'Nicio înregistrare în perioada aleasă.', pl_total:'TOTAL', pl_totalProgramat:'TOTAL PROGRAMAT', pl_progDetaliu:(z,m)=>`${z} ${z===1?'zi':'zile'} × ${m} meciuri/zi × 4 jucători`, pl_progOk:'Toate meciurile programate sunt înregistrate.', pl_progLipsa:(v,m)=>`Lipsesc ${v} victorii și ${v} înfrângeri (≈ ${m} meciuri) față de program — verificați zilele fără meciuri sau loturile incomplete.`, pl_progPeste:(v)=>`Cu ${v} victorii/înfrângeri peste program.`, pl_progFiltru:'Export filtrat — comparația cu programul e pentru toți jucătorii.',
+  pl_tabel:'Plăți pe jucător', pl_none:'Nicio înregistrare în perioada aleasă.', pl_total:'TOTAL', pl_th_nr:'Nr.', pl_totalProgramat:'TOTAL PROGRAMAT', pl_progDetaliu:(z,m)=>`${z} ${z===1?'zi':'zile'} × ${m} meciuri/zi × 4 jucători`, pl_progOk:'Toate meciurile programate sunt înregistrate.', pl_progLipsa:(v,m)=>`Lipsesc ${v} victorii și ${v} înfrângeri (≈ ${m} meciuri) față de program — verificați zilele fără meciuri sau loturile incomplete.`, pl_progPeste:(v)=>`Cu ${v} victorii/înfrângeri peste program.`, pl_progFiltru:'Export filtrat — comparația cu programul e pentru toți jucătorii.',
   pl_th_jucator:'Jucător', pl_th_echipa:'Echipa', pl_th_m:'Meciuri', pl_th_v:'V', pl_th_i:'Î', pl_th_cap:'Căp.', pl_th_rez:'Rez.',
   pl_th_net:'Net', pl_th_ret:'Reținere', pl_th_brut:'Brut', pl_th_ded:'Deduceri', pl_th_dePlata:'De plătit', pl_th_rol:'Rol',
   pl_tarifeTitle:'Tarife în vigoare (net pe meci)', pl_tarifeSub:'Brut necesar = net ÷ 0,85; reținerea de 15% se calculează automat. Fiecare meci păstrează tariful din ziua lui.',
@@ -913,7 +913,7 @@ Object.assign(I18N.ru, {
    pe_btn:'Скачать Excel', pe_btnSub:'выберите период и кого включить', pe_title:'Скачать выплаты в Excel', pe_perioada:'Период', pe_lunaTrecuta:'Прошлый месяц', pe_perioadaAfisata:'Период на экране', pe_cine:'Кто попадает в документ', pe_toti:'Все', pe_doarFl:'Только фрилансеры', pe_faraFl:'Только не фрилансеры', pe_echipa:'Команда', pe_toateEchipele:'Все команды', pe_jucator:'Игрок', pe_totiJucatorii:'Все игроки', pe_doarDed:'Только с удержаниями (прачечная, ущерб, тренировки)', pe_document:'Вид документа', pe_coloaneZile:'Отдельная колонка с суммой за каждый день', pe_sortare:'Порядок строк', pe_sNume:'По алфавиту', pe_sEchipa:'По командам', pe_sPlata:'Сумма к выплате ↓', pe_sMeciuri:'Кол-во матчей ↓', pe_inDocument:'В документе', pe_jucatori:(n)=>`игроков: ${n}`, pe_meciuri:(n)=>`матчей: ${n}`, pe_dePlata:'к выплате', pe_gol:'Нет игроков по этим фильтрам — выберите другой период или фильтр.', pe_calc:'Считаем…', pe_faraScor:(n)=>`матчей без счёта в периоде: ${n} — не оплачиваются, пока нет результата.`, pe_descarca:'Скачать Excel', pe_fFl:'только фрилансеры', pe_fNonFl:'только не фрилансеры', pe_fDed:'только с удержаниями', pl_saptCurenta:'Текущая неделя', pl_saptTrecuta:'Прошлая неделя', pl_lunaCurenta:'Текущий месяц',
   pl_meciuri:'Сыграно матчей', pl_faraScor:'без счёта', pl_jucatori:'Игроков к выплате', pl_fondNet:'Фонд нетто (MDL)', pl_brut:'Брутто',
   pl_retinere:'Удержание 15%', pl_deduceri:'Вычеты', pl_deduceriSub:'прачечная · ущерб · тренировки', pl_maxim:'Максимальная выплата',
-  pl_tabel:'Выплаты по игрокам', pl_none:'Нет записей за выбранный период.', pl_total:'ИТОГО', pl_totalProgramat:'ИТОГО ПО ПЛАНУ', pl_progDetaliu:(z,m)=>`${z} дн. × ${m} матчей/день × 4 игрока`, pl_progOk:'Все запланированные матчи записаны.', pl_progLipsa:(v,m)=>`Не хватает ${v} побед и ${v} поражений (≈ ${m} матчей) по сравнению с планом — проверьте дни без матчей или неполные составы.`, pl_progPeste:(v)=>`На ${v} побед/поражений больше плана.`, pl_progFiltru:'Экспорт с фильтром — сравнение с планом по всем игрокам.',
+  pl_tabel:'Выплаты по игрокам', pl_none:'Нет записей за выбранный период.', pl_total:'ИТОГО', pl_th_nr:'№', pl_totalProgramat:'ИТОГО ПО ПЛАНУ', pl_progDetaliu:(z,m)=>`${z} дн. × ${m} матчей/день × 4 игрока`, pl_progOk:'Все запланированные матчи записаны.', pl_progLipsa:(v,m)=>`Не хватает ${v} побед и ${v} поражений (≈ ${m} матчей) по сравнению с планом — проверьте дни без матчей или неполные составы.`, pl_progPeste:(v)=>`На ${v} побед/поражений больше плана.`, pl_progFiltru:'Экспорт с фильтром — сравнение с планом по всем игрокам.',
   pl_th_jucator:'Игрок', pl_th_echipa:'Команда', pl_th_m:'Матчи', pl_th_v:'П', pl_th_i:'Пор.', pl_th_cap:'Кап.', pl_th_rez:'Зап.',
   pl_th_net:'Нетто', pl_th_ret:'Удержание', pl_th_brut:'Брутто', pl_th_ded:'Вычеты', pl_th_dePlata:'К выплате', pl_th_rol:'Роль',
   pl_tarifeTitle:'Действующие ставки (нетто за матч)', pl_tarifeSub:'Брутто = нетто ÷ 0,85; удержание 15% считается автоматически. Каждый матч сохраняет ставку своего дня.',
@@ -4912,16 +4912,17 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
   const r2 = v => Math.round((v||0)*100)/100;
   const nDays = showDays ? days.length : 0;
   // identity + bank for paying (IDNP = person, IDNO = sole-trader company of a freelancer); kept as text so Excel shows every digit
-  const head = [t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), 'IDNP', 'IDNO', t('fd_banca'), ...(showDays ? days.map(ddmm) : []),
+  const head = [t('pl_th_nr'), t('pl_th_jucator'), t('pl_th_echipa'), t('pl_th_victorii'), t('pl_th_infrangeri'), t('pl_th_rol'), t('fl_label'), 'IDNP', 'IDNO', t('fd_banca'), ...(showDays ? days.map(ddmm) : []),
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
     t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
-  const C = { v:2, i:3, fl:5, idnp:6, idno:7, banca:8, net:9+nDays, coef:10+nDays, brut:11+nDays, ret:12+nDays, ramas:13+nDays, spal:14+nDays, daune:15+nDays, antr:16+nDays, plata:17+nDays, obs:18+nDays };
+  // column 0 numbers the players 1, 2, 3…; the TOTAL / TOTAL PROGRAMAT labels sit in the name column
+  const C = { nr:0, nume:1, echipa:2, v:3, i:4, rol:5, fl:6, idnp:7, idno:8, banca:9, net:10+nDays, coef:11+nDays, brut:12+nDays, ret:13+nDays, ramas:14+nDays, spal:15+nDays, daune:16+nDays, antr:17+nDays, plata:18+nDays, obs:19+nDays };
   const bankOf = p => p?.banca || '';   // only what is recorded — an empty cell shows the bank still has to be filled in
-  const body = rows.map(r=>{ const p = participant(r.participantId); return [r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'),
+  const body = rows.map((r,k)=>{ const p = participant(r.participantId); return [k+1, r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'),
     String(p?.idnp||''), String(p?.idno||''), bankOf(p), ...(showDays ? days.map(d=>r.perDay[d]||0) : []),
     r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]; });
   const moneyIdx = new Set([C.net, C.brut, C.ret, C.ramas, C.spal, C.daune, C.antr, C.plata, ...Array.from({length:nDays},(_,k)=>C.banca+1+k)]);
-  const total = head.map((_,i)=> i===0 ? t('pl_total') : (i===C.v||i===C.i) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
+  const total = head.map((_,i)=> i===C.nume ? t('pl_total') : (i===C.v||i===C.i) ? body.reduce((s,r)=>s+r[i],0) : moneyIdx.has(i) ? r2(body.reduce((s,r)=>s+Number(r[i]||0),0)) : '');
 
   // "Total programat": days of the period that have already happened (today counts once it has a result)
   const today = todayISO();
@@ -4932,11 +4933,11 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
   const realV = all.reduce((s,r)=>s+r.v,0), realI = all.reduce((s,r)=>s+r.i,0);
   const lipsa = progV - Math.min(realV, realI);
   const progNote = (filtered ? t('pl_progFiltru')+' ' : '') + (lipsa>0 ? t('pl_progLipsa')(lipsa, Math.round(lipsa/JUCATORI_PE_ECHIPA)) : lipsa<0 ? t('pl_progPeste')(-lipsa) : t('pl_progOk'));
-  const prog = head.map((_,i)=> i===0 ? t('pl_totalProgramat') : i===1 ? t('pl_progDetaliu')(zile, MECIURI_PE_ZI) : (i===C.v||i===C.i) ? progV : i===C.obs ? progNote : '');
+  const prog = head.map((_,i)=> i===C.nume ? t('pl_totalProgramat') : i===C.echipa ? t('pl_progDetaliu')(zile, MECIURI_PE_ZI) : (i===C.v||i===C.i) ? progV : i===C.obs ? progNote : '');
 
   const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(from)} – ${fmtDate(to)}${note ? ' · '+note : ''}`], [], total, prog, [], head, ...body, total, prog];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = head.map((h,i)=>({ wch: i===0?24 : i===1?22 : i===4?26 : i===C.fl?12 : (i===C.idnp||i===C.idno)?16 : i===C.banca?13 : i===C.obs?52 : 14 }));
+  ws['!cols'] = head.map((h,i)=>({ wch: i===C.nr?6 : i===C.nume?24 : i===C.echipa?22 : i===C.rol?26 : i===C.fl?12 : (i===C.idnp||i===C.idno)?16 : i===C.banca?13 : i===C.obs?52 : 14 }));
   const R = { tot1:2, prog1:3, head:5, first:6, tot2:6+body.length, prog2:7+body.length };
   ws['!rows'] = Array.from({length:aoa.length},(_,r)=>(r===R.tot1||r===R.tot2) ? {hpt:22} : (r===R.prog1||r===R.prog2) ? {hpt:48} : r===R.head ? {hpt:32} : {});
   ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:Math.min(8, head.length-1)} }];
@@ -4966,13 +4967,14 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
       } else if(r===R.tot1 || r===R.tot2){
         style(r, c, { font:{ bold:true, sz:12, color:{rgb:GREEN_TOTAL.font} }, fill:{ fgColor:{rgb:GREEN_TOTAL.fill} } });
       } else if(r===R.prog1 || r===R.prog2){
-        style(r, c, { font:{ bold:c<=C.i, italic:c===1, color:{rgb: c===C.obs && lipsa>0 ? '9B2C24' : PROG.font} }, fill:{ fgColor:{rgb:PROG.fill} } });
+        style(r, c, { font:{ bold:c<=C.i, italic:c===C.echipa, color:{rgb: c===C.obs && lipsa>0 ? '9B2C24' : PROG.font} }, fill:{ fgColor:{rgb:PROG.fill} } });
         if(c===C.obs) ws[XLSX.utils.encode_cell({r,c})].s.alignment = { horizontal:'center', vertical:'center', wrapText:true };
       } else {
         const fl = rows[r-R.first]?.freelancer;
         const x = c===C.fl ? { font:{ bold:true, color:{rgb:(fl?FL_DA:FL_NU).font} }, fill:{ fgColor:{rgb:(fl?FL_DA:FL_NU).fill} }, alignment:{ horizontal:'center', vertical:'center' } }
                 : c===C.brut ? { fill:{ fgColor:{rgb:BLUE} } }
-                : c===C.ramas ? { fill:{ fgColor:{rgb:YELLOW} } } : {};
+                : c===C.ramas ? { fill:{ fgColor:{rgb:YELLOW} } }
+                : c===C.nr ? { font:{ color:{rgb:'5B6573'} }, alignment:{ horizontal:'center', vertical:'center' } } : {};
         style(r, c, x);
       }
     }
