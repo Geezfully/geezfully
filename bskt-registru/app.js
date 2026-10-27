@@ -4916,7 +4916,7 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
     t('pl_th_netJucator'), t('pl_th_coef'), t('pl_th_brutNecesar'), t('pl_th_retinere15'), t('pl_th_netRamas'),
     t('nav_spalatorie'), t('nav_daune'), t('nav_antrenamente'), t('pl_th_dePlataBrut'), t('pl_th_observatie')];
   const C = { v:2, i:3, fl:5, idnp:6, idno:7, banca:8, net:9+nDays, coef:10+nDays, brut:11+nDays, ret:12+nDays, ramas:13+nDays, spal:14+nDays, daune:15+nDays, antr:16+nDays, plata:17+nDays, obs:18+nDays };
-  const bankOf = p => p?.banca || ({ AG:'MAIB', ML:'MICB', VI:'Victoriabank', FT:'FinComBank', EX:'EXIMBANK', MO:'OTP Bank', EN:'Energbank', CO:'Comertbank' })[String(p?.iban||'').replace(/\s/g,'').slice(4,6).toUpperCase()] || '';
+  const bankOf = p => p?.banca || '';   // only what is recorded — an empty cell shows the bank still has to be filled in
   const body = rows.map(r=>{ const p = participant(r.participantId); return [r.nume, r.echipe, r.v, r.i, payRoleText(r), t(r.freelancer?'fl_da':'fl_nu'),
     String(p?.idnp||''), String(p?.idno||''), bankOf(p), ...(showDays ? days.map(d=>r.perDay[d]||0) : []),
     r2(r.net), r.coef==null?'':Math.round(r.coef*100)/100, r2(r.brut), r2(r.ret), r2(r.net), r.ded.spal, r.ded.daune, r.ded.antr, r2(r.dePlata), payObservation(r)]; });
