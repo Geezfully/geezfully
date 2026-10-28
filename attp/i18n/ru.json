@@ -522,5 +522,22 @@
  "<a href=\"index.html\">Acasă</a> / <a href=\"players.html\">Jucători</a> / Tenis de masă": "<a href=\"index.html\">Главная</a> / <a href=\"players.html\">Игроки</a> / Настольный теннис",
  "<a href=\"index.html\">Acasă</a> / <a href=\"tournaments.html\">Turnee</a> / Baschet": "<a href=\"index.html\">Главная</a> / <a href=\"tournaments.html\">Турниры</a> / Баскетбол",
  "<a href=\"index.html\">Acasă</a> / <a href=\"tournaments.html\">Turnee</a> / Tenis de masă": "<a href=\"index.html\">Главная</a> / <a href=\"tournaments.html\">Турниры</a> / Настольный теннис",
- "Minge de baschet galben-violet, cu o stea cyan pe o orbită înclinată": "Жёлто-фиолетовый баскетбольный мяч с голубой звездой на наклонной орбите"
+ "Minge de baschet galben-violet, cu o stea cyan pe o orbită înclinată": "Жёлто-фиолетовый баскетбольный мяч с голубой звездой на наклонной орбите",
+ "Jucător · Baschet — ATTP": "Игрок · Баскетбол — ATTP",
+ "Meciuri recente": "Последние матчи",
+ "Ora": "Время",
+ "Rezultat": "Результат",
+ "Sortează: procent victorii": "Сортировка: процент побед",
+ "Sortează: victorii": "Сортировка: победы",
+ "Clasamentul apare aici imediat ce se sincronizează datele din Bskt Cup.": "Рейтинг появится здесь сразу после синхронизации данных Bskt Cup.",
+ "Vârsta: {n}": "Возраст: {n}",
+ "Actualizat: {d}": "Обновлено: {d}",
+ "Meciuri jucate · Bskt Cup": "Сыграно матчей · Bskt Cup",
+ "Victorii · Bskt Cup": "Победы · Bskt Cup",
+ "Înfrângeri · Bskt Cup": "Поражения · Bskt Cup",
+ "Procent victorii": "Процент побед",
+ "Victorie": "Победа",
+ "Înfrângere": "Поражение",
+ "Niciun meci înregistrat încă.": "Матчей пока нет.",
+ "Arată toate ({n})": "Показать все ({n})"
 }
