@@ -219,7 +219,12 @@ Deno.serve(async (req) => {
     const matches = await selectAll<any>(() => db.from("meciuri").select("id,nr,data,ora,echipa_a_id,echipa_b_id,scor_a,scor_b,prelungiri,sursa,id_extern,sync_baza").gte("data", addDays(fromDay, -1)).order("id"));
     const byNr = new Map(matches.filter(m => m.nr != null).map(m => [Number(m.nr), m]));
     const byPair = new Map<string, any>();
-    for (const m of matches) byPair.set(pairKey(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id), m);
+    // when a website copy shares day, time and teams with a sheet game, the key must point at the sheet's game — otherwise
+    // line-ups were also written into the copy (25.10.2026) and every player was counted twice
+    for (const m of matches) {
+      const k = pairKey(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id), prev = byPair.get(k);
+      if (!prev || (prev.sursa !== "tabel" && (m.sursa === "tabel" || m.nr != null))) byPair.set(k, m);
+    }
     const stamp = new Date().toISOString();
     const cur = (m: any) => ({ data: m.data, ora: String(m.ora ?? "").slice(0, 5), a: m.echipa_a_id, b: m.echipa_b_id, sa: m.scor_a, sb: m.scor_b, ot: !!m.prelungiri });
     const same = (x: Baza, y: Baza) => x.data === y.data && x.ora === y.ora && x.a === y.a && x.b === y.b && (x.sa ?? null) === (y.sa ?? null) && (x.sb ?? null) === (y.sb ?? null) && !!x.ot === !!y.ot;

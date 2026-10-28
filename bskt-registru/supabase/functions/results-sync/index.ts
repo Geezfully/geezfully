@@ -221,7 +221,7 @@ Deno.serve(async (req) => {
     const dates = wanted.map(w => w.data).sort();
     const existing = dates.length ? (await admin.from("meciuri")
       .select("id,data,ora,echipa_a_id,echipa_b_id,scor_a,scor_b,prelungiri,sursa,id_extern,sync_baza")
-      .gte("data", dates[0]).lte("data", dates[dates.length - 1])).data ?? [] : [];
+      .gte("data", addDays(dates[0], -1)).lte("data", addDays(dates[dates.length - 1], 1))).data ?? [] : [];   // ±1 day: see sheetTwin
     const byExt = new Map(existing.filter(m => m.id_extern).map(m => [m.id_extern as string, m]));
     const stamp = new Date().toISOString();
     const lockedWeeks = new Set(((await admin.from("saptamani_blocate").select("luni")).data ?? []).map(r => r.luni as string));
@@ -240,10 +240,18 @@ Deno.serve(async (req) => {
     // the site sometimes lists a sheet game at the wrong time (20.10.2026: #569 at 01:00 shown as 04:00): same session
     // day, same two teams, same final score → it is the sheet's game, not a new one (teams can meet twice a night,
     // so the score is what tells them apart)
-    const sheetHasSameGame = (day: string, a: string, b: string, sa: number | null, sb: number | null) => sa != null && sb != null &&
-      existing.some(m => m.sursa === "tabel" && m.data === day &&
+    // (the session day may differ by one: on 24/25.10.2026 the sheet moved a whole game day and the site's copies of
+    // its games were added as new ones — so the day before and after count too)
+    const near = (x: string, day: string) => x === day || x === addDays(day, -1) || x === addDays(day, 1);
+    const samePair = (m: any, a: string, b: string) => (m.echipa_a_id === a && m.echipa_b_id === b) || (m.echipa_a_id === b && m.echipa_b_id === a);
+    const sheetSameGame = (day: string, a: string, b: string, sa: number | null, sb: number | null) => sa == null || sb == null ? undefined :
+      existing.find(m => m.sursa === "tabel" && near(m.data, day) &&
         ((m.echipa_a_id === a && m.echipa_b_id === b && m.scor_a === sa && m.scor_b === sb) ||
          (m.echipa_a_id === b && m.echipa_b_id === a && m.scor_a === sb && m.scor_b === sa)));
+    const sheetHasSameGame = (day: string, a: string, b: string, sa: number | null, sb: number | null) => !!sheetSameGame(day, a, b, sa, sb);
+    // the sheet already has these two teams at this time (same or neighbouring session day): the site's game is that one
+    const sheetTwin = (day: string, ora: string, a: string, b: string) =>
+      existing.find(m => m.sursa === "tabel" && near(m.data, day) && String(m.ora ?? "").slice(0, 5) === ora && samePair(m, a, b));
     const skipped = { tabel: 0, manual: 0, blocat: 0, sters: 0, ocupat_tabel: 0, dublura_tabel: 0, curatate: 0 };
 
     for (const w of wanted) {
@@ -282,7 +290,7 @@ Deno.serve(async (req) => {
       }
       if (isLocked(w.data)) { skipped.blocat++; continue; }
       if (sheetSlotTaken(w.data, w.ora, w.a, w.b)) { skipped.ocupat_tabel++; continue; }
-      if (sheetHasSameGame(w.data, w.a, w.b, w.sa, w.sb)) { skipped.dublura_tabel++; continue; }
+      if (sheetTwin(w.data, w.ora, w.a, w.b) || sheetHasSameGame(w.data, w.a, w.b, w.sa, w.sb)) { skipped.dublura_tabel++; continue; }
       const { error } = await admin.from("meciuri").insert({
         data: w.data, ora: w.ora, echipa_a_id: w.a, echipa_b_id: w.b, scor_a: w.sa, scor_b: w.sb,
         sursa: "bsktcup", id_extern: w.key, sincronizat_la: stamp,
@@ -291,15 +299,19 @@ Deno.serve(async (req) => {
       if (error) throw error;
       stats.inserate++;
     }
-    // site-only games sitting in a slot where the sheet has a different game, or repeating a sheet game at another time,
-    // were the site's mistakes: remove them, unless someone gave them a line-up, edited them by hand, or the week is locked
+    // site-only games that are a copy of a sheet game (same teams at the same time, or same teams and final score in the
+    // same session), or that sit in a slot where the sheet has a different game, were the site's mistakes: remove them,
+    // unless they were edited by hand or the week is locked. A copy with a line-up goes only when the sheet's own game
+    // has a line-up too (otherwise the line-up typed on the copy would be the only one).
+    const lineupCount = async (id: string) =>
+      (await admin.from("meci_jucatori").select("id", { count: "exact", head: true }).eq("meci_id", id)).count ?? 0;
     for (const m of existing) {
       if (m.sursa !== "bsktcup") continue;
-      if (!sheetSlotTaken(m.data, String(m.ora ?? "").slice(0, 5), m.echipa_a_id, m.echipa_b_id) &&
-          !sheetHasSameGame(m.data, m.echipa_a_id, m.echipa_b_id, m.scor_a, m.scor_b)) continue;
+      const ora = String(m.ora ?? "").slice(0, 5);
+      const twin = sheetTwin(m.data, ora, m.echipa_a_id, m.echipa_b_id) ?? sheetSameGame(m.data, m.echipa_a_id, m.echipa_b_id, m.scor_a, m.scor_b);
+      if (!twin && !sheetSlotTaken(m.data, ora, m.echipa_a_id, m.echipa_b_id)) continue;
       if (changedByHand(m) || isLocked(m.data)) continue;
-      const { count } = await admin.from("meci_jucatori").select("id", { count: "exact", head: true }).eq("meci_id", m.id);
-      if (count) continue;
+      if (await lineupCount(m.id) && !(twin && await lineupCount(twin.id))) continue;
       const { error } = await admin.from("meciuri").delete().eq("id", m.id);
       if (!error) { skipped.curatate++; stats.sterse++; }
     }
