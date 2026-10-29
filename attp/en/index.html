@@ -129,7 +129,8 @@
      hand in % of the drawing: palm at 21.5% across (mirrored) and 9.4% down */
   .serve-art{ position:relative; width:100%; }
   .serve-art img.player{ display:block; width:100%; height:auto; transform:scaleX(-1); }
-  .serve-art img.ball{ position:absolute; width:9%; left:calc(21.5% - 4.5%); top:calc(9.4% - 9%); animation:toss 2.6s ease-in-out infinite; }
+  /* height:auto matters: the width/height attributes would otherwise keep it 43px tall and squeeze it into an egg */
+  .serve-art img.ball{ filter:drop-shadow(0 6px 6px rgba(20,28,40,.25)); position:absolute; width:9%; height:auto; aspect-ratio:1; left:calc(21.5% - 4.5%); top:calc(9.4% - 9%); animation:toss 2.6s ease-in-out infinite; }
   @keyframes toss{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-22px); } }
   @media (prefers-reduced-motion:reduce){ .serve-art img.ball{ animation:none; } }
   @media (max-width:1100px){
@@ -420,7 +421,7 @@
       <div class="serve" aria-hidden="true">
         <div class="serve-art">
           <img class="player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
-          <img class="ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="">
+          <img class="ball" src="images/ui/ball.svg" width="40" height="40" loading="lazy" decoding="async" alt="">
         </div>
       </div>
     </div>
