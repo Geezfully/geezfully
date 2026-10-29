@@ -8,14 +8,14 @@
    ============================================================ */
 :root{
   /* palette */
-  --hall:#F4F5F1;          /* page */
+  --hall:#D6DEE7;          /* page: the hall's blue-grey sport floor */
   --paper:#FFFFFF;         /* sheets, cards */
   --text:#141C28;          /* body text */
   --text-2:#3B4553;        /* secondary text */
-  --muted:#667080;         /* captions, labels */
+  --muted:#536071;         /* captions, labels (readable on the floor tint) */
   --rule:#DCE0E4;          /* hairlines */
   --rule-2:#C4CAD1;        /* stronger lines, inputs */
-  --wash:#ECEEEA;          /* quiet fills */
+  --wash:#E8ECF1;          /* quiet fills inside white sheets */
 
   --table:#1C4E94;         /* table blue — the brand colour */
   --table-deep:#133A72;
@@ -42,8 +42,8 @@
      hall palette, so every page follows the redesign without a rename. */
   --ink:var(--hall);
   --surface:var(--paper);
-  --surface-2:#F0F2EF;
-  --surface-3:#E5E8E4;
+  --surface-2:#F1F4F7;
+  --surface-3:#E3E8EE;
   --chalk:var(--text);
   --chalk-dim:var(--text-2);
   --border:var(--rule);
@@ -71,6 +71,14 @@ body{
   font-family:var(--font-body); font-size:16.5px; line-height:1.6;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
+}
+/* The floor under everything: a fine grain on the sport surface, and the painted
+   court lines of a multi-sport hall, fixed in place so the page moves over them. */
+body::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url('../images/ui/hall-floor.svg') center / cover no-repeat;
 }
 main{ flex:1 0 auto; }
 img{ max-width:100%; display:block; }
@@ -340,7 +348,7 @@ strong{ color:var(--text); }
   padding:14px 20px; border-bottom:1px solid var(--rule);
 }
 .score-row:last-child{ border-bottom:0; }
-.score-row:nth-child(even){ background:#FAFBF9; }
+.score-row:nth-child(even){ background:var(--surface-2); }
 .score-name{ font-size:16px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .score-name.r{ text-align:right; }
 .score-tournament{
@@ -424,7 +432,7 @@ table.data th{
   color:var(--text); padding:10px 14px; border-bottom:2px solid var(--text);
 }
 table.data td{ padding:13px 14px; border-bottom:1px solid var(--rule); font-size:15px; }
-table.data tr:hover td{ background:#FAFBF9; }
+table.data tr:hover td{ background:var(--surface-2); }
 table.data td.r, table.data th.r{ text-align:right; }
 
 /* ── Forms ── */

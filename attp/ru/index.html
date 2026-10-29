@@ -15,9 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-1">
+<link rel="stylesheet" href="css/style.css?v=redesign-2">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=30ad2a19"></script>
+<script src="js/i18n-ru.js?v=05f9ec05"></script>
 <script src="js/news-ru.js?v=6445b9f4"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -35,6 +35,14 @@
   .hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
   .home-hero-photo{ margin:0; position:relative; }
   .home-hero-photo img{ width:100%; height:auto; aspect-ratio:1800/1286; object-fit:cover; border-radius:var(--radius-lg); background:#0B1A2A; box-shadow:0 30px 60px -36px rgba(20,28,40,.6); }
+  /* the award, at most ~640px wide so the 1881px original stays sharp on high-density screens */
+  /* the graphic was drawn as a backdrop with an empty left third: frame the trophy and the
+     badges only. 1254px of source height keeps it sharp up to ~620px wide on 2x screens. */
+  .home-hero-award{ justify-self:end; width:100%; max-width:560px; }
+  .home-hero-award img{ aspect-ratio:1/1; object-fit:cover; object-position:100% 50%; box-shadow:0 0 0 6px var(--paper), 0 34px 60px -30px rgba(20,28,40,.6); }
+  .home-hero-award figcaption{ margin-top:18px; gap:2px 10px; }
+  .home-hero-award figcaption strong{ font-family:var(--font-display); font-size:24px; font-weight:800; line-height:1; color:var(--text); }
+  .home-hero-award figcaption span{ font-size:14.5px; color:var(--text-2); }
   .home-hero-photo figcaption{ display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 10px; margin-top:14px; font-size:14.5px; color:var(--text-2); }
   .home-hero-photo figcaption a{ white-space:nowrap; }
   .home-hero-photo figcaption a{ font-weight:600; color:var(--text); text-decoration:underline; text-decoration-color:var(--shirt); text-decoration-thickness:3px; text-underline-offset:3px; }
@@ -190,12 +198,6 @@
     .principle-col, .principle-col:first-child{ padding:0 0 0 16px; border-left:3px solid var(--shirt); }
   }
 
-  /* ── Recognition ── */
-  .award{ display:grid; grid-template-columns:minmax(0,.55fr) minmax(0,1fr); gap:clamp(24px,4vw,56px); align-items:center; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:clamp(18px,2.4vw,28px); }
-  .award img{ width:100%; height:auto; border-radius:var(--radius); }
-  .award h2{ font-size:clamp(32px,3.6vw,48px); }
-  .award p{ margin-top:12px; max-width:520px; }
-  @media (max-width:760px){ .award{ grid-template-columns:1fr; } .award img{ max-width:360px; } }
 
   /* ── Partners: the strip of logos, drifting slowly ── */
   .partners-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
@@ -296,9 +298,9 @@
           <a href="ru/players-basketball.html" class="btn btn-ghost">Рейтинг Bskt Cup</a>
         </div>
       </div>
-      <figure class="home-hero-photo">
-        <img src="images/heroes/players-1800.webp" srcset="images/heroes/players-900.webp 900w, images/heroes/players-1800.webp 1800w" sizes="(max-width:900px) 100vw, 46vw" width="1800" height="1286" alt="Владислав Урсу, игрок ATTP, за столом" fetchpriority="high">
-        <figcaption><a href="ru/players-table-tennis.html">Владислав Урсу</a><span>командный чемпион Балкан, Сараево 2026</span></figcaption>
+      <figure class="home-hero-photo home-hero-award">
+        <img src="images/heroes/award-hero-wide.webp?v=2" width="1881" height="1254" alt="ATTP — победитель Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
+        <figcaption><strong>Победитель Notorium Brand Awards 2025</strong><span>конкурс узнаваемых брендов</span></figcaption>
       </figure>
     </div>
   </section>
@@ -492,17 +494,6 @@
           <div class="principle-col"><h3>Команда</h3><p>Спорт учит относиться ко всем на равных и находить общие цели — именно это делает нас ассоциацией, а не просто списком игроков.</p></div>
         </div>
         <a href="ru/about.html" class="sec-link" style="display:inline-block;margin-top:24px">О нас →</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="container section-tight" aria-labelledby="awardTitle">
-    <div class="award">
-      <img src="images/heroes/award-hero-900.webp?v=2" alt="Диплом Notorium Brand Awards, врученный ATTP" width="900" height="900" loading="lazy" decoding="async">
-      <div>
-        <div class="eyebrow">Признание</div>
-        <h2 id="awardTitle">Победитель Notorium Brand Awards 2025</h2>
-        <p>ATTP стала победителем конкурса узнаваемых брендов.</p>
       </div>
     </div>
   </section>
