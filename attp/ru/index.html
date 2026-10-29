@@ -14,347 +14,212 @@
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-1">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=2903529e"></script>
+<script src="js/i18n-ru.js?v=30ad2a19"></script>
 <script src="js/news-ru.js?v=6445b9f4"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
-  .hero-stage{
-    position:relative; isolation:isolate; overflow:hidden;
-    /* Fill a laptop screen, but never grow past what the copy needs on tall
-       monitors (it used to leave hundreds of px empty); centre what's there. */
-    min-height:min(calc(100svh - 82px), 780px); background:#071421;
-    display:flex; align-items:center;
-  }
-  .hero-stage::before{
-    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-    /* Notorium Brand Awards 2025 winner graphic, widened with a blurred extension
-       of its own background so it can fade in slowly from far left; it fills the
-       hero's height on the right and the headline keeps the darker left side. */
-    background:url('images/heroes/award-hero-wide.webp?v=2') right center / auto 100% no-repeat;
-  }
-  .hero-stage::after{
-    content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
-    background:
-      linear-gradient(90deg, rgba(5,15,26,.86) 0%, rgba(5,15,26,.7) 22%, rgba(5,15,26,.44) 40%, rgba(5,15,26,.18) 58%, rgba(5,15,26,.05) 78%, rgba(5,15,26,.08) 100%),
-      linear-gradient(180deg, rgba(5,15,26,.04) 0%, rgba(5,15,26,.08) 34%, rgba(5,15,26,.62) 80%, #071421 100%),
-      radial-gradient(700px 480px at 12% 30%, rgba(249,202,80,.1), transparent 66%);
-  }
-  .hero{
-    position:relative; z-index:2; width:100%;
-    padding:40px 24px 64px; display:grid; grid-template-columns:1.1fr .9fr;
-    gap:0 56px; align-items:start; min-height:0;
-  }
-  .hero-kicker{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
-  .hero-copy{ position:relative; isolation:isolate; }
-  .hero-copy > :not(.hero-motion){ position:relative; z-index:1; }
-  .hero-motion{
-    position:absolute; z-index:0; pointer-events:none;
-    width:calc(100% + 96px); height:auto; left:-56px; top:72px;
-    overflow:visible;
-  }
-  .hero-motion .trail-main{ stroke:var(--spin); opacity:.34; }
-  .hero-motion .trail-light{ stroke:var(--spin-hi); opacity:.18; }
-  .hero-motion .trail-live{ stroke:var(--rally); opacity:.24; }
-  .hero-motion .speed-mark{ stroke:var(--spin-hi); opacity:.42; }
-  .hero-motion .hero-ball-ring{ stroke:var(--spin-hi); opacity:.9; }
-  .hero-motion .hero-ball-seam{ stroke:var(--ink); opacity:.72; }
-  @media (max-width:980px){
-    .hero-motion{ width:min(760px,calc(100% + 64px)); left:-40px; opacity:.82; }
-  }
-  @media (max-width:600px){
-    .hero-motion{ width:calc(100% + 34px); left:-22px; top:88px; opacity:.38; }
-    .hero-motion .trail-light{ display:none; }
-    .hero-motion .hero-ball{ display:none; }
-  }
-  @media (prefers-reduced-motion:no-preference){
-    .hero-motion .hero-ball{ animation:heroBallFloat 5s ease-in-out infinite; transform-origin:670px 110px; }
-    @keyframes heroBallFloat{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-7px) rotate(5deg); } }
-  }
-  .hero h1{ margin-bottom:20px; }
-  .hero h1 .accent{ color:var(--spin); }
+  /* ── Hero: the thesis on the hall floor, a real player framed beside it ── */
+  .home-hero{ padding-block:clamp(28px,5vw,64px) clamp(36px,5vw,64px); }
+  .home-hero-grid{ display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); align-items:center; gap:clamp(28px,5vw,72px); }
+  .home-kicker{ font-family:var(--font-label); font-size:15px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--table); margin-bottom:18px; }
+  .home-hero h1{ font-size:clamp(50px,6.3vw,94px); line-height:.88; letter-spacing:-.01em; }
+  /* the yellow of the illustrations' shirt, laid under the words like tape on a hall floor */
+  .home-hero h1 .accent{ background:linear-gradient(transparent 68%, var(--shirt) 68% 90%, transparent 90%); padding:0 .04em; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+  .home-hero .lede{ margin-top:22px; max-width:560px; }
   .hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
-  .hero-stats{ display:flex; gap:32px; margin-top:44px; flex-wrap:wrap; }
-  .hero-stat b{ display:block; font-family:var(--font-display); font-size:28px; }
-  .hero-stat span{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--font-mono); }
-  /* Phones: keep the three numbers on one row instead of wrapping 2 + 1. */
-  @media (max-width:600px){
-    /* both ranking buttons full width, so neither sport looks secondary */
-    .hero-actions{ display:grid; grid-template-columns:1fr; gap:10px; }
-    .hero-actions .btn{ width:100%; }
-    .hero-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:36px; }
-    .hero-stat b{ font-size:clamp(20px,6.4vw,26px); }
-    .hero-stat span{ display:block; margin-top:4px; font-size:10.5px; line-height:1.35; letter-spacing:.04em; }
+  .home-hero-photo{ margin:0; position:relative; }
+  .home-hero-photo img{ width:100%; height:auto; aspect-ratio:1800/1286; object-fit:cover; border-radius:var(--radius-lg); background:#0B1A2A; box-shadow:0 30px 60px -36px rgba(20,28,40,.6); }
+  .home-hero-photo figcaption{ display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 10px; margin-top:14px; font-size:14.5px; color:var(--text-2); }
+  .home-hero-photo figcaption a{ white-space:nowrap; }
+  .home-hero-photo figcaption a{ font-weight:600; color:var(--text); text-decoration:underline; text-decoration-color:var(--shirt); text-decoration-thickness:3px; text-underline-offset:3px; }
+  .home-hero-photo figcaption a:hover{ color:var(--table); }
+
+  /* ── The tally: the association's numbers on flip counters, on the table ── */
+  .tally{ padding-block:clamp(44px,6vw,72px); }
+  .tally-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(18px,3vw,40px); justify-items:center; text-align:center; }
+  .tally-item{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .tally-item .flip{ --d:clamp(44px,5.4vw,76px); min-height:calc(var(--d) * 1.28); }
+  .tally-label{ font-family:var(--font-label); font-size:clamp(15px,1.4vw,18px); font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#fff; }
+  .tally-note{ grid-column:1/-1; margin-top:6px; font-family:var(--font-hand); font-size:24px; color:rgba(255,255,255,.86); }
+  @media (max-width:760px){
+    .tally-grid{ grid-template-columns:1fr; gap:26px; }
+    .tally-item .flip{ --d:clamp(44px,13vw,64px); }
   }
-  .scoreboard-stage{
-    position:relative;
-    /* Top layer feathers this band into the hero above and the ink below, so it
-       reads as a continuation of the page rather than a bordered-off strip.
-       (Replaces the previous hard 1px border-top/border-bottom.) */
-    background:
-      linear-gradient(180deg, #071421 0%, rgba(7,20,33,0) 14%, rgba(11,26,43,0) 84%, var(--ink) 100%),
-      linear-gradient(135deg,#091827 0%,#0d2034 55%,#0a1929 100%);
-  }
-  .scoreboard-layout{
-    padding:44px 24px 52px; display:grid; grid-template-columns:.78fr 1.22fr;
-    gap:48px; align-items:start;
-  }
-  .scoreboard-visual{ min-width:0; }
-  .scoreboard-intro{ position:relative; z-index:3; padding-top:10px; max-width:480px; }
-  .scoreboard-intro h2{ margin-top:12px; }
-  .scoreboard-intro p{ margin-top:14px; color:var(--chalk-dim); }
-  .pingpong-model-shell{
-    position:relative; min-height:280px; margin-top:-8px; overflow:hidden;
-    border-radius:var(--radius-lg);
-  }
-  /* Table-tennis and basketball side by side, one sport per half. */
+
+  /* ── Section heads shared by the homepage blocks ── */
+  .sec-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; margin-bottom:26px; }
+  .sec-head p{ max-width:460px; margin-top:8px; }
+  .sec-link{ font-family:var(--font-label); font-size:17px; font-weight:800; color:var(--table); white-space:nowrap; padding:6px 0; border-bottom:3px solid var(--shirt); }
+  .sec-link:hover{ border-bottom-color:var(--table); }
+
+  /* ── Results: the sheet beside the two balls ── */
+  .results-layout{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(24px,4vw,56px); align-items:start; }
+  .results-layout .scoreboard{ align-self:stretch; }
+  .pingpong-model-shell{ position:relative; min-height:260px; margin-top:22px; border-radius:var(--radius-lg); overflow:hidden; background:var(--paper); border:1px solid var(--rule); }
   .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ball-slot{ position:relative; min-width:0; }
-  .ball-slot--tt{
-    background:
-      radial-gradient(circle at 50% 48%,rgba(249,202,80,.18),transparent 34%),
-      radial-gradient(circle at 50% 54%,rgba(41,197,194,.1),transparent 62%);
-  }
-  .ball-slot--bb{
-    background:
-      radial-gradient(circle at 50% 48%,rgba(41,197,194,.2),transparent 34%),
-      radial-gradient(circle at 50% 54%,rgba(249,202,80,.08),transparent 62%);
-  }
-  .pingpong-model{
-    position:relative; z-index:2; display:block; width:100%; height:280px;
-    background:transparent; --poster-color:transparent; cursor:grab; outline:none;
-  }
+  .ball-slot + .ball-slot{ border-left:1px solid var(--rule); }
+  .ball-caption{ position:absolute; left:0; right:0; bottom:12px; z-index:3; text-align:center; font-family:var(--font-hand); font-size:22px; color:var(--text-2); pointer-events:none; }
+  .pingpong-model{ position:relative; z-index:2; display:block; width:100%; height:260px; background:transparent; --poster-color:transparent; cursor:grab; outline:none; }
   .pingpong-model:active{ cursor:grabbing; }
   .pingpong-model-fallback{
-    position:absolute; z-index:1; left:50%; top:52%; width:80px; aspect-ratio:1;
-    border-radius:50%; transform:translate(-50%,-50%);
-    background:radial-gradient(circle at 34% 28%,#fff 0%,#f5f5f5 48%,#d4d4d4 100%);
-    box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
+    position:absolute; z-index:1; left:50%; top:46%; width:80px; aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 34% 28%,#fff 0%,#f5f5f5 48%,#d4d4d4 100%); box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
     transition:opacity .25s ease;
   }
-  .ball-slot--bb .pingpong-model-fallback{
-    background:radial-gradient(circle at 34% 28%,#ffe27a 0%,#f2b62f 46%,#6b3fa0 100%);
-    box-shadow:inset -18px -22px 30px rgba(20,10,40,.28);
-  }
+  .ball-slot--bb .pingpong-model-fallback{ background:radial-gradient(circle at 34% 28%,#ffe27a 0%,#f2b62f 46%,#6b3fa0 100%); }
   .ball-slot.is-loaded .pingpong-model-fallback{ opacity:0; }
-  @media (prefers-reduced-motion:reduce){
-    .pingpong-model-fallback{ transition:none; }
-  }
-  .scoreboard-stage .scoreboard{
-    width:100%;
-    background:rgba(12,29,49,.88); border-color:rgba(183,202,224,.2);
-    box-shadow:0 28px 70px rgba(2,8,16,.45);
-    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
-  }
-  .scoreboard-stage .scoreboard-head{ background:rgba(23,46,72,.72); }
-  @media (max-width:980px){
-    /* Narrow screens: the award sits whole at the top and the copy starts under it. */
-    .hero-stage{ --award:min(100vw, 620px); min-height:0; }
-    .hero-stage::before{ background:url('images/heroes/award-hero-900.webp?v=2') center top / var(--award) auto no-repeat; }
-    .hero-stage::after{
-      background:linear-gradient(180deg, transparent 0, transparent calc(var(--award) * .62), #071421 calc(var(--award) * .94));
-    }
-    .hero{ grid-template-columns:1fr; padding:calc(var(--award) * .86) 24px 52px; }
-    .scoreboard-layout{ grid-template-columns:1fr; gap:32px; }
-    .scoreboard-visual{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr); align-items:center; }
-    .pingpong-model-shell{ margin-top:0; }
-  }
-  @media (max-width:600px){
-    .hero{ padding:calc(var(--award) * .86) 18px 40px; }
-    .scoreboard-layout{ padding:40px 18px 44px; gap:24px; }
-    .scoreboard-intro{ padding-top:0; }
-    .scoreboard-visual{ display:block; }
-    .pingpong-model-shell{ min-height:220px; margin-top:-8px; }
-    .pingpong-model{ height:220px; }
+  @media (prefers-reduced-motion:reduce){ .pingpong-model-fallback{ transition:none; } }
+  @media (max-width:900px){
+    .results-layout{ grid-template-columns:1fr; }
+    .pingpong-model-shell{ min-height:200px; }
+    .pingpong-model{ height:200px; }
   }
 
-  .rank-strip{
-    display:flex; gap:14px; overflow-x:auto;
-    padding:7px 0 8px; margin-top:-7px;
-    scrollbar-width:none;
-  }
-  .rank-strip::-webkit-scrollbar{ display:none; }
+  /* ── Leaders: the top six, printed like the ranking pinned on the club board ── */
+  .rank-strip{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px; }
   .rank-card{
-    flex:0 0 200px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px 18px; position:relative; overflow:hidden; text-align:center;
-    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+    position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px;
+    padding:16px 12px 18px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg);
+    transition:border-color .2s ease, box-shadow .2s ease;
   }
-  .rank-card:hover{
-    z-index:2; transform:translateY(-5px); border-color:rgba(41,197,194,.42);
-    background:var(--surface-2); box-shadow:0 18px 34px rgba(3,9,18,.32);
+  .rank-card:hover{ border-color:var(--text); box-shadow:var(--shadow-sheet); }
+  .rank-no{ align-self:flex-start; font-family:var(--font-display); font-size:38px; font-weight:900; line-height:.8; color:var(--table); }
+  .rank-card:first-child .rank-no{ color:var(--text); background:var(--shirt); padding:4px 8px 2px; border-radius:var(--radius-sm); }
+  .rank-avatar{ width:96px; height:96px; margin:-6px 0 10px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font-family:var(--font-display); font-size:30px; font-weight:800; color:var(--table); }
+  .rank-name{ font-family:var(--font-display); font-size:23px; font-weight:800; line-height:1; color:var(--text); }
+  .rank-city{ font-size:13.5px; color:var(--muted); }
+  .rank-rating{ margin-top:8px; font-family:var(--font-display); font-size:30px; font-weight:800; line-height:1; color:var(--table); font-variant-numeric:tabular-nums; }
+  .rank-rating small{ display:block; margin-top:3px; font-family:var(--font-label); font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  @media (max-width:1100px){ .rank-strip{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:600px){
+    .rank-strip{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; margin:0 calc(var(--gutter) * -1); padding:2px var(--gutter) 8px; gap:12px; scrollbar-width:none; }
+    .rank-strip::-webkit-scrollbar{ display:none; }
+    .rank-card{ flex:0 0 46%; scroll-snap-align:start; }
   }
-  .rank-card:focus-visible{ outline:2px solid var(--rally); outline-offset:3px; }
-  .rank-card .rank-no{
-    position:absolute; top:12px; left:12px; font-family:var(--font-mono); font-size:11px; color:var(--rally-hi);
-    font-weight:700; background:var(--rally-dim); padding:3px 8px; border-radius:999px; z-index:1;
-  }
-  .rank-avatar{
-    width:88px; height:88px; border-radius:50%; overflow:hidden; margin:0 auto 14px; border:2px solid var(--border-hi);
-    background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-display); font-size:28px; font-weight:700; box-shadow:0 6px 20px rgba(0,0,0,.3);
-  }
-  .rank-card .rank-name{ font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:4px; }
-  .rank-card .rank-city{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
-  .rank-card .rank-rating{ font-family:var(--font-mono); font-size:24px; font-weight:700; color:var(--spin-hi); }
-  .rank-card .rank-rating small{ font-family:var(--font-body); font-size:11px; color:var(--muted); font-weight:600; margin-left:4px; }
 
-  .news-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:20px; }
-  .news-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; }
-  .news-card .news-cover{ aspect-ratio:16/10; background:linear-gradient(135deg,var(--surface-2),var(--surface-3)); display:flex; align-items:center; justify-content:center; }
-  .news-card .news-body{ padding:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
-  .news-card .news-date{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
-  .news-card h3{ font-size:16px; line-height:1.35; }
-  .news-card.feature{ grid-row:1/3; }
-  .news-card.feature h3{ font-size:22px; }
-  @media (max-width:900px){ .news-grid{ grid-template-columns:1fr; } .news-card.feature{ grid-row:auto; } }
-
-  .tourn-mini{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; display:flex; flex-direction:column; }
-  .tourn-mini-head{ margin-bottom:14px; }
-  .tourn-mini-head h3{ font-size:15.5px; line-height:1.35; }
-  .tourn-mini-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
-  .tourn-mini-date{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); }
-  .tourn-mini-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--border); font-size:13.5px; }
+  /* ── Tournaments beside the serving player ── */
+  .tourn-layout{ display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:clamp(20px,3vw,40px); align-items:end; }
+  .tourn-list{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+  .tourn-mini{ background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:20px; display:flex; flex-direction:column; }
+  .tourn-mini-head{ margin-bottom:12px; padding-bottom:12px; border-bottom:2px solid var(--text); }
+  .tourn-mini-head h3{ font-size:24px; line-height:1; }
+  .tourn-mini-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px; }
+  .tourn-mini-date{ font-family:var(--font-label); font-size:14px; font-weight:600; color:var(--muted); }
+  .tourn-mini-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--rule); font-size:15px; }
   .tourn-mini-row:first-of-type{ border-top:0; }
-  .tourn-pos{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:9px; flex:0 0 auto; }
-  .tourn-pos.gold{ background:var(--spin-dim); color:var(--spin-hi); }
-  .homepage-flow{
-    position:relative; z-index:0; isolation:isolate; overflow:visible; background:var(--ink);
+  .tourn-pos{ font-family:var(--font-display); font-size:17px; font-weight:800; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--wash); color:var(--text-2); margin-right:10px; flex:0 0 auto; }
+  .tourn-pos.gold{ background:var(--shirt); color:var(--text); }
+  .serve{ position:relative; padding-top:40px; }
+  /* the player and the ball he has just tossed share one box, so the ball sits on his
+     hand in % of the drawing: palm at 21.5% across (mirrored) and 9.4% down */
+  .serve-art{ position:relative; width:100%; }
+  .serve-art img.player{ display:block; width:100%; height:auto; transform:scaleX(-1); }
+  .serve-art img.ball{ position:absolute; width:9%; left:calc(21.5% - 4.5%); top:calc(9.4% - 9%); animation:toss 2.6s ease-in-out infinite; }
+  @keyframes toss{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-22px); } }
+  @media (prefers-reduced-motion:reduce){ .serve-art img.ball{ animation:none; } }
+  @media (max-width:1100px){
+    .tourn-layout{ grid-template-columns:1fr; }
+    .serve{ display:none; }
   }
-  .homepage-flow::before{
-    content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
-    background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
-  }
-  /* The player and the ball he has just tossed share one box, so the ball is placed
-     against the player's hand (in % of the drawing) rather than against the viewport.
-     The box hangs from the top of the tournaments section, with the hand in the
-     gap under the ranking cards: --hand is where the palm sits below the section top. */
-  .flow-tourn{ --art-w:clamp(500px,42vw,640px); --hand:64px; --toss:58px; }
-  .flow-art{
-    position:absolute; z-index:0; pointer-events:none; user-select:none;
-    width:var(--art-w); right:clamp(0px,2vw,40px);
-    /* palm = 9.4% of the drawing's height; height = width × 1654/951 */
-    top:calc(var(--hand) - var(--art-w) * 1.7392 * .094);
-  }
-  .flow-art-player{
-    display:block; width:100%; height:auto; opacity:.88;
-    transform:scaleX(-1); filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
-  }
-  /* the hand is at 21% from the left once the drawing is mirrored */
-  .flow-art-ball{
-    position:absolute; width:clamp(24px,1.8vw,30px); height:auto;
-    left:calc(21.5% - clamp(12px,.9vw,15px)); top:calc(9.4% - var(--toss));
-    filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
-  }
-  .homepage-flow > .section-tight{ position:relative; z-index:2; }
-  .homepage-flow + .section-tight{ position:relative; z-index:2; }
-  .homepage-flow .rank-strip,
-  .homepage-flow #tournGrid{ position:relative; z-index:2; }
-  .flow-tourn > :not(.flow-art){ position:relative; z-index:1; }
-  .homepage-flow .rank-card,
-  .homepage-flow .tourn-mini{
-    background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
-  }
+  @media (max-width:900px){ .tourn-list{ grid-template-columns:1fr; } }
+
+  /* ── News: one story leads, two follow ── */
+  .news-grid{ display:grid; grid-template-columns:1.25fr 1fr; grid-template-rows:auto auto; gap:18px; }
+  /* the lead story takes the height the two others need, and its photo fills what is left */
+  .news-card.feature{ display:flex; flex-direction:column; align-items:stretch; }
+  .news-card.feature .news-cover{ position:relative; flex:1 1 230px; min-height:230px; aspect-ratio:auto; }
+  .news-cover img{ position:absolute; inset:0; }
+  .news-cover{ position:relative; }
+  .news-card{ display:grid; grid-template-columns:150px minmax(0,1fr); gap:16px; align-items:start; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:14px; transition:border-color .2s ease; }
+  .news-card:hover{ border-color:var(--text); }
+  .news-card:hover h3{ color:var(--table); }
+  .news-card.feature{ grid-row:1 / span 2; grid-template-columns:1fr; padding:0; overflow:hidden; }
+  .news-cover{ aspect-ratio:4/3; border-radius:var(--radius); overflow:hidden; background:var(--wash); display:grid; place-items:center; }
+  .news-card.feature .news-cover{ border-radius:0; }
+  .news-body{ display:flex; flex-direction:column; gap:8px; }
+  .news-card.feature .news-body{ padding:6px 22px 22px; }
+  .news-body h3{ font-size:24px; line-height:1.02; transition:color .2s ease; }
+  .news-card.feature .news-body h3{ font-size:clamp(28px,3vw,40px); }
+  .news-date{ font-family:var(--font-label); font-size:14px; font-weight:600; color:var(--muted); }
   @media (max-width:900px){
-    html,body{ overflow-x:clip; }
-    .flow-tourn{ --art-w:440px; }
-    .flow-art{ right:-90px; }
-    .flow-art-player{ opacity:.5; }
+    .news-grid{ grid-template-columns:1fr; }
+    .news-card.feature{ grid-row:auto; }
   }
-  @media (max-width:600px){
-    /* phones get their own gap above the tournaments heading, so the hand and the
-       tossed ball sit clear of the ranking cards and the heading, as on desktop */
-    .flow-tourn{ --art-w:340px; --hand:92px; --toss:46px; padding-top:118px; }
-    .flow-art{ right:-96px; }
-    .flow-art-player{ opacity:.45; }
+  @media (max-width:520px){ .news-card{ grid-template-columns:110px minmax(0,1fr); } .news-body h3{ font-size:21px; } }
+
+  /* ── Follow: four plain entries, each in its own colour ── */
+  .social-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+  .social-card{
+    --brand:var(--table);
+    display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-areas:"icon name" "icon handle" "desc desc" "cta cta"; gap:2px 14px;
+    padding:18px; background:var(--paper); border:1px solid var(--rule); border-top:4px solid var(--brand); border-radius:var(--radius-lg);
+    transition:box-shadow .2s ease;
+  }
+  .social-card:hover{ box-shadow:var(--shadow-sheet); }
+  .social-card--tiktok{ --brand:#111; }
+  .social-card--instagram{ --brand:#D62976; }
+  .social-card--youtube{ --brand:#E62117; }
+  .social-card--facebook{ --brand:#1877F2; }
+  .social-icon{ grid-area:icon; width:46px; height:46px; display:grid; place-items:center; border-radius:var(--radius); background:var(--brand); color:#fff; }
+  .social-name{ grid-area:name; font-family:var(--font-display); font-size:26px; font-weight:800; line-height:1; align-self:end; }
+  .social-handle{ grid-area:handle; font-size:14px; color:var(--muted); }
+  .social-desc{ grid-area:desc; margin-top:12px; font-size:15px; color:var(--text-2); }
+  .social-cta{ grid-area:cta; margin-top:10px; font-family:var(--font-label); font-weight:800; font-size:16px; color:var(--brand); }
+  @media (max-width:980px){ .social-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:520px){ .social-grid{ grid-template-columns:1fr; } }
+
+  /* ── Principles, with the Moldova paddle ── */
+  .principles{ display:grid; grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr); gap:clamp(24px,4vw,64px); align-items:center; }
+  .principles-art{ width:100%; max-width:420px; height:auto; }
+  .principle-cols{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; margin-top:22px; }
+  .principle-col{ padding:0 22px; border-left:2px solid var(--text); }
+  .principle-col:first-child{ padding-left:0; border-left:0; }
+  .principle-col h3{ font-size:32px; color:var(--table); margin-bottom:8px; }
+  .principle-col p{ font-size:15.5px; }
+  @media (max-width:900px){
+    .principles{ grid-template-columns:1fr; }
+    .principles-art{ max-width:260px; }
+    .principle-cols{ grid-template-columns:1fr; gap:18px; }
+    .principle-col, .principle-col:first-child{ padding:0 0 0 16px; border-left:3px solid var(--shirt); }
   }
 
-  .principle-col h3{ font-size:16px; margin-bottom:8px; }
-  .principle-col p{ font-size:14px; }
-  .principles-stage{
-    position:relative;
-    isolation:isolate;
-    overflow:visible;
-  }
-  .principles-stage > :not(.principles-map-art){ position:relative; z-index:2; }
-  /* The Moldova paddle sits in the empty space right of the heading, clear of the text. */
-  .principles-map-art{
-    position:absolute; z-index:1;
-    top:-26px; right:24px; left:auto;
-    width:clamp(230px,19vw,290px); height:auto;
-    pointer-events:none; user-select:none;
-    filter:drop-shadow(0 24px 34px rgba(1,8,16,.3));
-  }
-  @media (max-width:900px){
-    .principles-map-art{ top:-14px; width:210px; }
-  }
-  @media (max-width:600px){
-    .principles-map-art{ top:10px; right:6px; width:118px; }
-  }
+  /* ── Recognition ── */
+  .award{ display:grid; grid-template-columns:minmax(0,.55fr) minmax(0,1fr); gap:clamp(24px,4vw,56px); align-items:center; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:clamp(18px,2.4vw,28px); }
+  .award img{ width:100%; height:auto; border-radius:var(--radius); }
+  .award h2{ font-size:clamp(32px,3.6vw,48px); }
+  .award p{ margin-top:12px; max-width:520px; }
+  @media (max-width:760px){ .award{ grid-template-columns:1fr; } .award img{ max-width:360px; } }
 
-  .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
-  .partner-track{ display:flex; width:max-content; padding-block:8px; animation:scroll 36s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
-  .partner{ display:flex; align-items:center; gap:18px; margin-right:72px; font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--muted); white-space:nowrap; }
-  .partner-logo{ height:96px; width:96px; border-radius:50%; object-fit:cover; opacity:.9; flex:0 0 auto; transition:opacity .2s ease, transform .2s ease; }
-  a.partner:hover, a.partner:focus-visible{ color:var(--chalk); }
-  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ opacity:1; transform:scale(1.04); }
-  /* Hold the strip still while someone is aiming at (or tabbing through) a logo.
-     Mouse only: on touch screens a tap leaves :hover stuck and the strip would stop for good. */
-  @media (hover:hover) and (pointer:fine){
-    .partner-marquee:hover .partner-track{ animation-play-state:paused; }
-  }
+  /* ── Partners: the strip of logos, drifting slowly ── */
+  .partners-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
+  .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
+  .partner-track{ display:flex; width:max-content; padding-block:10px; animation:scroll 40s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
+  .partner{ display:flex; align-items:center; gap:16px; margin-right:64px; font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text-2); white-space:nowrap; }
+  .partner-logo{ height:84px; width:84px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow:0 0 0 1px var(--rule); transition:transform .2s ease; }
+  a.partner:hover, a.partner:focus-visible{ color:var(--table); }
+  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ transform:scale(1.05); }
+  @media (hover:hover) and (pointer:fine){ .partner-marquee:hover .partner-track{ animation-play-state:paused; } }
   .partner-marquee:has(:focus-visible) .partner-track{ animation-play-state:paused; }
-  /* Touch screens: the strip is a real scroller people can swipe; js drifts it along
-     instead of the CSS animation, and stops while a finger is on it. */
   @media (hover:none), (pointer:coarse){
     .partner-marquee{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
     .partner-marquee::-webkit-scrollbar{ display:none; }
     .partner-track{ animation:none; will-change:transform; }
   }
-  @media (max-width:600px){
-    .partner{ gap:12px; margin-right:48px; font-size:18px; }
-    .partner-logo{ height:72px; width:72px; }
-  }
-
-  /* ── Follow ATTP ── */
-  /* Sits above the principles map art, which bleeds upward into this section. */
-  .social-stage{ position:relative; z-index:1; }
-  .social-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
-  .social-card{
-    --brand:var(--rally);
-    position:relative; display:flex; flex-direction:column; gap:4px; padding:22px 22px 20px;
-    border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface);
-    overflow:hidden; transition:transform .2s ease, border-color .2s ease, background .2s ease;
-  }
-  .social-card::before{
-    content:''; position:absolute; inset:0 0 auto; height:3px; background:var(--brand); opacity:.55;
-    transition:opacity .2s ease;
-  }
-  .social-card--tiktok{ --brand:#25F4EE; }
-  .social-card--instagram{ --brand:#E1306C; }
-  .social-card--youtube{ --brand:#FF3B30; }
-  .social-card--facebook{ --brand:#4C8DF6; }
-  .social-card:hover, .social-card:focus-visible{ transform:translateY(-3px); border-color:var(--border-hi); background:var(--surface-2); }
-  .social-card:hover::before, .social-card:focus-visible::before{ opacity:1; }
-  .social-icon{
-    width:46px; height:46px; margin-bottom:12px; border-radius:14px; display:flex; align-items:center; justify-content:center;
-    color:var(--chalk); background:color-mix(in srgb, var(--brand) 18%, transparent);
-  }
-  .social-name{ font-family:var(--font-display); font-size:19px; font-weight:600; }
-  .social-handle{ font-family:var(--font-mono); font-size:12.5px; color:var(--brand); }
-  .social-desc{ margin-top:8px; font-size:14px; color:var(--chalk-dim); line-height:1.5; }
-  .social-cta{ margin-top:auto; padding-top:16px; font-size:13.5px; font-weight:700; color:var(--chalk); }
-  .social-cta span{ display:inline-block; transition:transform .2s ease; }
-  .social-card:hover .social-cta span{ transform:translateX(3px); }
-  @media (max-width:980px){ .social-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:480px){ .social-card{ padding:18px 16px; } .social-desc{ font-size:13px; } }
-  @media (prefers-reduced-motion:reduce){ .social-card, .social-card:hover{ transform:none; } }
+  @media (max-width:600px){ .partner{ gap:12px; margin-right:44px; font-size:22px; } .partner-logo{ height:64px; width:64px; } }
+  @media (prefers-reduced-motion:reduce){ .partner-track{ animation:none; } .partner-marquee{ overflow-x:auto; } }
   @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
 
+  @media (max-width:900px){
+    .home-hero-grid{ grid-template-columns:1fr; }
+    .home-hero-photo{ order:-1; }
+  }
 </style>
 </head>
 <body>
@@ -382,7 +247,7 @@
 <header class="topbar">
   <div class="container topbar-inner">
     <a href="ru/index.html" class="brand">
-      <span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span>
+      <span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span>
       <span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span>
     </a>
     <nav class="nav-links">
@@ -420,50 +285,38 @@
 </div>
 
 <main>
-  <section class="hero-stage">
-    <div class="container hero">
-    <div class="hero-copy">
-      <div class="hero-kicker">
-        <span class="tag">Сезон 2025 – 2026</span>
-        <span class="tag tag-rally tag-live">Результаты онлайн</span>
+  <section class="home-hero" aria-labelledby="homeTitle">
+    <div class="container home-hero-grid">
+      <div class="home-hero-copy">
+        <p class="home-kicker">Национальная ассоциация профессиональных спортсменов · с 2023 года</p>
+        <h1 id="homeTitle">Профессиональный спорт Республики Молдова — <span class="accent">в одном месте</span>.</h1>
+        <p class="lede">ATTP объединяет игроков, судей и тренеров разных видов спорта Республики Молдова на принципах фейр-плей, честности и результата — с регулярными национальными турнирами и автоматически обновляемыми рейтингами.</p>
+        <div class="hero-actions">
+          <a href="ru/players-table-tennis.html" class="btn btn-primary">Рейтинг FTMM</a>
+          <a href="ru/players-basketball.html" class="btn btn-ghost">Рейтинг Bskt Cup</a>
+        </div>
       </div>
-      <svg class="hero-motion" viewBox="0 0 740 560" fill="none" aria-hidden="true">
-        <path class="trail-light" d="M10 438C112 548 358 547 521 401C565 361 554 274 590 188" stroke-width="2" stroke-linecap="round"/>
-        <path class="trail-main" d="M-8 466C128 574 384 541 527 388C570 342 552 254 600 176" stroke-width="8" stroke-linecap="round"/>
-        <path class="trail-live" d="M38 478C191 554 402 502 536 365C573 327 558 239 608 164" stroke-width="3" stroke-linecap="round"/>
-        <path class="trail-light" d="M96 500C255 541 436 469 568 330" stroke-width="2" stroke-linecap="round"/>
-        <path class="speed-mark" d="M613 155L625 141M620 163L634 148" stroke-width="3" stroke-linecap="round"/>
-        <g class="hero-ball">
-          <circle cx="670" cy="110" r="49" fill="var(--spin)" opacity=".92" class="hero-ball-ring" stroke-width="3"/>
-          <path d="M640 97C648 80 663 70 681 68" stroke="var(--spin-hi)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
-          <path d="M702 79C710 89 714 99 714 110" class="hero-ball-seam" stroke-width="5" stroke-linecap="round"/>
-          <path d="M715 119L713 133" class="hero-ball-seam" stroke-width="7" stroke-linecap="round"/>
-        </g>
-      </svg>
-      <h1>Профессиональный спорт Республики Молдова — <span class="accent">в одном месте</span>.</h1>
-      <p class="lede">ATTP объединяет игроков, судей и тренеров разных видов спорта Республики Молдова на принципах фейр-плей, честности и результата — с регулярными национальными турнирами и автоматически обновляемыми рейтингами.</p>
-      <div class="hero-actions">
-        <a href="ru/players-table-tennis.html" class="btn btn-primary">Рейтинг FTMM</a>
-        <a href="ru/players-basketball.html" class="btn btn-ghost">Рейтинг Bskt Cup</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><b class="num" id="statPlayers">—</b><span>Зарегистрированных спортсменов</span></div>
-        <div class="hero-stat"><b class="num" id="statTournaments">—</b><span>Сыграно турниров</span></div>
-        <div class="hero-stat"><b class="num" id="statMatches">—</b><span>Проведено матчей</span></div>
-      </div>
-    </div>
-
+      <figure class="home-hero-photo">
+        <img src="images/heroes/players-1800.webp" srcset="images/heroes/players-900.webp 900w, images/heroes/players-1800.webp 1800w" sizes="(max-width:900px) 100vw, 46vw" width="1800" height="1286" alt="Владислав Урсу, игрок ATTP, за столом" fetchpriority="high">
+        <figcaption><a href="ru/players-table-tennis.html">Владислав Урсу</a><span>командный чемпион Балкан, Сараево 2026</span></figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="scoreboard-stage" aria-labelledby="recent-results-title">
-    <div class="container scoreboard-layout">
-      <div class="scoreboard-visual">
-        <div class="scoreboard-intro">
-          <div class="eyebrow">Результаты</div>
-          <h2 id="recent-results-title">Последние матчи</h2>
-          <p>Счёт матчей турниров ATTP, автоматически синхронизируемый с Setka Cup.</p>
-        </div>
+  <section class="tally table-surface" aria-label="ATTP в цифрах">
+    <div class="container tally-grid">
+      <div class="tally-item"><span class="flip" id="statPlayers">—</span><span class="tally-label">Зарегистрированных спортсменов</span></div>
+      <div class="tally-item"><span class="flip" id="statTournaments">—</span><span class="tally-label">Сыграно турниров</span></div>
+      <div class="tally-item"><span class="flip" id="statMatches">—</span><span class="tally-label">Проведено матчей</span></div>
+    </div>
+  </section>
+
+  <section class="container section-tight" aria-labelledby="recent-results-title">
+    <div class="results-layout">
+      <div>
+        <div class="eyebrow">Результаты</div>
+        <h2 id="recent-results-title">Последние матчи</h2>
+        <p class="mt-16">Счёт матчей турниров ATTP, автоматически синхронизируемый с Setka Cup.</p>
         <div class="pingpong-model-shell ball-pair" id="pingpongModelShell">
           <div class="ball-slot ball-slot--tt">
             <model-viewer
@@ -489,6 +342,7 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
+            <span class="ball-caption">настольный теннис</span>
           </div>
           <div class="ball-slot ball-slot--bb">
             <model-viewer
@@ -514,72 +368,84 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
+            <span class="ball-caption">баскетбол</span>
           </div>
         </div>
       </div>
       <div class="scoreboard">
         <div class="scoreboard-head">
           <span class="live-dot">Последние результаты</span>
-          <span class="muted" style="font-family:var(--font-mono);font-size:11px">через Setka Cup</span>
+          <span class="muted" style="font-family:var(--font-label);font-size:14px;font-weight:600">через Setka Cup</span>
         </div>
         <div id="scoreboardBody">
-          <div class="skeleton" style="height:60px;padding:20px"></div>
+          <div class="skeleton" style="height:60px;margin:20px"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="homepage-flow">
-
-  <section class="container section-tight">
-    <div class="eyebrow">Рейтинг</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Лидеры рейтинга</h2>
-      <a href="ru/players-table-tennis.html" class="btn btn-sm btn-rally">Все игроки →</a>
+  <section class="container section-tight" aria-labelledby="leadersTitle">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Рейтинг</div>
+        <h2 id="leadersTitle">Лидеры рейтинга</h2>
+      </div>
+      <a href="ru/players-table-tennis.html" class="sec-link">Все игроки →</a>
     </div>
     <div class="rank-strip" id="rankStrip">
-      <div class="rank-card skeleton" style="height:150px"></div>
-      <div class="rank-card skeleton" style="height:150px"></div>
-      <div class="rank-card skeleton" style="height:150px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
     </div>
   </section>
 
-  <section class="container section-tight flow-tourn">
-    <div class="flow-art" aria-hidden="true">
-      <img class="flow-art-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
-      <img class="flow-art-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="">
-    </div>
-    <div class="eyebrow">Турниры</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Последние турниры</h2>
-      <a href="ru/tournaments-table-tennis.html" class="btn btn-sm btn-ghost">Все турниры →</a>
-    </div>
-    <div class="grid grid-3" id="tournGrid">
-      <div class="card skeleton" style="height:210px"></div>
-      <div class="card skeleton" style="height:210px"></div>
-      <div class="card skeleton" style="height:210px"></div>
+  <section class="container section-tight" aria-labelledby="tournTitle">
+    <div class="tourn-layout">
+      <div>
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">Турниры</div>
+            <h2 id="tournTitle">Последние турниры</h2>
+          </div>
+          <a href="ru/tournaments-table-tennis.html" class="sec-link">Все турниры →</a>
+        </div>
+        <div class="tourn-list" id="tournGrid">
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+        </div>
+      </div>
+      <div class="serve" aria-hidden="true">
+        <div class="serve-art">
+          <img class="player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
+          <img class="ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="">
+        </div>
+      </div>
     </div>
   </section>
-  </div>
 
-  <section class="container section-tight">
-    <div class="eyebrow">Новости</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Жизнь ассоциации</h2>
-      <a href="ru/news.html" class="btn btn-sm btn-ghost">Все новости →</a>
+  <section class="container section-tight" aria-labelledby="newsTitle">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Новости</div>
+        <h2 id="newsTitle">Жизнь ассоциации</h2>
+      </div>
+      <a href="ru/news.html" class="sec-link">Все новости →</a>
     </div>
     <div class="news-grid" id="newsGrid">
-      <div class="card skeleton" style="height:340px"></div>
-      <div class="card skeleton" style="height:160px"></div>
-      <div class="card skeleton" style="height:160px"></div>
+      <div class="news-card feature skeleton" style="height:380px"></div>
+      <div class="news-card skeleton" style="height:170px"></div>
+      <div class="news-card skeleton" style="height:170px"></div>
     </div>
   </section>
 
   <section class="container section-tight social-stage" aria-labelledby="social-title">
-    <div class="eyebrow">Сообщество</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2 id="social-title">Следите за ATTP</h2>
-      <p class="dim" style="max-width:420px">Матчи, люди и моменты из зала — каждый день в соцсетях ассоциации.</p>
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Сообщество</div>
+        <h2 id="social-title">Следите за ATTP</h2>
+        <p>Матчи, люди и моменты из зала — каждый день в соцсетях ассоциации.</p>
+      </div>
     </div>
     <div class="social-grid">
       <a class="social-card social-card--tiktok" href="https://www.tiktok.com/@attp.md" target="_blank" rel="noopener">
@@ -613,21 +479,37 @@
     </div>
   </section>
 
-  <section class="container section-tight principles-stage">
-    <img class="principles-map-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
-    <div class="eyebrow">Принципы</div>
-    <h2 class="mb-24">Что нас определяет</h2>
-    <div class="grid grid-3">
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Уважение</h3><p class="dim">В спорте это называют фейр-плей — неписаный кодекс, который определяет нас за столом и вне его.</p></div>
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Мастерство</h3><p class="dim">Преодолевать собственные пределы, как бы трудно ни было, — с упорством, дисциплиной и неизменной смелостью.</p></div>
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Команда</h3><p class="dim">Спорт учит относиться ко всем на равных и находить общие цели — именно это делает нас ассоциацией, а не просто списком игроков.</p></div>
+
+  <section class="container section-tight" aria-labelledby="principlesTitle">
+    <div class="principles">
+      <img class="principles-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
+      <div>
+        <div class="eyebrow">Принципы</div>
+        <h2 id="principlesTitle">Что нас определяет</h2>
+        <div class="principle-cols">
+          <div class="principle-col"><h3>Уважение</h3><p>В спорте это называют фейр-плей — неписаный кодекс, который определяет нас за столом и вне его.</p></div>
+          <div class="principle-col"><h3>Мастерство</h3><p>Преодолевать собственные пределы, как бы трудно ни было, — с упорством, дисциплиной и неизменной смелостью.</p></div>
+          <div class="principle-col"><h3>Команда</h3><p>Спорт учит относиться ко всем на равных и находить общие цели — именно это делает нас ассоциацией, а не просто списком игроков.</p></div>
+        </div>
+        <a href="ru/about.html" class="sec-link" style="display:inline-block;margin-top:24px">О нас →</a>
+      </div>
     </div>
-    <a href="ru/about.html" class="btn btn-sm btn-ghost mt-24">О нас →</a>
   </section>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="eyebrow">Партнёры</div>
+  <section class="container section-tight" aria-labelledby="awardTitle">
+    <div class="award">
+      <img src="images/heroes/award-hero-900.webp?v=2" alt="Диплом Notorium Brand Awards, врученный ATTP" width="900" height="900" loading="lazy" decoding="async">
+      <div>
+        <div class="eyebrow">Признание</div>
+        <h2 id="awardTitle">Победитель Notorium Brand Awards 2025</h2>
+        <p>ATTP стала победителем конкурса узнаваемых брендов.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-labelledby="partnersTitle">
+    <div class="container partners-head">
+      <h2 id="partnersTitle" class="eyebrow" style="margin:0">Партнёры</h2>
     </div>
     <div class="partner-marquee">
       <div class="partner-track">
@@ -687,6 +569,7 @@
 <script src="data-news.js?v=20260720-fullnews"></script>
 <script src="data-news-archive.js?v=20260720-fullnews"></script>
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/flip.js?v=redesign-1"></script>
 <script>
 // Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
 // Skips straight to the final value when the user has asked for reduced motion.
@@ -752,9 +635,9 @@ if (ballModels.length) {
     sbBody.innerHTML = `<div class="empty-state" style="border:0"><p>${t('Rezultatele apar aici imediat ce sunt sincronizate.')}</p></div>`;
   } else {
     sbBody.innerHTML = results.map((r,i) => `
-      <div class="score-row" style="animation-delay:${i*60}ms">
+      <div class="score-row">
         <div class="score-name">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</div>
-        <div class="score-chip"><span class="score-win">${r.match_win ?? '–'}</span><span class="score-separator">:</span><span class="score-loss">${r.match_lost ?? '–'}</span></div>
+        <div class="score-chip">${flipScore(r.match_win, r.match_lost)}</div>
         <div class="score-tournament">${escapeHtml(r.tournament_name || '')}</div>
         <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.start_date ? fmtDateShort(r.start_date) : ''}</span></div>
       </div>`).join('');
@@ -764,16 +647,16 @@ if (ballModels.length) {
   // (Setka-linked) player, counted once each in the database (site_stats).
   const { data: stats } = await db.rpc('site_stats');
   if (stats) {
-    countUp(document.getElementById('statPlayers'), stats.players);
-    countUp(document.getElementById('statTournaments'), stats.tournaments);
-    countUp(document.getElementById('statMatches'), stats.matches);
+    flipNumber(document.getElementById('statPlayers'), stats.players);
+    flipNumber(document.getElementById('statTournaments'), stats.tournaments);
+    flipNumber(document.getElementById('statMatches'), stats.matches);
   }
 
   // Ranking strip
   const rankStrip = document.getElementById('rankStrip');
   rankStrip.innerHTML = ranked.length ? ranked.map((p,i) => `
     <a class="rank-card" href="ru/player.html?id=${encodeURIComponent(p.id)}" aria-label="Vezi profilul lui ${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}">
-      <span class="rank-no">#${p.ligas_ranking[0].position}</span>
+      <span class="rank-no">${p.ligas_ranking[0].position}</span>
       <div class="rank-avatar">${avatarHtml(p)}</div>
       <div class="rank-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</div>
       <div class="rank-city">${escapeHtml(p.city || 'Moldova')}</div>
@@ -793,7 +676,7 @@ if (ballModels.length) {
         <h3>${escapeHtml(tr.name)}</h3>
         <div class="tourn-mini-meta">
           <span class="tourn-mini-date">${fmtDateShort(tr.date)} · ${divisionLabel(tr.division)}</span>
-          <span class="tag tag-rally" style="font-size:10px">${tr.rows.length} ATTP</span>
+          <span class="tag tag-rally">${tr.rows.length} ATTP</span>
         </div>
       </div>
       ${tr.rows.sort((a,b)=>(a.position||99)-(b.position||99)).slice(0,3).map(r => `
@@ -812,7 +695,7 @@ if (ballModels.length) {
       <a href="ru/news-article.html?slug=${encodeURIComponent(n.slug)}" class="news-card ${i===0?'feature':''}">
         <div class="news-cover">${n.cover_image_url ? `<img src="${n.cover_image_url}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><circle cx="10" cy="10" r="7"/></svg>`}</div>
         <div class="news-body">
-          ${n.tag ? `<span class="tag" style="align-self:flex-start">${escapeHtml(n.tag)}</span>` : ''}
+          ${n.tag ? `<span class="tag" style="align-self:flex-start;margin-top:${i===0?'14px':'0'}">${escapeHtml(n.tag)}</span>` : ''}
           <h3>${escapeHtml(n.title)}</h3>
           <span class="news-date">${fmtDate(n.published_at)}</span>
         </div>

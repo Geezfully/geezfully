@@ -11,93 +11,45 @@
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-1">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=2903529e"></script>
+<script src="js/i18n-ru.js?v=30ad2a19"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  .players-flow{
-    position:relative; isolation:isolate; overflow:hidden;
-    background:linear-gradient(180deg,#0a1929 0%,#0d2034 30%,var(--ink) 85%);
-  }
-  .players-flow::before{
-    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-    background-image:radial-gradient(rgba(242,245,244,.06) 1px, transparent 1px);
-    background-size:26px 26px;
-    -webkit-mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
-    mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
-  }
-  .players-flow::after{
-    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(520px 380px at 88% 4%, rgba(41,197,194,.13), transparent 70%),
-      radial-gradient(360px 300px at 68% 22%, rgba(249,202,80,.08), transparent 68%);
-  }
-  .players-hero{ position:relative; isolation:isolate; min-height:clamp(430px,43vw,560px); overflow:hidden; }
-  .players-hero-art{
-    position:absolute; z-index:-2; inset:0 0 0 auto; width:min(64%,900px); height:100%;
-    object-fit:cover; object-position:center; transform:scale(1.025); filter:saturate(.94) contrast(1.04);
-    -webkit-mask-image:
-      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
-      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
-    -webkit-mask-composite:source-in;
-    mask-image:
-      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
-      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
-    mask-composite:intersect;
-  }
-  .players-hero::before{
-    content:''; position:absolute; z-index:-1; inset:0; pointer-events:none;
-    background:linear-gradient(90deg,#0a1929 0%,rgba(10,25,41,.94) 30%,rgba(10,25,41,.48) 52%,rgba(10,25,41,.08) 78%);
-  }
-  .players-hero-inner{ min-height:inherit; display:flex; align-items:center; padding-block:clamp(76px,9vw,118px); }
-  .players-hero-copy{ width:min(570px,51%); }
-  .players-hero-copy h1{ font-size:clamp(48px,5.5vw,78px); line-height:1; letter-spacing:-.035em; }
-  .players-hero-note{
-    display:inline-flex; align-items:center; gap:9px; margin-top:28px; padding:9px 13px;
-    border:1px solid rgba(116,207,210,.23); border-radius:999px; background:rgba(8,26,45,.44);
-    color:var(--chalk-dim); font-family:var(--font-mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
-  }
-  .players-hero-note::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--spin); box-shadow:0 0 12px rgba(249,202,80,.56); }
-  .players-list-section{ padding-top:4px; }
-  @media (max-width:820px){
-    .players-hero{ min-height:640px; }
-    .players-hero-art{
-      inset:auto 0 0; width:100%; height:58%; object-position:center; transform:scale(1.035);
-      -webkit-mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
-      mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
-    }
-    .players-hero::before{ background:linear-gradient(180deg,#0a1929 0%,rgba(10,25,41,.96) 38%,rgba(10,25,41,.42) 65%,rgba(10,25,41,.06) 100%); }
-    .players-hero-inner{ align-items:flex-start; padding-block:76px 0; }
-    .players-hero-copy{ width:100%; }
-    .players-hero-copy h1{ font-size:clamp(44px,13vw,64px); }
-  }
-
-  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:28px 0; }
+  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:28px 0 18px; }
   .filters input, .filters select{
-    padding:11px 14px; border-radius:9px; border:1px solid var(--border-hi); background:var(--surface); color:var(--chalk); font-family:var(--font-body); font-size:16px;
-    min-height:44px;
+    padding:11px 14px; border-radius:var(--radius); border:2px solid var(--rule-2); background:var(--paper); color:var(--text);
+    font-family:var(--font-body); font-size:16px; min-height:48px;
   }
+  .filters select{ font-family:var(--font-label); font-weight:700; font-size:17px; }
   .filters input{ flex:1; min-width:200px; }
-  @media (max-width:460px){
-    .filters input{ min-width:100%; }
-    .filters select{ width:100%; }
-  }
-  .filters input:focus, .filters select:focus{ outline:2px solid var(--rally); border-color:var(--rally); }
-  .player-row{ display:grid; grid-template-columns:28px 40px 1fr auto auto auto; align-items:center; gap:14px; padding:10px 16px; border-radius:10px; }
-  .player-row:hover{ background:var(--surface); }
-  .player-row .p-rank{ font-family:var(--font-mono); color:var(--muted); font-size:13px; }
-  .p-avatar{ width:40px; height:40px; border-radius:50%; overflow:hidden; background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--chalk-dim); flex:0 0 auto; }
-  .player-row .p-name{ font-weight:700; }
-  .player-row .p-city{ font-size:12.5px; color:var(--muted); }
-  .player-row .p-rating{ font-family:var(--font-mono); font-weight:700; font-size:17px; color:var(--spin-hi); text-align:right; }
-  .player-row .p-record{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); text-align:right; white-space:nowrap; }
+  .filters input:focus, .filters select:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
+  @media (max-width:460px){ .filters input{ min-width:100%; } .filters select{ width:100%; } }
+
+  /* The ranking, printed like the sheet pinned on the club board */
+  #playerList{ background:var(--paper); border:1px solid var(--rule); border-top:3px solid var(--text); border-radius:var(--radius); overflow:hidden; }
+  .player-row{ display:grid; grid-template-columns:52px 48px 1fr auto auto auto; align-items:center; gap:16px; padding:10px 18px; border-top:1px solid var(--rule); }
+  .player-row:first-child{ border-top:0; }
+  .player-row:nth-child(even){ background:#FAFBF9; }
+  .player-row:hover{ background:#EEF3FA; }
+  .player-row:hover .p-name{ color:var(--table); }
+  .player-row .p-rank{ font-family:var(--font-display); font-size:28px; font-weight:800; line-height:1; color:var(--table); font-variant-numeric:tabular-nums; }
+  .player-row:nth-child(-n+3) .p-rank{ color:var(--text); }
+  .player-row:first-child .p-rank{ background:var(--shirt); border-radius:var(--radius-sm); padding:3px 6px 1px; justify-self:start; }
+  .p-avatar{ width:48px; height:48px; border-radius:50%; overflow:hidden; background:var(--wash); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; font-size:18px; color:var(--table); flex:0 0 auto; }
+  .player-row .p-name{ font-family:var(--font-display); font-size:23px; font-weight:800; line-height:1; transition:color .15s ease; }
+  .player-row .p-city{ font-size:13.5px; color:var(--muted); }
+  .player-row .p-rating{ font-family:var(--font-display); font-weight:800; font-size:28px; color:var(--table); text-align:right; min-width:64px; font-variant-numeric:tabular-nums; }
+  .player-row .p-record{ font-family:var(--font-label); font-size:15px; font-weight:600; color:var(--muted); text-align:right; white-space:nowrap; }
   @media (max-width:700px){
-    .player-row{ grid-template-columns:20px 34px 1fr auto; }
-    .p-avatar{ width:34px; height:34px; }
+    .player-row{ grid-template-columns:34px 40px 1fr auto; gap:10px; padding:10px 12px; }
+    .player-row .p-rank{ font-size:22px; }
+    .p-avatar{ width:40px; height:40px; }
+    .player-row .p-name{ font-size:20px; }
+    .player-row .p-rating{ font-size:22px; min-width:0; }
     .p-record{ display:none; }
   }
 </style>
@@ -126,7 +78,7 @@
 
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
+    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
     <nav class="nav-links">
       <a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html" class="active">Игроки</a>
       <a href="ru/tournaments.html">Турниры</a><a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a>
