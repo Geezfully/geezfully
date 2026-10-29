@@ -69,12 +69,18 @@
   /* ── Results: the sheet beside the two balls ── */
   .results-layout{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(24px,4vw,56px); align-items:start; }
   .results-layout .scoreboard{ align-self:stretch; }
-  .pingpong-model-shell{ position:relative; min-height:260px; margin-top:22px; border-radius:var(--radius-lg); overflow:hidden; background:var(--paper); border:1px solid var(--rule); }
-  .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .ball-slot{ position:relative; min-width:0; }
-  .ball-slot + .ball-slot{ border-left:1px solid var(--rule); }
-  .ball-caption{ position:absolute; left:0; right:0; bottom:12px; z-index:3; text-align:center; font-family:var(--font-hand); font-size:22px; color:var(--text-2); pointer-events:none; }
-  .pingpong-model{ position:relative; z-index:2; display:block; width:100%; height:260px; background:transparent; --poster-color:transparent; cursor:grab; outline:none; }
+  /* The two balls lie on the hall floor, each with its contact shadow and its name. */
+  .pingpong-model-shell{ position:relative; margin-top:30px; }
+  .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .ball-slot{ position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; }
+  .ball-stage{ position:relative; width:100%; will-change:transform; }
+  .ball-shadow{
+    display:block; width:44%; height:18px; margin-top:-34px; border-radius:50%; pointer-events:none;
+    background:radial-gradient(closest-side, rgba(14,27,48,.42), rgba(14,27,48,.18) 55%, transparent);
+  }
+  .ball-meta{ margin-top:14px; text-align:center; }
+  .ball-caption{ font-family:var(--font-hand); font-size:27px; line-height:1; color:var(--text); }
+  .pingpong-model{ position:relative; z-index:2; display:block; width:100%; height:230px; background:transparent; --poster-color:transparent; cursor:grab; outline:none; }
   .pingpong-model:active{ cursor:grabbing; }
   .pingpong-model-fallback{
     position:absolute; z-index:1; left:50%; top:46%; width:80px; aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%);
@@ -86,8 +92,7 @@
   @media (prefers-reduced-motion:reduce){ .pingpong-model-fallback{ transition:none; } }
   @media (max-width:900px){
     .results-layout{ grid-template-columns:1fr; }
-    .pingpong-model-shell{ min-height:200px; }
-    .pingpong-model{ height:200px; }
+    .pingpong-model{ height:190px; }
   }
 
   /* ── Leaders: the top six, printed like the ranking pinned on the club board ── */
@@ -321,7 +326,8 @@
         <h2 id="recent-results-title">Последние матчи</h2>
         <p class="mt-16">Счёт матчей турниров ATTP, автоматически синхронизируемый с Setka Cup.</p>
         <div class="pingpong-model-shell ball-pair" id="pingpongModelShell">
-          <div class="ball-slot ball-slot--tt">
+          <div class="ball-slot ball-slot--tt" data-sport="tt">
+            <div class="ball-stage">
             <model-viewer
               id="pingpongModel"
               class="pingpong-model"
@@ -345,9 +351,14 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
-            <span class="ball-caption">настольный теннис</span>
+            </div>
+            <span class="ball-shadow" aria-hidden="true"></span>
+            <div class="ball-meta">
+              <span class="ball-caption">настольный теннис</span>
+            </div>
           </div>
-          <div class="ball-slot ball-slot--bb">
+          <div class="ball-slot ball-slot--bb" data-sport="bb">
+            <div class="ball-stage">
             <model-viewer
               id="basketballModel"
               class="pingpong-model"
@@ -371,7 +382,11 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
-            <span class="ball-caption">баскетбол</span>
+            </div>
+            <span class="ball-shadow" aria-hidden="true"></span>
+            <div class="ball-meta">
+              <span class="ball-caption">баскетбол</span>
+            </div>
           </div>
         </div>
       </div>
