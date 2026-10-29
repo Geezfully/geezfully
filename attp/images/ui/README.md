@@ -31,3 +31,18 @@ Run the dependency-free probability and navigation checks with:
 ```sh
 node scripts/test-load-screen.cjs
 ```
+
+## Hall-floor intro (redesign)
+
+The intro now plays on the same hall floor as the pages (colour, grain and
+`hall-floor.svg`), so lifting it changes nothing underneath. The court for the
+drawn sport paints itself in (`.load-court--tt` table with net, `.load-court--bb`
+centre circle), the animation stands on it, and the crest with "Garanția
+integrității" rises beneath. Markup is identical on every page (`#loadScreen`);
+timings are unchanged (1,650 ms, 400 ms with reduced motion).
+
+`attp-pingpong-loader-floor.webp` is the original GIF with its navy background
+keyed out: only pure navy and the navy→outline anti-aliasing are made
+transparent (their alpha is the pixel's position along that line, colour set to
+the outline), so the paddle's black rubber face stays solid. 71 frames × 30 ms,
+cropped to 294 × 366. `attp-pingpong-loader-floor-still.png` is frame 0.

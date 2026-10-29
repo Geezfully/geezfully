@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-2">
+<link rel="stylesheet" href="css/style.css?v=redesign-4">
 <script>window.__PAGE_LANG__="en";</script>
 <script src="js/i18n-en.js?v=cd367824"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
@@ -122,24 +122,23 @@
 </head>
 <body>
 <div id="loadScreen" aria-hidden="true">
-  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
-    <g class="lm-ball-group">
-      <circle class="lm-ball" cx="88" cy="70" r="20"/>
-      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
-    </g>
-    <g class="lm-paddle-group">
-      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
-      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
-      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
-      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
-      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
-      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
-      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
-      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
-    </g>
-  </svg>
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">A guarantee of integrity</span></span>
+  </div>
 </div>
 <header class="topbar">
   <div class="container topbar-inner">

@@ -470,26 +470,76 @@ table.data td.r, table.data th.r{ text-align:right; }
 
 html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
 
-/* ── Load screen: the hall lights are still down for a moment ── */
+/* ── Load screen ───────────────────────────────────────────────────
+   The intro happens on the same hall floor as the site, so when it lifts nothing
+   underneath changes and the page simply appears on the floor. The court for the
+   chosen sport is painted in first: a table-tennis table under the paddle, or the
+   centre circle under the spinning basketball. Then the crest and the line
+   "Garanția integrității" come up beneath. */
 #loadScreen{
-  position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center;
-  background:#0B1A2A; transition:opacity .45s ease;
+  position:fixed; inset:0; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; gap:clamp(18px,3vh,30px);
+  background-color:var(--hall);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url('../images/ui/hall-floor.svg');
+  background-size:auto, cover; background-position:0 0, center; background-repeat:repeat, no-repeat;
+  transition:opacity .45s ease;
 }
 html.show-load-screen #loadScreen{ display:flex; }
 #loadScreen.is-hidden{ opacity:0; pointer-events:none; }
-#loadScreen::before{
-  content:''; display:block; width:min(82vw,420px); aspect-ratio:1;
-  background:url('../images/ui/attp-pingpong-loader.gif?v=20260729-edgefix') center/contain no-repeat;
+#loadScreen.is-hidden .load-stage{ transform:scale(1.04); }
+
+.load-stage{
+  position:relative; display:grid; place-items:center;
+  width:min(88vw,620px); aspect-ratio:440/300; transition:transform .45s ease;
 }
-html[data-load-sport="basketball"] #loadScreen::before{
-  background-image:url('../images/ui/attp-basketball-loader.webp?v=20260929'); background-size:auto 55%;
+.load-court{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; display:none; }
+html[data-load-sport="pingpong"] .load-court--tt, html[data-load-sport="basketball"] .load-court--bb{ display:block; }
+.lc-line{
+  stroke:#fff; stroke-width:5; stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:1; stroke-dashoffset:1; animation:lcDraw .8s cubic-bezier(.55,0,.25,1) forwards;
 }
-#loadScreen .load-mark{ display:none; }
-@media (max-width:600px){ #loadScreen::before{ width:min(92vw,320px); } }
+.lc-centre{ stroke-width:3; stroke-opacity:.8; animation-delay:.22s; }
+.lc-net{ stroke:var(--text); stroke-width:6; stroke-linecap:butt; animation-delay:.38s; }
+.lc-surface{ fill:var(--table); opacity:0; animation:lcFill .5s ease .35s forwards; }
+.load-court--bb .lc-line{ stroke:#fff; }
+@keyframes lcDraw{ to{ stroke-dashoffset:0; } }
+@keyframes lcFill{ to{ opacity:1; } }
+
+/* the animation itself, standing on the court */
+.load-figure{
+  position:relative; z-index:1; display:block;
+  background:url('../images/ui/attp-pingpong-loader-floor.webp?v=1') center / contain no-repeat;
+  width:40%; aspect-ratio:294/366; margin-top:-6%;
+  animation:lfIn .4s cubic-bezier(.2,.8,.3,1) .1s both;
+}
+/* the paddle plays from the near half of the table, the net beyond it */
+html[data-load-sport="pingpong"] .load-figure{ justify-self:start; margin-left:8.5%; }
+/* a soft shadow on the table under the paddle */
+html[data-load-sport="pingpong"] .load-figure::after{
+  content:''; position:absolute; left:6%; right:16%; bottom:3%; height:9%; z-index:-1; border-radius:50%;
+  background:radial-gradient(closest-side, rgba(6,22,48,.55), rgba(6,22,48,0));
+}
+html[data-load-sport="basketball"] .load-figure{
+  background-image:url('../images/ui/attp-basketball-loader.webp?v=20260929');
+  width:44%; aspect-ratio:360/400; margin-top:-2%;
+}
+@keyframes lfIn{ from{ opacity:0; transform:translateY(10px) scale(.94); } to{ opacity:1; transform:none; } }
+
+.load-brand{ display:flex; align-items:center; gap:12px; opacity:0; animation:lbIn .45s ease .5s forwards; }
+.load-brand img{ width:52px; height:52px; }
+.load-brand-text{ display:flex; flex-direction:column; line-height:1; }
+.load-brand-word{ font-family:var(--font-display); font-size:38px; font-weight:900; color:var(--table); letter-spacing:.01em; }
+.load-brand-sub{ margin-top:4px; font-family:var(--font-body); font-size:15px; font-weight:500; color:var(--muted); }
+@keyframes lbIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
 @media (prefers-reduced-motion:reduce){
-  #loadScreen{ transition:none; }
-  #loadScreen::before{ background-image:url('../images/ui/attp-pingpong-loader-still.png?v=20260729-edgefix'); }
-  html[data-load-sport="basketball"] #loadScreen::before{ background-image:url('../images/ui/attp-basketball-loader-still.webp?v=20260929'); }
+  #loadScreen, .load-stage{ transition:none; }
+  .lc-line{ animation:none; stroke-dashoffset:0; }
+  .lc-surface{ animation:none; opacity:1; }
+  .load-figure, .load-brand{ animation:none; opacity:1; }
+  .load-figure{ background-image:url('../images/ui/attp-pingpong-loader-floor-still.png?v=1'); }
+  html[data-load-sport="basketball"] .load-figure{ background-image:url('../images/ui/attp-basketball-loader-still.webp?v=20260929'); }
 }
 
 /* ── Section heroes: the copy on the hall floor, the photo framed beside it ──
