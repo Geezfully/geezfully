@@ -3039,11 +3039,13 @@
 
   // Players with ATTP charges this period who could not be matched to a profile.
   // Their deductions are held back until the name is fixed on either side.
+  // 'manual' with no referee means someone decided this person is not a
+  // participant (e.g. a visiting player), so there is nothing left to flag.
   async function checkUnmatchedAttpPlayers(){
     try {
       const period = periodKey(currentPeriod);
       const { data: unmatched } = await db.from('attp_referee_links')
-        .select('attp_participant_id, nume, prenume').is('referee_id', null);
+        .select('attp_participant_id, nume, prenume').is('referee_id', null).neq('match_status', 'manual');
       if (!unmatched?.length) return renderUnmatchedAttpBanner([]);
       const { data: items } = await db.from('attp_deduceri').select('attp_participant_id, suma')
         .eq('period', period).in('attp_participant_id', unmatched.map(u => u.attp_participant_id));
