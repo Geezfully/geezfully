@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-10-20-token-expirat-1">
+<meta name="attp-build" content="2026-11-01-platouri-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -219,7 +219,10 @@
   .ops-row:first-of-type { border-top: none; padding-top: 0; }
   .ops-row.training-row { grid-template-columns: 1fr .8fr .55fr auto; }
   .ops-row.inventory-row { grid-template-columns: 1fr .5fr auto; }
+  .ops-row.saved-row { grid-template-columns: 1.1fr 1fr 1.1fr; }
+  .ops-balls { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr); gap: 6px; }
   .ops-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .saved-row .ops-actions { grid-column: 1 / -1; justify-content: flex-end; }
   .ops-slot { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; margin-bottom: 5px; }
   .ops-saved { color: var(--green); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
   .ops-today-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
@@ -229,7 +232,7 @@
     .ops-card.training { grid-column: auto; }
   }
   @media (max-width: 680px) {
-    .shift-start-confirm, .ops-row, .ops-row.training-row, .ops-row.inventory-row { grid-template-columns: 1fr; }
+    .shift-start-confirm, .ops-row, .ops-row.training-row, .ops-row.inventory-row, .ops-row.saved-row { grid-template-columns: 1fr; }
     .daily-ops-grid { padding: 12px; }
   }
 
@@ -730,7 +733,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // (whatever the user was doing) raises the "no connection" banner at once.
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { fetch: (...args)=>monitoredFetch(...args) } });
 
-const TOURNAMENTS = ['RIO','MEXICO Day','MEXICO Night'];
+const TOURNAMENTS = ['Rio','Mexico','Rio Day2','Mexico Day2','Mexico Evening','Mexico Night','Rio Evening','Rio Night'];
 const DAUNE_TERENURI = ['Mexico','Rio'];
 const TRAINERS = ['Dubrovin','Turcan','Iasciuc'];
 const TRAINING_SUMA_JUCATOR = 100;
@@ -1422,7 +1425,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-10-20-token-expirat-1';
+const APP_BUILD = '2026-11-01-platouri-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -3167,15 +3170,16 @@ function renderShiftWorkflow(){
       <div class="ops-card">
         <div class="ops-title"><span>${t('sh_refTitle')}</span><span class="ops-kicker">01</span></div>
         <div class="ops-help">${t('sh_refHelp')}</div>
-        ${[1,2,3].map(slot=>{
-          const saved = refs.find(r=>r.slotSchimb===slot) || (isFullAdmin() ? refs[slot-1] : null);
+        ${TOURNAMENTS.map((venue,idx)=>{
+          const slot = idx+1;
+          const saved = refs.find(r=>r.slotSchimb===slot) || (isFullAdmin() ? refs[idx] : null);
           const editing = !!saved && dashboardRefereeEditId===saved.id;
-          return `<div class="ops-row">
+          return `<div class="ops-row ${saved?'saved-row':''}">
             <div class="field"><div class="ops-slot">#${slot} · ${t('sh_referee')} ${saved?'<span class="ops-saved">· '+t(editing?'sh_correcting':'sh_saved')+'</span>':''}</div>
               ${editing ? `<select id="shift-ref-correction-${saved.id}">${dashboardRefereeOptions(saved.arbitru)}</select>` : saved ? `<input value="${esc(saved.arbitru)}" disabled>` : `<select id="shift-ref-${slot}">${dashboardRefereeOptions('')}</select>`}
             </div>
-            <div class="field"><label>${t('sh_venue')}</label>${editing ? `<select id="shift-venue-correction-${saved.id}">${dashboardVenueOptions(saved.turneu)}</select>` : saved ? `<input value="${esc(saved.turneu)}" disabled>` : `<select id="shift-venue-${slot}">${dashboardVenueOptions('')}</select>`}</div>
-            ${saved ? `<div class="field"><label>${t('sh_balls')}</label><div style="display:grid;grid-template-columns:.9fr .7fr;gap:6px"><select id="shift-ball-brand-${saved.id}" ${editing?'disabled':''}><option ${saved.marcaMingi==='DHS'?'selected':''}>DHS</option><option ${saved.marcaMingi==='JOOLA'?'selected':''}>JOOLA</option></select><input id="shift-ball-qty-${saved.id}" type="number" min="0" value="${saved.cantitateMingi||0}" ${editing?'disabled':''}></div></div>
+            <div class="field"><label>${t('sh_venue')}</label>${editing ? `<select id="shift-venue-correction-${saved.id}">${dashboardVenueOptions(saved.turneu)}</select>` : saved ? `<input value="${esc(saved.turneu)}" disabled>` : `<select id="shift-venue-${slot}">${dashboardVenueOptions(venue)}</select>`}</div>
+            ${saved ? `<div class="field"><label>${t('sh_balls')}</label><div class="ops-balls"><select id="shift-ball-brand-${saved.id}" ${editing?'disabled':''}><option ${saved.marcaMingi==='DHS'?'selected':''}>DHS</option><option ${saved.marcaMingi==='JOOLA'?'selected':''}>JOOLA</option></select><input id="shift-ball-qty-${saved.id}" type="number" min="0" value="${saved.cantitateMingi||0}" ${editing?'disabled':''}></div></div>
               <div class="ops-actions">${editing ? `<button class="btn-primary btn-sm" onclick="saveDashboardRefereeCorrection('${saved.id}')">${t('sh_saveCorrection')}</button><button class="btn-ghost btn-sm" onclick="cancelDashboardRefereeCorrection()">${t('sh_cancelCorrection')}</button>` : `<button class="btn-ghost btn-sm" onclick="updateDashboardRefereeBalls('${saved.id}')">${t('sh_updateBalls')}</button><button class="btn-ghost btn-sm" onclick="beginDashboardRefereeCorrection('${saved.id}')">${t('sh_correctRef')}</button>`}</div>`
               : `<div></div><button class="btn-primary btn-sm" onclick="saveDashboardReferee(${slot})">${t('sh_saveRef')}</button>`}
           </div>`;
