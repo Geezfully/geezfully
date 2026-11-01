@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-11-01-platouri-2">
+<meta name="attp-build" content="2026-11-01-platouri-3">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -733,7 +733,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // (whatever the user was doing) raises the "no connection" banner at once.
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { fetch: (...args)=>monitoredFetch(...args) } });
 
-const TOURNAMENTS = ['Rio','Mexico','Rio Day2','Mexico Day2','Mexico Evening','Mexico Night','Rio Evening','Rio Night'];
+const TOURNAMENTS = ['Rio Day2','Mexico Day2','Mexico Evening','Mexico Night','Rio Evening','Rio Night'];
 const DAUNE_TERENURI = ['Mexico','Rio'];
 const TRAINERS = ['Dubrovin','Turcan','Iasciuc'];
 const TRAINING_SUMA_JUCATOR = 100;
@@ -1425,7 +1425,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-11-01-platouri-2';
+const APP_BUILD = '2026-11-01-platouri-3';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -3144,7 +3144,7 @@ function addDashboardTrainingRow(){
 }
 // a row saved earlier stays visible after a reload, when the count is back to 3
 function dashboardRefereeRowCount(refs){
-  return Math.min(TOURNAMENTS.length, Math.max(dashboardRefereeRows, ...refs.map((r,idx)=>r.slotSchimb||idx+1)));
+  return Math.max(dashboardRefereeRows, ...refs.map((r,idx)=>r.slotSchimb||idx+1));
 }
 function addDashboardRefereeRow(){
   const picks = [...document.querySelectorAll('.daily-ops select')].map(el=>[el.id,el.value]);
