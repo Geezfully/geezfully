@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-11-01-platouri-1">
+<meta name="attp-build" content="2026-11-01-platouri-2">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -845,7 +845,7 @@ ro: {
   sh_item:'Articol', sh_quantity:'Cantitate', sh_addStock:'Adaugă în stoc',
   sh_trainingTitle:'Antrenamente programate azi', sh_trainingHelp:'Adaugă antrenorul, sportivul și ora; înregistrarea apare automat în Antrenamente.',
   sh_trainer:'Antrenor', sh_trainee:'Sportiv', sh_time:'Ora', sh_addTraining:'Salvează antrenamentul',
-  sh_addRow:'+ Alt antrenament', sh_noEligible:'Nu există sportivi eligibili pentru antrenament.',
+  sh_addRow:'+ Alt antrenament', sh_addRefRow:'+ Alt arbitru', sh_noEligible:'Nu există sportivi eligibili pentru antrenament.',
   sh_startError:'Schimbul nu a putut fi pornit.', sh_stopError:'Schimbul nu a putut fi oprit.',
   sh_stopAlreadyEnded:'Acest schimb fusese deja încheiat (probabil dintr-un alt tab sau dispozitiv). Pagina a fost actualizată.',
   sh_reportRequired:'Schimbul nu poate fi încheiat înainte de generarea raportului de schimb. Generați și salvați raportul, apoi încercați din nou.',
@@ -1156,7 +1156,7 @@ ru: {
   sh_item:'Позиция', sh_quantity:'Количество', sh_addStock:'Добавить на склад',
   sh_trainingTitle:'Тренировки на сегодня', sh_trainingHelp:'Добавьте тренера, спортсмена и время; запись сразу появится в разделе тренировок.',
   sh_trainer:'Тренер', sh_trainee:'Спортсмен', sh_time:'Время', sh_addTraining:'Сохранить тренировку',
-  sh_addRow:'+ Ещё тренировка', sh_noEligible:'Нет спортсменов, допущенных к тренировкам.',
+  sh_addRow:'+ Ещё тренировка', sh_addRefRow:'+ Ещё судья', sh_noEligible:'Нет спортсменов, допущенных к тренировкам.',
   sh_startError:'Не удалось начать смену.', sh_stopError:'Не удалось завершить смену.',
   sh_stopAlreadyEnded:'Эта смена уже была завершена (вероятно, с другой вкладки или устройства). Страница обновлена.',
   sh_reportRequired:'Смену нельзя завершить до создания отчёта смены. Создайте и сохраните отчёт, затем повторите попытку.',
@@ -1425,7 +1425,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-11-01-platouri-1';
+const APP_BUILD = '2026-11-01-platouri-2';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1433,6 +1433,7 @@ let currentShift = null;
 let shiftStartPrompt = false;
 let adminDemoShiftActive = false;
 let dashboardTrainingRows = 1;
+let dashboardRefereeRows = 3;
 let demoShiftArbitrajIds = [];
 let dashboardRefereeEditId = null;
 function isFullAdmin(){ return currentRole === 'admin'; }
@@ -2459,6 +2460,7 @@ function openShiftPanel(){
     demoShiftArbitrajIds = [];
     dashboardRefereeEditId = null;
     dashboardTrainingRows = 1;
+    dashboardRefereeRows = 3;
     render();
     return;
   }
@@ -2491,6 +2493,7 @@ async function confirmLocationShift(){
   shiftStartPrompt = false;
   dashboardRefereeEditId = null;
   dashboardTrainingRows = 1;
+  dashboardRefereeRows = 3;
   document.getElementById('sb-admin').textContent = employee.nume;
   await logAction(`A început schimbul de locație: ${employee.nume}`);
   buildSidebar();
@@ -3115,6 +3118,7 @@ async function stopDashboardShift(){
     hideRefreshReminder();
     dashboardRefereeEditId = null;
     dashboardTrainingRows = 1;
+    dashboardRefereeRows = 3;
     if(!(await fetchAll())) return;
     document.getElementById('sb-admin').textContent = currentShift ? currentShift.administrator : currentAdmin;
     currentView = 'dashboard';
@@ -3128,6 +3132,7 @@ async function stopDashboardShift(){
   hideRefreshReminder();
   dashboardRefereeEditId = null;
   dashboardTrainingRows = 1;
+  dashboardRefereeRows = 3;
   document.getElementById('sb-admin').textContent = currentAdmin;
   currentView = 'dashboard';
   buildSidebar();
@@ -3136,6 +3141,16 @@ async function stopDashboardShift(){
 function addDashboardTrainingRow(){
   dashboardTrainingRows = Math.min(8, dashboardTrainingRows + 1);
   render();
+}
+// a row saved earlier stays visible after a reload, when the count is back to 3
+function dashboardRefereeRowCount(refs){
+  return Math.min(TOURNAMENTS.length, Math.max(dashboardRefereeRows, ...refs.map((r,idx)=>r.slotSchimb||idx+1)));
+}
+function addDashboardRefereeRow(){
+  const picks = [...document.querySelectorAll('.daily-ops select')].map(el=>[el.id,el.value]);
+  dashboardRefereeRows = dashboardRefereeRowCount(dashboardArbitrajRows()) + 1;
+  render();
+  picks.forEach(([id,value])=>{ const el = document.getElementById(id); if(el) el.value = value; });
 }
 let lastClosedShift = null;   // shown on the start screen until the next shift begins
 function renderShiftWorkflow(){
@@ -3153,6 +3168,7 @@ function renderShiftWorkflow(){
   }
 
   const refs = dashboardArbitrajRows();
+  const refereeRows = dashboardRefereeRowCount(refs);
   const eligible = eligibleTrainingParticipants();
   // trainings of this shift: the evening's date, and after midnight the new day too
   const todayTrainings = DB.treninguri.filter(r=>r.data===todayISO() || r.data===shiftDateISO()).sort((a,b)=>String(a.ora||'').localeCompare(String(b.ora||'')));
@@ -3170,20 +3186,20 @@ function renderShiftWorkflow(){
       <div class="ops-card">
         <div class="ops-title"><span>${t('sh_refTitle')}</span><span class="ops-kicker">01</span></div>
         <div class="ops-help">${t('sh_refHelp')}</div>
-        ${TOURNAMENTS.map((venue,idx)=>{
-          const slot = idx+1;
-          const saved = refs.find(r=>r.slotSchimb===slot) || (isFullAdmin() ? refs[idx] : null);
+        ${Array.from({length:refereeRows},(_,idx)=>idx+1).map(slot=>{
+          const saved = refs.find(r=>r.slotSchimb===slot) || (isFullAdmin() ? refs[slot-1] : null);
           const editing = !!saved && dashboardRefereeEditId===saved.id;
           return `<div class="ops-row ${saved?'saved-row':''}">
             <div class="field"><div class="ops-slot">#${slot} · ${t('sh_referee')} ${saved?'<span class="ops-saved">· '+t(editing?'sh_correcting':'sh_saved')+'</span>':''}</div>
               ${editing ? `<select id="shift-ref-correction-${saved.id}">${dashboardRefereeOptions(saved.arbitru)}</select>` : saved ? `<input value="${esc(saved.arbitru)}" disabled>` : `<select id="shift-ref-${slot}">${dashboardRefereeOptions('')}</select>`}
             </div>
-            <div class="field"><label>${t('sh_venue')}</label>${editing ? `<select id="shift-venue-correction-${saved.id}">${dashboardVenueOptions(saved.turneu)}</select>` : saved ? `<input value="${esc(saved.turneu)}" disabled>` : `<select id="shift-venue-${slot}">${dashboardVenueOptions(venue)}</select>`}</div>
+            <div class="field"><label>${t('sh_venue')}</label>${editing ? `<select id="shift-venue-correction-${saved.id}">${dashboardVenueOptions(saved.turneu)}</select>` : saved ? `<input value="${esc(saved.turneu)}" disabled>` : `<select id="shift-venue-${slot}">${dashboardVenueOptions('')}</select>`}</div>
             ${saved ? `<div class="field"><label>${t('sh_balls')}</label><div class="ops-balls"><select id="shift-ball-brand-${saved.id}" ${editing?'disabled':''}><option ${saved.marcaMingi==='DHS'?'selected':''}>DHS</option><option ${saved.marcaMingi==='JOOLA'?'selected':''}>JOOLA</option></select><input id="shift-ball-qty-${saved.id}" type="number" min="0" value="${saved.cantitateMingi||0}" ${editing?'disabled':''}></div></div>
               <div class="ops-actions">${editing ? `<button class="btn-primary btn-sm" onclick="saveDashboardRefereeCorrection('${saved.id}')">${t('sh_saveCorrection')}</button><button class="btn-ghost btn-sm" onclick="cancelDashboardRefereeCorrection()">${t('sh_cancelCorrection')}</button>` : `<button class="btn-ghost btn-sm" onclick="updateDashboardRefereeBalls('${saved.id}')">${t('sh_updateBalls')}</button><button class="btn-ghost btn-sm" onclick="beginDashboardRefereeCorrection('${saved.id}')">${t('sh_correctRef')}</button>`}</div>`
               : `<div></div><button class="btn-primary btn-sm" onclick="saveDashboardReferee(${slot})">${t('sh_saveRef')}</button>`}
           </div>`;
         }).join('')}
+        ${refereeRows<TOURNAMENTS.length ? `<button class="btn-ghost btn-sm" style="margin-top:10px" onclick="addDashboardRefereeRow()">${t('sh_addRefRow')}</button>` : ''}
       </div>
 
       <div class="ops-card">
