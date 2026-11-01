@@ -426,7 +426,7 @@ ro: {
   ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
   ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
   fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_toti:'Toți', fl_doarDa:'Freelanceri', fl_doarNu:'Non-freelanceri', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
-  ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_dejaPlatit:(d)=>`până la ${d} deja plătit`, ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
+  ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri sau ore de arbitraj în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_dejaPlatit:(d)=>`până la ${d} deja plătit`, ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
   fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
   fl_reviewTitlu:'Verificați statutul de freelancer',
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
@@ -761,7 +761,7 @@ ru: {
   ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
   ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
   fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_toti:'Все', fl_doarDa:'Фрилансеры', fl_doarNu:'Не фрилансеры', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
-  ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_dejaPlatit:(d)=>`по ${d} уже оплачено`, ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
+  ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей или часов судейства за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_dejaPlatit:(d)=>`по ${d} уже оплачено`, ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
   fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
   fl_reviewTitlu:'Проверьте статус фрилансера',
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
@@ -4001,6 +4001,7 @@ function saveProfileAsistent(){
     const { error } = await sb.rpc('asistent_salveaza_jucator', { p_id:p.id, p_statut:statut, p_aviz:aviz, p_dulap:dulap||'', p_freelancer:freelancer, p_rezumat:`${participantName(p.id)}: ${lines.join('; ')}` });
     if(error){ alert(t('err_update')+' '+error.message); return false; }
     Object.assign(p, { statut, dataAvizMedical:aviz, nrDulap:dulap, freelancer });
+    const ref = DB.arbitri.find(x=>x.participantId===p.id); if(ref) Object.assign(ref, { dataAvizMedical:aviz, nrDulap:dulap, freelancer });
     asLog = null; renderProfile(false); render(); return true;
   });
 }
@@ -4237,7 +4238,8 @@ function payDetailHtml(r, colspan){
   </td></tr>`;
 }
 function payTableHtml(){
-  const { rows:all, days, matches } = payRows();
+  const { rows:played, days, matches } = payRows();
+  const all = payWithReferees(played, payState.from, payState.to);
   const rows = payFilteredRows(all);
   const showDays = payView.days;
   // with day columns on, Coef., Net rămas (= Net / jucător) and Observație make room for a full week;
@@ -4257,7 +4259,7 @@ function payTableHtml(){
         <td class="pay-caret-col"><span class="pay-caret">›</span></td>
         <td class="pay-who"><span class="td-name">${esc(r.nume)}</span>${playerTeamsHtml(r.participantId, r.echipaIds)}</td>
         <td class="num c-green">${r.v}</td><td class="num c-red">${r.i}</td>
-        <td class="td-muted pay-role">${payRoleText(r).split(' · ').map(x=>`<span>${esc(x)}</span>`).join('')}</td>
+        <td class="td-muted pay-role">${payFileRole(r).split(' · ').map(x=>`<span>${esc(x)}</span>`).join('')}</td>
         <td class="fl-cell">${freelancerBadge(r.freelancer)}${actButton(r.participantId, 'plati')}</td>
         ${showDays ? days.map(d=>`<td class="num td-muted">${r.perDay[d]?money(r.perDay[d]):''}</td>`).join('') : ''}
         <td class="num">${money(r.net)}</td>
@@ -4296,7 +4298,7 @@ function payRefereesHtml(){
         const obs = r.lipsa ? t('ar2_obsLipsa')(r.lipsa) : '';
         return `<tr class="pay-row ${open?'open':''}" onclick="payRefToggle(${esc(JSON.stringify(r.arbitru))})">
           <td class="pay-caret-col"><span class="pay-caret">›</span></td><td class="td-name">${esc(r.arbitru)}</td>
-          <td>${canToggle && r.ref ? `<button type="button" class="fl-toggle" title="${esc(t('fl_schimba'))}" onclick="event.stopPropagation(); toggleRefereeFreelancer('${r.ref.id}')">${freelancerBadge(r.freelancer)}</button>` : freelancerBadge(r.freelancer)}</td>
+          <td>${canToggle && r.ref ? `<button type="button" class="fl-toggle" title="${esc(t('fl_schimba'))}" onclick="event.stopPropagation(); toggleRefereeFreelancer('${r.ref.id}')">${freelancerBadge(r.freelancer)}</button>` : freelancerBadge(r.freelancer)}${r.ref ? actButton(r.ref.participantId||r.ref.id, 'jucatori') : ''}</td>
           <td class="num">${r.zile}</td><td class="num">${hoursText(r.ore)}</td><td class="num">${money(r.net)}</td><td class="num td-muted">${money(r.brut-r.net)}</td>
           <td class="pay-obs ${obs?'c-yellow':'td-muted'}">${esc(obs)}</td><td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.brut)}</strong></td></tr>
           ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match ${it.missing?'lost':'won'}" style="grid-template-columns:96px 1fr 170px 90px">
@@ -4335,6 +4337,7 @@ function toggleRefereeFreelancer(id){
       : await sb.from('arbitri').update({ freelancer:next }).eq('id', id).select('id').single();
     if(error){ alert(t('err_update')+' '+error.message); return false; }
     a.freelancer = next;
+    const player = participant(a.participantId); if(player) player.freelancer = next;
     if(!isAsistent()) await logAction(`A setat arbitrul ${name}: freelancer ${next?'da':'nu'}`);
     asLog = null; renderPlatiBodyOnly(); return true;
   };
@@ -4555,18 +4558,24 @@ function actBic(p){
   const code = String(p.iban||'').replace(/\s/g,'').slice(4,6).toUpperCase();
   return { AG:'AGRNMD2X', ML:'MOLDMD2X', VI:'VICBMD2X', FT:'FTMDMD2X' }[code] || '—';
 }
-// Everything printed on the act for one player and the selected Plăți period.
+// a referee who also plays has one act: the player's, with their refereeing on it
+function actPerson(id){ return participant(id) || arbitru(id); }
+// Everything printed on the act for one player or referee and the selected Plăți period.
 function actData(participantId, from = payState.from, to = payState.to){
-  const p = participant(participantId);
+  const p = actPerson(participantId), isPlayer = !!participant(participantId);
+  if(!p) return null;
   const r = payRows({ from, to }).rows.find(x=>x.participantId===participantId);
-  if(!p || !r) return null;
-  const fl = r.freelancer;
+  const key = s => searchNorm(String(s||'')).split(/\s+/).filter(Boolean).sort().join(' ');
+  const ref = refereePayRows(from, to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));   // the same figures as the Excel line
+  if(!r && !ref) return null;
+  const fl = isPlayer ? isFreelancer(participantId) : p.freelancer!==false;
+  const items = r?.items || [];
   const pay = x => fl ? (x.sumaBruta||0) : (x.sumaNet||0);   // what the company pays per game (gross for freelancers, net otherwise)
   const roleKey = x => x.rol==='căpitan' ? 'căpitan' : 'jucător';
-  const roles = new Set(r.items.map(it=>roleKey(it.r)));
+  const roles = new Set(items.map(it=>roleKey(it.r)));
   // match rows: role × win/loss × gross rate (the rate changes over time, e.g. 06.10.2026)
   const groups = new Map();
-  r.items.filter(it=>it.won!==null).forEach(it=>{
+  items.filter(it=>it.won!==null).forEach(it=>{
     const rate = Math.round(pay(it.r)*100)/100;
     const k = `${roleKey(it.r)}|${it.won?1:0}|${rate}`;
     const g = groups.get(k) || { rol:roleKey(it.r), won:it.won, rate, n:0, sum:0, from:it.m.data, to:it.m.data };
@@ -4580,19 +4589,18 @@ function actData(participantId, from = payState.from, to = payState.to){
     label: `${g.won ? 'Meciuri câștigate' : 'Meciuri pierdute'}${roles.size>1 ? ` (${g.rol})` : ''}${sameLabel(g) ? ` · ${ddmm(g.from)}–${ddmm(g.to)}` : ''}`,
     rate: g.rate, vol: g.n, fee: Math.round(g.sum*100)/100 }));
   if(!rows.length) rows.push({ label:'Meciuri câștigate', rate:0, vol:0, fee:0 }, { label:'Meciuri pierdute', rate:0, vol:0, fee:0 });
-  // refereeing done by this player in the period (Arbitraj tab, matched by name)
-  const key = s => searchNorm(String(s||'')).split(/\s+/).filter(Boolean).sort().join(' ');
-  const ref = refereePayRows(from, to).find(x=>key(x.arbitru)===key(`${p.nume} ${p.prenume}`));
+  // refereeing in the period (Arbitraj tab)
   const refRate = Math.round((fl ? refereeGross(TARIF_ARBITRI.ora) : TARIF_ARBITRI.ora)*100)/100;
   const refHours = ref ? Math.round(ref.ore*100)/100 : 0;
-  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round((fl ? refereeGross(ref.net) : ref.net)*100)/100 : 0 });
-  const deductions = [[t('nav_spalatorie'), r.ded.spal], [t('nav_daune'), r.ded.daune]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
+  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round(ref.brut*100)/100 : 0 });
+  const ded = r?.ded || (isPlayer ? deductionsFor(participantId, from, to) : { spal:0, daune:0, antr:0, total:0 });
+  const deductions = [[t('nav_spalatorie'), ded.spal], [t('nav_daune'), ded.daune], [t('nav_antrenamente'), ded.antr]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
   const total = Math.round((rows.reduce((s,x)=>s+x.fee,0) - deductions.reduce((s,x)=>s+x.value,0))*100)/100;
   const [fy,fm,fd] = from.split('-').map(Number), [ty,tm,td] = to.split('-').map(Number);
   const lastDay = new Date(Date.UTC(ty, tm, 0)).getUTCDate();
   const fullMonth = fd===1 && fy===ty && fm===tm && td===lastDay;
   const periodLabel = fullMonth ? `${ACT_MONTHS[fm-1]} ${fy}` : `${fmtDate(from)} – ${fmtDate(to)}`;
-  const roleLabel = [roles.has('căpitan')?'Căpitan':null, roles.has('jucător')?'Jucător':null].filter(Boolean).join(' / ') || 'Jucător';
+  const roleLabel = [roles.has('căpitan')?'Căpitan':null, roles.has('jucător')?'Jucător':null, refHours>0 || !isPlayer ? 'Arbitru' : null].filter(Boolean).join(' / ') || 'Jucător';
   const next = addDays(to, 1);
   const contractDate = p.dataContract ? (([y,m,d])=>`${String(d).padStart(2,'0')} ${ACT_MONTHS_SHORT[m-1]} ${y}`)(p.dataContract.split('-').map(Number)) : '—';
   return { p, rows, deductions, total, tax: Math.round(total*ACT_TAX_RATE*100)/100, periodLabel, roleLabel, contractDate,
@@ -4601,7 +4609,7 @@ function actData(participantId, from = payState.from, to = payState.to){
 // exact = dates typed by hand in the act dialog ("Altă perioadă"); otherwise the paid-until rule trims the start
 async function downloadActPrestare(participantId, btn, from = payState?.from, to = payState?.to, exact = false){
   if(!isFullAdmin()) return;
-  const p = participant(participantId);
+  const p = actPerson(participantId);
   if(!p) return;
   const label = btn?.textContent; if(btn){ btn.disabled = true; btn.textContent = t('ac_seGenereaza'); }
   try {
@@ -4613,7 +4621,7 @@ async function downloadActPrestare(participantId, btn, from = payState?.from, to
     if(!a){ alert(t('ac_faraMeciuri')(`${p.nume} ${p.prenume}`, fmtDate(from), fmtDate(to))); return; }
     const pdf = actBuildPdf(a, sig);
     pdf.save(`act-prestare_${p.nume}_${p.prenume}_${from}_${to}.pdf`.replace(/\s+/g,'-'));
-    await logAction(`A generat actul de prestare (PDF) pentru ${participantName(participantId)}, ${fmtDate(from)}–${fmtDate(to)}: ${actMoney(a.total)} MDL`);
+    await logAction(`A generat actul de prestare (PDF) pentru ${p.nume} ${p.prenume}, ${fmtDate(from)}–${fmtDate(to)}: ${actMoney(a.total)} MDL`);
   } catch(e){
     alert(e.message===t('ac_faraSemnatura') ? e.message : `${t('ac_eroare')} ${e.message||e}`);
   } finally { if(btn){ btn.disabled = false; btn.textContent = label; } }
@@ -4642,7 +4650,7 @@ function actDefaultPeriod(){
 }
 let actDialogPid = null;
 function openActDialog(participantId){
-  const p = participant(participantId); if(!p) return;
+  const p = actPerson(participantId); if(!p) return;
   actDialogPid = participantId;
   const [y,m] = todayISO().split('-').map(Number);
   const py = m===1 ? y-1 : y, pm = m===1 ? 12 : m-1;
@@ -4805,22 +4813,34 @@ function openPlatiExport(){
   payExportLoad();
 }
 // rows of the chosen period after the dialog's filters (all = before filters, for the "Total programat" note)
-// the payment file beyond the played games: every active freelancer gets a line, even at zero, and referee hours are added.
-// A player who also referees keeps one line, with both incomes; a referee who doesn't play has a line of their own.
+// a player who also referees keeps one line with both incomes, everywhere; if they only refereed they get a line for it
+function payWithReferees(played, from, to){
+  const pay = new Map(refereePayRows(from, to).map(r=>[r.arbitru, r]));
+  const linked = new Map(DB.arbitri.filter(a=>a.participantId && pay.has(`${a.nume} ${a.prenume}`)).map(a=>[a.participantId, pay.get(`${a.nume} ${a.prenume}`)]));
+  played.forEach(r=>{ if(linked.has(r.participantId)) payAddHours(r, linked.get(r.participantId)); });
+  const has = new Set(played.map(r=>r.participantId));
+  const onlyRefereed = DB.participanti.filter(p=>linked.has(p.id) && !has.has(p.id)).map(p=>{ const ded = deductionsFor(p.id, from, to);
+    return payAddHours(payLine(p.id, participantName(p.id), null, { ded, dePlata:-ded.total, freelancer:p.freelancer!==false }), linked.get(p.id)); });
+  return [...played, ...onlyRefereed];
+}
+function payLine(id, nume, ref, over){
+  return { participantId:id, ref, zero:true, nume, echipe:'', echipaIds:[], meciuri:0, v:0, i:0, cap:0, rez:0, jucator:0, net:0, ret:0, brut:0, brutFreelancer:0, freelancer:true, coef:null, perDay:{}, items:[], ded:{ spal:0, daune:0, antr:0, total:0 }, dePlata:0, ...over };
+}
+function payAddHours(row, r){
+  row.zero = false; row.ore = r.ore; row.net += r.net; row.brut += r.brut; row.brutFreelancer += r.brut; row.ret += r.brut-r.net; row.dePlata += r.brut;
+  r.items.forEach(it=>{ row.perDay[it.day] = (row.perDay[it.day]||0) + it.net; });
+  return row;
+}
+// the payment file adds everyone else: active freelancers at zero, and referees who don't play on lines of their own
 function payFileRows(played, from, to){
   const pay = new Map(refereePayRows(from, to).map(r=>[r.arbitru, r]));
+  const rows = payWithReferees(played, from, to), has = new Set(rows.map(r=>r.participantId));
   const refName = a => `${a.nume} ${a.prenume}`;
-  const line = (id, nume, ref, over) => ({ participantId:id, ref, zero:true, nume, echipe:'', echipaIds:[], meciuri:0, v:0, i:0, cap:0, rez:0, jucator:0, net:0, ret:0, brut:0, brutFreelancer:0, freelancer:true, coef:null, perDay:{}, items:[], ded:{ spal:0, daune:0, antr:0, total:0 }, dePlata:0, ...over });
-  const addRef = (row, r) => { row.zero = false; row.ore = r.ore; row.net += r.net; row.brut += r.brut; row.brutFreelancer += r.brut; row.ret += r.brut-r.net; row.dePlata += r.brut;
-    r.items.forEach(it=>{ row.perDay[it.day] = (row.perDay[it.day]||0) + it.net; }); return row; };
-  const linked = new Map(DB.arbitri.filter(a=>a.participantId && pay.has(refName(a))).map(a=>[a.participantId, pay.get(refName(a))]));
-  played.forEach(r=>{ if(linked.has(r.participantId)) addRef(r, linked.get(r.participantId)); });
-  const has = new Set(played.map(r=>r.participantId));
-  const players = DB.participanti.filter(p=>!has.has(p.id) && (linked.has(p.id) || (p.freelancer!==false && p.statut==='activ'))).map(p=>{ const ded = deductionsFor(p.id, from, to);
-    const row = line(p.id, participantName(p.id), null, { ded, dePlata:-ded.total, freelancer:p.freelancer!==false }); return linked.has(p.id) ? addRef(row, linked.get(p.id)) : row; });
+  const players = DB.participanti.filter(p=>!has.has(p.id) && p.freelancer!==false && p.statut==='activ').map(p=>{ const ded = deductionsFor(p.id, from, to);
+    return payLine(p.id, participantName(p.id), null, { ded, dePlata:-ded.total }); });
   const referees = DB.arbitri.filter(a=>!a.participantId && (pay.has(refName(a)) || (a.freelancer!==false && a.statut==='activ'))).map(a=>{ const r = pay.get(refName(a));
-    const row = line(a.id, refName(a), a, { freelancer:a.freelancer!==false }); return r ? addRef(row, r) : row; });
-  return [...played, ...players, ...referees];
+    const row = payLine(a.id, refName(a), a, { freelancer:a.freelancer!==false }); return r ? payAddHours(row, r) : row; });
+  return [...rows, ...players, ...referees];
 }
 function payExportRows(){
   const o = payExport;
@@ -7036,7 +7056,7 @@ function renderArbitraj(){
         <tr class="clickable" onclick="openArbitruProfile('${a.id}')">
           ${isAsistent() ? '' : `<td class="td-muted">${esc(a.nrDulap)}</td>`}<td class="td-name">${esc(a.nume)}</td><td>${esc(a.prenume)}</td>
           ${isAsistent() ? '' : `<td class="td-muted">${fmtDate(a.dataNasterii)}</td><td class="td-muted">${esc(a.telefon)}</td>`}
-          <td>${freelancerBadge(a.freelancer!==false)}</td>
+          <td class="fl-cell">${freelancerBadge(a.freelancer!==false)}${actButton(a.participantId||a.id, 'jucatori')}</td>
           <td><span class="badge ${a.statut==='activ'?'green':'muted'}">${trEnum(a.statut)}</span></td>
         </tr>`).join('') : `<tr><td class="td-empty" colspan="7">${t('arb_none')}</td></tr>`}</tbody>
     </table></div>
