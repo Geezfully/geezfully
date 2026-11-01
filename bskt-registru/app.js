@@ -38,7 +38,7 @@ function readOnlyRefusal(){
 const DEFAULT_TERENURI = ['Teren 1'];
 // referee pay: every referee, alone or in a pair, gets `ora` MDL net per hour worked;
 // the company pays the gross amount = net ÷ (1 − retinerePct%), same rule as the players
-const DEFAULT_TARIF_ARBITRI = { ora:80, retinerePct:15 };
+const DEFAULT_TARIF_ARBITRI = { turneu:637.5, retinerePct:15 };
 function refereeGross(net){ return Math.round(net/(1-TARIF_ARBITRI.retinerePct/100)*100)/100; }
 // Freelancer (default on): pays the 15% tax itself, so the company pays the GROSS and the person keeps the net.
 // Not a freelancer: taxes go another way, the company pays the NET. Both end up with the same net.
@@ -302,8 +302,7 @@ ro: {
   fp_reportGalbene:'Galbene', fp_reportRosii:'Roșii', fp_reportTotal:'Total',
   fp_reportNone:'Nicio sancțiune în perioada selectată.', fp_needSportiv:'Selectați sportivul.',
 
-  ar_title:'Arbitraj', ar_sub:'Arbitrii de turneu și cantitatea de mingi noi eliberate — scade automat din inventar.',
-  ar_addTitle:'Eliberare mingi arbitru', ar_numeArbitru:'Nume arbitru', ar_numeArbitruPh:'Nume arbitru',
+  ar_numeArbitru:'Nume arbitru', ar_numeArbitruPh:'Nume arbitru',
   ar_turneu:'Turneu', ar_mingiNoi:'Mingi noi', ar_th_arbitru:'Arbitru', ar_th_turneu:'Turneu', ar_th_mingiNoi:'Mingi noi',
   ar_marcaMingi:'Marcă', ar_th_marcaMingi:'Marcă',
   ar_countSuffix:'eliberări', ar_none:'Nicio eliberare.', ar_needNume:'Introduceți numele arbitrului.',
@@ -409,7 +408,6 @@ ro: {
   as_pSyncIgnorate:(n)=>`Ultima sincronizare a ignorat ${n} ${plural(n,'mt_meciuriSuffix','ro')}: echipe de pe site nelegate de o echipă din registru.`,
   as_pSyncNiciodata:'Rezultatele nu au fost sincronizate niciodată.',
   as_pPeste2:(d,n)=>`${d}: peste doi arbitri (${n}).`,
-  as_pOreLipsa:(d,n)=>`${d}: arbitraj fără ore completate (${n}) — se plătește 0 până la completare.`,
   as_pAvizExpirat:(n,l)=>`${n} ${n===1?'aviz medical expirat':'avize medicale expirate'}: ${l}.`,
   as_pAvizCurand:(n,l)=>`${n} ${n===1?'aviz medical expiră':'avize medicale expiră'} în 30 de zile: ${l}.`,
   as_pEchipaMica:(e,n)=>`${e}: doar ${n} ${n===1?'jucător activ':'jucători activi'} în echipă (minim 3 pe teren).`,
@@ -420,13 +418,14 @@ ro: {
   as_pSpalatorie:(n)=>`${n} ${n===1?'predare la spălătorie nereturnată':'predări la spălătorie nereturnate'} de peste 2 zile.`,
   as_pLenjerie:(n)=>`${n} ${n===1?'set de lenjerie nereturnat':'seturi de lenjerie nereturnate'} de peste 7 zile.`,
   as_pSarciniDeschise:(n)=>`${n} ${n===1?'sarcină deschisă':'sarcini deschise'}.`,
-  ar2_regula:(ora,pct,brut)=>`Fiecare arbitru, singur sau în pereche: ${ora} lei net pe oră arbitrată. Compania plătește brut ${money(brut)} lei/oră (net ÷ (1 − ${pct}%)); arbitrul achită reținerea de ${pct}% și rămâne cu ${ora} lei/oră.`,
-  ar2_net:(ora)=>`Net (${ora}/oră)`, ar2_retinere:(pct)=>`Reținere ${pct}%`, ar2_tOra:'Lei net pe oră (fiecare arbitru)',
-  ar2_obsLipsa:(n)=>`${n} ${n===1?'zi':'zile'} fără ore completate`,
-  ar2_avertOreLipsa:(n)=>`${n} ${n===1?'zi de arbitraj nu are':'zile de arbitraj nu au'} ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`,
-  ar2_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.',
+  ar2_regula:(net,pct,brut)=>`Fiecare turneu arbitrat: ${money(brut)} lei brut. Arbitrul achită reținerea de ${pct}% și rămâne cu ${money(net)} lei.`,
+  ar3_titlu:'Turnee arbitrate', ar3_addTitle:'Adaugă turnee', ar3_luna:'Luna', ar3_turnee:'Turnee', ar3_unit:['turneu','turnee'], ar3_none:'Niciun turneu introdus.', ar3_detalii:'Detalii pe luni',
+  ar3_perioada:'Suma intră în plata perioadei care cuprinde ultima zi a lunii.', ar3_exista:(n,l,x)=>`${n} are deja ${x} în ${l}. Folosiți Editează din listă.`, ar3_faraStergere:(n)=>`${n} are turnee introduse, deci nu poate fi șters. Setați-l inactiv.`,
+  ar3_schimburi:'Arbitri pe schimburi', ar3_schimburiSub:'Înregistrați la schimb, cu mingile eliberate. Nu intră în plată.',
+  ar2_net:(net)=>`Net (${money(net)}/turneu)`, ar2_retinere:(pct)=>`Reținere ${pct}%`, ar2_tOra:'Lei net pe turneu (fiecare arbitru)',
+  ar2_hint:'Apăsați pe un arbitru pentru detaliile pe luni. Turneele se completează în Arbitraj.',
   fl_label:'Freelancer', fl_da:'Da', fl_nu:'Nu', fl_toti:'Toți', fl_doarDa:'Freelanceri', fl_doarNu:'Non-freelanceri', fl_daLung:'Da — se plătește brutul (achită singur 15%)', fl_nuLung:'Nu — se plătește netul',
-  ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri sau ore de arbitraj în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_dejaPlatit:(d)=>`până la ${d} deja plătit`, ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
+  ac_btn:'Act de prestare (PDF)', ac_scurt:'Act', ac_faraMeciuri:(n,a,b)=>`${n} nu are meciuri sau turnee arbitrate în perioada ${a} – ${b}, deci nu există un act de emis.`, ac_lunaIntreaga:'Toată luna', ac_altaPerioada:'Altă perioadă…', ac_dejaPlatit:(d)=>`până la ${d} deja plătit`, ac_de:'De la', ac_pana:'Până la', ac_descarca:'Descarcă actul', ac_lipsaDate:(x)=>`Pentru act lipsesc datele de freelancer: ${x}. Completați-le în fișa personală.`, ac_nuFreelancer:'Actul de prestare se emite doar pentru freelanceri.', ac_faraSemnatura:'Semnătura și ștampila beneficiarului nu sunt încărcate încă în aplicație.', ac_eroare:'Actul nu a putut fi generat:', ac_seGenereaza:'Se generează…',
   fl_nuCalc:'Nu este freelancer: compania plătește netul (impozitul se achită pe altă cale).', fl_schimba:'Schimbă statutul de freelancer',
   fl_reviewTitlu:'Verificați statutul de freelancer',
   fl_explDa:'Freelancer: compania plătește suma brută (net ÷ 0,85); persoana achită 15% și rămâne cu netul.',
@@ -637,8 +636,7 @@ ru: {
   fp_reportGalbene:'Жёлтые', fp_reportRosii:'Красные', fp_reportTotal:'Всего',
   fp_reportNone:'За выбранный период санкций не зарегистрировано.', fp_needSportiv:'Выберите спортсмена.',
 
-  ar_title:'Судейство', ar_sub:'Судьи турниров и количество выданных новых мячей — автоматически списывается со склада.',
-  ar_addTitle:'Выдача мячей судье', ar_numeArbitru:'Имя судьи', ar_numeArbitruPh:'Имя судьи',
+  ar_numeArbitru:'Имя судьи', ar_numeArbitruPh:'Имя судьи',
   ar_turneu:'Турнир', ar_mingiNoi:'Новые мячи', ar_th_arbitru:'Судья', ar_th_turneu:'Турнир', ar_th_mingiNoi:'Новые мячи',
   ar_marcaMingi:'Марка', ar_th_marcaMingi:'Марка',
   ar_countSuffix:'выдач', ar_none:'Выдач нет.', ar_needNume:'Введите имя судьи.',
@@ -744,7 +742,6 @@ ru: {
   as_pSyncIgnorate:(n)=>`Последняя синхронизация пропустила ${n} ${plural(n,'mt_meciuriSuffix','ru')}: команды сайта не связаны с командами реестра.`,
   as_pSyncNiciodata:'Результаты ещё ни разу не синхронизировались.',
   as_pPeste2:(d,n)=>`${d}: больше двух арбитров (${n}).`,
-  as_pOreLipsa:(d,n)=>`${d}: арбитраж без указанных часов (${n}) — оплата 0 до заполнения.`,
   as_pAvizExpirat:(n,l)=>`Просроченные медсправки (${n}): ${l}.`,
   as_pAvizCurand:(n,l)=>`Медсправки истекают в течение 30 дней (${n}): ${l}.`,
   as_pEchipaMica:(e,n)=>`${e}: в команде только ${n} ${plural(n,'pa_countSuffix','ru')} (на площадке нужно минимум 3).`,
@@ -755,13 +752,14 @@ ru: {
   as_pSpalatorie:(n)=>`Не возвращено из прачечной более 2 дней: ${n}.`,
   as_pLenjerie:(n)=>`Не возвращено бельё более 7 дней: ${n}.`,
   as_pSarciniDeschise:(n)=>`Открытых задач: ${n}.`,
-  ar2_regula:(ora,pct,brut)=>`Каждый арбитр, один или в паре: ${ora} лей нетто за час судейства. Компания платит брутто ${money(brut)} лей/час (нетто ÷ (1 − ${pct}%)); арбитр платит удержание ${pct}% и получает ${ora} лей/час.`,
-  ar2_net:(ora)=>`Нетто (${ora}/час)`, ar2_retinere:(pct)=>`Удержание ${pct}%`, ar2_tOra:'Лей нетто в час (каждому арбитру)',
-  ar2_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} без указанных часов`,
-  ar2_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} арбитража без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`,
-  ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.',
+  ar2_regula:(net,pct,brut)=>`За каждый отсуженный турнир: ${money(brut)} лей брутто. Арбитр платит удержание ${pct}% и получает ${money(net)} лей.`,
+  ar3_titlu:'Отсуженные турниры', ar3_addTitle:'Добавить турниры', ar3_luna:'Месяц', ar3_turnee:'Турниры', ar3_unit:['турнир','турнира','турниров'], ar3_none:'Турниры не внесены.', ar3_detalii:'Детали по месяцам',
+  ar3_perioada:'Сумма входит в выплату периода, который включает последний день месяца.', ar3_exista:(n,l,x)=>`У ${n} уже ${x} за ${l}. Используйте «Редактировать» в списке.`, ar3_faraStergere:(n)=>`У ${n} внесены турниры, поэтому удалить нельзя. Сделайте неактивным.`,
+  ar3_schimburi:'Арбитры на сменах', ar3_schimburiSub:'Внесены на смене вместе с выданными мячами. В выплату не входят.',
+  ar2_net:(net)=>`Нетто (${money(net)}/турнир)`, ar2_retinere:(pct)=>`Удержание ${pct}%`, ar2_tOra:'Лей нетто за турнир (каждому арбитру)',
+  ar2_hint:'Нажмите на арбитра, чтобы увидеть детали по месяцам. Турниры вносятся в Арбитраже.',
   fl_label:'Фрилансер', fl_da:'Да', fl_nu:'Нет', fl_toti:'Все', fl_doarDa:'Фрилансеры', fl_doarNu:'Не фрилансеры', fl_daLung:'Да — платим брутто (сам платит 15%)', fl_nuLung:'Нет — платим нетто',
-  ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей или часов судейства за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_dejaPlatit:(d)=>`по ${d} уже оплачено`, ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
+  ac_btn:'Акт оказания услуг (PDF)', ac_scurt:'Акт', ac_faraMeciuri:(n,a,b)=>`У ${n} нет матчей или отсуженных турниров за период ${a} – ${b}, поэтому акт не выдаётся.`, ac_lunaIntreaga:'Весь месяц', ac_altaPerioada:'Другой период…', ac_dejaPlatit:(d)=>`по ${d} уже оплачено`, ac_de:'С', ac_pana:'По', ac_descarca:'Скачать акт', ac_lipsaDate:(x)=>`Для акта не хватает данных фрилансера: ${x}. Заполните их в личной карточке.`, ac_nuFreelancer:'Акт оказания услуг выдаётся только фрилансерам.', ac_faraSemnatura:'Подпись и печать получателя ещё не загружены в приложение.', ac_eroare:'Не удалось создать акт:', ac_seGenereaza:'Создание…',
   fl_nuCalc:'Не фрилансер: компания платит нетто (налог уплачивается иначе).', fl_schimba:'Изменить статус фрилансера',
   fl_reviewTitlu:'Проверьте статус фрилансера',
   fl_explDa:'Фрилансер: компания платит брутто (нетто ÷ 0,85); человек платит 15% и получает нетто.',
@@ -813,7 +811,7 @@ Object.assign(ENUM_RU, {
   'Joc dur':'Грубая игра', 'Fără legitimație':'Без удостоверения', 'Lipsă echipament':'Нет экипировки', 'Comportament nesportiv':'Неспортивное поведение',
 });
 Object.assign(I18N.ro, {
-  st_rolValue:'Administrator', dl_title:'Loturile zilei', dl_btn:'Completează loturile zilei', dl_btnSub:'Un lot pe echipă, aplicat tuturor meciurilor ei din această zi care nu au încă jucători.', dl_sub:'Fiecare echipă joacă de obicei toată seara cu același lot: completați-l o dată și se aplică automat tuturor meciurilor ei fără jucători din această zi. Meciurile care au deja lot nu sunt modificate; un meci anume se poate corecta apoi din editorul meciului. Plățile se calculează automat.', dl_aplica:'Aplică', dl_seAplicaLa:(n)=>`Se aplică la ${n} ${plural(n,'mt_meciuriSuffix','ro')}:`, dl_salveaza:'Salvează loturile', dl_nimic:'Toate meciurile din această zi au deja loturile completate.', dl_conflict:(p,ora,a,b)=>`${p} apare în ambele echipe la meciul de la ${ora} (${a} – ${b}). Corectați unul dintre loturi.`, sx_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Clasamentul echipelor le include, dar statisticile jucătorilor și căpitanilor nu, până nu completați lotul. Zile:`, mt_lotDinUltimul:(d,opp)=>`Lot propus: cel din ultimul meci (${d}, cu ${opp}). Corectați dacă s-a schimbat.`, mt_lotDinEchipa:'Lot propus din componența echipei (nu există un meci anterior cu lot).', sh_faraPersonal:'Nu există personal de serviciu în listă, deci schimbul nu poate fi pornit. Un administrator adaugă numele în Setări → Personal de serviciu.', mt_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Jucătorii din aceste meciuri nu primesc plată până nu completați lotul. Zile:`, mt_faraLotCard:'Meci jucat fără lot: jucătorii nu sunt plătiți până nu se completează lotul.', mt_completeazaLot:'Completează lotul', pl_tabArbitri:'Arbitri', sh_updateBalls:'Actualizează mingi și ore', ar_oreTotal:'Total ore', ar_oraStart:'Început', ar_oraStop:'Sfârșit', ar_interval:'Interval', ar_ore:'Ore', ar_editOre:'Ore', ar_faraOre:'fără ore', ar_singur:'singur', ar_inDoi:'în doi', ar_peste2:'>2 arbitri', ar_needAmbeleOre:'Completați atât ora de început, cât și ora de sfârșit.', ar_confirmAlTreilea:(n)=>`În această zi arbitrează deja ${n}. De regulă sunt cel mult doi arbitri pe zi — adăugați totuși un al treilea?`, ar_regulaPlata:(zi,ore,ora)=>`Un singur arbitru în ziua respectivă: ${zi} lei/zi (${ore} ore). Doi arbitri: fiecare primește ${ora} lei × orele arbitrate (${ore} h = ${ora*ore} lei).`, ar_zile:'Zile', ar_zileSingur:'Zile singur', ar_zileDoi:'Zile în doi', ar_oreDoi:'Ore (în doi)', ar_dePlata:'De plătit', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} în doi fără ore completate`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu peste 2 arbitri`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu doi arbitri nu au ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`, ar_singurZi:'Singur toată ziua', ar_cu:'Cu', ar_tarifZi:(zi)=>`tarif zi ${zi}`, ar_niciunArbitru:'Niciun arbitru în perioada aleasă.', ar_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.', ar_tip:'Tip zi', ar_detaliiZile:'Detalii pe zile', ar_tarifeTitle:'Tarife arbitri', ar_tZi:'Arbitru singur — lei/zi', ar_tOreZi:'Ore într-o zi completă', ar_tOra:'Doi arbitri — lei/oră fiecare', re_luna:'Lună (setează perioada)', re_intervalPersonalizat:'Interval personalizat', mp_anAnterior:'Anul anterior', mp_anUrmator:'Anul următor', mp_lunaAnterioara:'Luna anterioară', mp_lunaUrmatoare:'Luna următoare', mp_lunaCurenta:'Luna curentă', mp_inregistrari:'înregistrări', sx_perioada:'Perioada aleasă', sx_siLa:'și la', sx_echipeScurt:'echipe', sx_tabEchipe:'Clasament echipe', sx_ldWin:'Cel mai bun win rate', sx_ldPm:'Cel mai bun +/−', sx_ldActiv:'Cele mai multe meciuri', sx_ldCap:'Cel mai bun căpitan', sx_caCapitan:'ca căpitan', sx_capitanVM:'Căpitan V/M', sx_meciuriCapitan:'Meciuri căpitan', sx_niciunJucator:'Niciun jucător nu corespunde filtrelor.', sx_sortWin:'Sortare: win rate ↓', sx_sortVictorii:'Sortare: victorii ↓', sx_sortPm:'Sortare: +/− ↓', sx_sortRating:'Sortare: rating ↓', sx_minMeciuri:(n)=>`Minim ${n} meciuri`, sx_oriceNrMeciuri:'Orice nr. de meciuri', sx_hintEchipe:'Apăsați pe o echipă pentru a vedea statisticile jucătorilor ei.', sx_hintRand:'Apăsați pe un jucător pentru profil. Liderii de sus iau în calcul doar jucătorii cu minim 10 meciuri.', pl_th2_net:'Net / jucător', pl_th2_brut:'Brut necesar', pl_th2_ret:'Reținere 15%', pl_th2_netRamas:'Net rămas', pl_sumeMdl:'Sume în MDL', pl_th_victorii:'Victorii', pl_th_infrangeri:'Înfrângeri', pl_th_netJucator:'Net / jucător (MDL)', pl_th_coef:'Coef. vs bază', pl_th_brutNecesar:'Brut necesar (MDL)', pl_th_retinere15:'Reținere 15% (MDL)', pl_th_netRamas:'Net rămas (MDL)', pl_th_observatie:'Observație', pl_th_dePlataBrut:'De plătit (brut)', pl_dePlataTotalBrut:'Total de plătit (brut) în perioadă', pl_sortBrut:'Sortare: brut ↓', pl_obsCapitan:'Bonus de leadership inclus', pl_obsRezerva:'Rezervă egală cu jucătorul; nu penalizăm rotația', pl_obsFaraMeciuri:'Fără meciuri în această perioadă', pl_obsArbitru:(ore)=>`Arbitraj: ${ore}`, pl_obsArbitruGol:'Arbitraj — orele nu sunt introduse', pl_rolArbitru:(n)=>`Arbitru: ${n} ore/meciuri`, pl_obsBaza:'Jucător de bază', pl_obsRetinut:'Reținut din plată', pl_tabJucatori:'Jucători', pl_tabEchipe:'Pe echipe', pl_tabTarife:'Tarife', pl_dePlataTotal:'Total de plătit în perioadă', pl_cauta:'Caută jucător sau echipă…', pl_arataZile:'Coloane pe zile', pl_sortNume:'Sortare: nume', pl_sortDePlata:'Sortare: de plătit ↓', pl_sortNet:'Sortare: net ↓', pl_sortMeciuri:'Sortare: meciuri ↓', pl_sortDed:'Sortare: deduceri ↓', pl_sortEchipa:'Sortare: echipă', pl_tipVI:'Victorii–înfrângeri', pl_hintRand:'Apăsați pe un jucător pentru a vedea fiecare meci și calculul plății. Coef. vs bază = media sumei pe meci împărțită la baza (jucător, înfrângere). De plătit = brutul necesar minus deducerile.', pl_detMeciuri:'Meciurile din perioadă', pl_detCalcul:'Calculul plății', pl_deschideProfil:'Deschide profilul', pl_echipeHint:'Apăsați pe o echipă pentru a vedea plățile jucătorilor ei.', pa_countSuffix:["jucător", "jucători"], mt_meciuriSuffix:["meci", "meciuri"], an_countSuffix:["sesiune", "sesiuni"], ve_countSuffix:["eliberare", "eliberări"], ta_countSuffix:["sarcină", "sarcini"], sp_operatiuni:["operațiune", "operațiuni"], sp_countSuffix:["înregistrare", "înregistrări"], pt_countSuffix:["pauză înregistrată", "pauze înregistrate"], pl_zile:["zi de joc", "zile de joc"], ob_countSuffix:["observație", "observații"], le_countSuffix:["înregistrare", "înregistrări"], iv_lowStock:["articol sub stocul minim admis.", "articole sub stocul minim admis."], fp_countSuffix:["sancțiune înregistrată", "sancțiuni înregistrate"], da_categorii:["categorie", "categorii"], da2_countSuffix:["daună înregistrată", "daune înregistrate"], arb_countSuffix:["arbitru", "arbitri"], ar_countSuffix:["eliberare", "eliberări"], pa_expiraLa:["zi", "zile"], cal_ziuaPrecedenta:'Ziua precedentă', cal_ziuaUrmatoare:'Ziua următoare', cal_faraMeciuri:'fără meciuri', cal_jocAnterior:'ziua de joc anterioară', cal_jocUrmator:'următoarea zi de joc', cal_cuMeciuri:'zile cu meciuri', cal_azi:'Azi', te_lot:'Lotul echipei', te_cautaJucator:'Caută jucătorul după nume, echipă sau rating…', te_capitanRating:'Căpitan = cel mai mare rating', te_mutatDin:'mutat din', te_faraNr:'fără nr.', te_scoate:'Scoate', te_adauga:'Adaugă jucător în lot', te_vorFiScosi:'Vor fi scoși din echipă la salvare', te_notaNr:'Numărul în echipă (1–4) este cel din fișa personală. O echipă poate avea mai mulți căpitani; la fiecare meci se alege căpitanul din lot. Jucătorii mutați din altă echipă își schimbă echipa la salvare.', te_errNume:'Denumirea echipei este obligatorie.', te_errNrDublu:'Doi jucători au același număr.', te_errDoiCapitani:'Echipa poate avea un singur căpitan.', te_altaCuloare:'Altă culoare', te_sterge:'Șterge echipa', te_stergeBlocat:'Echipa are meciuri înregistrate și nu poate fi ștearsă — marcați-o inactivă.', te_confirmSterge:(n)=>`Ștergeți echipa ${n}? Jucătorii ei rămân în registru, fără echipă.`, ec_numeExista:'Există deja o echipă cu acest nume.', pt_confirmLunga:(m)=>`Pauza durează ${Math.floor(m/60)} h ${m%60} min (trece peste miezul nopții?). Salvați așa?`, ve_stocInsuficient:(n)=>`În stoc sunt doar ${n} buc. din această mărime. Eliberați totuși (stocul va deveni negativ)?`, re_sect_participanti:'Rapoarte privind jucătorii', act_s_meciuri:'Meciuri', act_echipaA:'Echipa A', act_echipaB:'Echipa B', act_scor:'Scor', act_platou:'Teren', act_cartonas:'Sancțiune', nav_participanti:'Jucători', nav_echipe:'Echipe', nav_meciuri:'Meciuri', nav_plati:'Plăți', nav_statistici:'Statistici',
+  st_rolValue:'Administrator', dl_title:'Loturile zilei', dl_btn:'Completează loturile zilei', dl_btnSub:'Un lot pe echipă, aplicat tuturor meciurilor ei din această zi care nu au încă jucători.', dl_sub:'Fiecare echipă joacă de obicei toată seara cu același lot: completați-l o dată și se aplică automat tuturor meciurilor ei fără jucători din această zi. Meciurile care au deja lot nu sunt modificate; un meci anume se poate corecta apoi din editorul meciului. Plățile se calculează automat.', dl_aplica:'Aplică', dl_seAplicaLa:(n)=>`Se aplică la ${n} ${plural(n,'mt_meciuriSuffix','ro')}:`, dl_salveaza:'Salvează loturile', dl_nimic:'Toate meciurile din această zi au deja loturile completate.', dl_conflict:(p,ora,a,b)=>`${p} apare în ambele echipe la meciul de la ${ora} (${a} – ${b}). Corectați unul dintre loturi.`, sx_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Clasamentul echipelor le include, dar statisticile jucătorilor și căpitanilor nu, până nu completați lotul. Zile:`, mt_lotDinUltimul:(d,opp)=>`Lot propus: cel din ultimul meci (${d}, cu ${opp}). Corectați dacă s-a schimbat.`, mt_lotDinEchipa:'Lot propus din componența echipei (nu există un meci anterior cu lot).', sh_faraPersonal:'Nu există personal de serviciu în listă, deci schimbul nu poate fi pornit. Un administrator adaugă numele în Setări → Personal de serviciu.', mt_faraLotAvert:(n)=>`Fără lot completat: ${n} ${plural(n,'mt_meciuriSuffix','ro')} cu scor. Jucătorii din aceste meciuri nu primesc plată până nu completați lotul. Zile:`, mt_faraLotCard:'Meci jucat fără lot: jucătorii nu sunt plătiți până nu se completează lotul.', mt_completeazaLot:'Completează lotul', pl_tabArbitri:'Arbitri', sh_updateBalls:'Actualizează mingi și ore', ar_oraStart:'Început', ar_oraStop:'Sfârșit', ar_interval:'Interval', ar_ore:'Ore', ar_editOre:'Ore', ar_faraOre:'fără ore', ar_singur:'singur', ar_inDoi:'în doi', ar_peste2:'>2 arbitri', ar_needAmbeleOre:'Completați atât ora de început, cât și ora de sfârșit.', ar_confirmAlTreilea:(n)=>`În această zi arbitrează deja ${n}. De regulă sunt cel mult doi arbitri pe zi — adăugați totuși un al treilea?`, ar_regulaPlata:(zi,ore,ora)=>`Un singur arbitru în ziua respectivă: ${zi} lei/zi (${ore} ore). Doi arbitri: fiecare primește ${ora} lei × orele arbitrate (${ore} h = ${ora*ore} lei).`, ar_zile:'Zile', ar_zileSingur:'Zile singur', ar_zileDoi:'Zile în doi', ar_oreDoi:'Ore (în doi)', ar_dePlata:'De plătit', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} în doi fără ore completate`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu peste 2 arbitri`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ro')} cu doi arbitri nu au ora de început/sfârșit completată — se plătesc 0 până la completare (Arbitraj → Ore).`, ar_singurZi:'Singur toată ziua', ar_cu:'Cu', ar_tarifZi:(zi)=>`tarif zi ${zi}`, ar_niciunArbitru:'Niciun arbitru în perioada aleasă.', ar_hint:'Apăsați pe un arbitru pentru detaliile pe zile. Orele se completează în Arbitraj sau din tabloul de bord, la schimb.', ar_tip:'Tip zi', ar_detaliiZile:'Detalii pe zile', ar_tarifeTitle:'Tarife arbitri', ar_tZi:'Arbitru singur — lei/zi', ar_tOreZi:'Ore într-o zi completă', ar_tOra:'Doi arbitri — lei/oră fiecare', re_luna:'Lună (setează perioada)', re_intervalPersonalizat:'Interval personalizat', mp_anAnterior:'Anul anterior', mp_anUrmator:'Anul următor', mp_lunaAnterioara:'Luna anterioară', mp_lunaUrmatoare:'Luna următoare', mp_lunaCurenta:'Luna curentă', mp_inregistrari:'înregistrări', sx_perioada:'Perioada aleasă', sx_siLa:'și la', sx_echipeScurt:'echipe', sx_tabEchipe:'Clasament echipe', sx_ldWin:'Cel mai bun win rate', sx_ldPm:'Cel mai bun +/−', sx_ldActiv:'Cele mai multe meciuri', sx_ldCap:'Cel mai bun căpitan', sx_caCapitan:'ca căpitan', sx_capitanVM:'Căpitan V/M', sx_meciuriCapitan:'Meciuri căpitan', sx_niciunJucator:'Niciun jucător nu corespunde filtrelor.', sx_sortWin:'Sortare: win rate ↓', sx_sortVictorii:'Sortare: victorii ↓', sx_sortPm:'Sortare: +/− ↓', sx_sortRating:'Sortare: rating ↓', sx_minMeciuri:(n)=>`Minim ${n} meciuri`, sx_oriceNrMeciuri:'Orice nr. de meciuri', sx_hintEchipe:'Apăsați pe o echipă pentru a vedea statisticile jucătorilor ei.', sx_hintRand:'Apăsați pe un jucător pentru profil. Liderii de sus iau în calcul doar jucătorii cu minim 10 meciuri.', pl_th2_net:'Net / jucător', pl_th2_brut:'Brut necesar', pl_th2_ret:'Reținere 15%', pl_th2_netRamas:'Net rămas', pl_sumeMdl:'Sume în MDL', pl_th_victorii:'Victorii', pl_th_infrangeri:'Înfrângeri', pl_th_netJucator:'Net / jucător (MDL)', pl_th_coef:'Coef. vs bază', pl_th_brutNecesar:'Brut necesar (MDL)', pl_th_retinere15:'Reținere 15% (MDL)', pl_th_netRamas:'Net rămas (MDL)', pl_th_observatie:'Observație', pl_th_dePlataBrut:'De plătit (brut)', pl_dePlataTotalBrut:'Total de plătit (brut) în perioadă', pl_sortBrut:'Sortare: brut ↓', pl_obsCapitan:'Bonus de leadership inclus', pl_obsRezerva:'Rezervă egală cu jucătorul; nu penalizăm rotația', pl_obsFaraMeciuri:'Fără meciuri în această perioadă', pl_obsArbitru:(ore)=>`Arbitraj: ${ore}`, pl_obsArbitruGol:'Arbitraj — turneele nu sunt introduse', pl_rolArbitru:(x)=>`Arbitru: ${x}`, pl_obsBaza:'Jucător de bază', pl_obsRetinut:'Reținut din plată', pl_tabJucatori:'Jucători', pl_tabEchipe:'Pe echipe', pl_tabTarife:'Tarife', pl_dePlataTotal:'Total de plătit în perioadă', pl_cauta:'Caută jucător sau echipă…', pl_arataZile:'Coloane pe zile', pl_sortNume:'Sortare: nume', pl_sortDePlata:'Sortare: de plătit ↓', pl_sortNet:'Sortare: net ↓', pl_sortMeciuri:'Sortare: meciuri ↓', pl_sortDed:'Sortare: deduceri ↓', pl_sortEchipa:'Sortare: echipă', pl_tipVI:'Victorii–înfrângeri', pl_hintRand:'Apăsați pe un jucător pentru a vedea fiecare meci și calculul plății. Coef. vs bază = media sumei pe meci împărțită la baza (jucător, înfrângere). De plătit = brutul necesar minus deducerile.', pl_detMeciuri:'Meciurile din perioadă', pl_detCalcul:'Calculul plății', pl_deschideProfil:'Deschide profilul', pl_echipeHint:'Apăsați pe o echipă pentru a vedea plățile jucătorilor ei.', pa_countSuffix:["jucător", "jucători"], mt_meciuriSuffix:["meci", "meciuri"], an_countSuffix:["sesiune", "sesiuni"], ve_countSuffix:["eliberare", "eliberări"], ta_countSuffix:["sarcină", "sarcini"], sp_operatiuni:["operațiune", "operațiuni"], sp_countSuffix:["înregistrare", "înregistrări"], pt_countSuffix:["pauză înregistrată", "pauze înregistrate"], pl_zile:["zi de joc", "zile de joc"], ob_countSuffix:["observație", "observații"], le_countSuffix:["înregistrare", "înregistrări"], iv_lowStock:["articol sub stocul minim admis.", "articole sub stocul minim admis."], fp_countSuffix:["sancțiune înregistrată", "sancțiuni înregistrate"], da_categorii:["categorie", "categorii"], da2_countSuffix:["daună înregistrată", "daune înregistrate"], arb_countSuffix:["arbitru", "arbitri"], ar_countSuffix:["eliberare", "eliberări"], pa_expiraLa:["zi", "zile"], cal_ziuaPrecedenta:'Ziua precedentă', cal_ziuaUrmatoare:'Ziua următoare', cal_faraMeciuri:'fără meciuri', cal_jocAnterior:'ziua de joc anterioară', cal_jocUrmator:'următoarea zi de joc', cal_cuMeciuri:'zile cu meciuri', cal_azi:'Azi', te_lot:'Lotul echipei', te_cautaJucator:'Caută jucătorul după nume, echipă sau rating…', te_capitanRating:'Căpitan = cel mai mare rating', te_mutatDin:'mutat din', te_faraNr:'fără nr.', te_scoate:'Scoate', te_adauga:'Adaugă jucător în lot', te_vorFiScosi:'Vor fi scoși din echipă la salvare', te_notaNr:'Numărul în echipă (1–4) este cel din fișa personală. O echipă poate avea mai mulți căpitani; la fiecare meci se alege căpitanul din lot. Jucătorii mutați din altă echipă își schimbă echipa la salvare.', te_errNume:'Denumirea echipei este obligatorie.', te_errNrDublu:'Doi jucători au același număr.', te_errDoiCapitani:'Echipa poate avea un singur căpitan.', te_altaCuloare:'Altă culoare', te_sterge:'Șterge echipa', te_stergeBlocat:'Echipa are meciuri înregistrate și nu poate fi ștearsă — marcați-o inactivă.', te_confirmSterge:(n)=>`Ștergeți echipa ${n}? Jucătorii ei rămân în registru, fără echipă.`, ec_numeExista:'Există deja o echipă cu acest nume.', pt_confirmLunga:(m)=>`Pauza durează ${Math.floor(m/60)} h ${m%60} min (trece peste miezul nopții?). Salvați așa?`, ve_stocInsuficient:(n)=>`În stoc sunt doar ${n} buc. din această mărime. Eliberați totuși (stocul va deveni negativ)?`, re_sect_participanti:'Rapoarte privind jucătorii', act_s_meciuri:'Meciuri', act_echipaA:'Echipa A', act_echipaB:'Echipa B', act_scor:'Scor', act_platou:'Teren', act_cartonas:'Sancțiune', nav_participanti:'Jucători', nav_echipe:'Echipe', nav_meciuri:'Meciuri', nav_plati:'Plăți', nav_statistici:'Statistici',
   da_stat_activi:'Jucători activi', da_stat_meciuri:'Meciuri azi', da_stat_meciuriSub:'Săptămâna aceasta',
   pa_title:'Jucători', pa_sub:'Registrul jucătorilor BSKT Cup — fișa personală, echipa și istoricul fiecăruia.',
   pa_addTitle:'Înregistrare jucător nou', pa_btnAdd:'+ Adaugă jucător', pa_none:'Niciun jucător găsit.',   pa_editTitle:'Modifică fișa jucătorului', pa_deleteBtn:'Șterge jucător', pa_deleteTitle:'Șterge jucătorul din registru', pa_fisa:'Fișa jucătorului',
@@ -877,7 +875,7 @@ Object.assign(I18N.ro, {
   stx_faraAntrenori:'Adăugați antrenori în Setări',
   sh_refHelp:'Salvează numele și terenul acum. Numărul mingilor poate fi completat aici mai târziu.', sh_venue:'Teren',
   sh_matchesTitle:'Meciurile zilei', sh_matchesHelp:'Înregistrează meciurile, loturile și scorul — plățile jucătorilor se calculează automat.', sh_matchesOpen:'Deschide meciurile',
-  ar_sub:'Arbitrii de serviciu și mingile de baschet eliberate — se scad automat din inventar.', ar_turneu:'Teren', ar_th_turneu:'Teren',
+  ar_turneu:'Teren', ar_th_turneu:'Teren',
   fp_sub:'Sancțiunile acordate jucătorilor: avertismente, faulturi tehnice și antisportive, descalificări.', fp_platou:'Teren', fp_th_platou:'Teren',
   fp_cartonas:'Sancțiune', fp_th_cartonas:'Sancțiune', fp_reportTitle:'Clasament sancțiuni', fp_reportSub:'Jucătorii după numărul de sancțiuni primite.',
   da2_inventarAfectatPh:'ex. Panou baschet', da2_naturaPh:'ex. Plasă ruptă',
@@ -887,7 +885,7 @@ Object.assign(I18N.ro, {
   err_save:'Salvarea a eșuat:', err_update:'Actualizarea a eșuat:', err_delete:'Ștergerea a eșuat:', err_load:'Încărcarea a eșuat:', err_noPerm:'nu aveți permisiunea necesară.',
 });
 Object.assign(I18N.ru, {
-  st_rolValue:'Администратор', dl_title:'Составы дня', dl_btn:'Заполнить составы дня', dl_btnSub:'Один состав на команду для всех её матчей этого дня, где ещё нет игроков.', dl_sub:'Обычно команда играет весь вечер одним составом: заполните его один раз, и он применится ко всем её матчам этого дня без игроков. Матчи, где состав уже есть, не меняются; отдельный матч можно потом исправить в редакторе матча. Выплаты считаются автоматически.', dl_aplica:'Применить', dl_seAplicaLa:(n)=>`Применяется к ${n} ${plural(n,'mt_meciuriSuffix','ru')}:`, dl_salveaza:'Сохранить составы', dl_nimic:'У всех матчей этого дня составы уже заполнены.', dl_conflict:(p,ora,a,b)=>`${p} указан в обеих командах в матче в ${ora} (${a} – ${b}). Исправьте один из составов.`, sx_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Таблица команд их учитывает, а статистика игроков и капитанов — нет, пока состав не заполнен. Дни:`, mt_lotDinUltimul:(d,opp)=>`Предложен состав из последнего матча (${d}, против ${opp}). Исправьте, если он изменился.`, mt_lotDinEchipa:'Состав предложен по списку команды (нет прошлого матча с составом).', sh_faraPersonal:'В списке нет дежурного персонала, поэтому смену нельзя начать. Администратор добавляет имена в Настройки → Дежурный персонал.', mt_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Игроки этих матчей не получат оплату, пока состав не заполнен. Дни:`, mt_faraLotCard:'Матч сыгран без состава: игрокам не начисляется оплата, пока состав не заполнен.', mt_completeazaLot:'Заполнить состав', pl_tabArbitri:'Арбитры', sh_updateBalls:'Обновить мячи и часы', ar_oreTotal:'Всего часов', ar_oraStart:'Начало', ar_oraStop:'Конец', ar_interval:'Интервал', ar_ore:'Часы', ar_editOre:'Часы', ar_faraOre:'без часов', ar_singur:'один', ar_inDoi:'вдвоём', ar_peste2:'>2 арбитров', ar_needAmbeleOre:'Укажите и время начала, и время окончания.', ar_confirmAlTreilea:(n)=>`В этот день уже судят ${n}. Обычно не больше двух арбитров в день — всё равно добавить третьего?`, ar_regulaPlata:(zi,ore,ora)=>`Один арбитр за день: ${zi} лей/день (${ore} ч). Два арбитра: каждый получает ${ora} лей × отсуженные часы (${ore} ч = ${ora*ore} лей).`, ar_zile:'Дни', ar_zileSingur:'Дни один', ar_zileDoi:'Дни вдвоём', ar_oreDoi:'Часы (вдвоём)', ar_dePlata:'К выплате', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} вдвоём без указанных часов`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с более чем 2 арбитрами`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с двумя арбитрами без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`, ar_singurZi:'Один весь день', ar_cu:'С', ar_tarifZi:(zi)=>`ставка за день ${zi}`, ar_niciunArbitru:'Нет арбитров за выбранный период.', ar_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.', ar_tip:'Тип дня', ar_detaliiZile:'Детали по дням', ar_tarifeTitle:'Ставки арбитров', ar_tZi:'Один арбитр — лей/день', ar_tOreZi:'Часов в полном дне', ar_tOra:'Два арбитра — лей/час каждому', re_luna:'Месяц (задаёт период)', re_intervalPersonalizat:'Свой период', mp_anAnterior:'Предыдущий год', mp_anUrmator:'Следующий год', mp_lunaAnterioara:'Предыдущий месяц', mp_lunaUrmatoare:'Следующий месяц', mp_lunaCurenta:'Текущий месяц', mp_inregistrari:'записей', sx_perioada:'Выбранный период', sx_siLa:'также в', sx_echipeScurt:'команд', sx_tabEchipe:'Таблица команд', sx_ldWin:'Лучший винрейт', sx_ldPm:'Лучший +/−', sx_ldActiv:'Больше всего матчей', sx_ldCap:'Лучший капитан', sx_caCapitan:'капитаном', sx_capitanVM:'Капитан П/М', sx_meciuriCapitan:'Матчи капитаном', sx_niciunJucator:'Нет игроков по этим фильтрам.', sx_sortWin:'Сортировка: винрейт ↓', sx_sortVictorii:'Сортировка: победы ↓', sx_sortPm:'Сортировка: +/− ↓', sx_sortRating:'Сортировка: рейтинг ↓', sx_minMeciuri:(n)=>`Минимум ${n} матчей`, sx_oriceNrMeciuri:'Любое число матчей', sx_hintEchipe:'Нажмите на команду, чтобы увидеть статистику её игроков.', sx_hintRand:'Нажмите на игрока, чтобы открыть профиль. Лидеры сверху учитывают только игроков с минимум 10 матчами.', pl_th2_net:'Нетто / игрок', pl_th2_brut:'Необходимое брутто', pl_th2_ret:'Удержание 15%', pl_th2_netRamas:'Остаток нетто', pl_sumeMdl:'Суммы в MDL', pl_th_victorii:'Победы', pl_th_infrangeri:'Поражения', pl_th_netJucator:'Нетто / игрок (MDL)', pl_th_coef:'Коэф. к базе', pl_th_brutNecesar:'Необходимое брутто (MDL)', pl_th_retinere15:'Удержание 15% (MDL)', pl_th_netRamas:'Остаток нетто (MDL)', pl_th_observatie:'Примечание', pl_th_dePlataBrut:'К выплате (брутто)', pl_dePlataTotalBrut:'Итого к выплате (брутто) за период', pl_sortBrut:'Сортировка: брутто ↓', pl_obsCapitan:'Включён бонус за лидерство', pl_obsRezerva:'Запасной наравне с игроком; ротацию не штрафуем', pl_obsFaraMeciuri:'Без матчей за этот период', pl_obsArbitru:(ore)=>`Судейство: ${ore}`, pl_obsArbitruGol:'Судейство — часы не внесены', pl_rolArbitru:(n)=>`Судья: ${n} часов/матчей`, pl_obsBaza:'Базовый игрок', pl_obsRetinut:'Удержано из выплаты', pl_tabJucatori:'Игроки', pl_tabEchipe:'По командам', pl_tabTarife:'Ставки', pl_dePlataTotal:'Итого к выплате за период', pl_cauta:'Поиск игрока или команды…', pl_arataZile:'Колонки по дням', pl_sortNume:'Сортировка: имя', pl_sortDePlata:'Сортировка: к выплате ↓', pl_sortNet:'Сортировка: нетто ↓', pl_sortMeciuri:'Сортировка: матчи ↓', pl_sortDed:'Сортировка: вычеты ↓', pl_sortEchipa:'Сортировка: команда', pl_tipVI:'Победы–поражения', pl_hintRand:'Нажмите на игрока, чтобы увидеть каждый матч и расчёт выплаты. Коэф. к базе = средняя сумма за матч, делённая на базу (игрок, поражение). К выплате = необходимое брутто минус вычеты.', pl_detMeciuri:'Матчи за период', pl_detCalcul:'Расчёт выплаты', pl_deschideProfil:'Открыть профиль', pl_echipeHint:'Нажмите на команду, чтобы увидеть выплаты её игроков.', pa_countSuffix:["игрок", "игрока", "игроков"], mt_meciuriSuffix:["матч", "матча", "матчей"], an_countSuffix:["сессия", "сессии", "сессий"], ve_countSuffix:["выдача", "выдачи", "выдач"], ta_countSuffix:["задача", "задачи", "задач"], sp_operatiuni:["операция", "операции", "операций"], sp_countSuffix:["запись", "записи", "записей"], pt_countSuffix:["перерыв зарегистрирован", "перерыва зарегистрировано", "перерывов зарегистрировано"], pl_zile:["игровой день", "игровых дня", "игровых дней"], ob_countSuffix:["замечание", "замечания", "замечаний"], le_countSuffix:["запись", "записи", "записей"], iv_lowStock:["товар ниже допустимого минимума.", "товара ниже допустимого минимума.", "товаров ниже допустимого минимума."], fp_countSuffix:["зарегистрированная санкция", "зарегистрированные санкции", "зарегистрированных санкций"], da_categorii:["категории", "категорий", "категорий"], da2_countSuffix:["случай ущерба", "случая ущерба", "случаев ущерба"], arb_countSuffix:["судья", "судьи", "судей"], ar_countSuffix:["выдача", "выдачи", "выдач"], pa_expiraLa:["день", "дня", "дней"], cal_ziuaPrecedenta:'Предыдущий день', cal_ziuaUrmatoare:'Следующий день', cal_faraMeciuri:'без матчей', cal_jocAnterior:'предыдущий игровой день', cal_jocUrmator:'следующий игровой день', cal_cuMeciuri:'дни с матчами', cal_azi:'Сегодня', te_lot:'Состав команды', te_cautaJucator:'Поиск игрока по имени, команде или рейтингу…', te_capitanRating:'Капитан = самый высокий рейтинг', te_mutatDin:'переходит из', te_faraNr:'без №', te_scoate:'Убрать', te_adauga:'Добавить игрока в состав', te_vorFiScosi:'Будут убраны из команды при сохранении', te_notaNr:'Номер в команде (1–4) — тот же, что в личной карточке. У команды может быть несколько капитанов; капитан матча выбирается в составе на матч. Игроки из другой команды переходят при сохранении.', te_errNume:'Название команды обязательно.', te_errNrDublu:'У двух игроков одинаковый номер.', te_errDoiCapitani:'У команды может быть только один капитан.', te_altaCuloare:'Другой цвет', te_sterge:'Удалить команду', te_stergeBlocat:'У команды есть матчи, её нельзя удалить — отметьте её неактивной.', te_confirmSterge:(n)=>`Удалить команду ${n}? Её игроки останутся в реестре без команды.`, ec_numeExista:'Команда с таким названием уже существует.', pt_confirmLunga:(m)=>`Перерыв длится ${Math.floor(m/60)} ч ${m%60} мин (через полночь?). Сохранить так?`, ve_stocInsuficient:(n)=>`На складе только ${n} шт. этого размера. Всё равно выдать (остаток станет отрицательным)?`, re_sect_participanti:'Отчёты об игроках', act_s_meciuri:'Матчи', act_echipaA:'Команда A', act_echipaB:'Команда B', act_scor:'Счёт', act_platou:'Площадка', act_cartonas:'Санкция', nav_participanti:'Игроки', nav_echipe:'Команды', nav_meciuri:'Матчи', nav_plati:'Выплаты', nav_statistici:'Статистика',
+  st_rolValue:'Администратор', dl_title:'Составы дня', dl_btn:'Заполнить составы дня', dl_btnSub:'Один состав на команду для всех её матчей этого дня, где ещё нет игроков.', dl_sub:'Обычно команда играет весь вечер одним составом: заполните его один раз, и он применится ко всем её матчам этого дня без игроков. Матчи, где состав уже есть, не меняются; отдельный матч можно потом исправить в редакторе матча. Выплаты считаются автоматически.', dl_aplica:'Применить', dl_seAplicaLa:(n)=>`Применяется к ${n} ${plural(n,'mt_meciuriSuffix','ru')}:`, dl_salveaza:'Сохранить составы', dl_nimic:'У всех матчей этого дня составы уже заполнены.', dl_conflict:(p,ora,a,b)=>`${p} указан в обеих командах в матче в ${ora} (${a} – ${b}). Исправьте один из составов.`, sx_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Таблица команд их учитывает, а статистика игроков и капитанов — нет, пока состав не заполнен. Дни:`, mt_lotDinUltimul:(d,opp)=>`Предложен состав из последнего матча (${d}, против ${opp}). Исправьте, если он изменился.`, mt_lotDinEchipa:'Состав предложен по списку команды (нет прошлого матча с составом).', sh_faraPersonal:'В списке нет дежурного персонала, поэтому смену нельзя начать. Администратор добавляет имена в Настройки → Дежурный персонал.', mt_faraLotAvert:(n)=>`Без состава: ${n} ${plural(n,'mt_meciuriSuffix','ru')} со счётом. Игроки этих матчей не получат оплату, пока состав не заполнен. Дни:`, mt_faraLotCard:'Матч сыгран без состава: игрокам не начисляется оплата, пока состав не заполнен.', mt_completeazaLot:'Заполнить состав', pl_tabArbitri:'Арбитры', sh_updateBalls:'Обновить мячи и часы', ar_oraStart:'Начало', ar_oraStop:'Конец', ar_interval:'Интервал', ar_ore:'Часы', ar_editOre:'Часы', ar_faraOre:'без часов', ar_singur:'один', ar_inDoi:'вдвоём', ar_peste2:'>2 арбитров', ar_needAmbeleOre:'Укажите и время начала, и время окончания.', ar_confirmAlTreilea:(n)=>`В этот день уже судят ${n}. Обычно не больше двух арбитров в день — всё равно добавить третьего?`, ar_regulaPlata:(zi,ore,ora)=>`Один арбитр за день: ${zi} лей/день (${ore} ч). Два арбитра: каждый получает ${ora} лей × отсуженные часы (${ore} ч = ${ora*ore} лей).`, ar_zile:'Дни', ar_zileSingur:'Дни один', ar_zileDoi:'Дни вдвоём', ar_oreDoi:'Часы (вдвоём)', ar_dePlata:'К выплате', ar_obsLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} вдвоём без указанных часов`, ar_obsPeste2:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с более чем 2 арбитрами`, ar_avertOreLipsa:(n)=>`${n} ${plural(n,'pa_expiraLa','ru')} с двумя арбитрами без времени начала/окончания — оплата 0 до заполнения (Арбитраж → Часы).`, ar_singurZi:'Один весь день', ar_cu:'С', ar_tarifZi:(zi)=>`ставка за день ${zi}`, ar_niciunArbitru:'Нет арбитров за выбранный период.', ar_hint:'Нажмите на арбитра, чтобы увидеть детали по дням. Часы заполняются в Арбитраже или на панели смены.', ar_tip:'Тип дня', ar_detaliiZile:'Детали по дням', ar_tarifeTitle:'Ставки арбитров', ar_tZi:'Один арбитр — лей/день', ar_tOreZi:'Часов в полном дне', ar_tOra:'Два арбитра — лей/час каждому', re_luna:'Месяц (задаёт период)', re_intervalPersonalizat:'Свой период', mp_anAnterior:'Предыдущий год', mp_anUrmator:'Следующий год', mp_lunaAnterioara:'Предыдущий месяц', mp_lunaUrmatoare:'Следующий месяц', mp_lunaCurenta:'Текущий месяц', mp_inregistrari:'записей', sx_perioada:'Выбранный период', sx_siLa:'также в', sx_echipeScurt:'команд', sx_tabEchipe:'Таблица команд', sx_ldWin:'Лучший винрейт', sx_ldPm:'Лучший +/−', sx_ldActiv:'Больше всего матчей', sx_ldCap:'Лучший капитан', sx_caCapitan:'капитаном', sx_capitanVM:'Капитан П/М', sx_meciuriCapitan:'Матчи капитаном', sx_niciunJucator:'Нет игроков по этим фильтрам.', sx_sortWin:'Сортировка: винрейт ↓', sx_sortVictorii:'Сортировка: победы ↓', sx_sortPm:'Сортировка: +/− ↓', sx_sortRating:'Сортировка: рейтинг ↓', sx_minMeciuri:(n)=>`Минимум ${n} матчей`, sx_oriceNrMeciuri:'Любое число матчей', sx_hintEchipe:'Нажмите на команду, чтобы увидеть статистику её игроков.', sx_hintRand:'Нажмите на игрока, чтобы открыть профиль. Лидеры сверху учитывают только игроков с минимум 10 матчами.', pl_th2_net:'Нетто / игрок', pl_th2_brut:'Необходимое брутто', pl_th2_ret:'Удержание 15%', pl_th2_netRamas:'Остаток нетто', pl_sumeMdl:'Суммы в MDL', pl_th_victorii:'Победы', pl_th_infrangeri:'Поражения', pl_th_netJucator:'Нетто / игрок (MDL)', pl_th_coef:'Коэф. к базе', pl_th_brutNecesar:'Необходимое брутто (MDL)', pl_th_retinere15:'Удержание 15% (MDL)', pl_th_netRamas:'Остаток нетто (MDL)', pl_th_observatie:'Примечание', pl_th_dePlataBrut:'К выплате (брутто)', pl_dePlataTotalBrut:'Итого к выплате (брутто) за период', pl_sortBrut:'Сортировка: брутто ↓', pl_obsCapitan:'Включён бонус за лидерство', pl_obsRezerva:'Запасной наравне с игроком; ротацию не штрафуем', pl_obsFaraMeciuri:'Без матчей за этот период', pl_obsArbitru:(ore)=>`Судейство: ${ore}`, pl_obsArbitruGol:'Судейство — турниры не внесены', pl_rolArbitru:(x)=>`Судья: ${x}`, pl_obsBaza:'Базовый игрок', pl_obsRetinut:'Удержано из выплаты', pl_tabJucatori:'Игроки', pl_tabEchipe:'По командам', pl_tabTarife:'Ставки', pl_dePlataTotal:'Итого к выплате за период', pl_cauta:'Поиск игрока или команды…', pl_arataZile:'Колонки по дням', pl_sortNume:'Сортировка: имя', pl_sortDePlata:'Сортировка: к выплате ↓', pl_sortNet:'Сортировка: нетто ↓', pl_sortMeciuri:'Сортировка: матчи ↓', pl_sortDed:'Сортировка: вычеты ↓', pl_sortEchipa:'Сортировка: команда', pl_tipVI:'Победы–поражения', pl_hintRand:'Нажмите на игрока, чтобы увидеть каждый матч и расчёт выплаты. Коэф. к базе = средняя сумма за матч, делённая на базу (игрок, поражение). К выплате = необходимое брутто минус вычеты.', pl_detMeciuri:'Матчи за период', pl_detCalcul:'Расчёт выплаты', pl_deschideProfil:'Открыть профиль', pl_echipeHint:'Нажмите на команду, чтобы увидеть выплаты её игроков.', pa_countSuffix:["игрок", "игрока", "игроков"], mt_meciuriSuffix:["матч", "матча", "матчей"], an_countSuffix:["сессия", "сессии", "сессий"], ve_countSuffix:["выдача", "выдачи", "выдач"], ta_countSuffix:["задача", "задачи", "задач"], sp_operatiuni:["операция", "операции", "операций"], sp_countSuffix:["запись", "записи", "записей"], pt_countSuffix:["перерыв зарегистрирован", "перерыва зарегистрировано", "перерывов зарегистрировано"], pl_zile:["игровой день", "игровых дня", "игровых дней"], ob_countSuffix:["замечание", "замечания", "замечаний"], le_countSuffix:["запись", "записи", "записей"], iv_lowStock:["товар ниже допустимого минимума.", "товара ниже допустимого минимума.", "товаров ниже допустимого минимума."], fp_countSuffix:["зарегистрированная санкция", "зарегистрированные санкции", "зарегистрированных санкций"], da_categorii:["категории", "категорий", "категорий"], da2_countSuffix:["случай ущерба", "случая ущерба", "случаев ущерба"], arb_countSuffix:["судья", "судьи", "судей"], ar_countSuffix:["выдача", "выдачи", "выдач"], pa_expiraLa:["день", "дня", "дней"], cal_ziuaPrecedenta:'Предыдущий день', cal_ziuaUrmatoare:'Следующий день', cal_faraMeciuri:'без матчей', cal_jocAnterior:'предыдущий игровой день', cal_jocUrmator:'следующий игровой день', cal_cuMeciuri:'дни с матчами', cal_azi:'Сегодня', te_lot:'Состав команды', te_cautaJucator:'Поиск игрока по имени, команде или рейтингу…', te_capitanRating:'Капитан = самый высокий рейтинг', te_mutatDin:'переходит из', te_faraNr:'без №', te_scoate:'Убрать', te_adauga:'Добавить игрока в состав', te_vorFiScosi:'Будут убраны из команды при сохранении', te_notaNr:'Номер в команде (1–4) — тот же, что в личной карточке. У команды может быть несколько капитанов; капитан матча выбирается в составе на матч. Игроки из другой команды переходят при сохранении.', te_errNume:'Название команды обязательно.', te_errNrDublu:'У двух игроков одинаковый номер.', te_errDoiCapitani:'У команды может быть только один капитан.', te_altaCuloare:'Другой цвет', te_sterge:'Удалить команду', te_stergeBlocat:'У команды есть матчи, её нельзя удалить — отметьте её неактивной.', te_confirmSterge:(n)=>`Удалить команду ${n}? Её игроки останутся в реестре без команды.`, ec_numeExista:'Команда с таким названием уже существует.', pt_confirmLunga:(m)=>`Перерыв длится ${Math.floor(m/60)} ч ${m%60} мин (через полночь?). Сохранить так?`, ve_stocInsuficient:(n)=>`На складе только ${n} шт. этого размера. Всё равно выдать (остаток станет отрицательным)?`, re_sect_participanti:'Отчёты об игроках', act_s_meciuri:'Матчи', act_echipaA:'Команда A', act_echipaB:'Команда B', act_scor:'Счёт', act_platou:'Площадка', act_cartonas:'Санкция', nav_participanti:'Игроки', nav_echipe:'Команды', nav_meciuri:'Матчи', nav_plati:'Выплаты', nav_statistici:'Статистика',
   da_stat_activi:'Активные игроки', da_stat_meciuri:'Матчи сегодня', da_stat_meciuriSub:'За эту неделю',
   pa_title:'Игроки', pa_sub:'Реестр игроков BSKT Cup — личная карточка, команда и история каждого.',
   pa_addTitle:'Регистрация нового игрока', pa_btnAdd:'+ Добавить игрока', pa_none:'Игроки не найдены.',   pa_editTitle:'Изменить карточку игрока', pa_deleteBtn:'Удалить игрока', pa_deleteTitle:'Удалить игрока из реестра', pa_fisa:'Карточка игрока',
@@ -951,7 +949,7 @@ Object.assign(I18N.ru, {
   stx_faraAntrenori:'Добавьте тренеров в Настройках',
   sh_refHelp:'Сохраните имя и площадку сейчас. Количество мячей можно внести здесь позже.', sh_venue:'Площадка',
   sh_matchesTitle:'Матчи дня', sh_matchesHelp:'Вносите матчи, составы и счёт — выплаты игрокам считаются автоматически.', sh_matchesOpen:'Открыть матчи',
-  ar_sub:'Дежурные арбитры и выданные баскетбольные мячи — автоматически списываются со склада.', ar_turneu:'Площадка', ar_th_turneu:'Площадка',
+  ar_turneu:'Площадка', ar_th_turneu:'Площадка',
   fp_sub:'Санкции игрокам: предупреждения, технические и неспортивные фолы, дисквалификации.', fp_platou:'Площадка', fp_th_platou:'Площадка',
   fp_cartonas:'Санкция', fp_th_cartonas:'Санкция', fp_reportTitle:'Рейтинг санкций', fp_reportSub:'Игроки по количеству полученных санкций.',
   da2_inventarAfectatPh:'напр. Баскетбольный щит', da2_naturaPh:'напр. Порвана сетка',
@@ -1151,7 +1149,7 @@ async function fetchAll(){
   const [
     administratoriR, serviciuAdministratoriR, participantiR, arbitriR, intarzieriR, vestimentatieR, serviciuR, spalatorieR,
     hostelR, lenjerieR, dauneR, fairPlayR, arbitrajR, inventarR, sarciniR, observatiiR, pauzeTehniceR, jurnalR, trustedIpsR, treninguriR, sesiuniR, acteSchimbR,
-    echipeR, tarifeR, configR, meciuriRows
+    echipeR, tarifeR, configR, arbitrajTurneeR, meciuriRows
   ] = await Promise.all([
     sb.from('administratori').select('*'),
     sb.from('serviciu_administratori').select('*').eq('activ', true).order('nume'),
@@ -1178,6 +1176,7 @@ async function fetchAll(){
     sb.from('echipe').select('*').order('nume'),
     sb.from('tarife_plata').select('*').order('valabil_de_la'),
     sb.from('app_config').select('key,value'),
+    sb.from('arbitraj_turnee').select('*'),
     selectPaged(()=>sb.from('meciuri').select('*').order('data').order('nr')).catch(e=>{ console.error('meciuri', e); return []; }),
   ]);
   applyAppConfig(configR.data||[]);
@@ -1216,7 +1215,8 @@ async function fetchAll(){
       nrSursa:r.nr_sursa, createdAt:r.created_at,
     })),
     fairPlay: (fairPlayR.data||[]).map(r=>({id:r.id, participantId:r.participant_id, meciId:r.meci_id, data:r.data, ora:r.ora ? String(r.ora).slice(0,5) : '', platou:r.platou, descriere:r.descriere, tipCartonas:r.tip_cartonas, createdAt:r.created_at})),
-    arbitraj: (arbitrajR.data||[]).map(r=>({id:r.id, data:r.data, arbitru:r.arbitru, turneu:r.turneu, cantitateMingi:r.cantitate_mingi, oraStart:r.ora_start?String(r.ora_start).slice(0,5):'', oraStop:r.ora_stop?String(r.ora_stop).slice(0,5):'', oreTotal:r.ore_total, observatii:r.observatii, sesiuneSchimbId:r.sesiune_schimb_id, slotSchimb:r.slot_schimb})),
+    arbitraj: (arbitrajR.data||[]).map(r=>({id:r.id, data:r.data, arbitru:r.arbitru, turneu:r.turneu, cantitateMingi:r.cantitate_mingi, oraStart:r.ora_start?String(r.ora_start).slice(0,5):'', oraStop:r.ora_stop?String(r.ora_stop).slice(0,5):'', observatii:r.observatii, sesiuneSchimbId:r.sesiune_schimb_id, slotSchimb:r.slot_schimb})),
+    arbitrajTurnee: (arbitrajTurneeR.data||[]).map(mapArbitrajTurnee),
     inventar: (inventarR.data||[]).map(r=>({id:r.id, denumire:r.denumire, culoare:r.culoare, marime:r.marime, um:r.um, cantitateInitiala:r.cantitate_initiala, intrari:r.intrari, iesiri:r.iesiri, cantitateMinima:r.cantitate_minima, stare:r.stare, observatii:r.observatii, conditie:r.conditie})),
     sarcini: (sarciniR.data||[]).map(r=>({id:r.id, dataInreg:r.data_inreg, administratorServiciuInregId:r.administrator_serviciu_inreg_id, adminInreg: serviciuAdminById[r.administrator_serviciu_inreg_id]?.nume || publicAdminName(adminById[r.admin_inreg_id]), status:r.status, actiuni:r.actiuni, dataSolutionare:r.data_solutionare, administratorServiciuSolutionareId:r.administrator_serviciu_solutionare_id, adminSolutionare: serviciuAdminById[r.administrator_serviciu_solutionare_id]?.nume || (r.admin_solutionare_id ? publicAdminName(adminById[r.admin_solutionare_id]) : ''), descriere:r.descriere, createdAt:r.created_at})),
     observatii: (observatiiR.data||[]).map(r=>({id:r.id, data:r.data, participantId:r.participant_id, subiect:r.subiect, categorie:r.categorie, descriere:r.descriere, createdAt:r.created_at})),
@@ -2752,13 +2752,6 @@ function asistentProblems(){
     else if(hrs > 3) add('yellow', 'sync', t('as_pSyncVechi')(fmtDateTime(asDash.sync.rulat_la)), `navigate('meciuri')`);
     if(asDash.sync.ignorate > 0) add('yellow', 'sync', t('as_pSyncIgnorate')(asDash.sync.ignorate), `navigate('meciuri')`);
   } else if(asDash && !asDash.loading) add('yellow', 'sync', t('as_pSyncNiciodata'), `navigate('meciuri')`);
-  // referees: two on a day without hours (paid 0 until filled), or more than two
-  const refDays = {};
-  DB.arbitraj.filter(a=>a.data>=addDays(today,-45)).forEach(a=>{ (refDays[a.data] ||= []).push(a); });
-  Object.entries(refDays).sort().reverse().forEach(([d, rows])=>{
-    const noHours = [...new Set(rows.filter(r=>refereeHours(r)==null).map(r=>r.arbitru))];
-    if(noHours.length && d < today) add('red', 'referee', t('as_pOreLipsa')(fmtDate(d), names(noHours)), `navigate('arbitraj')`);
-  });
   // medical certificates
   const med = medicalRows();
   const expired = med.filter(r=>r.status==='expirat').map(r=>r.nume), soon = med.filter(r=>r.status==='expiră curând').map(r=>r.nume);
@@ -2878,7 +2871,7 @@ async function saveDashboardReferee(slot){
   }
   const { data:row, error } = await sb.from('arbitraj').insert(payload).select().single();
   if(error){ alert('Salvarea a eșuat: '+error.message); return; }
-  const local = {id:row.id,data:row.data,arbitru:row.arbitru,turneu:row.turneu,cantitateMingi:row.cantitate_mingi,oraStart:row.ora_start?String(row.ora_start).slice(0,5):'',oraStop:row.ora_stop?String(row.ora_stop).slice(0,5):'',oreTotal:row.ore_total,observatii:row.observatii,sesiuneSchimbId:row.sesiune_schimb_id,slotSchimb:row.slot_schimb};
+  const local = {id:row.id,data:row.data,arbitru:row.arbitru,turneu:row.turneu,cantitateMingi:row.cantitate_mingi,oraStart:row.ora_start?String(row.ora_start).slice(0,5):'',oraStop:row.ora_stop?String(row.ora_stop).slice(0,5):'',observatii:row.observatii,sesiuneSchimbId:row.sesiune_schimb_id,slotSchimb:row.slot_schimb};
   DB.arbitraj.unshift(local);
   if(isFullAdmin()) demoShiftArbitrajIds.push(row.id);
   await logAction(`A programat arbitrul ${arbitru} la ${turneu}`);
@@ -4146,19 +4139,19 @@ function payRoleText(r){
   if(r.rez) parts.push(`${trEnum('rezervă')} ×${r.rez}`);
   return parts.join(' · ');
 }
-// the Rol cell of the payment file: what they played, then what they refereed (one hour is one game)
+// the Rol cell of the payment file: what they played, then what they refereed
 function payFileRole(r){
-  const ref = r.ore ? t('pl_rolArbitru')((Math.round(r.ore*100)/100).toLocaleString('ro-RO')) : r.ref ? t('ar_th_arbitru') : '';
+  const ref = r.turnee ? t('pl_rolArbitru')(turneeText(r.turnee)) : r.ref ? t('ar_th_arbitru') : '';
   return [payRoleText(r), ref].filter(Boolean).join(' · ');
 }
 function payObservation(r){
-  if(r.ref) return r.zero ? t('pl_obsArbitruGol') : t('pl_obsArbitru')(hoursText(r.ore));
+  if(r.ref) return r.zero ? t('pl_obsArbitruGol') : t('pl_obsArbitru')(turneeText(r.turnee));
   const o = [];
   if(r.cap) o.push(t('pl_obsCapitan'));
   if(r.rez) o.push(t('pl_obsRezerva'));
   if(r.zero) o.push(t('pl_obsFaraMeciuri'));
   else if(!r.cap && !r.rez && r.items.length) o.push(t('pl_obsBaza'));
-  if(r.ore) o.push(t('pl_obsArbitru')(hoursText(r.ore)));
+  if(r.turnee) o.push(t('pl_obsArbitru')(turneeText(r.turnee)));
   if(r.ded.total){
     const d = [];
     if(r.ded.spal) d.push(`${t('nav_spalatorie')} ${money(r.ded.spal)}`);
@@ -4282,32 +4275,29 @@ let payRefOpen = new Set();
 function payRefToggle(name){ payRefOpen.has(name) ? payRefOpen.delete(name) : payRefOpen.add(name); renderPlatiBodyOnly(); }
 function payRefereesHtml(){
   const rows = refereePayRows(payState.from, payState.to);
-  const tot = rows.reduce((s,r)=>({ zile:s.zile+r.zile, ore:s.ore+r.ore, net:s.net+r.net, brut:s.brut+r.brut, lipsa:s.lipsa+r.lipsa }), { zile:0, ore:0, net:0, brut:0, lipsa:0 });
-  const cols = 9;
+  const tot = rows.reduce((s,r)=>({ turnee:s.turnee+r.turnee, net:s.net+r.net, brut:s.brut+r.brut }), { turnee:0, net:0, brut:0 });
+  const cols = 7;
   const canToggle = isFullAdmin() || isAsistent();
   return `<div class="table-wrap">
     <div class="pay-toolbar" style="grid-template-columns:1fr auto auto">
-      <div class="view-sub" style="margin:0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div>
+      <div class="view-sub" style="margin:0">${t('ar2_regula')(TARIF_ARBITRI.turneu, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.turneu))}</div>
       <span class="pay-amount-note">${t('pl_sumeMdl')}</span>
       <button class="btn-primary btn-sm" onclick="exportArbitriExcel()">${t('re_excel')}</button>
     </div>
-    ${tot.lipsa ? `<div class="te-problems" style="margin:12px 14px 0">${t('ar2_avertOreLipsa')(tot.lipsa)}</div>` : ''}
     <div class="table-scroll pay-scroll"><table class="pay-table">
-      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th>${t('fl_label')}</th><th class="num">${t('ar_zile')}</th><th class="num">${t('ar_ore')}</th><th class="num">${t('ar2_net')(TARIF_ARBITRI.ora)}</th><th class="num">${t('ar2_retinere')(TARIF_ARBITRI.retinerePct)}</th><th>${t('pl_th_observatie')}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th></tr></thead>
+      <thead><tr><th class="pay-caret-col"></th><th>${t('ar_th_arbitru')}</th><th>${t('fl_label')}</th><th class="num">${t('ar3_turnee')}</th><th class="num">${t('ar2_net')(TARIF_ARBITRI.turneu)}</th><th class="num">${t('ar2_retinere')(TARIF_ARBITRI.retinerePct)}</th><th class="num pay-gross-col pay-gross-end">${t('pl_th_dePlataBrut')}</th></tr></thead>
       <tbody>${rows.length ? rows.map(r=>{ const open = payRefOpen.has(r.arbitru);
-        const obs = r.lipsa ? t('ar2_obsLipsa')(r.lipsa) : '';
         return `<tr class="pay-row ${open?'open':''}" onclick="payRefToggle(${esc(JSON.stringify(r.arbitru))})">
           <td class="pay-caret-col"><span class="pay-caret">›</span></td><td class="td-name">${esc(r.arbitru)}</td>
           <td>${canToggle && r.ref ? `<button type="button" class="fl-toggle" title="${esc(t('fl_schimba'))}" onclick="event.stopPropagation(); toggleRefereeFreelancer('${r.ref.id}')">${freelancerBadge(r.freelancer)}</button>` : freelancerBadge(r.freelancer)}${r.ref ? actButton(r.ref.participantId||r.ref.id, 'jucatori') : ''}</td>
-          <td class="num">${r.zile}</td><td class="num">${hoursText(r.ore)}</td><td class="num">${money(r.net)}</td><td class="num td-muted">${money(r.brut-r.net)}</td>
-          <td class="pay-obs ${obs?'c-yellow':'td-muted'}">${esc(obs)}</td><td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.brut)}</strong></td></tr>
-          ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match ${it.missing?'lost':'won'}" style="grid-template-columns:96px 1fr 170px 90px">
-            <span class="td-muted">${ddmm(it.day)} · ${CAL_WEEKDAYS_LONG[LANG==='ru'?'ru':'ro'][isoWeekday(it.day)].slice(0,3)}</span>
-            <span>${it.entries.map(e=>refereeInterval(e)||t('ar_faraOre')).join(', ')}</span>
-            <span class="td-muted">${hoursText(it.hours)} × ${TARIF_ARBITRI.ora} = ${money(it.net)} net${r.freelancer?'':` · ${t('fl_nu')}`}</span>
+          <td class="num">${turneeText(r.turnee)}</td><td class="num">${money(r.net)}</td><td class="num td-muted">${money(r.brut-r.net)}</td>
+          <td class="num td-gold pay-gross-col pay-gross-end"><strong>${money(r.brut)}</strong></td></tr>
+          ${open ? `<tr class="pay-detail"><td colspan="${cols}"><div class="pay-matches" style="max-height:none">${r.items.map(it=>`<div class="pay-match won" style="grid-template-columns:150px 1fr 90px">
+            <span class="td-muted">${monthLabel(it.luna)}</span>
+            <span class="td-muted">${turneeText(it.turnee)} × ${money(TARIF_ARBITRI.turneu)} = ${money(it.net)} net${r.freelancer?'':` · ${t('fl_nu')}`}</span>
             <span class="num td-gold">${money(it.brut)}</span></div>`).join('')}</div></td></tr>` : ''}`; }).join('')
         : `<tr><td class="td-empty" colspan="${cols}">${t('ar_niciunArbitru')}</td></tr>`}</tbody>
-      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td></td><td class="num">${tot.zile}</td><td class="num">${hoursText(tot.ore)}</td><td class="num">${money(tot.net)}</td><td class="num">${money(tot.brut-tot.net)}</td><td></td><td class="num pay-gross-col pay-gross-end">${money(tot.brut)}</td></tr></tfoot>` : ''}
+      ${rows.length ? `<tfoot><tr><td></td><td>${t('pl_total')}</td><td></td><td class="num">${turneeText(tot.turnee)}</td><td class="num">${money(tot.net)}</td><td class="num">${money(tot.brut-tot.net)}</td><td class="num pay-gross-col pay-gross-end">${money(tot.brut)}</td></tr></tfoot>` : ''}
     </table></div>
     <div class="view-sub" style="padding:10px 16px 14px;margin:0">${t('ar2_hint')}</div>
   </div>`;
@@ -4316,14 +4306,14 @@ function exportArbitriExcel(){
   if(!window.XLSX){ alert('Excel indisponibil'); return; }
   const rows = refereePayRows(payState.from, payState.to);
   const r2 = v=>Math.round(v*100)/100;
-  const head = [t('ar_th_arbitru'), t('fl_label'), t('ar_zile'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('ar2_retinere')(TARIF_ARBITRI.retinerePct), t('pl_th_dePlataBrut')];
-  const body = rows.map(r=>[r.arbitru, t(r.freelancer?'fl_da':'fl_nu'), r.zile, r2(r.ore), r2(r.net), r2(r.brut-r.net), r2(r.brut)]);
-  const detailHead = [t('th_data'), t('ar_th_arbitru'), t('ar_interval'), t('ar_ore'), t('ar2_net')(TARIF_ARBITRI.ora), t('pl_th_dePlataBrut')];
-  const detail = rows.flatMap(r=>r.items.map(it=>[fmtDate(it.day), r.arbitru, it.entries.map(refereeInterval).join(', '), r2(it.hours), it.net, it.brut]));
+  const head = [t('ar_th_arbitru'), t('fl_label'), t('ar3_turnee'), t('ar2_net')(TARIF_ARBITRI.turneu), t('ar2_retinere')(TARIF_ARBITRI.retinerePct), t('pl_th_dePlataBrut')];
+  const body = rows.map(r=>[r.arbitru, t(r.freelancer?'fl_da':'fl_nu'), r2(r.turnee), r2(r.net), r2(r.brut-r.net), r2(r.brut)]);
+  const detailHead = [t('ar3_luna'), t('ar_th_arbitru'), t('ar3_turnee'), t('ar2_net')(TARIF_ARBITRI.turneu), t('pl_th_dePlataBrut')];
+  const detail = rows.flatMap(r=>r.items.map(it=>[monthLabel(it.luna), r.arbitru, r2(it.turnee), it.net, it.brut]));
   const sum = i => body.reduce((s,r)=>s+Number(r[i]||0),0);
-  const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_tabArbitri')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))], [], head, ...body,
-    [t('pl_total'), '', sum(2), r2(sum(3)), r2(sum(4)), r2(sum(5)), r2(sum(6))], [], [t('ar_detaliiZile')], detailHead, ...detail]);
-  ws['!cols'] = [{wch:16},{wch:24},{wch:16},{wch:10},{wch:14},{wch:16},{wch:16}];
+  const ws = XLSX.utils.aoa_to_sheet([[`BSKT Cup — ${t('pl_tabArbitri')} ${fmtDate(payState.from)} – ${fmtDate(payState.to)}`], [t('ar2_regula')(TARIF_ARBITRI.turneu, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.turneu))], [], head, ...body,
+    [t('pl_total'), '', r2(sum(2)), r2(sum(3)), r2(sum(4)), r2(sum(5))], [], [t('ar3_detalii')], detailHead, ...detail]);
+  ws['!cols'] = [{wch:24},{wch:24},{wch:10},{wch:16},{wch:16},{wch:16}];
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, t('pl_tabArbitri').slice(0,30));
   XLSX.writeFile(wb, `bskt-arbitri_${payState.from}_${payState.to}.xlsx`);
 }
@@ -4346,13 +4336,13 @@ function toggleRefereeFreelancer(id){
     <div class="view-sub" style="margin:10px 0 0">${t(next?'fl_explDa':'fl_explNu')}</div>`, apply);
 }
 async function saveTarifArbitri(){
-  const ora = Number(document.getElementById('ta-ora').value), retinerePct = Number(document.getElementById('ta-pct').value);
-  if(!(ora>0) || !(retinerePct>=0 && retinerePct<100)){ alert(t('pl_completeazaTot')); return; }
-  const value = JSON.stringify({ ora, retinerePct });
+  const turneu = Number(document.getElementById('ta-turneu').value), retinerePct = Number(document.getElementById('ta-pct').value);
+  if(!(turneu>0) || !(retinerePct>=0 && retinerePct<100)){ alert(t('pl_completeazaTot')); return; }
+  const value = JSON.stringify({ turneu, retinerePct });
   const { error } = await sb.from('app_config').upsert({ key:'tarif_arbitri', value, updated_at:new Date().toISOString() });
   if(error){ alert(t('err_save')+' '+error.message); return; }
-  TARIF_ARBITRI = { ora, retinerePct };
-  await logAction(`A stabilit tariful arbitrilor: ${ora} lei net/oră (brut ${refereeGross(ora)} lei/oră)`);
+  TARIF_ARBITRI = { turneu, retinerePct };
+  await logAction(`A stabilit tariful arbitrilor: ${turneu} lei net/turneu (brut ${refereeGross(turneu)} lei/turneu)`);
   renderPlatiBodyOnly();
 }
 function payTeamsHtml(){
@@ -4403,7 +4393,8 @@ function renderPlati(){
 }
 function renderPlatiBody(){
   const { rows, days, matches } = payRows();
-  const tot = rows.reduce((s,r)=>({ net:s.net+r.net, ret:s.ret+r.ret, brut:s.brut+r.brut, ded:s.ded+r.ded.total, dp:s.dp+r.dePlata }), { net:0, ret:0, brut:0, ded:0, dp:0 });
+  // the same lines as the payment file, referees included, so this total and the Excel total can't differ
+  const tot = payFileRows(rows, payState.from, payState.to).reduce((s,r)=>({ net:s.net+r.net, ret:s.ret+r.ret, brut:s.brut+r.brut, ded:s.ded+r.ded.total, dp:s.dp+r.dePlata }), { net:0, ret:0, brut:0, ded:0, dp:0 });
   const scored = matches.filter(m=>winnerOf(m)).length, unscored = matches.length - scored;
   const teamsInPeriod = [...new Set(rows.flatMap(r=>r.echipaIds))];
   const tabBtn = (id, label, count)=>`<button type="button" class="pay-tab ${payView.tab===id?'active':''}" onclick="setPayTab('${id}')">${label}${count!=null?`<span class="pay-tab-count">${count}</span>`:''}</button>`;
@@ -4445,9 +4436,9 @@ function renderPlatiBody(){
 }
 function renderTarifeArbitri(){
   return `<div class="table-wrap">
-    <div class="table-header"><div><div class="table-title">${t('ar_tarifeTitle')}</div><div class="view-sub" style="margin:4px 0 0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div></div></div>
+    <div class="table-header"><div><div class="table-title">${t('ar_tarifeTitle')}</div><div class="view-sub" style="margin:4px 0 0">${t('ar2_regula')(TARIF_ARBITRI.turneu, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.turneu))}</div></div></div>
     ${isFullAdmin() ? `<div class="form-grid" style="grid-template-columns:repeat(2,minmax(0,220px)) auto;padding:14px 16px">
-      <div class="field"><label>${t('ar2_tOra')}</label><input id="ta-ora" type="number" min="0" step="any" value="${TARIF_ARBITRI.ora}"></div>
+      <div class="field"><label>${t('ar2_tOra')}</label><input id="ta-turneu" type="number" min="0" step="any" value="${TARIF_ARBITRI.turneu}"></div>
       <div class="field"><label>${t('pl_retinerePct')}</label><input id="ta-pct" type="number" min="0" max="99" step="0.5" value="${TARIF_ARBITRI.retinerePct}"></div>
       <div class="field" style="justify-content:flex-end"><button class="btn-primary" onclick="saveTarifArbitri()">${t('btn_save')}</button></div>
     </div>` : ''}
@@ -4590,9 +4581,9 @@ function actData(participantId, from = payState.from, to = payState.to){
     rate: g.rate, vol: g.n, fee: Math.round(g.sum*100)/100 }));
   if(!rows.length) rows.push({ label:'Meciuri câștigate', rate:0, vol:0, fee:0 }, { label:'Meciuri pierdute', rate:0, vol:0, fee:0 });
   // refereeing in the period (Arbitraj tab)
-  const refRate = Math.round((fl ? refereeGross(TARIF_ARBITRI.ora) : TARIF_ARBITRI.ora)*100)/100;
-  const refHours = ref ? Math.round(ref.ore*100)/100 : 0;
-  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refHours, fee: ref ? Math.round(ref.brut*100)/100 : 0 });
+  const refRate = Math.round((fl ? refereeGross(TARIF_ARBITRI.turneu) : TARIF_ARBITRI.turneu)*100)/100;
+  const refTurnee = ref ? Math.round(ref.turnee*100)/100 : 0;
+  rows.push({ label:'Arbitraj turnee', rate:refRate, vol:refTurnee, fee: ref ? Math.round(ref.brut*100)/100 : 0 });
   const ded = r?.ded || (isPlayer ? deductionsFor(participantId, from, to) : { spal:0, daune:0, antr:0, total:0 });
   const deductions = [[t('nav_spalatorie'), ded.spal], [t('nav_daune'), ded.daune], [t('nav_antrenamente'), ded.antr]].filter(([,v])=>v>0).map(([label,v])=>({ label, value:v }));
   const total = Math.round((rows.reduce((s,x)=>s+x.fee,0) - deductions.reduce((s,x)=>s+x.value,0))*100)/100;
@@ -4600,7 +4591,7 @@ function actData(participantId, from = payState.from, to = payState.to){
   const lastDay = new Date(Date.UTC(ty, tm, 0)).getUTCDate();
   const fullMonth = fd===1 && fy===ty && fm===tm && td===lastDay;
   const periodLabel = fullMonth ? `${ACT_MONTHS[fm-1]} ${fy}` : `${fmtDate(from)} – ${fmtDate(to)}`;
-  const roleLabel = [roles.has('căpitan')?'Căpitan':null, roles.has('jucător')?'Jucător':null, refHours>0 || !isPlayer ? 'Arbitru' : null].filter(Boolean).join(' / ') || 'Jucător';
+  const roleLabel = [roles.has('căpitan')?'Căpitan':null, roles.has('jucător')?'Jucător':null, refTurnee>0 || !isPlayer ? 'Arbitru' : null].filter(Boolean).join(' / ') || 'Jucător';
   const next = addDays(to, 1);
   const contractDate = p.dataContract ? (([y,m,d])=>`${String(d).padStart(2,'0')} ${ACT_MONTHS_SHORT[m-1]} ${y}`)(p.dataContract.split('-').map(Number)) : '—';
   return { p, rows, deductions, total, tax: Math.round(total*ACT_TAX_RATE*100)/100, periodLabel, roleLabel, contractDate,
@@ -4817,17 +4808,17 @@ function openPlatiExport(){
 function payWithReferees(played, from, to){
   const pay = new Map(refereePayRows(from, to).map(r=>[r.arbitru, r]));
   const linked = new Map(DB.arbitri.filter(a=>a.participantId && pay.has(`${a.nume} ${a.prenume}`)).map(a=>[a.participantId, pay.get(`${a.nume} ${a.prenume}`)]));
-  played.forEach(r=>{ if(linked.has(r.participantId)) payAddHours(r, linked.get(r.participantId)); });
+  played.forEach(r=>{ if(linked.has(r.participantId)) payAddTurnee(r, linked.get(r.participantId)); });
   const has = new Set(played.map(r=>r.participantId));
   const onlyRefereed = DB.participanti.filter(p=>linked.has(p.id) && !has.has(p.id)).map(p=>{ const ded = deductionsFor(p.id, from, to);
-    return payAddHours(payLine(p.id, participantName(p.id), null, { ded, dePlata:-ded.total, freelancer:p.freelancer!==false }), linked.get(p.id)); });
+    return payAddTurnee(payLine(p.id, participantName(p.id), null, { ded, dePlata:-ded.total, freelancer:p.freelancer!==false }), linked.get(p.id)); });
   return [...played, ...onlyRefereed];
 }
 function payLine(id, nume, ref, over){
   return { participantId:id, ref, zero:true, nume, echipe:'', echipaIds:[], meciuri:0, v:0, i:0, cap:0, rez:0, jucator:0, net:0, ret:0, brut:0, brutFreelancer:0, freelancer:true, coef:null, perDay:{}, items:[], ded:{ spal:0, daune:0, antr:0, total:0 }, dePlata:0, ...over };
 }
-function payAddHours(row, r){
-  row.zero = false; row.ore = r.ore; row.net += r.net; row.brut += r.brut; row.brutFreelancer += r.brut; row.ret += r.brut-r.net; row.dePlata += r.brut;
+function payAddTurnee(row, r){
+  row.zero = false; row.turnee = r.turnee; row.net += r.net; row.brut += r.brut; row.brutFreelancer += r.brut; row.ret += r.brut-r.net; row.dePlata += r.brut;
   r.items.forEach(it=>{ row.perDay[it.day] = (row.perDay[it.day]||0) + it.net; });
   return row;
 }
@@ -4839,7 +4830,7 @@ function payFileRows(played, from, to){
   const players = DB.participanti.filter(p=>!has.has(p.id) && p.freelancer!==false && p.statut==='activ').map(p=>{ const ded = deductionsFor(p.id, from, to);
     return payLine(p.id, participantName(p.id), null, { ded, dePlata:-ded.total }); });
   const referees = DB.arbitri.filter(a=>!a.participantId && (pay.has(refName(a)) || (a.freelancer!==false && a.statut==='activ'))).map(a=>{ const r = pay.get(refName(a));
-    const row = payLine(a.id, refName(a), a, { freelancer:a.freelancer!==false }); return r ? payAddHours(row, r) : row; });
+    const row = payLine(a.id, refName(a), a, { freelancer:a.freelancer!==false }); return r ? payAddTurnee(row, r) : row; });
   return [...rows, ...players, ...referees];
 }
 function payExportRows(){
@@ -4990,7 +4981,7 @@ function exportPlatiExcel({ from, to, rows, all, days, showDays, note, file }){
 
   const aoa = [[`BSKT Cup — ${t('pl_title')} ${fmtDate(from)} – ${fmtDate(to)}${note ? ' · '+note : ''}`], [], total, prog, [], head, ...body, total, prog];
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = head.map((h,i)=>({ wch: i===C.nr?6 : i===C.nume?24 : i===C.echipa?22 : i===C.rol?(rows.some(r=>r.ore)?46:26) : i===C.fl?12 : i===C.idno?16 : i===C.contract?12 : i===C.dataContract?13 : i===C.banca?13 : i===C.iban?28 : i===C.obs?52 : 14 }));
+  ws['!cols'] = head.map((h,i)=>({ wch: i===C.nr?6 : i===C.nume?24 : i===C.echipa?22 : i===C.rol?(rows.some(r=>r.turnee)?46:26) : i===C.fl?12 : i===C.idno?16 : i===C.contract?12 : i===C.dataContract?13 : i===C.banca?13 : i===C.iban?28 : i===C.obs?52 : 14 }));
   const R = { tot1:2, prog1:3, head:5, first:6, tot2:6+body.length, prog2:7+body.length };
   ws['!rows'] = Array.from({length:aoa.length},(_,r)=>(r===R.tot1||r===R.tot2) ? {hpt:22} : (r===R.prog1||r===R.prog2) ? {hpt:48} : r===R.head ? {hpt:32} : {});
   ws['!merges'] = [{ s:{r:0,c:0}, e:{r:0,c:Math.min(8, head.length-1)} }];
@@ -5761,7 +5752,7 @@ async function drawFisaPdf(p, { sub, file, layout }){
 function applyAppConfig(rows){
   const get = k => { try { return JSON.parse(rows.find(r=>r.key===k)?.value || 'null'); } catch(_){ return null; } };
   const ter = get('terenuri'), antr = get('antrenori'), ta = get('tarif_arbitri');
-  TARIF_ARBITRI = { ora: Number(ta?.ora) > 0 ? Number(ta.ora) : DEFAULT_TARIF_ARBITRI.ora,
+  TARIF_ARBITRI = { turneu: Number(ta?.turneu) > 0 ? Number(ta.turneu) : DEFAULT_TARIF_ARBITRI.turneu,
                     retinerePct: Number(ta?.retinerePct) >= 0 && ta?.retinerePct != null ? Number(ta.retinerePct) : DEFAULT_TARIF_ARBITRI.retinerePct };
   TERENURI = Array.isArray(ter) && ter.length ? ter : DEFAULT_TERENURI.slice();
   TRAINERS = Array.isArray(antr) ? antr : [];
@@ -5907,9 +5898,13 @@ const RECORD_EDITORS = {
     { col:'turneu', prop:'turneu', type:'select', label:'ar_turneu', options:r=>withCurrent(optsOf(TERENURI), r.turneu) },
     { col:'ora_start', prop:'oraStart', type:'time', label:'ar_oraStart' },
     { col:'ora_stop', prop:'oraStop', type:'time', label:'ar_oraStop' },
-    { col:'ore_total', prop:'oreTotal', type:'number', label:'ar_oreTotal', min:0 },
     { col:'cantitate_mingi', prop:'cantitateMingi', type:'number', label:'ar_mingiNoi', min:0, required:true },
     { col:'observatii', prop:'observatii', type:'textarea', label:'da2_observatii' },
+  ]},
+  arbitraj_turnee: { stateKey:'arbitrajTurnee', title:'ar3_titlu', fields:[
+    { col:'luna', prop:'luna', type:'select', label:'ar3_luna', required:true, options:r=>optsOf([...new Set([r.luna, ...refereeMonths()])], monthLabel) },
+    { col:'arbitru_id', prop:'arbitruId', type:'select', label:'ar_th_arbitru', required:true, options:r=>optsOf([...new Set([r.arbitruId, ...arbitriActivi().map(a=>a.id)])], refereeName) },
+    { col:'turnee', prop:'turnee', type:'number', label:'ar3_turnee', min:0.01, required:true },
   ]},
   treninguri: { stateKey:'treninguri', title:'nav_antrenamente', fields:[
     { type:'participant', required:true },
@@ -6177,7 +6172,7 @@ async function removeRow(collection, id){
   const { data, error } = await sb.from(collection).delete().eq('id', id).select();
   if(error){ alert('Ștergerea a eșuat: ' + error.message); return; }
   if(!data || !data.length){ alert('Ștergerea a eșuat: nu aveți permisiunea necesară.'); return; }
-  const stateKey = collection==='trusted_ips' ? 'trustedIps' : collection==='fair_play' ? 'fairPlay' : collection==='acte_schimb' ? 'acteSchimb' : collection==='pauze_tehnice' ? 'pauzeTehnice' : collection;
+  const stateKey = collection==='trusted_ips' ? 'trustedIps' : collection==='fair_play' ? 'fairPlay' : collection==='acte_schimb' ? 'acteSchimb' : collection==='pauze_tehnice' ? 'pauzeTehnice' : collection==='arbitraj_turnee' ? 'arbitrajTurnee' : collection;
   if(Array.isArray(DB[stateKey])) DB[stateKey] = DB[stateKey].filter(r=>r.id!==id);
   else await fetchAll();
   await logAction(`A șters o înregistrare din „${collection}”`);
@@ -6321,33 +6316,25 @@ function yearPicker(value, counts, onPick){
   </div>`;
 }
 function countsByMonth(rows){ return rows.reduce((c,r)=>{ const m = r.data.slice(0,7); c[m]=(c[m]||0)+1; return c; }, {}); }
-// a typed total (e.g. a month's hours in one entry) wins over start/end times, which can't span more than a day
-function refereeHours(a){ return a.oreTotal!=null ? Number(a.oreTotal) : (a.oraStart && a.oraStop) ? pauzaDurata(a.oraStart, a.oraStop)/60 : null; }
-function refereeInterval(a){ return a.oreTotal!=null ? t('ar_oreTotal') : a.oraStart&&a.oraStop ? `${a.oraStart}–${a.oraStop}` : ''; }
+function refereeHours(a){ return (a.oraStart && a.oraStop) ? pauzaDurata(a.oraStart, a.oraStop)/60 : null; }
 function hoursText(h){ return h==null ? '—' : (Math.round(h*100)/100).toLocaleString('ro-RO',{maximumFractionDigits:2})+' h'; }
-// One row per referee for the period: hours worked × hourly net rate, whether alone or in a pair.
-// Several entries of the same referee on one day (e.g. two shifts) are added together; an entry
-// without start/end time counts 0 until the hours are filled in.
+function turneeText(n){ return `${(Math.round(n*100)/100).toLocaleString('ro-RO')} ${plural(n%1 ? 2 : n, 'ar3_unit')}`; }
+function refereeName(id){ const a = arbitru(id); return a ? `${a.nume} ${a.prenume}` : ''; }
+function refereeMonths(){ return Array.from({length:12},(_,k)=>addMonths(`${todayISO().slice(0,7)}-01`,-k).slice(0,7)); }
+function mapArbitrajTurnee(r){ return { id:r.id, arbitruId:r.arbitru_id, luna:r.luna, turnee:Number(r.turnee) }; }
+// One row per referee for the period: tournaments × the rate. A month counts in the period that holds its last day,
+// so 16–31.10 pays all of October, while a period that stops mid-month pays none of that month yet.
 function refereePayRows(from, to){
-  const days = {};
-  DB.arbitraj.filter(a=>a.data>=from && a.data<=to).forEach(a=>{
-    (days[a.data] ||= {})[a.arbitru] ||= [];
-    days[a.data][a.arbitru].push(a);
-  });
   const byRef = new Map();
-  Object.entries(days).sort().forEach(([day, refs])=>{
-    Object.entries(refs).forEach(([name, entries])=>{
-      const hrs = entries.map(refereeHours);
-      const missing = hrs.some(h=>h==null);
-      const hours = hrs.reduce((s,h)=>s+(h||0),0);
-      const fl = refereeFreelancer(name);
-      const net = Math.round(hours*TARIF_ARBITRI.ora*100)/100, brut = fl ? refereeGross(net) : net;
-      const e = byRef.get(name) || { arbitru:name, freelancer:fl, ref:refereeByName(name), zile:0, ore:0, net:0, brut:0, lipsa:0, items:[] };
-      e.zile++; e.ore += hours; e.net += net; e.brut += brut;
-      if(missing) e.lipsa++;
-      e.items.push({ day, hours, net, brut, missing, entries });
-      byRef.set(name, e);
-    });
+  DB.arbitrajTurnee.slice().sort((a,b)=>a.luna.localeCompare(b.luna)).forEach(x=>{
+    const day = addDays(addMonths(`${x.luna}-01`,1),-1), name = refereeName(x.arbitruId);
+    if(day<from || day>to || !name) return;
+    const fl = refereeFreelancer(name);
+    const net = Math.round(x.turnee*TARIF_ARBITRI.turneu*100)/100, brut = fl ? refereeGross(net) : net;
+    const e = byRef.get(name) || { arbitru:name, freelancer:fl, ref:arbitru(x.arbitruId), turnee:0, net:0, brut:0, items:[] };
+    e.turnee += x.turnee; e.net += net; e.brut += brut;
+    e.items.push({ day, luna:x.luna, turnee:x.turnee, net, brut });
+    byRef.set(name, e);
   });
   return [...byRef.values()].sort((a,b)=>a.arbitru.localeCompare(b.arbitru,'ro'));
 }
@@ -7062,25 +7049,10 @@ function renderArbitraj(){
     </table></div>
   </div>
 
-  <div class="view-head"><div class="view-title">${t('ar_title')}</div></div>
-  <div class="view-sub">${t('ar_sub')}</div>
+  ${isFullAdmin() || isAsistent() ? refereeMonthsHtml() : ''}
 
-  <div class="add-form">
-    <div class="form-title">${t('ar_addTitle')}</div>
-    <div class="form-grid" style="grid-template-columns:0.8fr 1.2fr 1fr 0.6fr 0.6fr 0.6fr 0.6fr auto">
-      <div class="field"><label>${t('th_data')}</label><input id="af-data" type="date" value="${todayISO()}"></div>
-      <div class="field"><label>${t('ar_numeArbitru')}</label><select id="af-arbitru">${arbitriActivi().map(a=>`<option>${esc(a.nume)} ${esc(a.prenume)}</option>`).join('')}</select></div>
-      <div class="field"><label>${t('ar_turneu')}</label><select id="af-turneu">${TERENURI.map(tour=>`<option>${esc(tour)}</option>`).join('')}</select></div>
-      <div class="field"><label>${t('ar_oraStart')}</label><input id="af-start" type="time"></div>
-      <div class="field"><label>${t('ar_oraStop')}</label><input id="af-stop" type="time"></div>
-      <div class="field"><label>${t('ar_oreTotal')}</label><input id="af-ore" type="number" min="0" step="0.25"></div>
-      <div class="field"><label>${t('ar_mingiNoi')}</label><input id="af-mingi" type="number" min="0" value="0"></div>
-      <div class="field" style="justify-content:flex-end"><button class="btn-primary" ${disabledAttr()} onclick="addArbitraj()">${t('btn_add')}</button></div>
-    </div>
-    <div class="view-sub" style="margin:10px 0 0">${t('ar2_regula')(TARIF_ARBITRI.ora, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.ora))}</div>
-    <div style="display:none">
-    </div>
-  </div>
+  ${!DB.arbitraj.length ? '' : `<div class="view-head"><div class="view-title">${t('ar3_schimburi')}</div></div>
+  <div class="view-sub">${t('ar3_schimburiSub')}</div>
 
   <div class="table-wrap">
     <div class="table-header"><div class="table-title">${DB.arbitraj.length} ${plural(DB.arbitraj.length,'ar_countSuffix')}</div></div>
@@ -7089,10 +7061,38 @@ function renderArbitraj(){
       <tbody>${DB.arbitraj.length ? DB.arbitraj.slice().sort((a,b)=>b.data.localeCompare(a.data)).map(a=>{ const editing = arbitrajTimeEditId===a.id;
         return `<tr><td class="td-muted">${fmtDate(a.data)}</td><td>${esc(a.arbitru)}</td><td><span class="badge muted">${esc(a.turneu)}</span></td>
         <td>${editing ? `<span class="ar-time-edit"><input id="ae-start-${a.id}" type="time" value="${esc(a.oraStart)}"> — <input id="ae-stop-${a.id}" type="time" value="${esc(a.oraStop)}"></span>`
-          : (a.oreTotal!=null ? esc(t('ar_oreTotal')) : a.oraStart&&a.oraStop ? `${esc(a.oraStart)} — ${esc(a.oraStop)}` : `<span class="td-muted">${t('ar_faraOre')}</span>`)}</td>
+          : (a.oraStart&&a.oraStop ? `${esc(a.oraStart)} — ${esc(a.oraStop)}` : `<span class="td-muted">${t('ar_faraOre')}</span>`)}</td>
         <td class="num">${hoursText(refereeHours(a))}</td><td class="num td-gold">${a.cantitateMingi}</td>
         <td style="white-space:nowrap">${editing ? `<button class="btn-primary btn-sm" onclick="saveArbitrajTimes('${a.id}')">${t('btn_save')}</button> <button class="btn-ghost btn-sm" onclick="arbitrajTimeEditId=null; render();">${t('btn_cancel')}</button>`
           : `${canEditReferee(a) && !isFullAdmin() ? `<button class="btn-ghost btn-sm" onclick="arbitrajTimeEditId='${a.id}'; render();">${t('ar_editOre')}</button> ` : ''}${editBtn('arbitraj', a.id)} <button class="btn-danger btn-sm" ${disabledAttr(true)} onclick="removeRow('arbitraj','${a.id}')">${t('btn_delete')}</button>`}</td></tr>`; }).join('') : `<tr><td class="td-empty" colspan="7">${t('ar_none')}</td></tr>`}</tbody>
+    </table></div>
+  </div>`}`;
+}
+let arbitrajLuna = null;   // the form keeps the month just used, for entering several referees of the same month
+function refereeMonthsHtml(){
+  const rows = DB.arbitrajTurnee.slice().sort((a,b)=>b.luna.localeCompare(a.luna) || refereeName(a.arbitruId).localeCompare(refereeName(b.arbitruId),'ro'));
+  const month = arbitrajLuna || actDefaultPeriod().to.slice(0,7);
+  const pay = x => { const net = x.turnee*TARIF_ARBITRI.turneu; return refereeFreelancer(refereeName(x.arbitruId)) ? refereeGross(net) : net; };
+  return `<div class="view-head"><div class="view-title">${t('ar3_titlu')}</div></div>
+  <div class="view-sub">${t('ar2_regula')(TARIF_ARBITRI.turneu, TARIF_ARBITRI.retinerePct, refereeGross(TARIF_ARBITRI.turneu))}</div>
+
+  ${!isFullAdmin() ? '' : `<div class="add-form">
+    <div class="form-title">${t('ar3_addTitle')}</div>
+    <div class="form-grid" style="grid-template-columns:1fr 1.4fr 0.6fr auto">
+      <div class="field"><label>${t('ar3_luna')}</label><select id="af-luna">${refereeMonths().map(m=>`<option value="${m}" ${m===month?'selected':''}>${monthLabel(m)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('ar_th_arbitru')}</label><select id="af-arbitru">${arbitriActivi().map(a=>`<option value="${a.id}">${esc(a.nume)} ${esc(a.prenume)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('ar3_turnee')}</label><input id="af-turnee" type="number" min="0" step="0.5"></div>
+      <div class="field" style="justify-content:flex-end"><button class="btn-primary" onclick="addArbitrajTurnee()">${t('btn_add')}</button></div>
+    </div>
+    <div class="view-sub" style="margin:10px 0 0">${t('ar3_perioada')}</div>
+  </div>`}
+
+  <div class="table-wrap">
+    <div class="table-scroll recent-actions-scroll"><table>
+      <thead><tr><th>${t('ar3_luna')}</th><th>${t('ar_th_arbitru')}</th><th class="num">${t('ar3_turnee')}</th><th class="num">${t('pl_th_dePlataBrut')}</th><th></th></tr></thead>
+      <tbody>${rows.length ? rows.map(x=>`<tr><td class="td-muted">${monthLabel(x.luna)}</td><td class="td-name">${esc(refereeName(x.arbitruId))}</td>
+        <td class="num">${turneeText(x.turnee)}</td><td class="num td-gold">${money(pay(x))}</td>
+        <td class="row-actions">${editBtn('arbitraj_turnee', x.id)}<button class="btn-danger btn-sm" ${disabledAttr(true)} onclick="removeRow('arbitraj_turnee','${x.id}')">${t('btn_delete')}</button></td></tr>`).join('') : `<tr><td class="td-empty" colspan="5">${t('ar3_none')}</td></tr>`}</tbody>
     </table></div>
   </div>`;
 }
@@ -7243,6 +7243,7 @@ async function saveArbitruProfile(){
 async function deleteArbitru(){
   const a = arbitru(currentArbitruId); if(!a) return;
   const nume = `${a.nume} ${a.prenume}`;
+  if(DB.arbitrajTurnee.some(x=>x.arbitruId===a.id)){ alert(t('ar3_faraStergere')(nume)); return; }
   if(!confirm(t('arb_deleteConfirm')(nume))) return;
   const { data, error } = await sb.from('arbitri').delete().eq('id', a.id).select();
   if(error){ alert('Ștergerea a eșuat: ' + error.message); return; }
@@ -7264,23 +7265,18 @@ async function saveArbitrajTimes(id){
   await logAction(`A înregistrat orele arbitrului ${a.arbitru} pe ${fmtDate(a.data)}: ${ora_start||'—'}–${ora_stop||'—'}`);
   render();
 }
-async function addArbitraj(){
-  const arbitru = document.getElementById('af-arbitru').value.trim();
-  if(!arbitru){ alert(t('ar_needNume')); return; }
-  const dayChk = document.getElementById('af-data').value || todayISO();
-  const ora_start = document.getElementById('af-start').value || null, ora_stop = document.getElementById('af-stop').value || null;
-  if((ora_start && !ora_stop) || (!ora_start && ora_stop)){ alert(t('ar_needAmbeleOre')); return; }
-  const oreRaw = document.getElementById('af-ore').value, ore_total = oreRaw==='' ? null : Number(oreRaw);
-  if(oreRaw!=='' && !(ore_total>0)){ alert(t('ed_badNumber')(t('ar_oreTotal'))); return; }
-  const turneu = document.getElementById('af-turneu').value;
-  const cantitateMingiRaw = parseInt(document.getElementById('af-mingi').value);
-  const cantitateMingi = Number.isFinite(cantitateMingiRaw) && cantitateMingiRaw>=0 ? cantitateMingiRaw : 0;
-  const data = document.getElementById('af-data').value || todayISO();
-  const { data:row, error } = await sb.from('arbitraj').insert({ data, arbitru, turneu, cantitate_mingi:cantitateMingi, ...(ore_total ? { ore_total } : ora_start ? { ora_start, ora_stop } : {}) }).select().single();
+async function addArbitrajTurnee(){
+  const luna = document.getElementById('af-luna').value, arbitruId = document.getElementById('af-arbitru').value;
+  const turnee = Number(document.getElementById('af-turnee').value), nume = refereeName(arbitruId);
+  if(!nume){ alert(t('ar_needNume')); return; }
+  if(!(turnee>0)){ alert(t('ed_badNumber')(t('ar3_turnee'))); return; }
+  const exists = DB.arbitrajTurnee.find(x=>x.arbitruId===arbitruId && x.luna===luna);
+  if(exists){ alert(t('ar3_exista')(nume, monthLabel(luna), turneeText(exists.turnee))); return; }
+  const { data:row, error } = await sb.from('arbitraj_turnee').insert({ arbitru_id:arbitruId, luna, turnee }).select().single();
   if(error){ alert('Salvarea a eșuat: ' + error.message); return; }
-  DB.arbitraj.unshift({id:row.id, data:row.data, arbitru:row.arbitru, turneu:row.turneu, cantitateMingi:row.cantitate_mingi, oraStart:row.ora_start?String(row.ora_start).slice(0,5):'', oraStop:row.ora_stop?String(row.ora_stop).slice(0,5):'', oreTotal:row.ore_total, observatii:row.observatii});
-  await refetchInventar(); // trigger a scăzut deja mingile din stoc
-  await logAction(ore_total ? `A înregistrat ${ore_total} ore pentru arbitrul ${arbitru} pe ${fmtDate(data)}` : `A eliberat ${cantitateMingi} mingi lui ${arbitru} (${turneu})`);
+  DB.arbitrajTurnee.unshift(mapArbitrajTurnee(row));
+  arbitrajLuna = luna;
+  await logAction(`A înregistrat ${turnee} turnee pentru arbitrul ${nume} (${luna})`);
   render();
 }
 
@@ -8748,7 +8744,7 @@ function startIconPreview(){
       id:`linen-${index}`, participantId:index%2?'p1':'p2', dataEliberare:addDays(today,-index),
       dataReturnare:index%3===0?addDays(today,-index+1):null, sursaStoc:index%2?'nou':'uzat',
     })),
-    daune:[], fairPlay:[], arbitraj:[],
+    daune:[], fairPlay:[], arbitraj:[], arbitrajTurnee:[],
     inventar:[
       {id:'inv-m-m',denumire:'Maiouri',culoare:'—',marime:'M',um:'buc',cantitateInitiala:0,intrari:0,iesiri:0,cantitateMinima:0,stare:'bună',observatii:'',conditie:'nou'},
       {id:'i2',denumire:'Mingi baschet 3×3',culoare:'—',marime:'6',um:'buc',cantitateInitiala:20,intrari:0,iesiri:18,cantitateMinima:5,stare:'bună',observatii:'',conditie:'nou'},

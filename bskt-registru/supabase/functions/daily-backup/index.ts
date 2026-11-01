@@ -11,7 +11,7 @@ const BACKUP_EMAIL_FROM = "BSKT Pontaj <onboarding@resend.dev>";
 const TABLES = [
   "administratori", "serviciu_administratori", "echipe", "participanti", "arbitri", "meciuri", "meci_jucatori",
   "tarife_plata", "intarzieri", "vestimentatie", "serviciu", "spalatorie", "hostel", "lenjerie", "daune",
-  "arbitraj", "fair_play", "inventar", "inventar_miscari", "sarcini", "sarcini_istoric_status", "observatii",
+  "arbitraj", "arbitraj_turnee", "fair_play", "inventar", "inventar_miscari", "sarcini", "sarcini_istoric_status", "observatii",
   "pauze_tehnice", "treninguri", "sesiuni_schimb", "acte_schimb", "jurnal", "trusted_ips",
 ];
 
