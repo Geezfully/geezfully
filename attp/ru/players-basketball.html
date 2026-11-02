@@ -30,18 +30,21 @@
   .bb-crests span{ display:grid; place-items:center; width:var(--d); height:var(--d); }
   /* the crests straight on the card; a soft shadow keeps the red and orange ones apart from the orange */
   .bb-crests img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 3px rgba(20,28,40,.35)); }
-  .bb-faces{ flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; --d:clamp(50px,5vw,70px); }
-  .bb-faces .row{ display:flex; }
-  .bb-faces .row:nth-child(2){ margin-left:calc(var(--d) * .45); }
-  .bb-faces .row > *{ width:var(--d); height:var(--d); margin-right:calc(var(--d) * -.18); border-radius:50%; overflow:hidden;
-    border:3px solid var(--c); background:#C9D3DE; flex:0 0 auto; }
-  .bb-faces img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .bb-faces .more{ display:grid; place-items:center; background:var(--shirt); color:var(--text); font-family:var(--font-display); font-weight:900; font-size:calc(var(--d) * .34); }
+  /* the players cut out of their photo backdrop and stood together like a team photo: a back row, a little
+     smaller and higher, and a front row in front of its shoulders */
+  .bb-faces{ flex-direction:column; align-items:flex-start; justify-content:center; --d:clamp(70px,7.4vw,106px); }
+  .bb-faces .row{ display:flex; align-items:flex-end; }
+  .bb-faces .row img{ display:block; width:var(--d); height:var(--d); margin-right:calc(var(--d) * -.24); filter:drop-shadow(0 4px 6px rgba(10,20,40,.35));
+    /* the photo ends in a straight line at the jersey; fade it so the rows run into each other */
+    -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%); mask-image:linear-gradient(180deg,#000 86%,transparent 100%); }
+  .bb-faces .row--back{ transform:scale(.86); transform-origin:left bottom; }
+  .bb-faces .row--front{ position:relative; margin-top:calc(var(--d) * -.42); margin-left:calc(var(--d) * .4); }
+  .bb-faces .more{ align-self:center; margin-left:calc(var(--d) * .36); font-family:var(--font-display); font-weight:900; font-size:calc(var(--d) * .42); color:var(--shirt); }
   @media (max-width:520px){
     .sport-card--teams, .sport-card--roster{ min-height:470px; }
     .bb-crests{ --d:clamp(36px,10.5vw,46px); gap:8px; }
     .bb-crests span:nth-child(n+7){ transform:none; }
-    .bb-faces{ --d:clamp(42px,12vw,54px); }
+    .bb-faces{ --d:clamp(54px,15vw,66px); }
   }
   @media (prefers-reduced-motion:reduce){ .bb-art{ transition:none; } }
 </style>
@@ -127,6 +130,42 @@
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
 <script>
 // Card art from the Bskt Cup sync: every team's crest, and the players with the most wins (photo on file).
+// The players' photos are all taken against the same cream backdrop, so it is cut away here: a flood fill from
+// the top and side edges takes every pixel close to the backdrop colour, and the pixels along the cut are faded
+// by how close they are, so hair keeps a soft edge. The bottom edge is the jersey and is never a seed.
+async function cutOut(url, size = 180, near = 34, far = 70){
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = url;
+  await img.decode();
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const g = c.getContext('2d', { willReadFrequently:true });
+  g.drawImage(img, 0, 0, size, size);
+  const im = g.getImageData(0, 0, size, size), px = im.data, n = size * size;
+  const at = (x, y) => (y * size + x) * 4;
+  const corners = [at(2, 2), at(size - 3, 2), at(2, size / 3 | 0), at(size - 3, size / 3 | 0)];
+  const bg = [0, 1, 2].map(k => corners.reduce((s, i) => s + px[i + k], 0) / corners.length);
+  const dist = i => Math.hypot(px[i] - bg[0], px[i + 1] - bg[1], px[i + 2] - bg[2]);
+  const gone = new Uint8Array(n), queue = [];
+  const seed = (x, y) => { const p = y * size + x; if (!gone[p] && dist(p * 4) < near) { gone[p] = 1; queue.push(p); } };
+  for (let x = 0; x < size; x++) seed(x, 0);
+  for (let y = 0; y < size * .75; y++) { seed(0, y); seed(size - 1, y); }
+  while (queue.length) {
+    const p = queue.pop(), x = p % size, y = p / size | 0;
+    if (x > 0) seed(x - 1, y);
+    if (x < size - 1) seed(x + 1, y);
+    if (y > 0) seed(x, y - 1);
+    if (y < size - 1) seed(x, y + 1);
+  }
+  for (let p = 0; p < n; p++) {
+    if (gone[p]) { px[p * 4 + 3] = 0; continue; }
+    const x = p % size, y = p / size | 0;
+    const edge = (x > 0 && gone[p - 1]) || (x < size - 1 && gone[p + 1]) || (y > 0 && gone[p - size]) || (y < size - 1 && gone[p + size]);
+    if (edge) px[p * 4 + 3] = Math.round(255 * Math.min(1, Math.max(0, (dist(p * 4) - near) / (far - near))));
+  }
+  g.putImageData(im, 0, 0);
+  return c.toDataURL('image/png');
+}
 (async function(){
   const [{ data: teams }, { data: faces }, { count }] = await Promise.all([
     db.from('bskt_echipe_stat').select('nume,logo_url,meciuri').gt('meciuri', 0).order('meciuri', { ascending:false }).limit(12),
@@ -139,12 +178,13 @@
     crests.classList.add('is-in');
   }
   const crowd = document.getElementById('faceArt');
-  if (faces && faces.length) {
-    const pics = faces.map(f => `<span><img src="${escapeHtml(f.foto_url_mic)}" alt="" decoding="async"></span>`);
+  const cut = (await Promise.all((faces || []).map(f => cutOut(f.foto_url_mic).catch(() => null)))).filter(Boolean);
+  if (cut.length) {
+    const pics = cut.map(src => `<img src="${src}" alt="">`);
+    const back = pics.slice(0, Math.ceil(pics.length / 2)), front = pics.slice(back.length);
     const rest = (count || 0) - pics.length;
-    if (rest > 0) pics.push(`<span class="more">+${rest}</span>`);
-    const half = Math.ceil(pics.length / 2);
-    crowd.innerHTML = `<div class="row">${pics.slice(0, half).join('')}</div><div class="row">${pics.slice(half).join('')}</div>`;
+    crowd.innerHTML = `<div class="row row--back">${back.join('')}</div>` +
+      `<div class="row row--front">${front.join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</div>`;
     crowd.classList.add('is-in');
   }
 })();
