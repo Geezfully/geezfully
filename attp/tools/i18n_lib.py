@@ -19,6 +19,7 @@ import re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LANGS = ('en', 'ru')
 PAGES = ['index', 'about', 'news', 'news-article', 'players', 'players-table-tennis', 'players-basketball',
+         'basketball-players', 'basketball-teams', 'basketball-team',
          'player', 'player-basketball', 'tournaments', 'tournaments-table-tennis', 'tournaments-basketball',
          'gallery', 'documents', 'fairplay', 'contact', 'privacy', 'terms']
 

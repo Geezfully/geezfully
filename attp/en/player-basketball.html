@@ -11,9 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-8">
+<link rel="stylesheet" href="css/style.css?v=redesign-9">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=05d15078"></script>
+<script src="js/i18n-en.js?v=5b64042c"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -36,9 +36,6 @@
   .gear-item .gear-value{ font-size:14.5px; color:var(--chalk); font-weight:600; }
   @media (max-width:700px){ .gear-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:460px){ .gear-grid{ grid-template-columns:1fr; } }
-  .res-badge{ display:inline-block; padding:2px 9px; border-radius:999px; font-family:var(--font-mono); font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
-  .res-badge.win{ color:var(--win); background:rgba(62,207,142,.12); }
-  .res-badge.loss{ color:var(--loss); background:rgba(229,72,77,.14); }
 </style>
 </head>
 <body>
@@ -77,22 +74,13 @@
 <main>
   <div class="page-flow">
     <div class="page-head container">
-      <div class="breadcrumb"><a href="en/index.html">Home</a> / <a href="en/players.html">Players</a> / <a href="en/players-basketball.html">Basketball</a> / <span id="crumbName">…</span></div>
+      <div class="breadcrumb"><a href="en/index.html">Home</a> / <a href="en/players.html">Players</a> / <a href="en/players-basketball.html">Basketball</a> / <a href="en/basketball-players.html">Players</a> / <span id="crumbName">…</span></div>
       <div class="profile-head" id="profileHead">
         <div class="card skeleton" style="width:100%;height:88px"></div>
       </div>
     </div>
     <section class="container section-tight">
       <div class="kpi-row" id="kpiRow"></div>
-      <div class="eyebrow">History</div>
-      <h2 class="mb-24">Recent games</h2>
-      <div class="table-scroll">
-        <table class="data" id="gamesTable">
-          <thead><tr><th>Date</th><th>Time</th><th>Result</th><th class="r">Score</th></tr></thead>
-          <tbody id="gamesBody"><tr><td colspan="4"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
-        </table>
-      </div>
-      <button type="button" class="btn btn-ghost btn-sm mt-16" id="gamesMore" hidden></button>
     </section>
   </div>
 </main>
@@ -111,17 +99,14 @@
 
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
 <script>
-// Basketball profile, from the BSKT register sync (bskt_jucatori / bskt_jocuri). No team is published, so the
-// game list shows only the date and the score from the player's side.
+// Basketball profile, from the BSKT register sync (bskt_jucatori). Totals only: no team and no per-game list
+// are published, so a player cannot be matched to a team through the team results.
 (async function(){
   const id = new URLSearchParams(location.search).get('id');
   const head = document.getElementById('profileHead');
-  const notFound = () => { head.innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; document.getElementById('gamesBody').innerHTML = ''; };
+  const notFound = () => { head.innerHTML = `<p class="muted">${t('Jucător negăsit.')}</p>`; };
   if (!id) return notFound();
-  const [{ data: p }, { data: games }] = await Promise.all([
-    db.from('bskt_jucatori').select('*').eq('id', id).maybeSingle(),
-    db.from('bskt_jocuri').select('data,ora,pentru,contra').eq('jucator_id', id).order('data', { ascending:false }),
-  ]);
+  const { data: p } = await db.from('bskt_jucatori').select('*').eq('id', id).maybeSingle();
   if (!p) return notFound();
 
   const name = `${p.prenume} ${p.nume}`;
@@ -142,27 +127,6 @@
     <div class="kpi"><b class="num" style="color:var(--loss)">${p.infrangeri}</b><span>${t('Înfrângeri · Bskt Cup')}</span></div>
     <div class="kpi"><b class="num" style="color:var(--spin-hi)">${rate != null ? rate + '%' : '—'}</b><span>${t('Procent victorii')}</span></div>`;
 
-  // games after midnight belong to the evening session of their date, so they come after its evening games
-  const key = g => `${g.data}|${(g.ora || '') < '06:00' ? 1 : 0}|${g.ora || ''}`;
-  const list = (games || []).slice().sort((a, b) => key(b).localeCompare(key(a)));
-  const body = document.getElementById('gamesBody'), more = document.getElementById('gamesMore');
-  const SHOW = 25;
-  const rows = n => list.slice(0, n).map(g => {
-    const win = g.pentru > g.contra;
-    return `<tr>
-      <td class="num">${fmtDateShort(g.data)}</td>
-      <td class="num">${escapeHtml(g.ora || '—')}</td>
-      <td><span class="res-badge ${win ? 'win' : 'loss'}">${win ? t('Victorie') : t('Înfrângere')}</span></td>
-      <td class="r num">${g.pentru}:${g.contra}</td>
-    </tr>`;
-  }).join('');
-  if (!list.length) { body.innerHTML = `<tr><td colspan="4"><p class="muted" style="padding:20px 0">${t('Niciun meci înregistrat încă.')}</p></td></tr>`; return; }
-  body.innerHTML = rows(SHOW);
-  if (list.length > SHOW) {
-    more.hidden = false;
-    more.textContent = t('Arată toate ({n})').replace('{n}', list.length);
-    more.addEventListener('click', () => { body.innerHTML = rows(list.length); more.hidden = true; }, { once:true });
-  }
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>

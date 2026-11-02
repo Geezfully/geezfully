@@ -449,7 +449,8 @@ footer :focus-visible{ outline-color:var(--shirt); }
 
 /* ── Interior pages ── */
 .page-flow{ position:relative; }
-.page-head{ position:relative; padding:clamp(40px,6vw,72px) 0 clamp(28px,4vw,44px); border-bottom:2px solid var(--text); }
+/* block padding only: .page-head is also a .container, whose side padding must stay */
+.page-head{ position:relative; padding-block:clamp(40px,6vw,72px) clamp(28px,4vw,44px); border-bottom:2px solid var(--text); }
 .page-head h1{ margin-top:4px; }
 .breadcrumb{ font-family:var(--font-label); font-size:15px; font-weight:600; color:var(--muted); margin-bottom:14px; letter-spacing:.02em; }
 .breadcrumb a{ color:var(--text-2); text-decoration:underline; text-decoration-color:var(--rule-2); text-underline-offset:3px; }
