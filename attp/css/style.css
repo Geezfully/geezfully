@@ -75,13 +75,37 @@ body{
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
 }
-/* The floor under everything: a fine grain on the sport surface, and the painted
-   court lines of a multi-sport hall, fixed in place so the page moves over them. */
+/* The floor under everything: a fine grain, over a photo of the ATTP hall (Super Cup,
+   summer 2024) toned into the hall colour and fixed in place, so the page moves over it.
+   The painted court lines sit on top of it in .floor-live (js/floor.js); without
+   JavaScript they come from the same SVG here. */
 body::before{
   content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
-    url('../images/ui/hall-floor.svg') center / cover no-repeat;
+    url('../images/ui/hall-floor.svg') center / cover no-repeat,
+    linear-gradient(180deg, rgba(214,222,231,0) 0 40%, rgba(214,222,231,.55) 100%),
+    url('../images/bg/hall-photo.webp?v=2') center top / cover no-repeat;
+}
+html.floor-live-on body::before{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, rgba(214,222,231,0) 0 40%, rgba(214,222,231,.55) 100%),
+    url('../images/bg/hall-photo.webp?v=2') center top / cover no-repeat;
+}
+/* The court lines, drawn in on the first page of a visit, drifting a little slower than
+   the page; and a ping-pong ball that bounces across the floor in step with the scroll. */
+.floor-live{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+.floor-live svg{ position:absolute; left:0; top:0; width:100%; height:125%; will-change:transform; }
+.floor-live.is-drawing path, .floor-live.is-drawing circle{ stroke-dasharray:1; stroke-dashoffset:1; animation:line-draw 1.8s cubic-bezier(.6,.1,.2,1) forwards; }
+.floor-live.is-drawing g:last-child path{ animation-delay:.5s; }
+@keyframes line-draw{ to{ stroke-dashoffset:0; } }
+.floor-ball{ position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; will-change:transform;
+  background:radial-gradient(circle at 35% 30%, #fff 0 30%, #E9EDF2 60%, #B9C3CF 100%); box-shadow:0 1px 2px rgba(20,28,40,.25); }
+.floor-ball-shadow{ position:absolute; left:0; top:0; width:22px; height:7px; border-radius:50%; background:rgba(20,28,40,.22); filter:blur(1px); will-change:transform; }
+@media (prefers-reduced-motion:reduce){
+  .floor-live.is-drawing path, .floor-live.is-drawing circle{ animation:none; stroke-dashoffset:0; }
+  .floor-ball, .floor-ball-shadow{ display:none; }
 }
 main{ flex:1 0 auto; }
 img{ max-width:100%; display:block; }
@@ -133,6 +157,11 @@ strong{ color:var(--text); }
   background:rgba(255,255,255,.96); border-bottom:1px solid var(--rule);
   transition:box-shadow .3s ease;
 }
+/* a thin Moldovan tricolour along the bottom of the header and the top of the footer */
+.topbar::after, footer::after{ content:""; position:absolute; left:0; right:0; height:4px; pointer-events:none;
+  background:linear-gradient(90deg,#0046AE 0 33.34%,#FFD200 33.34% 66.67%,#CC092F 66.67%); }
+.topbar::after{ bottom:-1px; }
+footer::after{ top:0; }
 @supports (backdrop-filter:blur(8px)){ .topbar{ background:rgba(255,255,255,.88); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); } }
 .topbar.is-stuck{ box-shadow:0 6px 24px -18px rgba(20,28,40,.5); }
 .topbar-inner{ display:flex; align-items:center; gap:28px; padding-top:12px; padding-bottom:12px; }
@@ -678,3 +707,15 @@ h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2p
 .about-flow::before, .about-flow::after, .documents-flow::before, .documents-flow::after,
 .fairplay-flow::before, .fairplay-flow::after, .news-flow::before, .news-flow::after,
 .players-flow::before, .players-flow::after, .tourn-flow::before, .tourn-flow::after{ display:none !important; }
+
+/* Courtside barriers: the navy boards around ATTP tables, as a band across the page.
+   They drift slowly, like the LED boards along a court. */
+.barrier{
+  height:56px; margin-block:clamp(10px,2vw,24px);
+  background:url("../images/bg/barrier.svg") 0 0 / 300px 56px repeat-x;
+  box-shadow:0 14px 24px -18px rgba(11,26,51,.8);
+  animation:barrier-drift 60s linear infinite;
+}
+.barrier--reverse{ animation-direction:reverse; }
+@keyframes barrier-drift{ to{ background-position:-1200px 0; } }
+@media (prefers-reduced-motion:reduce){ .barrier{ animation:none; } }
