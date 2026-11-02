@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-9">
+<link rel="stylesheet" href="css/style.css?v=redesign-10">
 <script>window.__PAGE_LANG__="en";</script>
 <script src="js/i18n-en.js?v=5b64042c"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
@@ -21,16 +21,15 @@
 <style>
   .sport-card--teams{ --c:#C4612A; }               /* hardwood / basketball orange, as on the sport choice */
   .sport-card--roster{ --c:var(--table); }
-  /* The top of each card shows the real thing, live from the Bskt Cup sync: the teams' crests on white
-     discs, like the fixture boards on a hall wall, and a crowd of the players' own photos. */
+  /* The top of each card shows the real thing, live from the Bskt Cup sync: the teams' crests and a crowd
+     of the players' own photos. */
   .bb-art{ display:flex; align-items:center; justify-content:flex-start; stroke:none; opacity:0; transition:opacity .5s ease; }
   .bb-art.is-in{ opacity:1; }
-  .bb-crests{ display:grid; grid-template-columns:repeat(6, var(--d)); gap:12px 14px; align-content:center; --d:clamp(46px,4.8vw,66px); }
+  .bb-crests{ display:grid; grid-template-columns:repeat(6, var(--d)); gap:14px 18px; align-content:center; --d:clamp(48px,5vw,70px); }
   .bb-crests span:nth-child(n+7){ transform:translateX(calc(var(--d) * .55)); }
-  .bb-crests span{ display:grid; place-items:center; width:var(--d); height:var(--d); border-radius:50%; background:#fff;
-    box-shadow:0 6px 14px -8px rgba(20,28,40,.55); }
-  .bb-crests img{ width:76%; height:76%; object-fit:contain; }
-  .bb-crests span.dark{ background:var(--text); }      /* pale crests (Westsiders) need a dark disc */
+  .bb-crests span{ display:grid; place-items:center; width:var(--d); height:var(--d); }
+  /* the crests straight on the card; a soft shadow keeps the red and orange ones apart from the orange */
+  .bb-crests img{ width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 2px 3px rgba(20,28,40,.35)); }
   .bb-faces{ flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; --d:clamp(50px,5vw,70px); }
   .bb-faces .row{ display:flex; }
   .bb-faces .row:nth-child(2){ margin-left:calc(var(--d) * .45); }
@@ -128,22 +127,15 @@
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
 <script>
 // Card art from the Bskt Cup sync: every team's crest, and the players with the most wins (photo on file).
-// A team whose colour is pale (its crest is drawn in it) gets a dark disc instead of a white one.
-const paleTeam = hex => {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
-  if (!m) return false;
-  const n = parseInt(m[1], 16), [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255];
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.8;
-};
 (async function(){
   const [{ data: teams }, { data: faces }, { count }] = await Promise.all([
-    db.from('bskt_echipe_stat').select('nume,culoare,logo_url,meciuri').gt('meciuri', 0).order('meciuri', { ascending:false }).limit(12),
+    db.from('bskt_echipe_stat').select('nume,logo_url,meciuri').gt('meciuri', 0).order('meciuri', { ascending:false }).limit(12),
     db.from('bskt_jucatori').select('foto_url_mic').not('foto_url_mic', 'is', null).order('victorii', { ascending:false }).limit(11),
     db.from('bskt_jucatori').select('id', { count:'exact', head:true }),
   ]);
   const crests = document.getElementById('crestArt');
   if (teams && teams.length) {
-    crests.innerHTML = teams.filter(t => t.logo_url).map(t => `<span${paleTeam(t.culoare) ? ' class="dark"' : ''}><img src="${escapeHtml(t.logo_url)}" alt="" decoding="async"></span>`).join('');
+    crests.innerHTML = teams.filter(t => t.logo_url).map(t => `<span><img src="${escapeHtml(t.logo_url)}" alt="" decoding="async"></span>`).join('');
     crests.classList.add('is-in');
   }
   const crowd = document.getElementById('faceArt');
@@ -159,7 +151,7 @@ const paleTeam = hex => {
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
-<script src="js/floor.js?v=1"></script>
+<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>

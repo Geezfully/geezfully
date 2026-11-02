@@ -93,19 +93,14 @@ html.floor-live-on body::before{
     linear-gradient(180deg, rgba(214,222,231,0) 0 40%, rgba(214,222,231,.55) 100%),
     url('../images/bg/hall-photo.webp?v=2') center top / cover no-repeat;
 }
-/* The court lines, drawn in on the first page of a visit, drifting a little slower than
-   the page; and a ping-pong ball that bounces across the floor in step with the scroll. */
+/* The court lines, drawn in on the first page of a visit, drifting a little slower than the page. */
 .floor-live{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
 .floor-live svg{ position:absolute; left:0; top:0; width:100%; height:125%; will-change:transform; }
 .floor-live.is-drawing path, .floor-live.is-drawing circle{ stroke-dasharray:1; stroke-dashoffset:1; animation:line-draw 1.8s cubic-bezier(.6,.1,.2,1) forwards; }
 .floor-live.is-drawing g:last-child path{ animation-delay:.5s; }
 @keyframes line-draw{ to{ stroke-dashoffset:0; } }
-.floor-ball{ position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; will-change:transform;
-  background:radial-gradient(circle at 35% 30%, #fff 0 30%, #E9EDF2 60%, #B9C3CF 100%); box-shadow:0 1px 2px rgba(20,28,40,.25); }
-.floor-ball-shadow{ position:absolute; left:0; top:0; width:22px; height:7px; border-radius:50%; background:rgba(20,28,40,.22); filter:blur(1px); will-change:transform; }
 @media (prefers-reduced-motion:reduce){
   .floor-live.is-drawing path, .floor-live.is-drawing circle{ animation:none; stroke-dashoffset:0; }
-  .floor-ball, .floor-ball-shadow{ display:none; }
 }
 main{ flex:1 0 auto; }
 img{ max-width:100%; display:block; }
