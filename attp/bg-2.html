@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ideea 2: Panou de onoare · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
+<title>Fundal 2: Tapet ATTP · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
 <meta name="description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”. Turnee, clasamente, arbitraj și rezultate live.">
 <meta property="og:title" content="ATTP — Tenis de masă din Moldova">
 <meta property="og:description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”.">
@@ -237,49 +237,20 @@
     .home-hero-photo{ order:-1; }
   }
 
-  /* ── Idea 2: the honours board, as it hangs in a sports hall ── */
-  .i2-board{
-    position:relative; padding:clamp(28px,4.5vw,56px) clamp(20px,4vw,56px); border-radius:8px; color:#E9CB86; text-align:center;
-    background:
-      repeating-linear-gradient(92deg, rgba(255,255,255,.022) 0 2px, transparent 2px 9px),
-      repeating-linear-gradient(88deg, rgba(0,0,0,.08) 0 1px, transparent 1px 23px),
-      linear-gradient(180deg,#4A2C1B,#33200F);
-    box-shadow:inset 0 0 0 10px #29170C, inset 0 0 0 12px #B58E46, 0 34px 60px -34px rgba(20,28,40,.7);
-  }
-  .i2-board h2{
-    font-family:var(--font-display); font-weight:900; font-size:clamp(34px,4.6vw,62px); letter-spacing:.12em; text-transform:uppercase; line-height:1;
-    background:linear-gradient(180deg,#F6E2A6 10%,#C8994A 90%); -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .i2-sub{ margin:12px 0 0; font-family:var(--font-label); font-size:15px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#C9AD74; }
-  .i2-rows{ margin-top:clamp(22px,3vw,36px); text-align:left; }
-  .i2-loading{ text-align:center; color:#C9AD74; }
-  .i2-row{ display:grid; grid-template-columns:110px repeat(3,minmax(0,1fr)); gap:10px 24px; align-items:baseline; padding:16px 0; border-top:1px solid rgba(201,162,78,.32); }
-  .i2-row:last-child{ border-bottom:1px solid rgba(201,162,78,.32); }
-  .i2-year{ font-family:var(--font-display); font-size:40px; font-weight:900; line-height:1; color:#F0D597; }
-  .i2-year small{ display:block; margin-top:4px; font-family:var(--font-label); font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#B89A62; }
-  .i2-name{ font-family:var(--font-display); font-size:clamp(21px,2vw,27px); font-weight:800; letter-spacing:.05em; text-transform:uppercase; line-height:1.05; color:#EBCB85; }
-  .i2-name a:hover{ color:#FFF0C4; }
-  .i2-name small{ display:block; margin-top:3px; font-family:var(--font-label); font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:none; color:#B89A62; }
-  .i2-name--1{ font-size:clamp(25px,2.4vw,33px); color:#F7E1A3; }
-  .i2-plaque[hidden]{ display:none; }
-  .i2-plaque{ display:inline-block; margin:clamp(22px,3vw,34px) 0 0; padding:9px 20px; border-radius:3px;
-    background:linear-gradient(180deg,#EED494,#B98E40); color:#33200F; font-family:var(--font-label); font-size:16px; font-weight:800; letter-spacing:.02em;
-    box-shadow:0 2px 0 #7E5B22, inset 0 1px 0 rgba(255,255,255,.5); }
-  @media (max-width:700px){
-    .i2-row{ grid-template-columns:1fr; gap:8px; }
-    .i2-year{ font-size:34px; }
-  }
+  /* ── Background 2: the ATTP player figure, repeated like a club wallpaper ── */
+  body.bg-2::before{ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"), url("images/bg/attp-pattern.svg") 0 0 / 240px 240px repeat; }
 
-  /* review only: jump between the five ideas */
-  .idea-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
-    padding:6px; border-radius:999px; background:var(--text); box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
-  .idea-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
-  .idea-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
-  .idea-switch a:hover{ background:rgba(255,255,255,.14); }
-  .idea-switch a[aria-current]{ background:var(--shirt); color:var(--text); }
+  /* review only: jump between the five backgrounds */
+  .bg-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
+    padding:6px; border-radius:999px; background:#141C28; box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
+  .bg-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
+  .bg-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
+  .bg-switch a:hover{ background:rgba(255,255,255,.14); }
+  .bg-switch a[aria-current]{ background:#F5C330; color:#141C28; }
 </style>
 </head>
-<body class="idea-2">
+<body class="bg-2">
+
 <div id="loadScreen" aria-hidden="true">
   <div class="load-stage">
     <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
@@ -356,15 +327,6 @@
         <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="(max-width:900px) 100vw, 560px" width="3762" height="2508" alt="ATTP, câștigător Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
         <figcaption><strong>Câștigător Notorium Brand Awards 2025</strong><span>concursul mărcilor recunoscute</span></figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section class="container section-tight" aria-labelledby="boardTitle">
-    <div class="i2-board">
-      <h2 id="boardTitle">Panou de onoare</h2>
-      <p class="i2-sub">Cele mai multe turnee câștigate, în fiecare an</p>
-      <div class="i2-rows" id="boardRows"><p class="i2-loading">Se numără victoriile…</p></div>
-      <p class="i2-plaque" id="boardPlaque" hidden></p>
     </div>
   </section>
 
@@ -605,7 +567,7 @@
     </div>
   </section>
 </main>
-<nav class="idea-switch" aria-label="Variante"><span>Idee</span><a href="idea-1.html">1</a><a href="idea-2.html" aria-current="page">2</a><a href="idea-3.html">3</a><a href="idea-4.html">4</a><a href="idea-5.html">5</a><a href="index.html">Actual</a></nav>
+<nav class="bg-switch" aria-label="Fundaluri"><span>Fundal</span><a href="bg-1.html">1</a><a href="bg-2.html" aria-current="page">2</a><a href="bg-3.html">3</a><a href="bg-4.html">4</a><a href="bg-5.html">5</a><a href="index.html">Actual</a></nav>
 
 
 <footer>
@@ -865,42 +827,6 @@ renderTowns();
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
-})();
-</script>
-<script>
-// Honours board: who won the most tournaments each year (Setka Cup results of ATTP players).
-(async function(){
-  const pages = await Promise.all([0,1,2,3,4,5,6,7,8,9].map(i =>
-    db.from('tournament_results').select('player_id,first_name,last_name,start_date').eq('position',1)
-      .order('start_date').range(i*1000, i*1000+999).then(r => r.data || [])));
-  const rows = pages.flat();
-  const el = document.getElementById('boardRows');
-  if (!rows.length) { el.innerHTML = ''; return; }
-  const years = {}, names = {};
-  rows.forEach(r => {
-    const y = r.start_date.slice(0,4);
-    (years[y] ||= {})[r.player_id] = ((years[y][r.player_id]) || 0) + 1;
-    names[r.player_id] = `${r.first_name} ${r.last_name}`;
-  });
-  const now = String(new Date().getFullYear());
-  const list = Object.keys(years).sort().reverse();
-  const onBoard = {};
-  el.innerHTML = list.map(y => {
-    const top = Object.entries(years[y]).sort((a,b) => b[1]-a[1]).slice(0,3);
-    top.forEach(([id]) => { onBoard[id] = (onBoard[id] || 0) + 1; });
-    return `<div class="i2-row"><div class="i2-year">${y}${y === now ? '<small>în desfășurare</small>' : ''}</div>` +
-      top.map(([id,n],i) => `<div class="i2-name i2-name--${i+1}"><a href="player.html?id=${encodeURIComponent(id)}">${escapeHtml(names[id])}</a><small>${n} turnee câștigate</small></div>`).join('') + '</div>';
-  }).join('');
-  // a brass plaque for whoever made the board every single year
-  const most = Math.max(...Object.values(onBoard));
-  const best = Object.entries(onBoard).filter(([,n]) => n === most).map(([id]) => names[id]);
-  if (most > 1) {
-    const p = document.getElementById('boardPlaque');
-    p.textContent = most === list.length
-      ? `${best.join(' și ')}: pe panou în fiecare an, din ${list[list.length-1]}`
-      : `${best.join(' și ')}: pe panou în ${most} din ${list.length} ani`;
-    p.hidden = false;
-  }
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>

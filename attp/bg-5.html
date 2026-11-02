@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ideea 5: Desenat pe masă și pe teren · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
+<title>Fundal 5: Linii în mișcare · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
 <meta name="description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”. Turnee, clasamente, arbitraj și rezultate live.">
 <meta property="og:title" content="ATTP — Tenis de masă din Moldova">
 <meta property="og:description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”.">
@@ -237,41 +237,53 @@
     .home-hero-photo{ order:-1; }
   }
 
-  /* ── Idea 5: the leaders drawn on a table tennis table and a basketball half-court ── */
-  .i5-grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(20px,3vw,40px); align-items:start; }
-  .i5-fig{ margin:0; }
-  .i5-fig figcaption{ margin-top:12px; font-family:var(--font-label); font-size:15px; font-weight:700; color:var(--text-2); }
-  .i5-stage{ position:relative; }
-  .i5-stage svg{ display:block; width:100%; height:auto; }
-  .tt-top{ fill:var(--table); stroke:#fff; stroke-width:5; }
-  .tt-line{ stroke:#fff; stroke-width:3; }
-  .tt-net{ stroke:#0E2C57; stroke-width:8; stroke-linecap:round; }
-  .bb-floor{ fill:#E8C79A; }
-  .bb-line{ fill:none; stroke:#fff; stroke-width:5; }
-  .bb-rim{ fill:none; stroke:#E8762B; stroke-width:5; }
-  .i5-chip{ position:absolute; transform:translate(-50%,-50%); display:flex; flex-direction:column; align-items:center; gap:4px; width:max-content; max-width:150px; text-align:center; }
-  .i5-chip:empty{ display:none; }
-  .i5-chip a{ display:contents; color:inherit; }
-  .i5-chip .av{ width:clamp(46px,5.4vw,70px); height:clamp(46px,5.4vw,70px); border-radius:50%; overflow:hidden; border:3px solid #fff; background:#C9D3DE; box-shadow:0 6px 14px -6px rgba(20,28,40,.6); display:grid; place-items:center; font-family:var(--font-display); font-weight:800; color:var(--table); }
-  .i5-chip .av img{ width:100%; height:100%; object-fit:cover; }
-  .i5-chip .nm{ padding:2px 8px; border-radius:var(--radius-sm); background:var(--paper); font-family:var(--font-label); font-size:clamp(12px,1.1vw,15px); font-weight:800; line-height:1.2; color:var(--text); box-shadow:0 2px 6px -3px rgba(20,28,40,.4); }
-  .i5-chip .st{ font-family:var(--font-display); font-size:clamp(15px,1.4vw,19px); font-weight:800; color:var(--text); line-height:1; }
-  .i5-queue{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px; margin:16px 0 0; }
-  .i5-hand{ font-family:var(--font-hand); font-size:26px; font-weight:700; color:var(--table); }
-  .i5-q{ padding:3px 10px; border-radius:999px; background:var(--paper); border:1px solid var(--rule); font-family:var(--font-label); font-size:15px; font-weight:700; color:var(--text); }
-  .i5-q b{ color:var(--table); margin-right:4px; }
-  @media (max-width:900px){ .i5-grid{ grid-template-columns:1fr; } }
+  /* ── Background 5: the court lines draw themselves in and drift with the scroll, a ball bounces
+     across the floor as you go down the page, and a thin Moldovan tricolour edges the header and footer ── */
+  body.bg-5::before{ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .floor-live{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
+  .floor-live svg{ position:absolute; left:0; top:0; width:100%; height:125%; will-change:transform; }
+  .floor-live path, .floor-live circle{ stroke-dasharray:1; stroke-dashoffset:1; animation:line-draw 1.8s cubic-bezier(.6,.1,.2,1) forwards; }
+  .floor-live g:last-child path{ animation-delay:.5s; }
+  @keyframes line-draw{ to{ stroke-dashoffset:0; } }
+  .floor-ball{ position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; will-change:transform;
+    background:radial-gradient(circle at 35% 30%, #fff 0 30%, #E9EDF2 60%, #B9C3CF 100%); box-shadow:0 1px 2px rgba(20,28,40,.25); }
+  .floor-ball-shadow{ position:absolute; left:0; top:0; width:22px; height:7px; border-radius:50%; background:rgba(20,28,40,.22); will-change:transform; filter:blur(1px); }
+  .bg-5 .topbar{ border-bottom:0; box-shadow:0 4px 0 0 transparent; }
+  .bg-5 .topbar::after, .bg-5 footer::before{ content:""; position:absolute; left:0; right:0; height:4px;
+    background:linear-gradient(90deg,#0046AE 0 33.34%,#FFD200 33.34% 66.67%,#CC092F 66.67%); }
+  .bg-5 .topbar::after{ bottom:0; }
+  .bg-5 footer{ position:relative; }
+  .bg-5 footer::before{ top:0; }
+  @media (prefers-reduced-motion:reduce){
+    .floor-live path, .floor-live circle{ animation:none; stroke-dashoffset:0; }
+    .floor-ball, .floor-ball-shadow{ display:none; }
+  }
 
-  /* review only: jump between the five ideas */
-  .idea-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
-    padding:6px; border-radius:999px; background:var(--text); box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
-  .idea-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
-  .idea-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
-  .idea-switch a:hover{ background:rgba(255,255,255,.14); }
-  .idea-switch a[aria-current]{ background:var(--shirt); color:var(--text); }
+  /* review only: jump between the five backgrounds */
+  .bg-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
+    padding:6px; border-radius:999px; background:#141C28; box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
+  .bg-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
+  .bg-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
+  .bg-switch a:hover{ background:rgba(255,255,255,.14); }
+  .bg-switch a[aria-current]{ background:#F5C330; color:#141C28; }
 </style>
 </head>
-<body class="idea-5">
+<body class="bg-5">
+<div class="floor-live" aria-hidden="true">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none">
+    <g stroke="#FFFFFF" stroke-opacity=".6" stroke-width="4">
+      <path pathLength="1" d="M-20 92H1620"/><path pathLength="1" d="M1180 92V1100"/>
+      <circle pathLength="1" cx="1180" cy="560" r="150"/>
+      <path pathLength="1" d="M-20 420H250V700H-20"/>
+      <path pathLength="1" d="M-20 140H40A520 420 0 0 1 40 980H-20"/>
+    </g>
+    <g stroke="#E8B21F" stroke-opacity=".42" stroke-width="4">
+      <path pathLength="1" d="M520 -20V1020"/><path pathLength="1" d="M820 -20V1020"/><path pathLength="1" d="M300 236H1040"/>
+    </g>
+  </svg>
+  <span class="floor-ball"></span><span class="floor-ball-shadow"></span>
+</div>
+
 <div id="loadScreen" aria-hidden="true">
   <div class="load-stage">
     <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
@@ -455,34 +467,16 @@
   <section class="container section-tight" aria-labelledby="leadersTitle">
     <div class="sec-head">
       <div>
-        <div class="eyebrow">Clasamente</div>
-        <h2 id="leadersTitle">La masă și pe teren</h2>
+        <div class="eyebrow">Clasament</div>
+        <h2 id="leadersTitle">Liderii clasamentului</h2>
       </div>
-      <a href="players.html" class="sec-link">Toți jucătorii →</a>
+      <a href="players-table-tennis.html" class="sec-link">Toți jucătorii →</a>
     </div>
-    <div class="i5-grid">
-      <figure class="i5-fig">
-        <div class="i5-stage i5-stage--tt">
-          <svg viewBox="0 0 640 360" aria-hidden="true"><rect class="tt-top" x="140" y="40" width="360" height="280" rx="4"/><path class="tt-line" d="M140 180H500"/><path class="tt-net" d="M320 24V336"/></svg>
-          <div class="i5-chip" id="ttA" style="left:9%;top:50%"></div>
-          <div class="i5-chip" id="ttB" style="left:91%;top:50%"></div>
-        </div>
-        <p class="i5-queue"><span class="i5-hand">La rând:</span> <span id="ttQueue"></span></p>
-        <figcaption>Nr. 1 și Nr. 2 din clasamentul FTMM, la aceeași masă.</figcaption>
-      </figure>
-      <figure class="i5-fig">
-        <div class="i5-stage i5-stage--bb">
-          <svg viewBox="0 0 640 520" aria-hidden="true"><rect class="bb-floor" x="0" y="0" width="640" height="520" rx="6"/><g class="bb-line"><path d="M20 30H620V500H20Z"/><path d="M240 30V220H400V30"/><circle cx="320" cy="220" r="80"/><path d="M60 30V110A262 262 0 0 0 580 110V30"/><path d="M290 52H350"/></g><circle class="bb-rim" cx="320" cy="66" r="12"/></svg>
-          <div class="i5-chip" id="bb1" style="left:50%;top:76%"></div>
-          <div class="i5-chip" id="bb2" style="left:16%;top:52%"></div>
-          <div class="i5-chip" id="bb3" style="left:84%;top:52%"></div>
-          <div class="i5-chip" id="bb4" style="left:30%;top:22%"></div>
-          <div class="i5-chip" id="bb5" style="left:70%;top:22%"></div>
-        </div>
-        <figcaption>Cinci de start: cei mai mulți câștigați din Bskt Cup.</figcaption>
-      </figure>
+    <div class="rank-strip" id="rankStrip">
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
     </div>
-    <div id="rankStrip" hidden></div>
   </section>
 
   <section class="container section-tight" aria-labelledby="tournTitle">
@@ -606,7 +600,7 @@
     </div>
   </section>
 </main>
-<nav class="idea-switch" aria-label="Variante"><span>Idee</span><a href="idea-1.html">1</a><a href="idea-2.html">2</a><a href="idea-3.html">3</a><a href="idea-4.html">4</a><a href="idea-5.html" aria-current="page">5</a><a href="index.html">Actual</a></nav>
+<nav class="bg-switch" aria-label="Fundaluri"><span>Fundal</span><a href="bg-1.html">1</a><a href="bg-2.html">2</a><a href="bg-3.html">3</a><a href="bg-4.html">4</a><a href="bg-5.html" aria-current="page">5</a><a href="index.html">Actual</a></nav>
 
 
 <footer>
@@ -869,21 +863,27 @@ renderTowns();
 })();
 </script>
 <script>
-// Leaders drawn on the table and the court.
-(async function(){
-  const [tt, bb] = await Promise.all([
-    fetchTopRanked(6),
-    db.from('bskt_jucatori').select('id,nume,prenume,victorii,foto_url_mic').order('victorii', { ascending:false }).limit(5),
-  ]);
-  const chip = (href, av, name, stat) => `<a href="${href}"><span class="av">${av}</span><span class="nm">${name}</span><span class="st">${stat}</span></a>`;
-  const ttChip = p => chip(`player.html?id=${encodeURIComponent(p.id)}`, avatarHtml(p), `${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}`, `Nr. ${p.ligas_ranking[0].position} · ${Number(p.ligas_ranking[0].rating).toFixed(1)}`);
-  if (tt[0]) document.getElementById('ttA').innerHTML = ttChip(tt[0]);
-  if (tt[1]) document.getElementById('ttB').innerHTML = ttChip(tt[1]);
-  document.getElementById('ttQueue').innerHTML = tt.slice(2).map(p => `<a class="i5-q" href="player.html?id=${encodeURIComponent(p.id)}"><b>${p.ligas_ranking[0].position}</b>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</a>`).join(' ');
-  (bb.data || []).forEach((p, i) => {
-    const av = p.foto_url_mic ? `<img src="${p.foto_url_mic}" alt="">` : escapeHtml((p.prenume[0] || '') + (p.nume[0] || ''));
-    document.getElementById('bb' + (i + 1)).innerHTML = chip(`player-basketball.html?id=${encodeURIComponent(p.id)}`, av, `${escapeHtml(p.prenume)} ${escapeHtml(p.nume)}`, `${p.victorii} victorii`);
-  });
+// Background 5: the floor drifts a little slower than the page, and a ball bounces across
+// it in step with the scroll — left to right over the length of the page, six bounces.
+(function(){
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const svg = document.querySelector('.floor-live svg');
+  const ball = document.querySelector('.floor-ball'), shadow = document.querySelector('.floor-ball-shadow');
+  let queued = false;
+  const paint = () => {
+    queued = false;
+    const y = scrollY, max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const p = Math.min(1, y / max);
+    svg.style.transform = `translate3d(0,${(-y * 0.06).toFixed(1)}px,0)`;
+    const floorY = innerHeight * 0.84, x = 24 + p * (innerWidth - 70);
+    const hop = Math.abs(Math.sin(p * Math.PI * 6)) * Math.min(160, innerHeight * 0.2);
+    ball.style.transform = `translate3d(${x.toFixed(1)}px,${(floorY - hop).toFixed(1)}px,0)`;
+    shadow.style.transform = `translate3d(${x.toFixed(1)}px,${(floorY + 18).toFixed(1)}px,0) scale(${(1 - hop / 400).toFixed(3)})`;
+  };
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+  addEventListener('scroll', queue, { passive:true });
+  addEventListener('resize', queue);
+  paint();
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>

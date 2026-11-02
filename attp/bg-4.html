@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ideea 1: Fotografiile conduc · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
+<title>Fundal 4: Mantinele · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
 <meta name="description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”. Turnee, clasamente, arbitraj și rezultate live.">
 <meta property="og:title" content="ATTP — Tenis de masă din Moldova">
 <meta property="og:description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”.">
@@ -237,48 +237,28 @@
     .home-hero-photo{ order:-1; }
   }
 
-  /* ── Idea 1: the association's own photos lead ── */
-  .i1-hero-grid{ display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:clamp(28px,4vw,56px); align-items:center; }
-  .i1-hero h1{ font-size:clamp(46px,5.4vw,82px); }
-  .i1-mosaic{ display:grid; grid-template-columns:1.4fr 1fr; grid-template-rows:1fr 1fr; gap:10px; height:clamp(380px,40vw,580px); }
-  .i1-ph{ position:relative; margin:0; overflow:hidden; border-radius:var(--radius-lg); background:#0B1A2A; }
-  .i1-ph img{ width:100%; height:100%; object-fit:cover; }
-  .i1-big{ grid-row:span 2; }
-  .i1-big img{ object-position:40% 30%; }
-  .i1-ph figcaption, .i1-tile span{
-    position:absolute; left:10px; bottom:10px; padding:4px 9px; border-radius:var(--radius-sm);
-    background:rgba(20,28,40,.78); color:#fff; font-family:var(--font-label); font-size:14px; font-weight:700; letter-spacing:.02em;
+  /* ── Background 4: the navy courtside barriers around ATTP tables, as boards across the page ── */
+  .barrier{
+    height:56px; margin-block:clamp(10px,2vw,24px);
+    background:url("images/bg/barrier.svg") 0 0 / 300px 56px repeat-x;
+    box-shadow:0 14px 24px -18px rgba(11,26,51,.8);
+    animation:barrier-drift 60s linear infinite;
   }
-  .i1-award{ display:flex; align-items:center; gap:14px; margin-top:30px; padding:8px 16px 8px 8px; width:max-content; max-width:100%;
-    background:var(--paper); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); color:var(--text); }
-  .i1-award img{ width:84px; height:84px; object-fit:cover; object-position:100% 50%; border-radius:var(--radius); }
-  .i1-award strong{ display:block; font-family:var(--font-display); font-size:21px; font-weight:800; line-height:1.05; }
-  .i1-award span span{ font-size:14px; color:var(--text-2); }
-  .i1-award:hover strong{ color:var(--table); }
-  .i1-wall{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:clamp(150px,15vw,230px); grid-auto-flow:dense; gap:10px; }
-  .i1-tile{ position:relative; overflow:hidden; border-radius:var(--radius-lg); background:#0B1A2A; }
-  .i1-tile img{ width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.2,.7,.2,1); }
-  .i1-tile:hover img{ transform:scale(1.04); }
-  .i1-tile:focus-visible{ outline:3px solid var(--table); outline-offset:3px; }
-  .i1-tile.w2{ grid-column:span 2; }
-  .i1-tile.h2{ grid-row:span 2; }
-  @media (prefers-reduced-motion:reduce){ .i1-tile img{ transition:none; } }
-  @media (max-width:900px){
-    .i1-hero-grid{ grid-template-columns:1fr; }
-    .i1-mosaic{ order:-1; height:clamp(300px,70vw,460px); }
-    .i1-wall{ grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:150px; }
-  }
+  .barrier:nth-of-type(even){ animation-direction:reverse; }
+  @keyframes barrier-drift{ to{ background-position:-1200px 0; } }
+  @media (prefers-reduced-motion:reduce){ .barrier{ animation:none; } }
 
-  /* review only: jump between the five ideas */
-  .idea-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
-    padding:6px; border-radius:999px; background:var(--text); box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
-  .idea-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
-  .idea-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
-  .idea-switch a:hover{ background:rgba(255,255,255,.14); }
-  .idea-switch a[aria-current]{ background:var(--shirt); color:var(--text); }
+  /* review only: jump between the five backgrounds */
+  .bg-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
+    padding:6px; border-radius:999px; background:#141C28; box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
+  .bg-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
+  .bg-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
+  .bg-switch a:hover{ background:rgba(255,255,255,.14); }
+  .bg-switch a[aria-current]{ background:#F5C330; color:#141C28; }
 </style>
 </head>
-<body class="idea-1">
+<body class="bg-4">
+
 <div id="loadScreen" aria-hidden="true">
   <div class="load-stage">
     <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
@@ -340,8 +320,8 @@
 </div>
 
 <main>
-  <section class="home-hero i1-hero" aria-labelledby="homeTitle">
-    <div class="container i1-hero-grid">
+  <section class="home-hero" aria-labelledby="homeTitle">
+    <div class="container home-hero-grid">
       <div class="home-hero-copy">
         <p class="home-kicker">Tenis de masă și baschet · Republica Moldova</p>
         <h1 id="homeTitle">Tenisul de masă și baschetul Moldovei, cu oamenii lor.</h1>
@@ -350,18 +330,15 @@
           <a href="players-table-tennis.html" class="btn btn-primary">Vezi clasamentul FTMM</a>
           <a href="players-basketball.html" class="btn btn-ghost">Vezi clasamentul Bskt Cup</a>
         </div>
-        <a class="i1-award" href="about.html">
-          <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="96px" width="3762" height="2508" alt="">
-          <span><strong>Câștigător Notorium Brand Awards 2025</strong><span>concursul mărcilor recunoscute</span></span>
-        </a>
       </div>
-      <div class="i1-mosaic">
-        <figure class="i1-ph i1-big"><img src="images/gallery/masters-attp-2024/023.jpg" alt="Câștigătorul primește trofeul la Masters ATTP 2024" loading="lazy" decoding="async"><figcaption>Masters ATTP 2024</figcaption></figure>
-        <figure class="i1-ph "><img src="images/gallery/turneul-memorial-mihail-polcanov-2024/012.jpg" alt="Strângere de mână la Turneul Memorial Mihail Polcanov" loading="lazy" decoding="async"><figcaption>Memorial Mihail Polcanov 2024</figcaption></figure>
-        <figure class="i1-ph "><img src="images/gallery/masters-2025/009.jpg" alt="Un jucător sare după o minge la Masters 2025" loading="lazy" decoding="async"><figcaption>Masters 2025</figcaption></figure>
-      </div>
+      <figure class="home-hero-photo home-hero-award">
+        <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="(max-width:900px) 100vw, 560px" width="3762" height="2508" alt="ATTP, câștigător Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
+        <figcaption><strong>Câștigător Notorium Brand Awards 2025</strong><span>concursul mărcilor recunoscute</span></figcaption>
+      </figure>
     </div>
   </section>
+
+  <div class="barrier" aria-hidden="true"></div>
 
   <section class="container section-tight" aria-labelledby="recent-results-title">
     <div class="results-layout">
@@ -446,28 +423,6 @@
     </div>
   </section>
 
-  <section class="container section-tight" aria-labelledby="salaTitle">
-    <div class="sec-head">
-      <div>
-        <div class="eyebrow">Din sală</div>
-        <h2 id="salaTitle">Turneele, așa cum au fost</h2>
-      </div>
-      <a href="gallery.html" class="sec-link">Toate albumele →</a>
-    </div>
-    <div class="i1-wall">
-      <a class="i1-tile w2" href="gallery.html"><img src="images/gallery/super-cup-attp-summer-2024-open/006.jpg" alt="Sala înainte de Super Cup ATTP, vara 2024" loading="lazy" decoding="async"><span>Super Cup · vara 2024</span></a>
-      <a class="i1-tile h2" href="gallery.html"><img src="images/gallery/masters-attp-2024/038.jpg" alt="Podiumul Masters ATTP 2024" loading="lazy" decoding="async"><span>Masters ATTP 2024</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/super-cup-attp-summer-2024-open/015.jpg" alt="Bucuria unui punct câștigat" loading="lazy" decoding="async"><span>Super Cup · vara 2024</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/masters-2025/017.jpg" alt="Doi jucători râd după un meci" loading="lazy" decoding="async"><span>Masters 2025</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/masters-attp-2024/019.jpg" alt="Trofeul Masters ATTP" loading="lazy" decoding="async"><span>Trofeul Masters</span></a>
-      <a class="i1-tile w2" href="gallery.html"><img src="images/gallery/masters-2025/031.jpg" alt="Jucătorii la masa de premiere" loading="lazy" decoding="async"><span>Masters 2025</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/turneul-memorial-mihail-polcanov-2024/025.jpg" alt="Doi antrenori urmăresc un meci" loading="lazy" decoding="async"><span>Memorial Mihail Polcanov 2024</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/super-cup-attp-summer-2024-open/037.jpg" alt="Diplomă de onoare la Super Cup" loading="lazy" decoding="async"><span>Super Cup · vara 2024</span></a>
-      <a class="i1-tile " href="gallery.html"><img src="images/gallery/masters-2025/016.jpg" alt="Serviciu la Masters 2025" loading="lazy" decoding="async"><span>Masters 2025</span></a>
-    </div>
-  </section>
-
-
   <section class="container section-tight" aria-labelledby="townsTitle">
     <div class="towns">
       <figure class="towns-map">
@@ -485,6 +440,8 @@
       </div>
     </div>
   </section>
+
+  <div class="barrier" aria-hidden="true"></div>
 
   <section class="container section-tight" aria-labelledby="leadersTitle">
     <div class="sec-head">
@@ -525,6 +482,8 @@
       </div>
     </div>
   </section>
+
+  <div class="barrier" aria-hidden="true"></div>
 
   <section class="container section-tight" aria-labelledby="newsTitle">
     <div class="sec-head">
@@ -582,6 +541,8 @@
   </section>
 
 
+  <div class="barrier" aria-hidden="true"></div>
+
   <section class="container section-tight" aria-labelledby="principlesTitle">
     <div class="principles">
       <img class="principles-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
@@ -622,7 +583,7 @@
     </div>
   </section>
 </main>
-<nav class="idea-switch" aria-label="Variante"><span>Idee</span><a href="idea-1.html" aria-current="page">1</a><a href="idea-2.html">2</a><a href="idea-3.html">3</a><a href="idea-4.html">4</a><a href="idea-5.html">5</a><a href="index.html">Actual</a></nav>
+<nav class="bg-switch" aria-label="Fundaluri"><span>Fundal</span><a href="bg-1.html">1</a><a href="bg-2.html">2</a><a href="bg-3.html">3</a><a href="bg-4.html" aria-current="page">4</a><a href="bg-5.html">5</a><a href="index.html">Actual</a></nav>
 
 
 <footer>

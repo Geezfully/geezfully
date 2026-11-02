@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ideea 3: Model ATTP și benzi de culoare · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
+<title>Fundal 3: Podeaua roșie · Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”</title>
 <meta name="description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”. Turnee, clasamente, arbitraj și rezultate live.">
 <meta property="og:title" content="ATTP — Tenis de masă din Moldova">
 <meta property="og:description" content="Resursa oficială a Asociației Naționale a Sportivilor Profesioniști din Republica Moldova „ATTP”.">
@@ -237,36 +237,26 @@
     .home-hero-photo{ order:-1; }
   }
 
-  /* ── Idea 3: the ATTP figure as club wallpaper, and full-colour bands ── */
-  body.idea-3::before{
-    background:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
-      url("images/ideas/attp-pattern.svg") 0 0 / 240px 240px repeat;
-  }
-  .i3-band{ position:relative; padding-block:clamp(26px,4vw,52px); }
-  .i3-band--blue{ background:var(--table); color:#fff; }
-  .i3-band--blue .eyebrow{ color:var(--shirt); }
-  .i3-band--blue h2{ color:#fff; }
-  .i3-band--blue p{ color:rgba(255,255,255,.86); }
-  .i3-band--blue .ball-caption{ color:#fff; }
-  .i3-band--blue .ball-shadow{ opacity:.5; }
-  .i3-band--yellow{ background:var(--shirt); }
-  .i3-band--yellow .eyebrow{ color:var(--table); }
-  .i3-band--yellow .sec-link{ color:var(--text); text-decoration-color:var(--text); }
-  /* a painted court line where each band meets the floor */
-  .i3-band::before, .i3-band::after{ content:""; position:absolute; left:0; right:0; height:4px; background:#fff; opacity:.9; }
-  .i3-band::before{ top:10px; } .i3-band::after{ bottom:10px; }
+  /* ── Background 3: the clay-red sport floor of the halls where ATTP plays ── */
+  .bg-3{ --hall:#C9705F; --text-2:#2A1914; --muted:#3B241D; }
+  html:has(body.bg-3){ background:#C9705F; }
+  .bg-3 .eyebrow, .bg-3 .home-kicker{ color:#0E2240; }
+  .bg-3 .sec-link{ color:#141C28; text-decoration-color:#fff; }
+  .bg-3 .ball-caption{ color:#141C28; }
+  .bg-3 .btn-ghost{ border-color:#141C28; color:#141C28; }
+  .bg-3 .md-land{ stroke:#2A1914; }
 
-  /* review only: jump between the five ideas */
-  .idea-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
-    padding:6px; border-radius:999px; background:var(--text); box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
-  .idea-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
-  .idea-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
-  .idea-switch a:hover{ background:rgba(255,255,255,.14); }
-  .idea-switch a[aria-current]{ background:var(--shirt); color:var(--text); }
+  /* review only: jump between the five backgrounds */
+  .bg-switch{ position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:200; display:flex; align-items:center; gap:4px;
+    padding:6px; border-radius:999px; background:#141C28; box-shadow:0 12px 30px -10px rgba(20,28,40,.6); font-family:var(--font-label); font-weight:800; font-size:15px; }
+  .bg-switch span{ color:rgba(255,255,255,.6); padding:0 8px 0 10px; }
+  .bg-switch a{ min-width:38px; height:38px; padding:0 12px; display:grid; place-items:center; border-radius:999px; color:#fff; }
+  .bg-switch a:hover{ background:rgba(255,255,255,.14); }
+  .bg-switch a[aria-current]{ background:#F5C330; color:#141C28; }
 </style>
 </head>
-<body class="idea-3">
+<body class="bg-3">
+
 <div id="loadScreen" aria-hidden="true">
   <div class="load-stage">
     <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
@@ -346,7 +336,6 @@
     </div>
   </section>
 
-  <div class="i3-band i3-band--blue">
   <section class="container section-tight" aria-labelledby="recent-results-title">
     <div class="results-layout">
       <div>
@@ -429,7 +418,6 @@
       </div>
     </div>
   </section>
-  </div>
 
   <section class="container section-tight" aria-labelledby="townsTitle">
     <div class="towns">
@@ -449,7 +437,6 @@
     </div>
   </section>
 
-  <div class="i3-band i3-band--yellow">
   <section class="container section-tight" aria-labelledby="leadersTitle">
     <div class="sec-head">
       <div>
@@ -464,7 +451,6 @@
       <div class="rank-card skeleton" style="height:230px"></div>
     </div>
   </section>
-  </div>
 
   <section class="container section-tight" aria-labelledby="tournTitle">
     <div class="tourn-layout">
@@ -587,7 +573,7 @@
     </div>
   </section>
 </main>
-<nav class="idea-switch" aria-label="Variante"><span>Idee</span><a href="idea-1.html">1</a><a href="idea-2.html">2</a><a href="idea-3.html" aria-current="page">3</a><a href="idea-4.html">4</a><a href="idea-5.html">5</a><a href="index.html">Actual</a></nav>
+<nav class="bg-switch" aria-label="Fundaluri"><span>Fundal</span><a href="bg-1.html">1</a><a href="bg-2.html">2</a><a href="bg-3.html" aria-current="page">3</a><a href="bg-4.html">4</a><a href="bg-5.html">5</a><a href="index.html">Actual</a></nav>
 
 
 <footer>
