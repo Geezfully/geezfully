@@ -21,6 +21,30 @@
 <style>
   .sport-card--teams{ --c:#C4612A; }               /* hardwood / basketball orange, as on the sport choice */
   .sport-card--roster{ --c:var(--table); }
+  /* The top of each card shows the real thing, live from the Bskt Cup sync: the teams' crests on white
+     discs, like the fixture boards on a hall wall, and a crowd of the players' own photos. */
+  .bb-art{ display:flex; align-items:center; justify-content:flex-start; stroke:none; opacity:0; transition:opacity .5s ease; }
+  .bb-art.is-in{ opacity:1; }
+  .bb-crests{ display:grid; grid-template-columns:repeat(6, var(--d)); gap:12px 14px; align-content:center; --d:clamp(46px,4.8vw,66px); }
+  .bb-crests span:nth-child(n+7){ transform:translateX(calc(var(--d) * .55)); }
+  .bb-crests span{ display:grid; place-items:center; width:var(--d); height:var(--d); border-radius:50%; background:#fff;
+    box-shadow:0 6px 14px -8px rgba(20,28,40,.55); }
+  .bb-crests img{ width:76%; height:76%; object-fit:contain; }
+  .bb-crests span.dark{ background:var(--text); }      /* pale crests (Westsiders) need a dark disc */
+  .bb-faces{ flex-direction:column; align-items:flex-start; justify-content:center; gap:10px; --d:clamp(50px,5vw,70px); }
+  .bb-faces .row{ display:flex; }
+  .bb-faces .row:nth-child(2){ margin-left:calc(var(--d) * .45); }
+  .bb-faces .row > *{ width:var(--d); height:var(--d); margin-right:calc(var(--d) * -.18); border-radius:50%; overflow:hidden;
+    border:3px solid var(--c); background:#C9D3DE; flex:0 0 auto; }
+  .bb-faces img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .bb-faces .more{ display:grid; place-items:center; background:var(--shirt); color:var(--text); font-family:var(--font-display); font-weight:900; font-size:calc(var(--d) * .34); }
+  @media (max-width:520px){
+    .sport-card--teams, .sport-card--roster{ min-height:470px; }
+    .bb-crests{ --d:clamp(36px,10.5vw,46px); gap:8px; }
+    .bb-crests span:nth-child(n+7){ transform:none; }
+    .bb-faces{ --d:clamp(42px,12vw,54px); }
+  }
+  @media (prefers-reduced-motion:reduce){ .bb-art{ transition:none; } }
 </style>
 </head>
 <body>
@@ -71,7 +95,7 @@
   </section>
   <section class="container sport-choice" aria-label="Teams or players">
       <a class="sport-card sport-card--teams" href="en/basketball-teams.html">
-        <svg class="sport-card-art" viewBox="0 0 400 260" fill="none" aria-hidden="true"><rect x="20" y="30" width="360" height="200" rx="6"/><path d="M200 30v200"/><circle cx="200" cy="130" r="36"/><path d="M20 90h56v80H20M380 90h-56v80h56"/><circle cx="110" cy="130" r="12" class="ball"/><circle cx="290" cy="130" r="12" class="ball"/></svg>
+        <div class="sport-card-art bb-art bb-crests" id="crestArt" aria-hidden="true"></div>
         <span class="sport-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v5a5 5 0 0 1-10 0V3z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/></svg></span>
         <span class="sport-card-kicker">Bskt Cup</span>
         <h2 class="sport-card-title">Teams</h2>
@@ -79,7 +103,7 @@
         <span class="sport-card-cta">See the teams <span aria-hidden="true">→</span></span>
       </a>
       <a class="sport-card sport-card--roster" href="en/basketball-players.html">
-        <svg class="sport-card-art" viewBox="0 0 400 260" fill="none" aria-hidden="true"><rect x="30" y="20" width="340" height="220" rx="6"/><path d="M150 20v92h100V20"/><circle cx="200" cy="112" r="34"/><path d="M60 20v40a140 140 0 0 0 280 0V20"/><circle cx="200" cy="42" r="10" class="ball"/></svg>
+        <div class="sport-card-art bb-art bb-faces" id="faceArt" aria-hidden="true"></div>
         <span class="sport-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>
         <span class="sport-card-kicker">Bskt Cup</span>
         <h2 class="sport-card-title">Players</h2>
@@ -102,6 +126,37 @@
 </footer>
 
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script>
+// Card art from the Bskt Cup sync: every team's crest, and the players with the most wins (photo on file).
+// A team whose colour is pale (its crest is drawn in it) gets a dark disc instead of a white one.
+const paleTeam = hex => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+  if (!m) return false;
+  const n = parseInt(m[1], 16), [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255];
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.8;
+};
+(async function(){
+  const [{ data: teams }, { data: faces }, { count }] = await Promise.all([
+    db.from('bskt_echipe_stat').select('nume,culoare,logo_url,meciuri').gt('meciuri', 0).order('meciuri', { ascending:false }).limit(12),
+    db.from('bskt_jucatori').select('foto_url_mic').not('foto_url_mic', 'is', null).order('victorii', { ascending:false }).limit(11),
+    db.from('bskt_jucatori').select('id', { count:'exact', head:true }),
+  ]);
+  const crests = document.getElementById('crestArt');
+  if (teams && teams.length) {
+    crests.innerHTML = teams.filter(t => t.logo_url).map(t => `<span${paleTeam(t.culoare) ? ' class="dark"' : ''}><img src="${escapeHtml(t.logo_url)}" alt="" decoding="async"></span>`).join('');
+    crests.classList.add('is-in');
+  }
+  const crowd = document.getElementById('faceArt');
+  if (faces && faces.length) {
+    const pics = faces.map(f => `<span><img src="${escapeHtml(f.foto_url_mic)}" alt="" decoding="async"></span>`);
+    const rest = (count || 0) - pics.length;
+    if (rest > 0) pics.push(`<span class="more">+${rest}</span>`);
+    const half = Math.ceil(pics.length / 2);
+    crowd.innerHTML = `<div class="row">${pics.slice(0, half).join('')}</div><div class="row">${pics.slice(half).join('')}</div>`;
+    crowd.classList.add('is-in');
+  }
+})();
+</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/floor.js?v=1"></script>

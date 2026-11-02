@@ -19,6 +19,7 @@
   .tm-logo{ display:inline-grid; place-items:center; flex:0 0 auto; width:34px; height:34px; border-radius:50%; overflow:hidden;
     background:#fff; border:1px solid var(--rule); color:var(--text); font-family:var(--font-display); font-size:12px; font-weight:800; }
   .tm-logo img{ width:84%; height:84%; object-fit:contain; }
+  .tm-logo.dark, .tm-logo-xl.dark{ background:var(--text); }
   .tm-name{ display:inline-flex; align-items:center; gap:10px; font-weight:700; color:var(--chalk); }
   a.tm-name:hover{ color:var(--spin-hi); }
   .tm-note{ font-size:13px; color:var(--muted); margin-top:12px; max-width:760px; }
@@ -120,10 +121,16 @@
 
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
 <script>
-// Team helpers shared by the two team pages: a logo on a light disc (team logos are drawn for light
-// backgrounds), and the order of matches — games after midnight belong to the evening session of their date.
+// Team helpers shared by the two team pages: a logo on a white disc (a dark one for a team whose colour is
+// pale, since its crest is drawn in it), and the order of matches — games after midnight belong to the evening session of their date.
+const paleTeam = hex => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '');
+  if (!m) return false;
+  const n = parseInt(m[1], 16), [r, g, b] = [n >> 16, (n >> 8) & 255, n & 255];
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.8;
+};
 const teamLogo = (t, cls = 'tm-logo') => t && t.logo_url
-  ? `<span class="${cls}"><img src="${escapeHtml(t.logo_url)}" alt="" loading="lazy" decoding="async"></span>`
+  ? `<span class="${cls}${paleTeam(t.culoare) ? ' dark' : ''}"><img src="${escapeHtml(t.logo_url)}" alt="" loading="lazy" decoding="async"></span>`
   : `<span class="${cls}">${escapeHtml(((t && t.nume) || '?').slice(0, 2).toUpperCase())}</span>`;
 const matchKey = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
 const byRecent = (a, b) => matchKey(b).localeCompare(matchKey(a));
