@@ -70,7 +70,7 @@ html{ scroll-behavior:smooth; scroll-padding-top:96px; overscroll-behavior-y:non
 body{ overscroll-behavior-y:none; }
 @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
 body{
-  margin:0; background:var(--hall); color:var(--text);
+  margin:0; color:var(--text);   /* the hall colour is on html, so the floor layer below shows through */
   font-family:var(--font-body); font-size:16.5px; line-height:1.6;
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
