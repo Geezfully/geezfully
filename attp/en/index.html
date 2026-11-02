@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-4">
+<link rel="stylesheet" href="css/style.css?v=redesign-5">
 <script>window.__PAGE_LANG__="en";</script>
 <script src="js/i18n-en.js?v=05d15078"></script>
 <script src="js/news-en.js?v=7dbf42ab"></script>
@@ -53,8 +53,6 @@
   .towns-map svg{ display:block; width:100%; height:auto; overflow:visible; }
   .md-land{ fill:var(--paper); stroke:var(--text); stroke-width:2.5; stroke-linejoin:round; }
   .town-dot{ fill:var(--rubber); stroke:var(--paper); stroke-width:2; }
-  .town-label{ font-family:var(--font-label); font-size:17px; font-weight:800; fill:var(--text); paint-order:stroke; stroke:var(--paper); stroke-width:5px; stroke-linejoin:round; }
-  .town-label--big{ font-size:21px; }
   .towns-count{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin-top:18px; font-family:var(--font-label); font-size:clamp(18px,1.7vw,22px); font-weight:700; color:var(--text); }
   .towns-count .flip{ --d:clamp(34px,3.4vw,46px); }
   .towns-count .flip + span{ margin-left:clamp(10px,2vw,22px); }
@@ -659,8 +657,6 @@ if (ballModels.length) {
 const TOWN_XY = {"Anenii Noi":[366.4,332.5],"Avdarma":[313.4,457.6],"Basarabeasca":[331.9,441.8],"Bender":[400.9,343.9],"Briceni":[73.9,36.0],"Bălți":[189.0,155.8],"Cahul":[225.3,527.4],"Camenca":[294.8,101.9],"Cantemir":[226.1,452.8],"Cazaclia":[289.1,507.1],"Ceadîr-Lunga":[311.3,496.8],"Chișinău":[316.5,306.2],"Cimișlia":[305.6,404.0],"Codru":[311.6,314.5],"Comrat":[288.2,448.1],"Congaz":[280.9,486.7],"Copceac":[293.3,537.4],"Cricova":[316.3,280.9],"Criuleni":[356.9,265.6],"Călărași":[242.1,257.9],"Cărpineni":[245.9,355.3],"Căușeni":[390.6,378.4],"Dondușeni":[145.6,60.8],"Drochia":[173.6,101.9],"Dubăsari":[357.2,255.2],"Durlești":[303.0,303.7],"Edineț":[103.0,74.6],"Florești":[239.6,129.5],"Fălești":[158.7,193.6],"Glodeni":[131.1,153.4],"Grigoriopol":[375.2,278.9],"Hîncești":[279.1,342.6],"Ialoveni":[304.7,319.5],"Leova":[233.7,412.2],"Nisporeni":[223.0,292.8],"Ocnița":[127.6,26.2],"Orhei":[311.5,234.7],"Rezina":[329.2,158.5],"Rîbnița":[336.1,155.1],"Rîșcani":[137.5,117.6],"Slobozia":[431.8,362.8],"Soroca":[238.1,77.4],"Strășeni":[282.6,278.8],"Stăuceni":[317.2,289.1],"Sîngera":[331.4,325.5],"Sîngerei":[218.6,181.1],"Taraclia":[289.9,528.7],"Telenești":[248.3,207.7],"Tiraspol":[417.8,337.0],"Ungheni":[171.3,267.1],"Vadul lui Vodă":[346.0,290.7],"Vulcănești":[253.6,571.8],"Șoldănești":[306.9,145.6],"Ștefan Vodă":[425.4,405.2]};
 const TOWN_ALIAS = { 'Кишинів':'Chișinău', 'Кишинев':'Chișinău', 'Chisinau':'Chișinău', 'Odessa':'Odesa' };
 const ABROAD = new Set(['Odesa','Catania','Zaporojie']);
-// label side for the towns that get one: [dx, dy, anchor]
-const TOWN_LABEL = { 'Chișinău':[-16,6,'end'], 'Dubăsari':[14,5,'start'], 'Bender':[-8,26,'end'], 'Tiraspol':[12,-6,'start'], 'Rîbnița':[13,5,'start'], 'Hîncești':[-10,4,'end'] };
 async function renderTowns(){
   const { data } = await db.from('players').select('city');
   if (!data) return;
@@ -677,30 +673,23 @@ async function renderTowns(){
   flipNumber(document.getElementById('statTowns'), towns.length + Object.keys(abroad).length);
   const svgNS = 'http://www.w3.org/2000/svg';
   const g = document.getElementById('townDots');
-  // biggest first, so the small dots are drawn on top and stay visible
+  // Biggest first. A town whose spot falls inside a bigger dot (the suburbs around
+  // Chișinău) gets no dot of its own; it is still counted in the roll.
+  const drawn = [];
   towns.forEach(([name, n]) => {
     const xy = TOWN_XY[name];
     if (!xy) return;
+    const r = 4 + Math.sqrt(n) * 2.2;
+    if (drawn.some(d => Math.hypot(d.x - xy[0], d.y - xy[1]) < d.r + r * .5)) return;
+    drawn.push({ x:xy[0], y:xy[1], r });
     const dot = document.createElementNS(svgNS, 'circle');
     dot.setAttribute('cx', xy[0]); dot.setAttribute('cy', xy[1]);
-    dot.setAttribute('r', (4 + Math.sqrt(n) * 2.2).toFixed(1));
+    dot.setAttribute('r', r.toFixed(1));
     dot.setAttribute('class', 'town-dot');
     const title = document.createElementNS(svgNS, 'title');
     title.textContent = `${t(name)}: ${n}`;
     dot.appendChild(title);
     g.appendChild(dot);
-  });
-  Object.entries(TOWN_LABEL).forEach(([name, [dx, dy, anchor]]) => {
-    const xy = TOWN_XY[name];
-    if (!home[name]) return;
-    const r = 4 + Math.sqrt(home[name]) * 2.2;
-    const label = document.createElementNS(svgNS, 'text');
-    label.setAttribute('x', xy[0] + Math.sign(dx) * r + dx);
-    label.setAttribute('y', xy[1] + dy);
-    label.setAttribute('text-anchor', anchor);
-    label.setAttribute('class', 'town-label' + (name === 'Chișinău' ? ' town-label--big' : ''));
-    label.textContent = t(name);
-    g.appendChild(label);
   });
   const abroadList = Object.keys(abroad).sort((a,b) => a.localeCompare(b, 'ro'));
   document.getElementById('townRoll').innerHTML =

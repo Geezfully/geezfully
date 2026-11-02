@@ -64,7 +64,10 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; scroll-padding-top:96px; }
+/* no rubber-band past the top or bottom of the page (macOS/iOS bounce); the hall colour
+   sits behind it anyway, so a browser that still bounces shows floor, not white */
+html{ scroll-behavior:smooth; scroll-padding-top:96px; overscroll-behavior-y:none; background:var(--hall); }
+body{ overscroll-behavior-y:none; }
 @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
 body{
   margin:0; background:var(--hall); color:var(--text);
