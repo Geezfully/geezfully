@@ -191,6 +191,17 @@
     .results-layout{ grid-template-columns:1fr; }
     .pingpong-model{ height:190px; }
   }
+  /* Phone: the scores come first, right under the heading; the two balls follow as decoration */
+  @media (max-width:640px){
+    .results-layout{ gap:0; }
+    .results-layout .scoreboard{ margin-top:16px; }
+    .results-layout > div:first-child{ display:contents; }
+    .results-layout .eyebrow, .results-layout h2, .results-layout h2 + p{ order:0; }
+    .results-layout .scoreboard{ order:1; }
+    .results-layout .pingpong-model-shell{ order:2; margin-top:22px; }
+    .results-layout h2 + p{ display:none; }   /* the board's own header already says where the scores come from */
+    .pingpong-model{ height:150px; }
+  }
 
   /* ── Leaders: the top six, printed like the ranking pinned on the club board ── */
   .rank-strip{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px; }
@@ -329,34 +340,31 @@
   @media (max-width:900px){
     .home-hero-grid{ grid-template-columns:1fr; }
   }
-  /* Phone: the first screen is the association and the two ways in. The award becomes a small ribbon
-     above the headline (a seal, not a poster); the two buttons become a pair of sport tiles, each with
-     its own ball. Both exist only on phones; wider screens keep the award picture and the buttons. */
+  /* Phone: a short opener, then straight to the results. One compact headline, the two sports as equal
+     buttons (ball beside the name), the award as a slim line under them, and no barrier band before the
+     results — so the latest scores start on the first screen instead of after a full screen of intro.
+     The award ribbon and the sport buttons exist only on phones; wider screens keep the picture and buttons. */
   .award-ribbon, .hero-sports{ display:none; }
   @media (max-width:640px){
-    .home-hero{ padding-block:18px 30px; }
-    .home-hero-award, .hero-actions, .home-kicker{ display:none; }
-    .award-ribbon{ display:inline-flex; align-items:center; gap:10px; margin-bottom:18px; padding:5px 14px 5px 5px; max-width:100%;
-      border-radius:999px; background:var(--paper); box-shadow:var(--shadow-sheet); color:var(--text); text-decoration:none; }
-    .award-ribbon img{ width:44px; height:44px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
-    .award-ribbon strong{ display:block; font-family:var(--font-display); font-size:16px; font-weight:800; line-height:1.05; }
-    .award-ribbon span span{ display:block; font-size:12.5px; color:var(--text-2); line-height:1.2; }
-    .home-hero h1{ font-size:clamp(40px,11.6vw,52px); line-height:.92; }
-    .home-hero .lede{ margin-top:14px; font-size:16.5px; }
-    .hero-sports{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
-    .hero-sport{ position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; gap:3px; min-height:0;
-      padding:14px; border-radius:var(--radius-lg); color:#fff; text-decoration:none; isolation:isolate; --ball:clamp(70px,21vw,88px);
-      box-shadow:0 14px 28px -20px rgba(20,28,40,.7); }
+    .home-hero{ padding-block:16px 6px; }
+    .home-hero-award, .hero-actions, .home-kicker, .home-hero .lede{ display:none; }
+    .home-hero h1{ font-size:clamp(31px,8.8vw,38px); line-height:.95; max-width:15ch; }
+    .hero-sports{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .hero-sport{ position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:10px;
+      min-height:64px; padding:10px 12px; border-radius:var(--radius); color:#fff; text-decoration:none; isolation:isolate;
+      box-shadow:0 10px 22px -18px rgba(20,28,40,.8); }
     .hero-sport--tt{ background:var(--table); }
     .hero-sport--bb{ background:#C4612A; }
-    /* a court line across each tile, the way the sport cards draw their surface */
-    .hero-sport::before{ content:""; position:absolute; inset:8px; z-index:-1; border:2px solid rgba(255,255,255,.35); border-radius:6px; }
-    .hero-sport img{ position:absolute; top:8px; right:-4px; width:var(--ball); height:auto; z-index:-1; filter:drop-shadow(0 6px 8px rgba(0,0,0,.3)); }
-    /* the words sit under the ball, never on it, even when a name wraps (Russian) */
-    .hero-sport{ padding-top:calc(var(--ball) * .82 + 12px); }
-    .hs-name{ font-family:var(--font-display); font-size:clamp(20px,6vw,24px); font-weight:900; line-height:1; }
-    .hs-what{ font-family:var(--font-label); font-size:14px; font-weight:800; color:var(--shirt); }
+    .hero-sport::before{ content:""; position:absolute; inset:5px; z-index:-1; border:1.5px solid rgba(255,255,255,.3); border-radius:7px; }
+    .hero-sport img{ grid-row:1 / span 2; width:40px; height:40px; object-fit:contain; filter:drop-shadow(0 3px 4px rgba(0,0,0,.3)); }
+    .hs-name{ font-family:var(--font-display); font-size:clamp(17px,5vw,20px); font-weight:900; line-height:1; align-self:end; }
+    .hs-what{ font-family:var(--font-label); font-size:12.5px; font-weight:800; color:var(--shirt); align-self:start; margin-top:2px; }
     .hero-sport:active{ transform:scale(.98); }
+    .award-ribbon{ display:flex; align-items:center; gap:9px; margin-top:12px; color:var(--text-2); text-decoration:none; }
+    .award-ribbon img{ width:28px; height:28px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
+    .award-ribbon strong{ display:block; font-family:var(--font-label); font-size:13.5px; font-weight:800; line-height:1.15; color:var(--text); }
+    .award-ribbon span span{ display:block; font-size:12px; line-height:1.2; }
+    .home-hero + .barrier{ display:none; }
   }
   @media (max-width:640px) and (prefers-reduced-motion:reduce){ .hero-sport:active{ transform:none; } }
 </style>
@@ -426,10 +434,6 @@
   <section class="home-hero" aria-labelledby="homeTitle">
     <div class="container home-hero-grid">
       <div class="home-hero-copy">
-        <a class="award-ribbon" href="ru/about.html">
-          <img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async">
-          <span><strong>Победитель Notorium Brand Awards 2025</strong><span>конкурс узнаваемых брендов</span></span>
-        </a>
         <p class="home-kicker">Настольный теннис и баскетбол · Республика Молдова</p>
         <h1 id="homeTitle">Настольный теннис и баскетбол Молдовы — и люди, которые в них играют.</h1>
         <p class="lede">От Кишинёва до Дубоссар, Бендер и Чадыр-Лунги ATTP ведёт счёт, рейтинги и истории игроков со всей страны.</p>
@@ -449,6 +453,10 @@
             <span class="hs-what">Bskt Cup <span aria-hidden="true">→</span></span>
           </a>
         </nav>
+        <a class="award-ribbon" href="ru/about.html">
+          <img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async">
+          <span><strong>Победитель Notorium Brand Awards 2025</strong><span>конкурс узнаваемых брендов</span></span>
+        </a>
       </div>
       <figure class="home-hero-photo home-hero-award">
         <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="(max-width:900px) 100vw, 560px" width="3762" height="2508" alt="ATTP — победитель Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
