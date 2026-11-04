@@ -641,5 +641,20 @@
  "{a} contra {b}: {n} meciuri, {v} victorii, {i} înfrângeri": "{a} против {b}: матчей {n}, побед {v}, поражений {i}",
  "{n} adversari întâlniți": "Соперников: {n}",
  "Împotriva fiecărei echipe": "Против каждой команды",
- "Înfrângeri": "Поражения"
+ "Înfrângeri": "Поражения",
+ "<span aria-hidden=\"true\">←</span> Toate știrile": "<span aria-hidden=\"true\">←</span> Все новости",
+ "Toate știrile": "Все новости",
+ "Arată mai multe știri ({n} rămase)": "Показать ещё новости (осталось {n})",
+ "Arată serile anterioare": "Показать предыдущие вечера",
+ "Arată toate localitățile ({n})": "Показать все населённые пункты ({n})",
+ "Clasamentul echipelor →": "Таблица команд →",
+ "Rezultate, pe seri": "Результаты по вечерам",
+ "Rezultatele apar aici imediat ce se sincronizează datele din Bskt Cup.": "Результаты появятся здесь сразу после синхронизации данных Bskt Cup.",
+ "{n} meciuri": "Матчей: {n}",
+ "Manager echipe SKC": "Менеджер команд SKC",
+ "Manager arbitraj SKC": "Менеджер судейства SKC",
+ "Manager arbitraj BSKC": "Менеджер судейства BSKC",
+ "Manager echipe BSKC": "Менеджер команд BSKC",
+ "Clasament FTMM": "Рейтинг FTMM",
+ "Clasamente": "Рейтинги"
 }

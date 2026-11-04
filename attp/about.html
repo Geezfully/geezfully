@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-10">
+<link rel="stylesheet" href="css/style.css?v=redesign-11">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -43,8 +43,13 @@
     .person-grid.cols-4 > *{ flex-basis:calc((100% - 20px)/2); }
   }
   @media (max-width:460px){
-    .person-grid.cols-3{ grid-template-columns:1fr; }
-    .person-grid.cols-4 > *{ flex-basis:100%; }
+    /* two people side by side on a phone, so a section of thirty is not a 14,000px scroll */
+    .person-grid{ gap:12px; }
+    .person-grid.cols-3{ grid-template-columns:repeat(2,1fr); }
+    .person-grid.cols-4 > *{ flex-basis:calc((100% - 12px)/2); }
+    .person-card h3{ font-size:19px; }
+    .person-role{ font-size:13px; }
+    .person-body{ padding:10px 10px 12px; }
   }
   /* team portraits, captioned like the photographs in a club's yearbook */
   .person-card{ background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); overflow:hidden; }
@@ -165,7 +170,8 @@
   <section class="container section-tight">
     <div class="eyebrow">Echipa</div>
     <h2 class="mb-24">Management</h2>
-    <div class="person-grid cols-3" id="managementGrid">
+    <div class="person-grid cols-4" id="managementGrid">
+      <div class="card skeleton" style="height:260px"></div>
       <div class="card skeleton" style="height:260px"></div>
       <div class="card skeleton" style="height:260px"></div>
       <div class="card skeleton" style="height:260px"></div>
@@ -224,17 +230,24 @@
     'a10edafb-1c94-428b-afad-5df8586a970e', // Nicolae Toma
     '258f5472-c2d1-4b45-92ee-771d482e7fb5', // Eduard Buianov
   ]);
-  const players = (all || []).filter(p => !HIDDEN_FROM_ABOUT.has(p.id));
+  // Management is a fixed list with job titles, as on attp.md/about (two of the four are not players,
+  // so they have no player record). Its two players are not listed again in the other sections.
+  const MANAGEMENT = [
+    { id:'9d049977-9afe-4bc2-ba69-3dd6cafc7d35', name:'Oksana Halimbaieva',  title:'Manager echipe SKC',     photo:'images/team/oksana-halimbaieva.webp?v=hd1' },
+    { id:'1bc5ffb4-a12a-4b0b-8ce2-76089832168c', name:'Serghei Cucerovschii', title:'Manager arbitraj SKC',  photo:'images/team/serghei-cucerovschii.webp?v=hd1' },
+    { id:null, name:'Alexandra Iurii',  title:'Manager arbitraj BSKC', photo:'images/team/alexandra-iurii.webp' },
+    { id:null, name:'Alexandr Ștubei',  title:'Manager echipe BSKC',  photo:'images/team/alexandr-stubei.webp' },
+  ];
+  const managementIds = new Set(MANAGEMENT.map(m => m.id).filter(Boolean));
+  const players = (all || []).filter(p => !HIDDEN_FROM_ABOUT.has(p.id) && !managementIds.has(p.id));
   const roleText = p => p.roles.map(roleLabel).join(' · ');
 
   // Each person appears once, bucketed into their primary section (matching attp.md/about's grouping).
   const leadership = players.filter(p => p.roles.includes('founder') || p.roles.includes('president'));
   const leadershipIds = new Set(leadership.map(p => p.id));
-  const management = players.filter(p => !leadershipIds.has(p.id) && p.roles.includes('management'));
-  const managementIds = new Set(management.map(p => p.id));
-  const coaches = players.filter(p => !leadershipIds.has(p.id) && !managementIds.has(p.id) && p.roles.includes('coach'));
+  const coaches = players.filter(p => !leadershipIds.has(p.id) && p.roles.includes('coach'));
   const coachIds = new Set(coaches.map(p => p.id));
-  const referees = players.filter(p => !leadershipIds.has(p.id) && !managementIds.has(p.id) && !coachIds.has(p.id) && p.roles.includes('referee'));
+  const referees = players.filter(p => !leadershipIds.has(p.id) && !coachIds.has(p.id) && p.roles.includes('referee'));
 
   const renderGrid = list => list.map(p => `
     <div class="person-card">
@@ -247,7 +260,14 @@
     </div>`).join('') || '<p class="muted">—</p>';
 
   document.getElementById('leadershipGrid').innerHTML = renderGrid(leadership);
-  document.getElementById('managementGrid').innerHTML = renderGrid(management);
+  document.getElementById('managementGrid').innerHTML = MANAGEMENT.map(m => `
+    <div class="person-card">
+      <div class="person-photo"><img src="${m.photo}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>
+      <div class="person-body">
+        <h3>${escapeHtml(m.name)}</h3>
+        <div class="person-role">${escapeHtml(t(m.title))}</div>
+      </div>
+    </div>`).join('');
   document.getElementById('coachesGrid').innerHTML = renderGrid(coaches);
   document.getElementById('refereesGrid').innerHTML = renderGrid(referees);
 })();

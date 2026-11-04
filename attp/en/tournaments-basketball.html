@@ -12,9 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-10">
+<link rel="stylesheet" href="css/style.css?v=redesign-11">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=5b64042c"></script>
+<script src="js/i18n-en.js?v=ea1a049c"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -63,8 +63,36 @@
   .tourn-date{ font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:4px; }
   .participant-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--border); font-size:14px; }
   .participant-row:first-of-type{ border-top:0; }
-  .pos-badge{ font-family:var(--font-mono); font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:10px; }
+  .pos-badge{ font-family:var(--font-mono); font-size:12px; font-weight:700; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:10px; }
   .pos-badge.gold{ background:var(--spin-dim); color:var(--spin-hi); }
+  /* Bskt Cup evenings: one card per evening, its matches in playing order */
+  .sec-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; margin-bottom:22px; }
+  .sec-link{ display:inline-flex; align-items:center; min-height:44px; font-family:var(--font-label); font-size:17px; font-weight:800; color:var(--table); border-bottom:3px solid var(--shirt); }
+  .bb-day{ background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); margin-bottom:16px; overflow:hidden; }
+  .bb-day-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; padding:14px 18px; border-bottom:2px solid var(--text); }
+  .bb-day-head h3{ font-size:24px; }
+  .bb-day-head span{ font-family:var(--font-label); font-size:14px; font-weight:700; color:var(--muted); white-space:nowrap; }
+  .bb-match{ display:grid; grid-template-columns:52px minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:10px; padding:10px 18px; border-bottom:1px solid var(--rule); }
+  .bb-match:last-child{ border-bottom:0; }
+  .bb-time{ font-family:var(--font-label); font-size:14px; font-weight:700; color:var(--muted); }
+  .bb-team{ display:flex; align-items:center; gap:8px; min-width:0; min-height:44px; color:var(--text-2); font-weight:600; font-size:15px; }
+  .bb-team span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bb-team.won{ color:var(--text); font-weight:800; }
+  .bb-team.b{ flex-direction:row-reverse; text-align:right; }
+  .bb-team img{ width:28px; height:28px; object-fit:contain; flex:0 0 auto; }
+  .bb-score{ font-family:var(--font-display); font-size:22px; font-weight:800; white-space:nowrap; }
+  .bb-ot{ margin-left:4px; font-family:var(--font-label); font-size:12px; font-weight:800; color:var(--table); }
+  .day-more{ display:flex; justify-content:center; width:100%; max-width:420px; margin:8px auto 0; }
+  .day-more[hidden]{ display:none; }
+  @media (max-width:560px){
+    /* a phone: the time beside the two teams, stacked one above the other, and the score on the right */
+    .bb-match{ grid-template-columns:44px minmax(0,1fr) auto; grid-template-areas:"t a s" "t b s"; gap:0 10px; padding:6px 14px; }
+    .bb-time{ grid-area:t; font-size:13px; align-self:center; }
+    .bb-team.a{ grid-area:a; }
+    .bb-team.b{ grid-area:b; flex-direction:row; text-align:left; }
+    .bb-score{ grid-area:s; font-size:20px; }
+    .bb-day-head{ padding:12px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -108,13 +136,16 @@
     <h1 id="tournamentsTitle">Basketball</h1>
     <p class="lede mt-16">Basketball games and tournaments with ATTP players, synced from Bskt Cup.</p>
   </section>
-  <section class="container sport-soon-section">
-    <div class="sport-soon">
-      <span class="sport-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5.6 5.6c3.4 3.4 3.4 9.4 0 12.8M18.4 5.6c-3.4 3.4-3.4 9.4 0 12.8"/></svg></span>
-      <h2>Bskt Cup tournaments</h2>
-      <p class="dim">Tournaments will appear here as soon as the Bskt Cup data source is connected.</p>
-      <span class="tag">Coming soon</span>
+  <section class="container section-tight bb-days" aria-labelledby="daysTitle">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Bskt Cup</div>
+        <h2 id="daysTitle">Results, evening by evening</h2>
+      </div>
+      <a href="en/basketball-teams.html" class="sec-link">Team standings →</a>
     </div>
+    <div id="dayList"><div class="card skeleton" style="height:220px"></div></div>
+    <button type="button" class="btn btn-ghost day-more" id="dayMore" hidden></button>
     <a class="sport-back" href="en/tournaments.html"><span aria-hidden="true">←</span> All sports</a>
   </section>
 </main>
@@ -132,6 +163,50 @@
 </footer>
 
 <script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script>
+// Bskt Cup results by evening, from the BSKT register sync (bskt_meciuri, bskt_echipe). A match's date is
+// its evening: games after midnight belong to the evening before, so they come last within it.
+(async function(){
+  const [{ data: teams }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(1000),
+  ]);
+  const list = document.getElementById('dayList'), more = document.getElementById('dayMore');
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  if (!games || !games.length) { list.innerHTML = `<div class="empty-state"><p>${t('Rezultatele apar aici imediat ce se sincronizează datele din Bskt Cup.')}</p></div>`; return; }
+  const late = ora => (ora || '') < '06:00';
+  const days = {};
+  games.forEach(m => (days[m.data] ||= []).push(m));
+  const order = Object.keys(days).sort().reverse();
+  const href = id => `basketball-team.html?id=${encodeURIComponent(id)}`;
+  const team = (x, won, side) => x
+    ? `<a class="bb-team ${side}${won ? ' won' : ''}" href="${href(x.id)}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(x.nume)}</span></a>`
+    : `<span class="bb-team ${side}">—</span>`;
+  const dayHtml = d => {
+    const ms = days[d].slice().sort((a, b) => (late(a.ora) - late(b.ora)) || (a.ora || '').localeCompare(b.ora || ''));
+    const title = new Date(d + 'T12:00:00').toLocaleDateString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { weekday:'long', day:'numeric', month:'long' });
+    return `<article class="bb-day">
+      <div class="bb-day-head"><h3>${escapeHtml(title.charAt(0).toUpperCase() + title.slice(1))}</h3><span>${t('{n} meciuri').replace('{n}', ms.length)}</span></div>
+      ${ms.map(m => `<div class="bb-match">
+        <span class="bb-time">${escapeHtml(m.ora || '')}</span>
+        ${team(byId[m.echipa_a], m.scor_a > m.scor_b, 'a')}
+        <span class="bb-score">${m.scor_a}:${m.scor_b}${m.prelungiri ? `<span class="bb-ot">${t('prel.')}</span>` : ''}</span>
+        ${team(byId[m.echipa_b], m.scor_b > m.scor_a, 'b')}
+      </div>`).join('')}
+    </article>`;
+  };
+  let shown = 0;
+  const showMore = () => {
+    list.insertAdjacentHTML('beforeend', order.slice(shown, shown + 5).map(dayHtml).join(''));
+    shown = Math.min(order.length, shown + 5);
+    more.hidden = shown >= order.length;
+    more.textContent = t('Arată serile anterioare');
+  };
+  list.innerHTML = '';
+  showMore();
+  more.addEventListener('click', showMore);
+})();
+</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/floor.js?v=2"></script>

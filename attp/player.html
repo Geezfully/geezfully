@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-10">
+<link rel="stylesheet" href="css/style.css?v=redesign-11">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -25,14 +25,21 @@
   .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:32px 0; }
   .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
   .kpi b{ display:block; font-family:var(--font-mono); font-size:24px; }
-  .kpi span{ font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .kpi span{ display:block; font-size:12.5px; line-height:1.35; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
   @media (max-width:700px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
 
   .gear-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px 28px; margin-top:16px; }
-  .gear-item .gear-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
+  .gear-item .gear-label{ font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
   .gear-item .gear-value{ font-size:14.5px; color:var(--chalk); font-weight:600; }
   @media (max-width:700px){ .gear-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:460px){ .gear-grid{ grid-template-columns:1fr; } }
+  /* on a phone the history keeps tournament, date, score and place; division and points drop out */
+  @media (max-width:640px){
+    #statsTable{ min-width:0; }
+    #statsTable th:nth-child(3), #statsTable td:nth-child(3), #statsTable th:nth-child(5), #statsTable td:nth-child(5){ display:none; }
+    #statsTable td, #statsTable th{ padding-inline:8px; }
+    #statsTable td:first-child{ font-size:14px; }
+  }
 </style>
 </head>
 <body>

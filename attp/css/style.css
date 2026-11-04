@@ -144,7 +144,7 @@ strong{ color:var(--text); }
 .btn-ghost:hover{ background:var(--text); color:#fff; }
 .btn-rally{ background:var(--shirt); color:var(--text); box-shadow:inset 0 -3px 0 var(--shirt-deep); }
 .btn-rally:hover{ background:#F8CF52; }
-.btn-sm{ min-height:40px; padding:8px 16px; font-size:15.5px; }
+.btn-sm{ min-height:44px; padding:8px 16px; font-size:15.5px; }
 
 /* ── Top bar ── */
 .topbar{
@@ -160,7 +160,7 @@ footer::after{ top:0; }
 @supports (backdrop-filter:blur(8px)){ .topbar{ background:rgba(255,255,255,.88); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); } }
 .topbar.is-stuck{ box-shadow:0 6px 24px -18px rgba(20,28,40,.5); }
 .topbar-inner{ display:flex; align-items:center; gap:28px; padding-top:12px; padding-bottom:12px; }
-.brand{ display:flex; align-items:center; gap:12px; margin-right:auto; }
+.brand{ display:flex; align-items:center; gap:12px; margin-right:auto; min-height:44px; }
 .brand-mark{ display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
 .brand-mark img{ height:44px; width:auto; display:block; }
 .brand-word{ font-family:var(--font-display); font-weight:900; font-size:27px; line-height:.9; letter-spacing:.01em; color:var(--table); }
@@ -292,8 +292,8 @@ footer::after{ top:0; }
   .brand{ gap:9px; min-width:0; }
   .brand-mark img{ height:38px; }
   .brand-word{ font-size:24px; }
-  .brand-sub{ font-size:11px; line-height:1.25; }
-  .lang-switch a{ min-width:34px; padding:4px 4px; font-size:14px; }
+  .brand-sub{ font-size:12px; line-height:1.25; }
+  .lang-switch a{ min-width:40px; min-height:44px; padding:4px 2px; font-size:14px; }
   .nav-toggle{ width:44px; height:44px; }
 }
 @media (max-width:340px){ .brand-sub{ display:none !important; } }
@@ -432,7 +432,7 @@ footer .brand-word{ color:#fff; font-size:44px; }
 footer p, footer .dim{ color:rgba(255,255,255,.82); }
 .footer-grid{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:36px; margin-bottom:44px; }
 .footer-grid h4{ font-family:var(--font-label); font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--shirt); margin-bottom:12px; }
-.footer-grid a{ display:block; color:#fff; font-size:15.5px; padding:5px 0; }
+.footer-grid a{ display:block; color:#fff; font-size:15.5px; padding:5px 0; min-height:34px; }
 .footer-grid a:hover{ text-decoration:underline; text-underline-offset:4px; }
 .footer-bottom{
   display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
@@ -440,7 +440,13 @@ footer p, footer .dim{ color:rgba(255,255,255,.82); }
 }
 footer :focus-visible{ outline-color:var(--shirt); }
 @media (max-width:800px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
-@media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; } footer::before{ inset:10px; } }
+@media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; gap:28px; } footer::before{ inset:10px; } }
+/* the white edge of the table is painted 10-16px in; keep the words a comfortable step inside it */
+@media (max-width:760px){
+  footer{ padding-top:48px; }
+  footer .container{ padding-inline:calc(var(--gutter) + 22px); }
+  .footer-grid a{ padding:10px 0; }
+}
 
 /* ── Interior pages ── */
 .page-flow{ position:relative; }
@@ -600,15 +606,17 @@ html[data-load-sport="basketball"] .load-figure{
   font-family:var(--font-hand); font-size:26px; font-weight:600; color:var(--table); transform:rotate(-1.5deg);
 }
 @media (max-width:760px){
-  .photo-hero-inner{ grid-template-columns:1fr; min-height:0; padding-block:22px 36px; }
+  /* on a phone the title and intro come first; the photo follows them, a little shorter */
+  .photo-hero{ display:flex; flex-direction:column; }
+  .photo-hero-inner{ grid-template-columns:1fr; min-height:0; padding-block:22px 22px; }
   .photo-hero-img{
-    position:static; display:block; width:calc(100% - 2 * var(--gutter)); margin:20px auto 0;
-    aspect-ratio:4/3; box-shadow:0 18px 36px -24px rgba(20,28,40,.55);
+    order:1; position:static; display:block; width:calc(100% - 2 * var(--gutter)); margin:0 auto 32px;
+    aspect-ratio:16/10; box-shadow:0 18px 36px -24px rgba(20,28,40,.55);
   }
 }
 
 /* Footer credit: "Made by" + the handwritten signature (a mask painted with currentColor). */
-.foot-by{ display:inline-flex; align-items:center; gap:8px; color:#fff; text-decoration:none; white-space:nowrap; }
+.foot-by{ display:inline-flex; align-items:center; gap:8px; min-height:44px; color:#fff; text-decoration:none; white-space:nowrap; }
 .foot-by:hover, .foot-by:focus-visible{ color:var(--shirt); }
 .foot-sig{
   display:inline-block; height:30px; aspect-ratio:2.75; background-color:currentColor;
@@ -628,7 +636,7 @@ html[data-load-sport="basketball"] .load-figure{
 .rank-pill[data-rank="master_int"]{ border-color:var(--shirt-deep); background:var(--shirt); color:var(--text); }
 h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2px 8px; }
 @media (max-width:600px){
-  .rank-pill{ margin-left:6px; padding:1px 5px; font-size:11px; }
+  .rank-pill{ margin-left:6px; padding:1px 5px; font-size:12px; }
   h1 .rank-pill{ font-size:13px; vertical-align:8px; margin-left:8px; }
 }
 
@@ -676,7 +684,9 @@ h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2p
 }
 @media (max-width:760px){
   .sport-choice{ grid-template-columns:1fr; }
-  .sport-card{ min-height:400px; }
+  /* the drawing keeps to the top of the card, clear of the label and title below it */
+  .sport-card{ min-height:440px; }
+  .sport-card-art{ height:36%; }
 }
 
 .sport-choice-hero--art{ position:relative; isolation:isolate; overflow-x:clip; }
@@ -694,7 +704,7 @@ h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2p
 }
 .sport-soon .sport-card-icon{ display:none; }
 .sport-soon h2{ font-size:clamp(28px,3vw,38px); }
-.sport-back{ display:inline-flex; gap:8px; margin-top:24px; color:var(--table); font-family:var(--font-label); font-weight:800; font-size:17px; text-decoration:none; }
+.sport-back{ display:inline-flex; align-items:center; gap:8px; min-height:44px; margin-top:24px; color:var(--table); font-family:var(--font-label); font-weight:800; font-size:17px; text-decoration:none; }
 .sport-back:hover{ text-decoration:underline; text-underline-offset:4px; }
 
 /* Page wrappers left from the previous, dark design. The hall has no backdrop

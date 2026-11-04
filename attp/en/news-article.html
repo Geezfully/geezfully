@@ -11,9 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-10">
+<link rel="stylesheet" href="css/style.css?v=redesign-11">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=5b64042c"></script>
+<script src="js/i18n-en.js?v=ea1a049c"></script>
 <script src="js/news-en.js?v=f1a6c1da"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -38,6 +38,10 @@
   .article-source{ display:inline-flex; align-items:center; gap:8px; margin-top:12px; padding:13px 18px; border:1px solid var(--teal); border-radius:999px; color:var(--teal); font-weight:700; }
   .article-source:hover{ background:rgba(45,212,211,.09); }
   @media (max-width:600px){ .article-cover{ aspect-ratio:4/3; } }
+  /* the end of an article leads somewhere: back to the list */
+  .article-back{ display:inline-flex; align-items:center; gap:8px; min-height:48px; margin-top:32px; padding:0 18px; border:2px solid var(--text); border-radius:var(--radius);
+    background:var(--paper); color:var(--text); font-family:var(--font-label); font-weight:800; font-size:17px; text-decoration:none; }
+  .article-back:hover{ background:var(--text); color:var(--paper); }
 </style>
 </head>
 <body>
@@ -84,6 +88,7 @@
     <section class="container section-tight">
       <div class="article-cover" id="articleCover" style="display:none"></div>
       <div class="article-body" id="articleBody"></div>
+      <a class="article-back" href="en/news.html"><span aria-hidden="true">←</span> All news</a>
     </section>
   </div>
 </main>
