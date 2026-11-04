@@ -81,6 +81,32 @@
   /* ── Results: the sheet beside the two balls ── */
   .results-layout{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(24px,4vw,56px); align-items:start; }
   .results-layout .scoreboard{ align-self:stretch; }
+  /* Table tennis / basketball switch on the scoreboard: two tabs, the source label follows the sport */
+  .sb-source{ font-family:var(--font-label); font-size:14px; font-weight:600; }
+  .sb-tabs{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px 14px; border-bottom:1px solid var(--rule); background:var(--surface-2); }
+  .sb-tabs button{ min-height:44px; border:2px solid transparent; border-radius:var(--radius); background:transparent; cursor:pointer;
+    font-family:var(--font-label); font-size:16px; font-weight:800; color:var(--text-2); transition:background .15s ease, color .15s ease; }
+  .sb-tabs button:hover{ color:var(--text); }
+  .sb-tabs button[aria-selected="true"]{ background:var(--paper); border-color:var(--text); color:var(--text); }
+  .sb-tabs button:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
+  #sbTabBb[aria-selected="true"]{ border-color:#C4612A; color:#9C4A1E; }
+  /* a basketball result: the two teams with their crests either side of the flip score */
+  .bb-row{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--rule); }
+  .bb-row:last-child{ border-bottom:0; }
+  .bb-row:nth-child(even){ background:var(--surface-2); }
+  .bb-side{ display:flex; align-items:center; gap:10px; min-width:0; font-size:16px; font-weight:600; color:var(--text-2); text-decoration:none; }
+  .bb-side span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bb-side.won{ color:var(--text); font-weight:800; }
+  .bb-side.b{ flex-direction:row-reverse; text-align:right; }
+  .bb-side img{ width:34px; height:34px; object-fit:contain; flex:0 0 auto; }
+  .bb-row .score-meta{ margin-top:-4px; }
+  @media (max-width:600px){
+    .bb-row{ grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"a s" "b s" "m m"; gap:4px 12px; padding:12px 14px; }
+    .bb-side.a{ grid-area:a; } .bb-side.b{ grid-area:b; flex-direction:row; text-align:left; }
+    .bb-row .score-chip{ grid-area:s; }
+    .bb-row .score-meta{ grid-area:m; display:flex; margin-top:2px; }
+    .bb-side{ font-size:15px; } .bb-side img{ width:28px; height:28px; }
+  }
   /* The two balls lie on the hall floor, each with its contact shadow and its name. */
   .pingpong-model-shell{ position:relative; margin-top:30px; }
   .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
@@ -443,9 +469,16 @@
       <div class="scoreboard">
         <div class="scoreboard-head">
           <span class="live-dot">Rezultate recente</span>
-          <span class="muted" style="font-family:var(--font-label);font-size:14px;font-weight:600">via Setka Cup</span>
+          <span class="muted sb-source" id="sbSource">via Setka Cup</span>
         </div>
-        <div id="scoreboardBody">
+        <div class="sb-tabs" role="tablist" aria-label="Sport">
+          <button type="button" role="tab" id="sbTabTt" aria-controls="scoreboardBody" aria-selected="true">Tenis de masă</button>
+          <button type="button" role="tab" id="sbTabBb" aria-controls="scoreboardBb" aria-selected="false" tabindex="-1">Baschet</button>
+        </div>
+        <div id="scoreboardBody" role="tabpanel" aria-labelledby="sbTabTt">
+          <div class="skeleton" style="height:60px;margin:20px"></div>
+        </div>
+        <div id="scoreboardBb" role="tabpanel" aria-labelledby="sbTabBb" hidden>
           <div class="skeleton" style="height:60px;margin:20px"></div>
         </div>
       </div>
@@ -753,6 +786,47 @@ async function renderTowns(){
   }
 }
 renderTowns();
+// Scoreboard tabs: table tennis (Setka Cup results of ATTP players) or basketball (the latest Bskt Cup
+// matches, team against team). Arrow keys move between the tabs, as in any tab list.
+function scoreboardTabs(){
+  const tabs = [document.getElementById('sbTabTt'), document.getElementById('sbTabBb')];
+  const panels = [document.getElementById('scoreboardBody'), document.getElementById('scoreboardBb')];
+  const source = document.getElementById('sbSource');
+  const sources = [t('via Setka Cup'), t('via Bskt Cup')];
+  let bbLoaded = false;
+  const select = (i, focus) => {
+    tabs.forEach((tab, k) => { tab.setAttribute('aria-selected', String(k === i)); tab.tabIndex = k === i ? 0 : -1; panels[k].hidden = k !== i; });
+    source.textContent = sources[i];
+    if (focus) tabs[i].focus();
+    if (i === 1 && !bbLoaded) { bbLoaded = true; renderBasketballResults(); }
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(i));
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); select(1 - i, true); }
+    });
+  });
+}
+async function renderBasketballResults(){
+  const el = document.getElementById('scoreboardBb');
+  const [{ data: teams }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(60),
+  ]);
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  // games after midnight belong to the evening before, so they are the latest of their date
+  const key = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
+  const latest = (games || []).filter(m => byId[m.echipa_a] && byId[m.echipa_b]).sort((a, b) => key(b).localeCompare(key(a))).slice(0, 5);
+  if (!latest.length) { el.innerHTML = `<div class="empty-state" style="border:0"><p>${t('Rezultatele apar aici imediat ce sunt sincronizate.')}</p></div>`; return; }
+  const side = (x, won, cls) => `<a class="bb-side ${cls}${won ? ' won' : ''}" href="basketball-team.html?id=${encodeURIComponent(x.id)}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(x.nume)}</span></a>`;
+  el.innerHTML = latest.map(m => `
+    <div class="bb-row">
+      ${side(byId[m.echipa_a], m.scor_a > m.scor_b, 'a')}
+      <div class="score-chip">${flipScore(m.scor_a, m.scor_b)}</div>
+      ${side(byId[m.echipa_b], m.scor_b > m.scor_a, 'b')}
+      <div class="score-meta" style="grid-column:1/-1"><span>Bskt Cup${m.prelungiri ? ' · ' + t('prel.') : ''}</span><span>${fmtDateShort(m.data)}${m.ora ? ' · ' + escapeHtml(m.ora) : ''}</span></div>
+    </div>`).join('');
+}
 (async function(){
   const [results, ranked, news, tournRows] = await Promise.all([
     fetchRecentResults(5), fetchTopRanked(6), fetchNews(3),
@@ -772,6 +846,7 @@ renderTowns();
         <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.start_date ? fmtDateShort(r.start_date) : ''}</span></div>
       </div>`).join('');
   }
+  scoreboardTabs();
 
   // Ranking strip
   const rankStrip = document.getElementById('rankStrip');
