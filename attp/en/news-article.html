@@ -5,15 +5,34 @@
 <base href="../">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Article — ATTP</title>
+<meta name="description" content="National Association of Professional Athletes of the Republic of Moldova “ATTP”: table tennis and basketball.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/en/news-article.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/news-article.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/news-article.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/news-article.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/news-article.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Article — ATTP">
+<meta property="og:description" content="National Association of Professional Athletes of the Republic of Moldova “ATTP”: table tennis and basketball.">
+<meta property="og:url" content="https://geezfully.com/attp/en/news-article.html">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — table tennis and basketball in the Republic of Moldova">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-11">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=b7acf04a"></script>
+<script src="js/i18n-en.js?v=c6a924f5"></script>
 <script src="js/news-en.js?v=f1a6c1da"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -101,19 +120,30 @@
       <div><h4>Resources</h4><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/gallery.html">Media</a></div>
       <div><h4>Association</h4><a href="en/contact.html">Contact</a><a href="en/privacy.html">Privacy</a><a href="en/terms.html">Terms and conditions</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span></div>
   </div>
 </footer>
 
 <script src="data-news.js?v=20261102-attpmd"></script>
 <script src="data-news-archive.js?v=20260720-fullnews"></script>
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
 <script>
 (async function(){
   const slug = new URLSearchParams(location.search).get('slug');
   const n = (await fetchNews(200)).find(a => a.slug === slug);
   if (!n) { document.getElementById('articleHead').innerHTML = `<h1>${t('Articol negăsit')}</h1>`; return; }
   document.title = `${n.title} — ATTP`;
+  // the article for search engines and link previews that run scripts: headline, date, picture, publisher
+  const abs = u => u ? new URL(u, location.href).href : undefined;
+  const ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.textContent = JSON.stringify({ '@context':'https://schema.org', '@type':'NewsArticle', headline:n.title, description:n.excerpt || undefined,
+    datePublished:(n.date || n.published_at || '').slice(0, 10) || undefined, image:abs(n.image || n.cover_image_url) || 'https://geezfully.com/attp/images/og-attp.jpg',
+    inLanguage:window.ATTP_LANG || 'ro', mainEntityOfPage:location.href,
+    publisher:{ '@type':'SportsOrganization', name:'ATTP', logo:{ '@type':'ImageObject', url:'https://geezfully.com/attp/images/favicon-192.png' } } });
+  document.head.appendChild(ld);
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', n.title);
+  if (n.excerpt) document.querySelector('meta[name="description"]')?.setAttribute('content', n.excerpt);
   document.getElementById('crumb').textContent = n.title;
   document.getElementById('articleHead').innerHTML = `
     ${n.tag ? `<span class="tag mb-16">${escapeHtml(n.tag)}</span>` : ''}

@@ -6,18 +6,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Национальная ассоциация профессиональных спортсменов Республики Молдова «ATTP»</title>
 <meta name="description" content="Официальный ресурс Национальной ассоциации профессиональных спортсменов Республики Молдова «ATTP». Турниры, рейтинги, судейство и результаты в реальном времени.">
-<meta property="og:title" content="ATTP — Настольный теннис в Молдове">
-<meta property="og:description" content="Официальный ресурс Национальной ассоциации профессиональных спортсменов Республики Молдова «ATTP».">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/ru/">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/">
+<meta property="og:site_name" content="ATTP">
 <meta property="og:type" content="website">
+<meta property="og:title" content="Национальная ассоциация профессиональных спортсменов Республики Молдова «ATTP»">
+<meta property="og:description" content="Официальный ресурс Национальной ассоциации профессиональных спортсменов Республики Молдова «ATTP». Турниры, рейтинги, судейство и результаты в реальном времени.">
+<meta property="og:url" content="https://geezfully.com/attp/ru/">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — настольный теннис и баскетбол в Республике Молдова">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SportsOrganization","name":"Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”","alternateName":"ATTP",
+ "url":"https://geezfully.com/attp/","logo":"https://geezfully.com/attp/images/favicon-192.png","image":"https://geezfully.com/attp/images/og-attp.jpg",
+ "sport":["Table tennis","Basketball"],"foundingDate":"2023","email":"attp.moldova@gmail.com","telephone":"+37368650404",
+ "address":{"@type":"PostalAddress","streetAddress":"str. Albișoara 4","postalCode":"MD-2001","addressLocality":"Chișinău","addressCountry":"MD"},
+ "award":"Notorium Brand Awards 2025",
+ "sameAs":["https://www.facebook.com/profile.php?id=61565205231697","https://www.instagram.com/attpmoldova/","https://www.youtube.com/@ATTPMoldova","https://www.tiktok.com/@attp.md"]}
+</script>
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-11">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=17ee4a9a"></script>
+<script src="js/i18n-ru.js?v=b5860c94"></script>
 <script src="js/news-ru.js?v=d91bfff6"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -85,6 +108,36 @@
   /* ── Results: the sheet beside the two balls ── */
   .results-layout{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(24px,4vw,56px); align-items:start; }
   .results-layout .scoreboard{ align-self:stretch; }
+  /* The table tennis / basketball switch above a homepage section: the same tabs as on the scoreboard,
+     sized to their words */
+  .sport-switch{ display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin:-8px 0 20px; padding:4px; border-radius:calc(var(--radius) + 4px); background:var(--paper); box-shadow:var(--shadow-sheet); }
+  .sport-switch button{ min-height:44px; padding:0 18px; border:2px solid transparent; border-radius:var(--radius); background:transparent; cursor:pointer;
+    font-family:var(--font-label); font-size:16px; font-weight:800; color:var(--text-2); white-space:nowrap; transition:background .15s ease, color .15s ease; }
+  .sport-switch button:hover{ color:var(--text); }
+  .sport-switch button[aria-selected="true"]{ background:var(--table); color:#fff; }
+  .sport-switch button:last-child[aria-selected="true"]{ background:#C4612A; }
+  .sport-switch button:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
+  @media (max-width:520px){ .sport-switch{ display:grid; width:100%; } }
+  .sb-legend{ margin:0; padding:9px 20px; border-bottom:1px solid var(--rule); font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); }
+  /* names are links: invisible padding gives them a full 44px tap area without moving the row */
+  .score-name a, .tourn-mini-row a{ display:inline-block; padding-block:13px; margin-block:-13px; }
+  .score-name a{ color:inherit; text-decoration:none; }
+  .score-name a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  /* basketball leaders: wins in place of the rating */
+  .rank-card .rank-sub{ margin-top:6px; font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); }
+  #rankStripBb .rank-rating{ color:#C4612A; }
+  #rankStripBb .rank-card:first-child .rank-no{ background:#F2B36F; }
+  /* basketball evenings: the evening's best teams, with their crests */
+  .tourn-team{ display:inline-flex; align-items:center; gap:8px; min-width:0; }
+  .tourn-team img{ width:24px; height:24px; object-fit:contain; flex:0 0 auto; }
+  .tourn-team span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  a.tourn-mini{ color:inherit; text-decoration:none; transition:box-shadow .2s ease, border-color .2s ease; }
+  a.tourn-mini:hover{ border-color:var(--text); }
+  .tourn-mini-row a{ color:inherit; text-decoration:none; }
+  .tourn-mini-row a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .serve-art .player-bb{ display:none; }
+  .serve.is-bb .player, .serve.is-bb .ball{ display:none; }
+  .serve.is-bb .player-bb{ display:block; width:min(100%,300px); height:auto; margin:0 auto; }
   /* Table tennis / basketball switch on the scoreboard: two tabs, the source label follows the sport */
   .sb-source{ font-family:var(--font-label); font-size:14px; font-weight:600; }
   .sb-tabs{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px 14px; border-bottom:1px solid var(--rule); background:var(--surface-2); }
@@ -476,11 +529,12 @@
           <span class="muted sb-source" id="sbSource">через Setka Cup</span>
         </div>
         <div class="sb-tabs" role="tablist" aria-label="Вид спорта">
-          <button type="button" role="tab" id="sbTabTt" aria-controls="scoreboardBody" aria-selected="true">Настольный теннис</button>
+          <button type="button" role="tab" id="sbTabTt" aria-controls="scoreboardTt" aria-selected="true">Настольный теннис</button>
           <button type="button" role="tab" id="sbTabBb" aria-controls="scoreboardBb" aria-selected="false" tabindex="-1">Баскетбол</button>
         </div>
-        <div id="scoreboardBody" role="tabpanel" aria-labelledby="sbTabTt">
-          <div class="skeleton" style="height:60px;margin:20px"></div>
+        <div role="tabpanel" id="scoreboardTt" aria-labelledby="sbTabTt">
+          <p class="sb-legend">Счёт = выигранные : проигранные матчи игрока в турнире</p>
+          <div id="scoreboardBody"><div class="skeleton" style="height:60px;margin:20px"></div></div>
         </div>
         <div id="scoreboardBb" role="tabpanel" aria-labelledby="sbTabBb" hidden>
           <div class="skeleton" style="height:60px;margin:20px"></div>
@@ -514,9 +568,18 @@
         <div class="eyebrow">Рейтинг</div>
         <h2 id="leadersTitle">Лидеры рейтинга</h2>
       </div>
-      <a href="ru/players-table-tennis.html" class="sec-link">Все игроки →</a>
+      <a href="ru/players-table-tennis.html" class="sec-link" id="leadersLink">Все игроки →</a>
     </div>
-    <div class="rank-strip" id="rankStrip">
+    <div class="sport-switch" role="tablist" aria-label="Вид спорта" id="leadersTabs">
+      <button type="button" role="tab" aria-controls="rankStrip" aria-selected="true">Настольный теннис</button>
+      <button type="button" role="tab" aria-controls="rankStripBb" aria-selected="false" tabindex="-1">Баскетбол</button>
+    </div>
+    <div class="rank-strip" id="rankStrip" role="tabpanel">
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+    </div>
+    <div class="rank-strip" id="rankStripBb" role="tabpanel" hidden>
       <div class="rank-card skeleton" style="height:230px"></div>
       <div class="rank-card skeleton" style="height:230px"></div>
       <div class="rank-card skeleton" style="height:230px"></div>
@@ -531,9 +594,18 @@
             <div class="eyebrow">Турниры</div>
             <h2 id="tournTitle">Последние турниры</h2>
           </div>
-          <a href="ru/tournaments-table-tennis.html" class="sec-link">Все турниры →</a>
+          <a href="ru/tournaments-table-tennis.html" class="sec-link" id="tournLink">Все турниры →</a>
         </div>
-        <div class="tourn-list" id="tournGrid">
+        <div class="sport-switch" role="tablist" aria-label="Вид спорта" id="tournTabs">
+          <button type="button" role="tab" aria-controls="tournGrid" aria-selected="true">Настольный теннис</button>
+          <button type="button" role="tab" aria-controls="tournGridBb" aria-selected="false" tabindex="-1">Баскетбол</button>
+        </div>
+        <div class="tourn-list" id="tournGrid" role="tabpanel">
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+        </div>
+        <div class="tourn-list" id="tournGridBb" role="tabpanel" hidden>
           <div class="tourn-mini skeleton" style="height:230px"></div>
           <div class="tourn-mini skeleton" style="height:230px"></div>
           <div class="tourn-mini skeleton" style="height:230px"></div>
@@ -543,6 +615,7 @@
         <div class="serve-art">
           <img class="player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
           <img class="ball" src="images/ui/ball.svg" width="40" height="40" loading="lazy" decoding="async" alt="">
+          <img class="player-bb" src="images/ui/attp-basketball-loader.webp" width="360" height="400" loading="lazy" decoding="async" alt="">
         </div>
       </div>
     </div>
@@ -676,14 +749,14 @@
     <div class="footer-bottom">
       <span>© 2023–2026 ATTP. Все права защищены.</span>
       <a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a>
-      <span>Рейтинг: ligas.io · Результаты: Setka Cup</span>
+      <span>Рейтинг через ligas.io · Результаты через Setka Cup и Bskt Cup</span>
     </div>
   </div>
 </footer>
 
 <script src="data-news.js?v=20261102-attpmd"></script>
 <script src="data-news-archive.js?v=20260720-fullnews"></script>
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
 <script src="js/flip.js?v=redesign-1"></script>
 <script>
 // Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
@@ -791,25 +864,75 @@ async function renderTowns(){
 }
 renderTowns();
 // Scoreboard tabs: table tennis (Setka Cup results of ATTP players) or basketball (the latest Bskt Cup
-// matches, team against team). Arrow keys move between the tabs, as in any tab list.
+// matches, team against team). Basketball loads the first time its tab is opened.
 function scoreboardTabs(){
-  const tabs = [document.getElementById('sbTabTt'), document.getElementById('sbTabBb')];
-  const panels = [document.getElementById('scoreboardBody'), document.getElementById('scoreboardBb')];
   const source = document.getElementById('sbSource');
-  const sources = [t('via Setka Cup'), t('via Bskt Cup')];
   let bbLoaded = false;
-  const select = (i, focus) => {
-    tabs.forEach((tab, k) => { tab.setAttribute('aria-selected', String(k === i)); tab.tabIndex = k === i ? 0 : -1; panels[k].hidden = k !== i; });
-    source.textContent = sources[i];
-    if (focus) tabs[i].focus();
+  sportTabs(document.querySelector('.sb-tabs'), [document.getElementById('scoreboardTt'), document.getElementById('scoreboardBb')], i => {
+    source.textContent = i ? t('via Bskt Cup') : t('via Setka Cup');
     if (i === 1 && !bbLoaded) { bbLoaded = true; renderBasketballResults(); }
-  };
-  tabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => select(i));
-    tab.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); select(1 - i, true); }
-    });
   });
+}
+// Leaders and latest tournaments switch sport too; the section link follows the chosen sport, and the
+// illustration beside the tournaments changes from the table tennis player to the basketball figure.
+function sectionTabs(){
+  let leadersBb = false, eveningsBb = false;
+  const leadersLink = document.getElementById('leadersLink'), tournLink = document.getElementById('tournLink');
+  sportTabs(document.getElementById('leadersTabs'), [document.getElementById('rankStrip'), document.getElementById('rankStripBb')], i => {
+    leadersLink.href = i ? 'basketball-players.html' : 'players-table-tennis.html';
+    if (i === 1 && !leadersBb) { leadersBb = true; renderBasketballLeaders(); }
+  });
+  sportTabs(document.getElementById('tournTabs'), [document.getElementById('tournGrid'), document.getElementById('tournGridBb')], i => {
+    tournLink.href = i ? 'tournaments-basketball.html' : 'tournaments-table-tennis.html';
+    document.querySelector('.serve')?.classList.toggle('is-bb', i === 1);
+    if (i === 1 && !eveningsBb) { eveningsBb = true; renderBasketballEvenings(); }
+  });
+}
+async function renderBasketballLeaders(){
+  const el = document.getElementById('rankStripBb');
+  const { data } = await db.from('bskt_jucatori').select('id,nume,prenume,victorii,meciuri,foto_url_mic').order('victorii', { ascending:false }).order('meciuri').limit(6);
+  el.innerHTML = (data || []).map((p, i) => `
+    <a class="rank-card" href="ru/player-basketball.html?id=${encodeURIComponent(p.id)}" aria-label="${escapeHtml(t('Vezi profilul lui {n}').replace('{n}', p.prenume + ' ' + p.nume))}">
+      <span class="rank-no">${i + 1}</span>
+      <div class="rank-avatar">${p.foto_url_mic ? `<img src="${escapeHtml(p.foto_url_mic)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : escapeHtml(((p.prenume || '')[0] || '') + ((p.nume || '')[0] || ''))}</div>
+      <div class="rank-name">${escapeHtml(p.prenume)} ${escapeHtml(p.nume)}</div>
+      <div class="rank-sub">${t('{n} meciuri').replace('{n}', p.meciuri)} · ${p.meciuri ? Math.round(p.victorii / p.meciuri * 100) : 0}%</div>
+      <div class="rank-rating">${p.victorii}<small>${t('victorii')}</small></div>
+    </a>`).join('') || `<p class="muted">${t('Clasamentul se actualizează.')}</p>`;
+}
+async function renderBasketballEvenings(){
+  const el = document.getElementById('tournGridBb');
+  const [{ data: teams }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('data,echipa_a,echipa_b,scor_a,scor_b').order('data', { ascending:false }).limit(200),
+  ]);
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  const days = {};
+  (games || []).forEach(m => (days[m.data] ||= []).push(m));
+  const evenings = Object.keys(days).sort().reverse().slice(0, 3);
+  el.innerHTML = evenings.map(d => {
+    const rec = {};
+    days[d].forEach(m => {
+      const a = (rec[m.echipa_a] ||= { v:0, i:0 }), b = (rec[m.echipa_b] ||= { v:0, i:0 });
+      if (m.scor_a > m.scor_b) { a.v++; b.i++; } else { b.v++; a.i++; }
+    });
+    const best = Object.entries(rec).filter(([id]) => byId[id]).sort((x, y) => y[1].v - x[1].v || x[1].i - y[1].i).slice(0, 3);
+    const day = new Date(d + 'T12:00:00').toLocaleDateString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { weekday:'long' });
+    return `<a class="tourn-mini" href="ru/tournaments-basketball.html">
+      <div class="tourn-mini-head">
+        <h3>${escapeHtml(t('Seara de {zi}').replace('{zi}', day))}</h3>
+        <div class="tourn-mini-meta">
+          <span class="tourn-mini-date">${fmtDateShort(d)} · Bskt Cup</span>
+          <span class="tag tag-rally">${t('{n} meciuri').replace('{n}', days[d].length)}</span>
+        </div>
+      </div>
+      ${best.map(([id, r], k) => `
+        <div class="tourn-mini-row">
+          <span class="tourn-team"><span class="tourn-pos ${k === 0 ? 'gold' : ''}">${k + 1}</span>${byId[id].logo_url ? `<img src="${escapeHtml(byId[id].logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(byId[id].nume)}</span></span>
+          <span class="num muted">${r.v}:${r.i}</span>
+        </div>`).join('')}
+    </a>`;
+  }).join('') || `<p class="muted">${t('Turneele apar aici imediat ce sunt sincronizate.')}</p>`;
 }
 async function renderBasketballResults(){
   const el = document.getElementById('scoreboardBb');
@@ -828,7 +951,7 @@ async function renderBasketballResults(){
       ${side(byId[m.echipa_a], m.scor_a > m.scor_b, 'a')}
       <div class="score-chip">${flipScore(m.scor_a, m.scor_b)}</div>
       ${side(byId[m.echipa_b], m.scor_b > m.scor_a, 'b')}
-      <div class="score-meta" style="grid-column:1/-1"><span>Bskt Cup${m.prelungiri ? ' · ' + t('prel.') : ''}</span><span>${fmtDateShort(m.data)}${m.ora ? ' · ' + escapeHtml(m.ora) : ''}</span></div>
+      <div class="score-meta" style="grid-column:1/-1"><span>Bskt Cup${m.prelungiri ? ' · ' + t('prel.') : ''}</span><span>${fmtDateShort(bsktPlayedOn(m.data, m.ora))}${m.ora ? ' · ' + escapeHtml(m.ora) : ''}</span></div>
     </div>`).join('');
 }
 (async function(){
@@ -844,13 +967,14 @@ async function renderBasketballResults(){
   } else {
     sbBody.innerHTML = results.map((r,i) => `
       <div class="score-row">
-        <div class="score-name">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</div>
+        <div class="score-name"><a href="ru/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></div>
         <div class="score-chip">${flipScore(r.match_win, r.match_lost)}</div>
-        <div class="score-tournament">${escapeHtml(r.tournament_name || '')}</div>
-        <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.start_date ? fmtDateShort(r.start_date) : ''}</span></div>
+        <div class="score-tournament">${escapeHtml(tournamentTitle(r.tournament_name))}${r.start_date ? ' · ' + fmtDateShort(r.start_date) : ''}</div>
+        <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.position ? t('locul {n}').replace('{n}', r.position) : ''}</span></div>
       </div>`).join('');
   }
   scoreboardTabs();
+  sectionTabs();
 
   // Ranking strip
   const rankStrip = document.getElementById('rankStrip');
@@ -873,7 +997,7 @@ async function renderBasketballResults(){
   tournGrid.innerHTML = tournaments.length ? tournaments.map(tr => `
     <div class="tourn-mini">
       <div class="tourn-mini-head">
-        <h3>${escapeHtml(tr.name)}</h3>
+        <h3>${escapeHtml(tournamentTitle(tr.name))}</h3>
         <div class="tourn-mini-meta">
           <span class="tourn-mini-date">${fmtDateShort(tr.date)} · ${divisionLabel(tr.division)}</span>
           <span class="tag tag-rally">${tr.rows.length} ATTP</span>
@@ -881,7 +1005,7 @@ async function renderBasketballResults(){
       </div>
       ${tr.rows.sort((a,b)=>(a.position||99)-(b.position||99)).slice(0,3).map(r => `
         <div class="tourn-mini-row">
-          <span><span class="tourn-pos ${r.position===1?'gold':''}">${r.position ?? '–'}</span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span>
+          <span><span class="tourn-pos ${r.position===1?'gold':''}">${r.position ?? '–'}</span><a href="ru/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></span>
           <span class="num muted">${r.match_win ?? '–'}:${r.match_lost ?? '–'}</span>
         </div>`).join('')}
     </div>`).join('') : `<p class="muted">${t('Turneele apar aici imediat ce sunt sincronizate.')}</p>`;

@@ -64,6 +64,8 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
+/* hidden always hides, whatever display a component sets (tab panels, show-more buttons) */
+[hidden]{ display:none !important; }
 /* no rubber-band past the top or bottom of the page (macOS/iOS bounce); the hall colour
    sits behind it anyway, so a browser that still bounces shows floor, not white */
 html{ scroll-behavior:smooth; scroll-padding-top:96px; overscroll-behavior-y:none; background:var(--hall); }

@@ -6,15 +6,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Команда · Баскетбол — ATTP</title>
 <meta name="description" content="Команда Bskt Cup: статистика, личные встречи с каждым соперником и последние результаты.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/ru/basketball-team.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/basketball-team.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/basketball-team.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/basketball-team.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/basketball-team.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Команда · Баскетбол — ATTP">
+<meta property="og:description" content="Команда Bskt Cup: статистика, личные встречи с каждым соперником и последние результаты.">
+<meta property="og:url" content="https://geezfully.com/attp/ru/basketball-team.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — настольный теннис и баскетбол в Республике Молдова">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-11">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=17ee4a9a"></script>
+<script src="js/i18n-ru.js?v=b5860c94"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -39,6 +57,25 @@
   .kpi span{ display:block; font-size:12.5px; line-height:1.35; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
   @media (max-width:900px){ .kpi-row{ grid-template-columns:repeat(3,1fr); } }
   @media (max-width:520px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
+  /* form and streaks: the last five results as chips, then the few numbers a fan asks about first */
+  .form-card{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:20px 32px; margin:-8px 0 36px; padding:20px 22px;
+    background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); }
+  .form-title{ font-size:26px; }
+  .form-chips{ display:flex; gap:8px; margin-top:12px; }
+  .form-chip{ width:44px; height:44px; border-radius:var(--radius); display:grid; place-items:center; font-family:var(--font-display); font-size:22px; font-weight:900; color:#fff; }
+  .form-chip.w{ background:var(--felt); } .form-chip.l{ background:var(--rubber); }
+  .form-chip:first-child{ box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--text); }
+  .form-streak{ margin:12px 0 0; font-family:var(--font-label); font-size:15px; font-weight:700; color:var(--text-2); }
+  .form-facts{ display:grid; grid-template-columns:1fr 1fr; gap:14px 22px; margin:0; align-content:center; }
+  .form-facts div{ min-width:0; }
+  .form-facts dt{ font-family:var(--font-label); font-size:13px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--muted); }
+  .form-facts dd{ margin:2px 0 0; font-family:var(--font-display); font-size:22px; font-weight:800; line-height:1.1; color:var(--text); }
+  .form-facts dd a{ color:inherit; text-decoration:none; }
+  .form-facts dd a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .form-facts dd small{ display:block; font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); }
+  .form-card[hidden]{ display:none; }
+  @media (max-width:760px){ .form-card{ grid-template-columns:1fr; padding:16px; } }
+  @media (max-width:380px){ .form-facts{ grid-template-columns:1fr; } }
   .vs td.num, .vs th.num{ text-align:right; white-space:nowrap; }
   .share{ display:inline-block; width:90px; height:8px; border-radius:999px; background:rgba(201,58,47,.3); overflow:hidden; vertical-align:middle; margin-left:10px; }
   .share i{ display:block; height:100%; background:var(--win); }
@@ -85,6 +122,14 @@
     </div>
     <section class="container section-tight">
       <div class="kpi-row" id="kpiRow"></div>
+      <section class="form-card" id="formCard" aria-labelledby="formTitle" hidden>
+        <div class="form-main">
+          <h2 class="form-title" id="formTitle">Форма</h2>
+          <div class="form-chips" id="formChips"></div>
+          <p class="form-streak" id="formStreak"></p>
+        </div>
+        <dl class="form-facts" id="formFacts"></dl>
+      </section>
       <div class="eyebrow">Личные встречи</div>
       <h2 class="mb-24">Против каждой команды</h2>
       <div class="table-scroll">
@@ -116,11 +161,11 @@
       <div><h4>Материалы</h4><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/gallery.html">Медиа</a></div>
       <div><h4>Ассоциация</h4><a href="ru/contact.html">Контакты</a><a href="ru/privacy.html">Конфиденциальность</a><a href="ru/terms.html">Условия использования</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг: ligas.io · Результаты: Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг через ligas.io · Результаты через Setka Cup и Bskt Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
 <script>
 // Team helpers shared by the two team pages: the team's logo on its own (initials when there is none), and the
 // order of matches — games after midnight belong to the evening session of their date.
@@ -131,6 +176,33 @@ const matchKey = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || '
 const byRecent = (a, b) => matchKey(b).localeCompare(matchKey(a));
 const pct = (w, n) => n ? Math.round(w / n * 100) : 0;
 const coef = c => c == null ? '—' : Number(c).toFixed(2);
+// Form and streaks, from this team's matches (newest first): the last five, the current and the longest
+// winning run, overtime, the average points difference, and the easiest and hardest opponents (4+ games).
+function renderForm(list, vs, byId){
+  if (!list.length) return;
+  const win = m => m.pentru > m.contra;
+  document.getElementById('formChips').innerHTML = list.slice(0, 5).map(m => {
+    const tip = `${fmtDateShort(bsktPlayedOn(m.data, m.ora))} · ${m.opp.nume} ${m.pentru}:${m.contra}`;
+    return `<span class="form-chip ${win(m) ? 'w' : 'l'}" title="${escapeHtml(tip)}" aria-label="${escapeHtml((win(m) ? t('Victorie') : t('Înfrângere')) + ', ' + tip)}">${win(m) ? t('V') : t('Î')}</span>`;
+  }).join('');
+  let run = 1; while (run < list.length && win(list[run]) === win(list[0])) run++;
+  document.getElementById('formStreak').textContent = (win(list[0]) ? t('{n} victorii la rând') : t('{n} înfrângeri la rând')).replace('{n}', run);
+  let best = 0, cur = 0;
+  list.slice().reverse().forEach(m => { cur = win(m) ? cur + 1 : 0; best = Math.max(best, cur); });
+  const ot = list.filter(m => m.prelungiri), otW = ot.filter(win).length;
+  const diff = list.reduce((a, m) => a + m.pentru - m.contra, 0) / list.length;
+  const met = (vs || []).filter(r => r.meciuri >= 4 && byId[r.adversar]).map(r => ({ ...r, share: r.victorii / r.meciuri }));
+  const easiest = met.slice().sort((a, b) => b.share - a.share || b.meciuri - a.meciuri)[0];
+  const hardest = met.slice().sort((a, b) => a.share - b.share || b.meciuri - a.meciuri)[0];
+  const opp = r => r ? `<a href="ru/basketball-team.html?id=${encodeURIComponent(r.adversar)}">${escapeHtml(byId[r.adversar].nume)}</a><small>${r.victorii}–${r.infrangeri}</small>` : '—';
+  document.getElementById('formFacts').innerHTML = `
+    <div><dt>${t('Cea mai lungă serie')}</dt><dd>${t('{n} victorii').replace('{n}', best)}</dd></div>
+    <div><dt>${t('Diferență medie')}</dt><dd>${diff >= 0 ? '+' : '−'}${Math.abs(diff).toFixed(1)}<small>${t('puncte pe meci')}</small></dd></div>
+    <div><dt>${t('Cel mai ușor adversar')}</dt><dd>${opp(easiest)}</dd></div>
+    <div><dt>${t('Cel mai greu adversar')}</dt><dd>${opp(hardest)}</dd></div>
+    ${ot.length ? `<div><dt>${t('În prelungiri')}</dt><dd>${otW}–${ot.length - otW}</dd></div>` : ''}`;
+  document.getElementById('formCard').hidden = false;
+}
 // One basketball team: totals, record against every opponent, and its matches. Team results only — the BSKT
 // register never publishes who plays in which team.
 (async function(){
@@ -187,12 +259,13 @@ const coef = c => c == null ? '—' : Number(c).toFixed(2);
     const home = m.echipa_a === id;
     return { ...m, opp: byId[home ? m.echipa_b : m.echipa_a], pentru: home ? m.scor_a : m.scor_b, contra: home ? m.scor_b : m.scor_a };
   }).filter(m => m.opp);
+  renderForm(list, rows, byId);
   const body = document.getElementById('gamesBody'), more = document.getElementById('gamesMore');
   const SHOW = 25;
   const render = n => list.slice(0, n).map(m => {
     const win = m.pentru > m.contra;
     return `<tr>
-      <td class="num">${fmtDateShort(m.data)}</td>
+      <td class="num">${fmtDateShort(bsktPlayedOn(m.data, m.ora))}</td>
       <td class="num">${escapeHtml(m.ora || '—')}</td>
       <td><a class="tm-name" href="${href(m.opp)}">${teamLogo(m.opp)}<span>${escapeHtml(m.opp.nume)}</span></a></td>
       <td><span class="res-badge ${win ? 'win' : 'loss'}">${win ? t('Victorie') : t('Înfrângere')}</span>${m.prelungiri ? `<span class="ot-badge">${t('prel.')}</span>` : ''}</td>

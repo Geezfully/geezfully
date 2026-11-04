@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Pagina nu există</title>
+<link rel="icon" href="/attp/images/favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@800;900&family=Sofia+Sans+Condensed:wght@700;800&family=Golos+Text:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* The one 404 page GitHub Pages allows for all of geezfully.com. Under /attp/ it is the ATTP court with
+     ways back in, in the visitor's language; anywhere else it is a plain page with a link home. */
+  :root{ --hall:#D6DEE7; --text:#141C28; --text-2:#3A4556; --table:#1C4E94; --shirt:#F5C330; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; min-height:100%; }
+  body{ min-height:100vh; display:grid; place-items:center; padding:24px; background:var(--hall); color:var(--text); font-family:'Golos Text',system-ui,sans-serif; }
+  .court{ position:relative; width:min(100%,640px); padding:clamp(28px,6vw,56px); border-radius:10px; background:var(--table); color:#fff; box-shadow:0 30px 60px -36px rgba(20,28,40,.7); overflow:hidden; }
+  .court::before{ content:""; position:absolute; inset:14px; border:3px solid rgba(255,255,255,.85); border-radius:4px; pointer-events:none; }
+  .court::after{ content:""; position:absolute; top:14px; bottom:14px; left:50%; border-left:4px dashed rgba(255,255,255,.3); pointer-events:none; }
+  .code{ position:relative; font-family:'Sofia Sans Extra Condensed',sans-serif; font-weight:900; font-size:clamp(96px,22vw,150px); line-height:.8; }
+  .code span{ color:var(--shirt); }
+  h1{ position:relative; margin:18px 0 0; font-family:'Sofia Sans Extra Condensed',sans-serif; font-weight:900; font-size:clamp(32px,7vw,46px); line-height:.95; }
+  p{ position:relative; margin:14px 0 0; max-width:420px; color:rgba(255,255,255,.88); line-height:1.5; }
+  nav{ position:relative; display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+  nav a{ display:inline-flex; align-items:center; min-height:44px; padding:0 18px; border-radius:6px; background:#fff; color:var(--text); text-decoration:none; font-family:'Sofia Sans Condensed',sans-serif; font-weight:800; font-size:17px; }
+  nav a:first-child{ background:var(--shirt); }
+  nav a:focus-visible{ outline:3px solid var(--shirt); outline-offset:3px; }
+  .plain{ text-align:center; }
+  .plain h1{ font-family:'Sofia Sans Extra Condensed',sans-serif; font-size:48px; margin:0; }
+  .plain a{ color:var(--table); font-weight:500; }
+</style>
+</head>
+<body>
+<main id="page"></main>
+<script>
+(function(){
+  const path = location.pathname, main = document.getElementById('page');
+  if (!/^\/attp(\/|$)/.test(path)) {
+    main.className = 'plain';
+    main.innerHTML = '<h1>404</h1><p>Pagina nu există. · Page not found.</p><p><a href="/">geezfully.com</a></p>';
+    return;
+  }
+  const lang = /^\/attp\/(en|ru)(\/|$)/.exec(path)?.[1] || 'ro';
+  const base = '/attp/' + (lang === 'ro' ? '' : lang + '/');
+  const T = {
+    ro:{ title:'Pagina nu există', h:'Mingea a ieșit din teren.', p:'Pagina căutată nu există sau a fost mutată. Te întorci în joc de aici:', home:'Acasă', players:'Jucători', news:'Știri', contact:'Contact' },
+    en:{ title:'Page not found', h:'The ball went out of play.', p:'The page you were looking for does not exist or has moved. Get back in the game from here:', home:'Home', players:'Players', news:'News', contact:'Contact' },
+    ru:{ title:'Страница не найдена', h:'Мяч ушёл в аут.', p:'Такой страницы нет или она переехала. Вернуться в игру можно отсюда:', home:'Главная', players:'Игроки', news:'Новости', contact:'Контакты' },
+  }[lang];
+  document.documentElement.lang = lang;
+  document.title = T.title + ' — ATTP';
+  main.className = 'court';
+  main.innerHTML = `<div class="code">4<span>0</span>4</div><h1>${T.h}</h1><p>${T.p}</p>
+    <nav aria-label="ATTP"><a href="${base}">${T.home}</a><a href="${base}players.html">${T.players}</a><a href="${base}news.html">${T.news}</a><a href="${base}contact.html">${T.contact}</a></nav>`;
+})();
+</script>
+</body>
+</html>

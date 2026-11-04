@@ -1,0 +1,8 @@
+# geezfully.com — the public ATTP site is open to search engines; the internal staff apps are not.
+User-agent: *
+Disallow: /attp-pontaj/
+Disallow: /bskt-registru/
+Disallow: /setka-pontaj/
+Allow: /
+
+Sitemap: https://geezfully.com/attp/sitemap.xml
