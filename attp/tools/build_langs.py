@@ -62,6 +62,11 @@ def build():
                           + (f'<script src="js/news-{lang}.js?v={nver}"></script>\n' if page in NEWS_PAGES else '')
                           + '<script src="js/i18n.js', 1)
             s = localise_links(s, lang, page)
+            # share & search: this language's own address and locale (the alternates stay as they are)
+            own = f'https://geezfully.com/attp/{lang}/' + ('' if page == 'index' else f'{page}.html')
+            s = re.sub(r'(<link rel="canonical" href=")[^"]*(")', lambda m: m.group(1) + own + m.group(2), s, count=1)
+            s = re.sub(r'(<meta property="og:url" content=")[^"]*(")', lambda m: m.group(1) + own + m.group(2), s, count=1)
+            s = s.replace('<meta property="og:locale" content="ro_RO">', f'<meta property="og:locale" content="{ {"en": "en_GB", "ru": "ru_RU"}[lang] }">', 1)
             s = re.sub(r'(<a href="[^"]*" hreflang="ro" lang="ro") class="active"', r'\1', s)
             s = re.sub(rf'(<a href="[^"]*" hreflang="{lang}" lang="{lang}")', r'\1 class="active"', s)
             with open(os.path.join(ROOT, lang, f'{page}.html'), 'w', encoding='utf-8') as f:
@@ -73,8 +78,36 @@ def build():
     return report
 
 
+
+def build_sitemap():
+    """sitemap.xml: every page and every news article in the three languages, each listing its alternates."""
+    base = 'https://geezfully.com/attp/'
+    def news():
+        out = []
+        for f, var in (('data-news.js', 'ATTP_NEWS'), ('data-news-archive.js', 'ATTP_NEWS_ARCHIVE')):
+            with open(os.path.join(ROOT, f), encoding='utf-8') as fh:
+                src = fh.read()
+            out += json.loads(src[src.index('['):src.rindex(']') + 1])
+        return out
+    entries = [('' if p == 'index' else f'{p}.html', None) for p in PAGES if p not in ('news-article', 'player', 'player-basketball', 'basketball-team', 'tournament')]
+    entries += [(f'news-article.html?slug={n["slug"]}', n.get('date')) for n in news()]
+    urls = []
+    for path, date in entries:
+        loc = {'ro': base + path, 'en': base + 'en/' + path, 'ru': base + 'ru/' + path}
+        alts = ''.join(f'\n    <xhtml:link rel="alternate" hreflang="{l}" href="{u.replace("&", "&amp;")}"/>' for l, u in loc.items())
+        for u in loc.values():
+            urls.append(f'  <url>\n    <loc>{u.replace("&", "&amp;")}</loc>' + (f'\n    <lastmod>{date[:10]}</lastmod>' if date else '') + alts + '\n  </url>')
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+           + '\n'.join(urls) + '\n</urlset>\n')
+    with open(os.path.join(ROOT, 'sitemap.xml'), 'w', encoding='utf-8') as f:
+        f.write(xml)
+    print(f'sitemap: {len(urls)} addresses')
+
+
 if __name__ == '__main__':
     rep = build()
+    build_sitemap()
     if '-v' in sys.argv:
         for lang, miss in rep.items():
             for k in miss:

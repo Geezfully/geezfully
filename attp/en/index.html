@@ -6,383 +6,428 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>National Association of Professional Athletes of the Republic of Moldova “ATTP”</title>
 <meta name="description" content="The official home of the National Association of Professional Athletes of the Republic of Moldova “ATTP”. Tournaments, rankings, refereeing and live results.">
-<meta property="og:title" content="ATTP — Table tennis in Moldova">
-<meta property="og:description" content="The official home of the National Association of Professional Athletes of the Republic of Moldova “ATTP”.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/en/">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/">
+<meta property="og:site_name" content="ATTP">
 <meta property="og:type" content="website">
+<meta property="og:title" content="National Association of Professional Athletes of the Republic of Moldova “ATTP”">
+<meta property="og:description" content="The official home of the National Association of Professional Athletes of the Republic of Moldova “ATTP”. Tournaments, rankings, refereeing and live results.">
+<meta property="og:url" content="https://geezfully.com/attp/en/">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — table tennis and basketball in the Republic of Moldova">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SportsOrganization","name":"Asociația Națională a Sportivilor Profesioniști din Republica Moldova „ATTP”","alternateName":"ATTP",
+ "url":"https://geezfully.com/attp/","logo":"https://geezfully.com/attp/images/favicon-192.png","image":"https://geezfully.com/attp/images/og-attp.jpg",
+ "sport":["Table tennis","Basketball"],"foundingDate":"2023","email":"attp.moldova@gmail.com","telephone":"+37368650404",
+ "address":{"@type":"PostalAddress","streetAddress":"str. Albișoara 4","postalCode":"MD-2001","addressLocality":"Chișinău","addressCountry":"MD"},
+ "award":"Notorium Brand Awards 2025",
+ "sameAs":["https://www.facebook.com/profile.php?id=61565205231697","https://www.instagram.com/attpmoldova/","https://www.youtube.com/@ATTPMoldova","https://www.tiktok.com/@attp.md"]}
+</script>
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=9711e515"></script>
-<script src="js/news-en.js?v=7dbf42ab"></script>
+<script src="js/i18n-en.js?v=f5674db9"></script>
+<script src="js/news-en.js?v=f1a6c1da"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
-  .hero-stage{
-    position:relative; isolation:isolate; overflow:hidden;
-    /* Fill a laptop screen, but never grow past what the copy needs on tall
-       monitors (it used to leave hundreds of px empty); centre what's there. */
-    min-height:min(calc(100svh - 82px), 780px); background:#071421;
-    display:flex; align-items:center;
-  }
-  .hero-stage::before{
-    content:''; position:absolute; inset:0; z-index:0; pointer-events:none;
-    /* Notorium Brand Awards 2025 winner graphic, widened with a blurred extension
-       of its own background so it can fade in slowly from far left; it fills the
-       hero's height on the right and the headline keeps the darker left side. */
-    background:url('images/heroes/award-hero-wide.webp?v=2') right center / auto 100% no-repeat;
-  }
-  .hero-stage::after{
-    content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
-    background:
-      linear-gradient(90deg, rgba(5,15,26,.86) 0%, rgba(5,15,26,.7) 22%, rgba(5,15,26,.44) 40%, rgba(5,15,26,.18) 58%, rgba(5,15,26,.05) 78%, rgba(5,15,26,.08) 100%),
-      linear-gradient(180deg, rgba(5,15,26,.04) 0%, rgba(5,15,26,.08) 34%, rgba(5,15,26,.62) 80%, #071421 100%),
-      radial-gradient(700px 480px at 12% 30%, rgba(249,202,80,.1), transparent 66%);
-  }
-  .hero{
-    position:relative; z-index:2; width:100%;
-    padding:40px 24px 64px; display:grid; grid-template-columns:1.1fr .9fr;
-    gap:0 56px; align-items:start; min-height:0;
-  }
-  .hero-kicker{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
-  .hero-copy{ position:relative; isolation:isolate; }
-  .hero-copy > :not(.hero-motion){ position:relative; z-index:1; }
-  .hero-motion{
-    position:absolute; z-index:0; pointer-events:none;
-    width:calc(100% + 96px); height:auto; left:-56px; top:72px;
-    overflow:visible;
-  }
-  .hero-motion .trail-main{ stroke:var(--spin); opacity:.34; }
-  .hero-motion .trail-light{ stroke:var(--spin-hi); opacity:.18; }
-  .hero-motion .trail-live{ stroke:var(--rally); opacity:.24; }
-  .hero-motion .speed-mark{ stroke:var(--spin-hi); opacity:.42; }
-  .hero-motion .hero-ball-ring{ stroke:var(--spin-hi); opacity:.9; }
-  .hero-motion .hero-ball-seam{ stroke:var(--ink); opacity:.72; }
-  @media (max-width:980px){
-    .hero-motion{ width:min(760px,calc(100% + 64px)); left:-40px; opacity:.82; }
-  }
-  @media (max-width:600px){
-    .hero-motion{ width:calc(100% + 34px); left:-22px; top:88px; opacity:.38; }
-    .hero-motion .trail-light{ display:none; }
-    .hero-motion .hero-ball{ display:none; }
-  }
-  @media (prefers-reduced-motion:no-preference){
-    .hero-motion .hero-ball{ animation:heroBallFloat 5s ease-in-out infinite; transform-origin:670px 110px; }
-    @keyframes heroBallFloat{ 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-7px) rotate(5deg); } }
-  }
-  .hero h1{ margin-bottom:20px; }
-  .hero h1 .accent{ color:var(--spin); }
+  /* ── Hero: the thesis on the hall floor, a real player framed beside it ── */
+  .home-hero{ padding-block:clamp(28px,5vw,64px) clamp(36px,5vw,64px); }
+  .home-hero-grid{ display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); align-items:center; gap:clamp(28px,5vw,72px); }
+  .home-kicker{ font-family:var(--font-label); font-size:15px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--table); margin-bottom:18px; }
+  .home-hero h1{ font-size:clamp(50px,6.3vw,94px); line-height:.88; letter-spacing:-.01em; }
+  .home-hero .lede{ margin-top:22px; max-width:560px; }
   .hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
-  .hero-stats{ display:flex; gap:32px; margin-top:44px; flex-wrap:wrap; }
-  .hero-stat b{ display:block; font-family:var(--font-display); font-size:28px; }
-  .hero-stat span{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; font-family:var(--font-mono); }
-  /* Phones: keep the three numbers on one row instead of wrapping 2 + 1. */
+  .home-hero-photo{ margin:0; position:relative; }
+  .home-hero-photo img{ width:100%; height:auto; aspect-ratio:1800/1286; object-fit:cover; border-radius:var(--radius-lg); background:#0B1A2A; box-shadow:0 30px 60px -36px rgba(20,28,40,.6); }
+  /* the award, at most ~640px wide so the 1881px original stays sharp on high-density screens */
+  /* the graphic was drawn as a backdrop with an empty left third: frame the trophy and the
+     badges only. 1254px of source height keeps it sharp up to ~620px wide on 2x screens. */
+  .home-hero-award{ justify-self:end; width:100%; max-width:560px; }
+  .home-hero-award img{ aspect-ratio:1/1; object-fit:cover; object-position:100% 50%; box-shadow:0 0 0 6px var(--paper), 0 34px 60px -30px rgba(20,28,40,.6); }
+  .home-hero-award figcaption{ margin-top:18px; gap:2px 10px; }
+  .home-hero-award figcaption strong{ font-family:var(--font-display); font-size:24px; font-weight:800; line-height:1; color:var(--text); }
+  .home-hero-award figcaption span{ font-size:14.5px; color:var(--text-2); }
+  .home-hero-photo figcaption{ display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 10px; margin-top:14px; font-size:14.5px; color:var(--text-2); }
+  .home-hero-photo figcaption a{ white-space:nowrap; }
+  .home-hero-photo figcaption a{ font-weight:600; color:var(--text); text-decoration:underline; text-decoration-color:var(--shirt); text-decoration-thickness:3px; text-underline-offset:3px; }
+  .home-hero-photo figcaption a:hover{ color:var(--table); }
+
+  /* ── Where the players come from: a map of Moldova with a dot per hometown, and the
+     same towns written out as a roll, the way names go on a tournament sign-up sheet ── */
+  .towns{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(28px,5vw,72px); align-items:start; }
+  .towns-map{ position:sticky; top:110px; margin:0; max-width:470px; justify-self:center; width:100%; }
+  .towns-map svg{ display:block; width:100%; height:auto; overflow:visible; }
+  .md-land{ fill:var(--paper); stroke:var(--text); stroke-width:2.5; stroke-linejoin:round; }
+  .town-dot{ fill:var(--rubber); stroke:var(--paper); stroke-width:2; }
+  .towns-count{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 12px; margin-top:18px; font-family:var(--font-label); font-size:clamp(18px,1.7vw,22px); font-weight:700; color:var(--text); }
+  .towns-count .flip{ --d:clamp(34px,3.4vw,46px); }
+  .towns-count .flip + span{ margin-left:clamp(10px,2vw,22px); }
+  .town-roll{
+    margin:26px 0 0; padding:6px 22px 10px; list-style:none; columns:2; column-gap:34px;
+    background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet);
+  }
+  .town-roll li{ display:flex; justify-content:space-between; gap:12px; break-inside:avoid; padding:7px 0; border-bottom:1px solid var(--rule); font-size:15.5px; }
+  .town-roll li a{ display:flex; justify-content:space-between; gap:12px; flex:1; color:inherit; text-decoration:none; padding-block:6px; margin-block:-6px; }
+  .town-roll li a:hover span{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .town-roll li b{ font-family:var(--font-label); font-weight:800; font-variant-numeric:tabular-nums; color:var(--table); }
+  .town-roll .roll-abroad{ column-span:all; border-bottom:0; padding-top:12px; font-size:14.5px; color:var(--text-2); }
+  .town-more{ display:none; }
+  @media (max-width:900px){
+    .towns{ grid-template-columns:1fr; }
+    .towns-map{ position:relative; top:auto; max-width:400px; }
+  }
+  @media (max-width:520px){
+    .town-roll{ column-gap:20px; padding-inline:16px; }
+    .town-roll li{ font-size:14.5px; }
+    /* a phone shows the ten biggest towns; the button under the roll opens the rest */
+    .town-roll:not(.is-open) li:nth-child(n+11):not(.roll-abroad){ display:none; }
+    .town-more:not([hidden]){ display:flex !important; margin-top:12px; width:100%; justify-content:center; }
+  }
+
+  /* ── Section heads shared by the homepage blocks ── */
+  .sec-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; margin-bottom:26px; }
+  .sec-head p{ max-width:460px; margin-top:8px; }
+  .sec-link{ display:inline-flex; align-items:center; min-height:44px; font-family:var(--font-label); font-size:17px; font-weight:800; color:var(--table); white-space:nowrap; padding:6px 0; border-bottom:3px solid var(--shirt); }
+  .sec-link:hover{ border-bottom-color:var(--table); }
+
+  /* ── Results: the sheet beside the two balls ── */
+  .results-layout{ display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:clamp(24px,4vw,56px); align-items:start; }
+  .results-layout .scoreboard{ align-self:stretch; }
+  /* The table tennis / basketball switch above a homepage section: the same tabs as on the scoreboard,
+     sized to their words */
+  .sport-switch{ display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin:-8px 0 20px; padding:4px; border-radius:calc(var(--radius) + 4px); background:var(--paper); box-shadow:var(--shadow-sheet); }
+  .sport-switch button{ min-height:44px; padding:0 18px; border:2px solid transparent; border-radius:var(--radius); background:transparent; cursor:pointer;
+    font-family:var(--font-label); font-size:16px; font-weight:800; color:var(--text-2); white-space:nowrap; transition:background .15s ease, color .15s ease; }
+  .sport-switch button:hover{ color:var(--text); }
+  .sport-switch button[aria-selected="true"]{ background:var(--table); color:#fff; }
+  .sport-switch button:last-child[aria-selected="true"]{ background:#C4612A; }
+  .sport-switch button:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
+  @media (max-width:520px){ .sport-switch{ display:grid; width:100%; } }
+  .sb-legend{ margin:0; padding:9px 20px; border-bottom:1px solid var(--rule); font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); }
+  /* names are links: invisible padding gives them a full 44px tap area without moving the row */
+  .score-name a, .tourn-mini-row a{ display:inline-block; padding-block:13px; margin-block:-13px; }
+  .score-name a{ color:inherit; text-decoration:none; }
+  .score-name a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  /* basketball leaders: wins in place of the rating */
+  .rank-card .rank-sub{ margin-top:6px; font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); }
+  #rankStripBb .rank-rating{ color:#C4612A; }
+  #rankStripBb .rank-card:first-child .rank-no{ background:#F2B36F; }
+  /* basketball evenings: the evening's best teams, with their crests */
+  .tourn-team{ display:inline-flex; align-items:center; gap:8px; min-width:0; }
+  .tourn-team img{ width:24px; height:24px; object-fit:contain; flex:0 0 auto; }
+  .tourn-team span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  a.tourn-mini{ color:inherit; text-decoration:none; transition:box-shadow .2s ease, border-color .2s ease; }
+  a.tourn-mini:hover{ border-color:var(--text); }
+  .tourn-mini-row a{ color:inherit; text-decoration:none; }
+  .tourn-mini-row a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .serve-art .player-bb{ display:none; }
+  .serve.is-bb .player, .serve.is-bb .ball{ display:none; }
+  .serve.is-bb .player-bb{ display:block; width:min(100%,300px); height:auto; margin:0 auto; }
+  /* Table tennis / basketball switch on the scoreboard: two tabs, the source label follows the sport */
+  .sb-source{ font-family:var(--font-label); font-size:14px; font-weight:600; }
+  .sb-tabs{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px 14px; border-bottom:1px solid var(--rule); background:var(--surface-2); }
+  .sb-tabs button{ min-height:44px; border:2px solid transparent; border-radius:var(--radius); background:transparent; cursor:pointer;
+    font-family:var(--font-label); font-size:16px; font-weight:800; color:var(--text-2); transition:background .15s ease, color .15s ease; }
+  .sb-tabs button:hover{ color:var(--text); }
+  .sb-tabs button[aria-selected="true"]{ background:var(--paper); border-color:var(--text); color:var(--text); }
+  .sb-tabs button:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
+  #sbTabBb[aria-selected="true"]{ border-color:#C4612A; color:#9C4A1E; }
+  /* a basketball result: the two teams with their crests either side of the flip score */
+  .bb-row{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:14px; padding:14px 20px; border-bottom:1px solid var(--rule); }
+  .bb-row:last-child{ border-bottom:0; }
+  .bb-row:nth-child(even){ background:var(--surface-2); }
+  .bb-side{ display:flex; align-items:center; gap:10px; min-width:0; font-size:16px; font-weight:600; color:var(--text-2); text-decoration:none; }
+  .bb-side span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bb-side.won{ color:var(--text); font-weight:800; }
+  .bb-side.b{ flex-direction:row-reverse; text-align:right; }
+  .bb-side img{ width:34px; height:34px; object-fit:contain; flex:0 0 auto; }
+  .bb-row .score-meta{ margin-top:-4px; }
   @media (max-width:600px){
-    /* both ranking buttons full width, so neither sport looks secondary */
-    .hero-actions{ display:grid; grid-template-columns:1fr; gap:10px; }
-    .hero-actions .btn{ width:100%; }
-    .hero-stats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:36px; }
-    .hero-stat b{ font-size:clamp(20px,6.4vw,26px); }
-    .hero-stat span{ display:block; margin-top:4px; font-size:10.5px; line-height:1.35; letter-spacing:.04em; }
+    .bb-row{ grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"a s" "b s" "m m"; gap:4px 12px; padding:12px 14px; }
+    .bb-side.a{ grid-area:a; } .bb-side.b{ grid-area:b; flex-direction:row; text-align:left; }
+    .bb-row .score-chip{ grid-area:s; }
+    .bb-row .score-meta{ grid-area:m; display:flex; margin-top:2px; }
+    .bb-side{ font-size:15px; } .bb-side img{ width:28px; height:28px; }
   }
-  .scoreboard-stage{
-    position:relative;
-    /* Top layer feathers this band into the hero above and the ink below, so it
-       reads as a continuation of the page rather than a bordered-off strip.
-       (Replaces the previous hard 1px border-top/border-bottom.) */
-    background:
-      linear-gradient(180deg, #071421 0%, rgba(7,20,33,0) 14%, rgba(11,26,43,0) 84%, var(--ink) 100%),
-      linear-gradient(135deg,#091827 0%,#0d2034 55%,#0a1929 100%);
+  /* The two balls lie on the hall floor, each with its contact shadow and its name. */
+  .pingpong-model-shell{ position:relative; margin-top:30px; }
+  .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  .ball-slot{ position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; }
+  .ball-stage{ position:relative; width:100%; will-change:transform; }
+  .ball-shadow{
+    display:block; width:44%; height:18px; margin-top:-34px; border-radius:50%; pointer-events:none;
+    background:radial-gradient(closest-side, rgba(14,27,48,.42), rgba(14,27,48,.18) 55%, transparent);
   }
-  .scoreboard-layout{
-    padding:44px 24px 52px; display:grid; grid-template-columns:.78fr 1.22fr;
-    gap:48px; align-items:start;
-  }
-  .scoreboard-visual{ min-width:0; }
-  .scoreboard-intro{ position:relative; z-index:3; padding-top:10px; max-width:480px; }
-  .scoreboard-intro h2{ margin-top:12px; }
-  .scoreboard-intro p{ margin-top:14px; color:var(--chalk-dim); }
-  .pingpong-model-shell{
-    position:relative; min-height:280px; margin-top:-8px; overflow:hidden;
-    border-radius:var(--radius-lg);
-  }
-  /* Table-tennis and basketball side by side, one sport per half. */
-  .ball-pair{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .ball-slot{ position:relative; min-width:0; }
-  .ball-slot--tt{
-    background:
-      radial-gradient(circle at 50% 48%,rgba(249,202,80,.18),transparent 34%),
-      radial-gradient(circle at 50% 54%,rgba(41,197,194,.1),transparent 62%);
-  }
-  .ball-slot--bb{
-    background:
-      radial-gradient(circle at 50% 48%,rgba(41,197,194,.2),transparent 34%),
-      radial-gradient(circle at 50% 54%,rgba(249,202,80,.08),transparent 62%);
-  }
-  .pingpong-model{
-    position:relative; z-index:2; display:block; width:100%; height:280px;
-    background:transparent; --poster-color:transparent; cursor:grab; outline:none;
-  }
+  .ball-meta{ margin-top:14px; text-align:center; }
+  .ball-caption{ font-family:var(--font-hand); font-size:27px; line-height:1; color:var(--text); }
+  .pingpong-model{ position:relative; z-index:2; display:block; width:100%; height:230px; background:transparent; --poster-color:transparent; cursor:grab; outline:none; }
   .pingpong-model:active{ cursor:grabbing; }
   .pingpong-model-fallback{
-    position:absolute; z-index:1; left:50%; top:52%; width:80px; aspect-ratio:1;
-    border-radius:50%; transform:translate(-50%,-50%);
-    background:radial-gradient(circle at 34% 28%,#fff 0%,#f5f5f5 48%,#d4d4d4 100%);
-    box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
+    position:absolute; z-index:1; left:50%; top:46%; width:80px; aspect-ratio:1; border-radius:50%; transform:translate(-50%,-50%);
+    background:radial-gradient(circle at 34% 28%,#fff 0%,#f5f5f5 48%,#d4d4d4 100%); box-shadow:inset -18px -22px 30px rgba(25,25,25,.12);
     transition:opacity .25s ease;
   }
-  .ball-slot--bb .pingpong-model-fallback{
-    background:radial-gradient(circle at 34% 28%,#ffe27a 0%,#f2b62f 46%,#6b3fa0 100%);
-    box-shadow:inset -18px -22px 30px rgba(20,10,40,.28);
-  }
+  .ball-slot--bb .pingpong-model-fallback{ background:radial-gradient(circle at 34% 28%,#ffe27a 0%,#f2b62f 46%,#6b3fa0 100%); }
   .ball-slot.is-loaded .pingpong-model-fallback{ opacity:0; }
-  @media (prefers-reduced-motion:reduce){
-    .pingpong-model-fallback{ transition:none; }
+  @media (prefers-reduced-motion:reduce){ .pingpong-model-fallback{ transition:none; } }
+  @media (max-width:900px){
+    .results-layout{ grid-template-columns:1fr; }
+    .pingpong-model{ height:190px; }
   }
-  .scoreboard-stage .scoreboard{
-    width:100%;
-    background:rgba(12,29,49,.88); border-color:rgba(183,202,224,.2);
-    box-shadow:0 28px 70px rgba(2,8,16,.45);
-    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
-  }
-  .scoreboard-stage .scoreboard-head{ background:rgba(23,46,72,.72); }
-  @media (max-width:980px){
-    /* Narrow screens: the award sits whole at the top and the copy starts under it. */
-    .hero-stage{ --award:min(100vw, 620px); min-height:0; }
-    .hero-stage::before{ background:url('images/heroes/award-hero-900.webp?v=2') center top / var(--award) auto no-repeat; }
-    .hero-stage::after{
-      background:linear-gradient(180deg, transparent 0, transparent calc(var(--award) * .62), #071421 calc(var(--award) * .94));
-    }
-    .hero{ grid-template-columns:1fr; padding:calc(var(--award) * .86) 24px 52px; }
-    .scoreboard-layout{ grid-template-columns:1fr; gap:32px; }
-    .scoreboard-visual{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr); align-items:center; }
-    .pingpong-model-shell{ margin-top:0; }
-  }
-  @media (max-width:600px){
-    .hero{ padding:calc(var(--award) * .86) 18px 40px; }
-    .scoreboard-layout{ padding:40px 18px 44px; gap:24px; }
-    .scoreboard-intro{ padding-top:0; }
-    .scoreboard-visual{ display:block; }
-    .pingpong-model-shell{ min-height:220px; margin-top:-8px; }
-    .pingpong-model{ height:220px; }
+  /* Phone: the scores come first, right under the heading; the two balls follow as decoration */
+  @media (max-width:640px){
+    .results-layout{ gap:0; }
+    .results-layout .scoreboard{ margin-top:16px; }
+    .results-layout > div:first-child{ display:contents; }
+    .results-layout .eyebrow, .results-layout h2, .results-layout h2 + p{ order:0; }
+    .results-layout .scoreboard{ order:1; }
+    .results-layout .pingpong-model-shell{ order:2; margin-top:22px; }
+    .results-layout h2 + p{ display:none; }   /* the board's own header already says where the scores come from */
+    .pingpong-model{ height:150px; }
   }
 
-  .rank-strip{
-    display:flex; gap:14px; overflow-x:auto;
-    padding:7px 0 8px; margin-top:-7px;
-    scrollbar-width:none;
-  }
-  .rank-strip::-webkit-scrollbar{ display:none; }
+  /* ── Leaders: the top six, printed like the ranking pinned on the club board ── */
+  .rank-strip{ display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:14px; }
   .rank-card{
-    flex:0 0 200px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-    padding:20px 18px; position:relative; overflow:hidden; text-align:center;
-    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+    position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px;
+    padding:16px 12px 18px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg);
+    transition:border-color .2s ease, box-shadow .2s ease;
   }
-  .rank-card:hover{
-    z-index:2; transform:translateY(-5px); border-color:rgba(41,197,194,.42);
-    background:var(--surface-2); box-shadow:0 18px 34px rgba(3,9,18,.32);
+  .rank-card:hover{ border-color:var(--text); box-shadow:var(--shadow-sheet); }
+  .rank-no{ align-self:flex-start; font-family:var(--font-display); font-size:38px; font-weight:900; line-height:.8; color:var(--table); }
+  .rank-card:first-child .rank-no{ color:var(--text); background:var(--shirt); padding:4px 8px 2px; border-radius:var(--radius-sm); }
+  .rank-avatar{ width:96px; height:96px; margin:-6px 0 10px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font-family:var(--font-display); font-size:30px; font-weight:800; color:var(--table); }
+  .rank-name{ font-family:var(--font-display); font-size:23px; font-weight:800; line-height:1; color:var(--text); }
+  .rank-city{ font-size:13.5px; color:var(--muted); }
+  .rank-rating{ margin-top:8px; font-family:var(--font-display); font-size:30px; font-weight:800; line-height:1; color:var(--table); font-variant-numeric:tabular-nums; }
+  .rank-rating small{ display:block; margin-top:3px; font-family:var(--font-label); font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  @media (max-width:1100px){ .rank-strip{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media (max-width:600px){
+    .rank-strip{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; margin:0 calc(var(--gutter) * -1); padding:2px var(--gutter) 8px; gap:12px; scrollbar-width:none; }
+    .rank-strip::-webkit-scrollbar{ display:none; }
+    .rank-card{ flex:0 0 46%; scroll-snap-align:start; }
   }
-  .rank-card:focus-visible{ outline:2px solid var(--rally); outline-offset:3px; }
-  .rank-card .rank-no{
-    position:absolute; top:12px; left:12px; font-family:var(--font-mono); font-size:11px; color:var(--rally-hi);
-    font-weight:700; background:var(--rally-dim); padding:3px 8px; border-radius:999px; z-index:1;
-  }
-  .rank-avatar{
-    width:88px; height:88px; border-radius:50%; overflow:hidden; margin:0 auto 14px; border:2px solid var(--border-hi);
-    background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-display); font-size:28px; font-weight:700; box-shadow:0 6px 20px rgba(0,0,0,.3);
-  }
-  .rank-card .rank-name{ font-family:var(--font-display); font-size:16px; font-weight:600; margin-bottom:4px; }
-  .rank-card .rank-city{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
-  .rank-card .rank-rating{ font-family:var(--font-mono); font-size:24px; font-weight:700; color:var(--spin-hi); }
-  .rank-card .rank-rating small{ font-family:var(--font-body); font-size:11px; color:var(--muted); font-weight:600; margin-left:4px; }
 
-  .news-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:20px; }
-  .news-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; }
-  .news-card .news-cover{ aspect-ratio:16/10; background:linear-gradient(135deg,var(--surface-2),var(--surface-3)); display:flex; align-items:center; justify-content:center; }
-  .news-card .news-body{ padding:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
-  .news-card .news-date{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
-  .news-card h3{ font-size:16px; line-height:1.35; }
-  .news-card.feature{ grid-row:1/3; }
-  .news-card.feature h3{ font-size:22px; }
-  @media (max-width:900px){ .news-grid{ grid-template-columns:1fr; } .news-card.feature{ grid-row:auto; } }
-
-  .tourn-mini{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; display:flex; flex-direction:column; }
-  .tourn-mini-head{ margin-bottom:14px; }
-  .tourn-mini-head h3{ font-size:15.5px; line-height:1.35; }
-  .tourn-mini-meta{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
-  .tourn-mini-date{ font-family:var(--font-mono); font-size:11.5px; color:var(--muted); }
-  .tourn-mini-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid var(--border); font-size:13.5px; }
+  /* ── Tournaments beside the serving player ── */
+  .tourn-layout{ display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:clamp(20px,3vw,40px); align-items:end; }
+  .tourn-list{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+  .tourn-mini{ background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:20px; display:flex; flex-direction:column; }
+  .tourn-mini-head{ margin-bottom:12px; padding-bottom:12px; border-bottom:2px solid var(--text); }
+  .tourn-mini-head h3{ font-size:24px; line-height:1; }
+  .tourn-mini-meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px; }
+  .tourn-mini-date{ font-family:var(--font-label); font-size:14px; font-weight:600; color:var(--muted); }
+  .tourn-mini-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--rule); font-size:15px; }
   .tourn-mini-row:first-of-type{ border-top:0; }
-  .tourn-pos{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; width:20px; height:20px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:9px; flex:0 0 auto; }
-  .tourn-pos.gold{ background:var(--spin-dim); color:var(--spin-hi); }
-  .homepage-flow{
-    position:relative; z-index:0; isolation:isolate; overflow:visible; background:var(--ink);
+  .tourn-pos{ font-family:var(--font-display); font-size:17px; font-weight:800; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--wash); color:var(--text-2); margin-right:10px; flex:0 0 auto; }
+  .tourn-pos.gold{ background:var(--shirt); color:var(--text); }
+  .serve{ position:relative; padding-top:40px; }
+  /* the player and the ball he has just tossed share one box, so the ball sits on his
+     hand in % of the drawing: palm at 21.5% across (mirrored) and 9.4% down */
+  .serve-art{ position:relative; width:100%; }
+  .serve-art img.player{ display:block; width:100%; height:auto; transform:scaleX(-1); }
+  /* height:auto matters: the width/height attributes would otherwise keep it 43px tall and squeeze it into an egg */
+  .serve-art img.ball{ filter:drop-shadow(0 6px 6px rgba(20,28,40,.25)); position:absolute; width:9%; height:auto; aspect-ratio:1; left:calc(21.5% - 4.5%); top:calc(9.4% - 9%); animation:toss 2.6s ease-in-out infinite; }
+  @keyframes toss{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-22px); } }
+  @media (prefers-reduced-motion:reduce){ .serve-art img.ball{ animation:none; } }
+  @media (max-width:1100px){
+    .tourn-layout{ grid-template-columns:1fr; }
+    .serve{ display:none; }
   }
-  .homepage-flow::before{
-    content:''; position:absolute; z-index:0; inset:0; pointer-events:none;
-    background:radial-gradient(650px 720px at 88% 48%,rgba(41,197,194,.075),transparent 72%);
-  }
-  /* The player and the ball he has just tossed share one box, so the ball is placed
-     against the player's hand (in % of the drawing) rather than against the viewport.
-     The box hangs from the top of the tournaments section, with the hand in the
-     gap under the ranking cards: --hand is where the palm sits below the section top. */
-  .flow-tourn{ --art-w:clamp(500px,42vw,640px); --hand:64px; --toss:58px; }
-  .flow-art{
-    position:absolute; z-index:0; pointer-events:none; user-select:none;
-    width:var(--art-w); right:clamp(0px,2vw,40px);
-    /* palm = 9.4% of the drawing's height; height = width × 1654/951 */
-    top:calc(var(--hand) - var(--art-w) * 1.7392 * .094);
-  }
-  .flow-art-player{
-    display:block; width:100%; height:auto; opacity:.88;
-    transform:scaleX(-1); filter:drop-shadow(0 34px 42px rgba(1,8,16,.34));
-  }
-  /* the hand is at 21% from the left once the drawing is mirrored */
-  .flow-art-ball{
-    position:absolute; width:clamp(24px,1.8vw,30px); height:auto;
-    left:calc(21.5% - clamp(12px,.9vw,15px)); top:calc(9.4% - var(--toss));
-    filter:drop-shadow(0 12px 18px rgba(1,8,16,.32));
-  }
-  .homepage-flow > .section-tight{ position:relative; z-index:2; }
-  .homepage-flow + .section-tight{ position:relative; z-index:2; }
-  .homepage-flow .rank-strip,
-  .homepage-flow #tournGrid{ position:relative; z-index:2; }
-  .flow-tourn > :not(.flow-art){ position:relative; z-index:1; }
-  .homepage-flow .rank-card,
-  .homepage-flow .tourn-mini{
-    background:rgba(16,31,51,.92); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
-  }
+  @media (max-width:900px){ .tourn-list{ grid-template-columns:1fr; } }
+  .tourn-mini-link{ color:inherit; text-decoration:none; display:inline-block; padding-block:10px; margin-block:-10px; }
+  .tourn-mini-link:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .score-tournament a{ color:inherit; text-decoration:underline; text-decoration-color:var(--rule-2); text-underline-offset:3px; display:inline-block; padding-block:12px; margin-block:-12px; }
+  .score-tournament a:hover{ color:var(--table); }
+  .score-tournament a:hover{ text-decoration-color:currentColor; }
+
+  /* ── News: one story leads, two follow ── */
+  .news-grid{ display:grid; grid-template-columns:1.25fr 1fr; grid-template-rows:auto auto; gap:18px; }
+  /* the lead story takes the height the two others need, and its photo fills what is left */
+  .news-card.feature{ display:flex; flex-direction:column; align-items:stretch; }
+  .news-card.feature .news-cover{ position:relative; flex:1 1 230px; min-height:230px; aspect-ratio:auto; }
+  .news-cover img{ position:absolute; inset:0; }
+  .news-cover{ position:relative; }
+  .news-card{ display:grid; grid-template-columns:150px minmax(0,1fr); gap:16px; align-items:start; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); padding:14px; transition:border-color .2s ease; }
+  .news-card:hover{ border-color:var(--text); }
+  .news-card:hover h3{ color:var(--table); }
+  .news-card.feature{ grid-row:1 / span 2; grid-template-columns:1fr; padding:0; overflow:hidden; }
+  .news-cover{ aspect-ratio:4/3; border-radius:var(--radius); overflow:hidden; background:var(--wash); display:grid; place-items:center; }
+  .news-card.feature .news-cover{ border-radius:0; }
+  .news-body{ display:flex; flex-direction:column; gap:8px; }
+  .news-card.feature .news-body{ padding:6px 22px 22px; }
+  .news-body h3{ font-size:24px; line-height:1.02; transition:color .2s ease; }
+  .news-card.feature .news-body h3{ font-size:clamp(28px,3vw,40px); }
+  .news-date{ font-family:var(--font-label); font-size:14px; font-weight:600; color:var(--muted); }
   @media (max-width:900px){
-    html,body{ overflow-x:clip; }
-    .flow-tourn{ --art-w:440px; }
-    .flow-art{ right:-90px; }
-    .flow-art-player{ opacity:.5; }
+    .news-grid{ grid-template-columns:1fr; }
+    .news-card.feature{ grid-row:auto; }
   }
-  @media (max-width:600px){
-    /* phones get their own gap above the tournaments heading, so the hand and the
-       tossed ball sit clear of the ranking cards and the heading, as on desktop */
-    .flow-tourn{ --art-w:340px; --hand:92px; --toss:46px; padding-top:118px; }
-    .flow-art{ right:-96px; }
-    .flow-art-player{ opacity:.45; }
+  @media (max-width:520px){ .news-card{ grid-template-columns:110px minmax(0,1fr); } .news-body h3{ font-size:21px; } }
+
+  /* ── Follow: four plain entries, each in its own colour ── */
+  .social-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+  .social-card{
+    --brand:var(--table);
+    display:grid; grid-template-columns:auto minmax(0,1fr); grid-template-areas:"icon name" "icon handle" "desc desc" "cta cta"; gap:2px 14px;
+    padding:18px; background:var(--paper); border:1px solid var(--rule); border-top:4px solid var(--brand); border-radius:var(--radius-lg);
+    transition:box-shadow .2s ease;
+  }
+  .social-card:hover{ box-shadow:var(--shadow-sheet); }
+  .social-card--tiktok{ --brand:#111; }
+  .social-card--instagram{ --brand:#D62976; }
+  .social-card--youtube{ --brand:#E62117; }
+  .social-card--facebook{ --brand:#1877F2; }
+  .social-icon{ grid-area:icon; width:46px; height:46px; display:grid; place-items:center; border-radius:var(--radius); background:var(--brand); color:#fff; }
+  .social-name{ grid-area:name; font-family:var(--font-display); font-size:26px; font-weight:800; line-height:1; align-self:end; }
+  .social-handle{ grid-area:handle; font-size:14px; color:var(--muted); }
+  .social-desc{ grid-area:desc; margin-top:12px; font-size:15px; color:var(--text-2); }
+  .social-cta{ grid-area:cta; margin-top:10px; font-family:var(--font-label); font-weight:800; font-size:16px; color:var(--brand); }
+  @media (max-width:980px){ .social-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:520px){ .social-grid{ grid-template-columns:1fr; } }
+
+  /* ── Principles, with the Moldova paddle ── */
+  .principles{ display:grid; grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr); gap:clamp(24px,4vw,64px); align-items:center; }
+  .principles-art{ width:100%; max-width:420px; height:auto; }
+  .principle-cols{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; margin-top:22px; }
+  .principle-col{ padding:0 22px; border-left:2px solid var(--text); }
+  .principle-col:first-child{ padding-left:0; border-left:0; }
+  .principle-col h3{ font-size:32px; color:var(--table); margin-bottom:8px; }
+  .principle-col p{ font-size:15.5px; }
+  @media (max-width:900px){
+    .principles{ grid-template-columns:1fr; }
+    .principles-art{ max-width:260px; }
+    .principle-cols{ grid-template-columns:1fr; gap:18px; }
+    .principle-col, .principle-col:first-child{ padding:0 0 0 16px; border-left:3px solid var(--shirt); }
   }
 
-  .principle-col h3{ font-size:16px; margin-bottom:8px; }
-  .principle-col p{ font-size:14px; }
-  .principles-stage{
-    position:relative;
-    isolation:isolate;
-    overflow:visible;
-  }
-  .principles-stage > :not(.principles-map-art){ position:relative; z-index:2; }
-  /* The Moldova paddle sits in the empty space right of the heading, clear of the text. */
-  .principles-map-art{
-    position:absolute; z-index:1;
-    top:-26px; right:24px; left:auto;
-    width:clamp(230px,19vw,290px); height:auto;
-    pointer-events:none; user-select:none;
-    filter:drop-shadow(0 24px 34px rgba(1,8,16,.3));
-  }
-  @media (max-width:900px){
-    .principles-map-art{ top:-14px; width:210px; }
-  }
-  @media (max-width:600px){
-    .principles-map-art{ top:10px; right:6px; width:118px; }
-  }
 
-  .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
-  .partner-track{ display:flex; width:max-content; padding-block:8px; animation:scroll 36s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
-  .partner{ display:flex; align-items:center; gap:18px; margin-right:72px; font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--muted); white-space:nowrap; }
-  .partner-logo{ height:96px; width:96px; border-radius:50%; object-fit:cover; opacity:.9; flex:0 0 auto; transition:opacity .2s ease, transform .2s ease; }
-  a.partner:hover, a.partner:focus-visible{ color:var(--chalk); }
-  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ opacity:1; transform:scale(1.04); }
-  /* Hold the strip still while someone is aiming at (or tabbing through) a logo.
-     Mouse only: on touch screens a tap leaves :hover stuck and the strip would stop for good. */
-  @media (hover:hover) and (pointer:fine){
-    .partner-marquee:hover .partner-track{ animation-play-state:paused; }
-  }
+  /* ── Partners: the strip of logos, drifting slowly ── */
+  .partners-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
+  .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
+  .partner-track{ display:flex; width:max-content; padding-block:10px; animation:scroll 40s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
+  .partner{ display:flex; align-items:center; gap:16px; margin-right:64px; font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text-2); white-space:nowrap; }
+  .partner-logo{ height:84px; width:84px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow:0 0 0 1px var(--rule); transition:transform .2s ease; }
+  a.partner:hover, a.partner:focus-visible{ color:var(--table); }
+  a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ transform:scale(1.05); }
+  @media (hover:hover) and (pointer:fine){ .partner-marquee:hover .partner-track{ animation-play-state:paused; } }
   .partner-marquee:has(:focus-visible) .partner-track{ animation-play-state:paused; }
-  /* Touch screens: the strip is a real scroller people can swipe; js drifts it along
-     instead of the CSS animation, and stops while a finger is on it. */
   @media (hover:none), (pointer:coarse){
     .partner-marquee{ overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
     .partner-marquee::-webkit-scrollbar{ display:none; }
     .partner-track{ animation:none; will-change:transform; }
   }
-  @media (max-width:600px){
-    .partner{ gap:12px; margin-right:48px; font-size:18px; }
-    .partner-logo{ height:72px; width:72px; }
-  }
-
-  /* ── Follow ATTP ── */
-  /* Sits above the principles map art, which bleeds upward into this section. */
-  .social-stage{ position:relative; z-index:1; }
-  .social-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
-  .social-card{
-    --brand:var(--rally);
-    position:relative; display:flex; flex-direction:column; gap:4px; padding:22px 22px 20px;
-    border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface);
-    overflow:hidden; transition:transform .2s ease, border-color .2s ease, background .2s ease;
-  }
-  .social-card::before{
-    content:''; position:absolute; inset:0 0 auto; height:3px; background:var(--brand); opacity:.55;
-    transition:opacity .2s ease;
-  }
-  .social-card--tiktok{ --brand:#25F4EE; }
-  .social-card--instagram{ --brand:#E1306C; }
-  .social-card--youtube{ --brand:#FF3B30; }
-  .social-card--facebook{ --brand:#4C8DF6; }
-  .social-card:hover, .social-card:focus-visible{ transform:translateY(-3px); border-color:var(--border-hi); background:var(--surface-2); }
-  .social-card:hover::before, .social-card:focus-visible::before{ opacity:1; }
-  .social-icon{
-    width:46px; height:46px; margin-bottom:12px; border-radius:14px; display:flex; align-items:center; justify-content:center;
-    color:var(--chalk); background:color-mix(in srgb, var(--brand) 18%, transparent);
-  }
-  .social-name{ font-family:var(--font-display); font-size:19px; font-weight:600; }
-  .social-handle{ font-family:var(--font-mono); font-size:12.5px; color:var(--brand); }
-  .social-desc{ margin-top:8px; font-size:14px; color:var(--chalk-dim); line-height:1.5; }
-  .social-cta{ margin-top:auto; padding-top:16px; font-size:13.5px; font-weight:700; color:var(--chalk); }
-  .social-cta span{ display:inline-block; transition:transform .2s ease; }
-  .social-card:hover .social-cta span{ transform:translateX(3px); }
-  @media (max-width:980px){ .social-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media (max-width:480px){ .social-card{ padding:18px 16px; } .social-desc{ font-size:13px; } }
-  @media (prefers-reduced-motion:reduce){ .social-card, .social-card:hover{ transform:none; } }
+  @media (max-width:600px){ .partner{ gap:12px; margin-right:44px; font-size:22px; } .partner-logo{ height:64px; width:64px; } }
+  @media (prefers-reduced-motion:reduce){ .partner-track{ animation:none; } .partner-marquee{ overflow-x:auto; } }
   @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
 
+  @media (max-width:900px){
+    .home-hero-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ── Phone opener: the current No. 1 in an action photo, the other leaders as swipeable cards, then the
+     latest results on a deep-blue board (last Bskt Cup game in flip digits, last table tennis tournament's
+     top three). Phones only; wider screens keep the hero with the award picture. ── */
+  .m-open{ display:none; }
+  @media (max-width:640px){
+    .home-hero, .home-hero + .barrier{ display:none; }
+    .m-open{ display:block; }
+    .mo-hero{ position:relative; display:block; height:min(118vw,440px); overflow:hidden; color:#fff; isolation:isolate; background:var(--table-ink); text-decoration:none; }
+    .mo-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2; }
+    .mo-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(8,16,30,0) 30%,rgba(8,16,30,.55) 58%,rgba(8,16,30,.95) 100%); }
+    .mo-copy{ position:absolute; left:18px; right:18px; bottom:20px; }
+    .mo-kick{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; font:800 12.5px/1.1 var(--font-label); letter-spacing:.08em; text-transform:uppercase; }
+    .mo-no{ display:inline-grid; place-items:center; height:26px; padding:0 8px; border-radius:5px; background:var(--shirt); color:var(--text); font:900 18px/1 var(--font-display); letter-spacing:0; }
+    .mo-name{ display:block; font:900 clamp(44px,13.5vw,56px)/.86 var(--font-display); margin:12px 0 10px; }
+    .mo-meta{ display:flex; gap:20px; font:600 13.5px/1.2 var(--font-body); color:rgba(255,255,255,.82); }
+    .mo-meta b{ display:block; font:900 26px/1 var(--font-display); color:#fff; }
+    .mo-row{ display:flex; gap:10px; overflow-x:auto; padding:14px 18px 16px; scroll-snap-type:x mandatory; scroll-padding:0 18px; scrollbar-width:none; }
+    .mo-row::-webkit-scrollbar{ display:none; }
+    .mo-card{ flex:0 0 74%; scroll-snap-align:start; display:grid; grid-template-columns:56px minmax(0,1fr); gap:12px; align-items:center;
+      background:var(--paper); border-radius:var(--radius-lg); padding:12px; color:var(--text); text-decoration:none; box-shadow:var(--shadow-sheet); }
+    .mo-card .mo-pic{ width:56px; height:56px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font:900 20px/1 var(--font-display); color:var(--text-2); }
+    .mo-card .mo-pic img{ width:100%; height:100%; object-fit:cover; }
+    .mo-card .mo-pic.crest{ border-radius:0; background:none; }
+    .mo-card .mo-pic.crest img{ object-fit:contain; }
+    .mo-card small{ display:block; font:800 11.5px/1 var(--font-label); letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+    .mo-card strong{ display:block; font:900 22px/1 var(--font-display); margin:5px 0 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mo-card span{ font:600 13px/1.2 var(--font-body); color:var(--text-2); }
+    .mo-board{ background:var(--table-ink); color:#fff; padding:20px 18px 24px; position:relative; overflow:hidden; isolation:isolate; }
+    .mo-board::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:.13; background:
+      linear-gradient(90deg,transparent calc(50% - 1px),#fff calc(50% - 1px),#fff calc(50% + 1px),transparent calc(50% + 1px)),
+      radial-gradient(circle at 50% 108%,transparent 118px,#fff 119px,#fff 121px,transparent 122px); }
+    .mo-live{ display:inline-flex; align-items:center; gap:7px; font:700 13px/1 var(--font-label); letter-spacing:.06em; text-transform:uppercase; color:var(--shirt); }
+    .mo-live::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--shirt); box-shadow:0 0 0 4px rgba(245,195,48,.22); }
+    .mo-board h1{ color:#fff; font:900 clamp(34px,10.4vw,40px)/.9 var(--font-display); margin:14px 0 16px; }
+    .mo-board h1 em{ font-style:normal; color:var(--shirt); }
+    .mo-res{ display:block; background:var(--paper); color:var(--text); border-radius:var(--radius-lg); padding:14px; text-decoration:none; margin-top:10px; box-shadow:0 16px 30px -22px rgba(0,0,0,.7); }
+    .mo-res .lbl{ display:flex; justify-content:space-between; gap:10px; font:800 12px/1.1 var(--font-label); letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+    .mo-res .lbl b{ color:var(--table); }
+    .mo-bb{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; margin-top:12px; }
+    .mo-team{ display:flex; flex-direction:column; align-items:center; gap:6px; font:800 15px/1.05 var(--font-label); text-align:center; color:var(--muted); overflow-wrap:anywhere; }
+    .mo-team.won{ color:var(--text); }
+    .mo-team img{ width:46px; height:46px; object-fit:contain; }
+    .mo-score{ display:flex; align-items:center; gap:4px; }
+    .mo-dg{ display:inline-grid; place-items:center; width:30px; height:42px; border-radius:5px; background:var(--table-ink); color:#fff; font:900 30px/1 var(--font-display); position:relative; }
+    .mo-dg::after{ content:""; position:absolute; left:0; right:0; top:50%; height:1px; background:rgba(255,255,255,.18); }
+    .mo-dg.won{ background:var(--table); }
+    .mo-colon{ font:900 26px/1 var(--font-display); color:var(--muted); margin:0 2px; }
+    .mo-tt{ list-style:none; margin:10px 0 0; padding:0; }
+    .mo-tt li{ display:grid; grid-template-columns:26px minmax(0,1fr) auto; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--rule); font:600 15px/1.2 var(--font-body); }
+    .mo-tt li:first-child{ border-top:0; }
+    .mo-pos{ display:grid; place-items:center; width:24px; height:24px; border-radius:5px; background:var(--wash); font:900 15px/1 var(--font-display); }
+    .mo-tt li:first-child .mo-pos{ background:var(--shirt); }
+    .mo-wl{ font:800 15px/1 var(--font-label); color:var(--muted); }
+    .mo-links{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .mo-links a{ display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:48px; padding:0 14px; border:1.5px solid rgba(255,255,255,.35); border-radius:var(--radius-lg); color:#fff; text-decoration:none; font:800 15px/1 var(--font-label); }
+    .mo-award{ display:flex; align-items:center; gap:9px; margin-top:16px; color:rgba(255,255,255,.75); font:600 12.5px/1.25 var(--font-body); text-decoration:none; }
+    .mo-award img{ width:30px; height:30px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
+    .mo-award b{ color:#fff; font-family:var(--font-label); font-weight:800; }
+    .mo-sk{ background:rgba(255,255,255,.08); border-radius:var(--radius-lg); }
+  }
 </style>
 </head>
 <body>
 <div id="loadScreen" aria-hidden="true">
-  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
-    <g class="lm-ball-group">
-      <circle class="lm-ball" cx="88" cy="70" r="20"/>
-      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
-    </g>
-    <g class="lm-paddle-group">
-      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
-      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
-      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
-      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
-      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
-      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
-      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
-      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
-    </g>
-  </svg>
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">A guarantee of integrity</span></span>
+  </div>
 </div>
 
 <header class="topbar">
   <div class="container topbar-inner">
     <a href="en/index.html" class="brand">
-      <span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span>
+      <span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span>
       <span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span>
     </a>
     <nav class="nav-links">
@@ -420,52 +465,48 @@
 </div>
 
 <main>
-  <section class="hero-stage">
-    <div class="container hero">
-    <div class="hero-copy">
-      <div class="hero-kicker">
-        <span class="tag">Season 2025 – 2026</span>
-        <span class="tag tag-rally tag-live">Live results</span>
-      </div>
-      <svg class="hero-motion" viewBox="0 0 740 560" fill="none" aria-hidden="true">
-        <path class="trail-light" d="M10 438C112 548 358 547 521 401C565 361 554 274 590 188" stroke-width="2" stroke-linecap="round"/>
-        <path class="trail-main" d="M-8 466C128 574 384 541 527 388C570 342 552 254 600 176" stroke-width="8" stroke-linecap="round"/>
-        <path class="trail-live" d="M38 478C191 554 402 502 536 365C573 327 558 239 608 164" stroke-width="3" stroke-linecap="round"/>
-        <path class="trail-light" d="M96 500C255 541 436 469 568 330" stroke-width="2" stroke-linecap="round"/>
-        <path class="speed-mark" d="M613 155L625 141M620 163L634 148" stroke-width="3" stroke-linecap="round"/>
-        <g class="hero-ball">
-          <circle cx="670" cy="110" r="49" fill="var(--spin)" opacity=".92" class="hero-ball-ring" stroke-width="3"/>
-          <path d="M640 97C648 80 663 70 681 68" stroke="var(--spin-hi)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
-          <path d="M702 79C710 89 714 99 714 110" class="hero-ball-seam" stroke-width="5" stroke-linecap="round"/>
-          <path d="M715 119L713 133" class="hero-ball-seam" stroke-width="7" stroke-linecap="round"/>
-        </g>
-      </svg>
-      <h1>Professional sport in the Republic of Moldova, <span class="accent">all in one place</span>.</h1>
-      <p class="lede">ATTP brings together players, referees and coaches from several sports in the Republic of Moldova under the principles of fair play, integrity and performance — with national tournaments held all year round and rankings that update automatically.</p>
-      <div class="hero-actions">
-        <a href="en/players-table-tennis.html" class="btn btn-primary">See the FTMM rankings</a>
-        <a href="en/players-basketball.html" class="btn btn-ghost">See the Bskt Cup rankings</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><b class="num" id="statPlayers">—</b><span>Registered athletes</span></div>
-        <div class="hero-stat"><b class="num" id="statTournaments">—</b><span>Tournaments played</span></div>
-        <div class="hero-stat"><b class="num" id="statMatches">—</b><span>Matches played</span></div>
-      </div>
-    </div>
-
+  <section class="m-open" aria-labelledby="mobileTitle">
+    <a class="mo-hero" id="moHero" href="en/players-table-tennis.html"><div class="mo-copy"><span class="mo-kick"><span class="mo-no">No. 1</span>Table tennis · FTMM rankings</span><span class="mo-name">&nbsp;</span></div></a>
+    <div class="mo-row" id="moRow" aria-label="Ranking leaders"></div>
+    <div class="mo-board">
+      <span class="mo-live">Latest results</span>
+      <h1 id="mobileTitle">Table tennis and basketball, <em>score by score.</em></h1>
+      <div id="moBb"><div class="mo-sk" style="height:132px"></div></div>
+      <div id="moTt"><div class="mo-sk" style="height:150px;margin-top:10px"></div></div>
+      <div class="mo-links"><a href="en/players-table-tennis.html">FTMM ranking <span aria-hidden="true">→</span></a><a href="en/players-basketball.html">Bskt Cup <span aria-hidden="true">→</span></a></div>
+      <a class="mo-award" href="en/about.html"><img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async"><span><b>Winner of the Notorium Brand Awards 2025</b><br>Recognised Brands competition</span></a>
     </div>
   </section>
 
-  <section class="scoreboard-stage" aria-labelledby="recent-results-title">
-    <div class="container scoreboard-layout">
-      <div class="scoreboard-visual">
-        <div class="scoreboard-intro">
-          <div class="eyebrow">Results</div>
-          <h2 id="recent-results-title">Latest matches</h2>
-          <p>Scores from ATTP tournaments, synced automatically from Setka Cup.</p>
+  <section class="home-hero" aria-labelledby="homeTitle">
+    <div class="container home-hero-grid">
+      <div class="home-hero-copy">
+        <p class="home-kicker">Table tennis and basketball · Republic of Moldova</p>
+        <h1 id="homeTitle">Moldova's table tennis and basketball, and the people who play them.</h1>
+        <p class="lede">From Chișinău to Dubăsari, Bender and Ceadîr-Lunga, ATTP keeps the score, the rankings and the stories of players from across the country.</p>
+        <div class="hero-actions">
+          <a href="en/players-table-tennis.html" class="btn btn-primary">See the FTMM rankings</a>
+          <a href="en/players-basketball.html" class="btn btn-ghost">See the Bskt Cup rankings</a>
         </div>
+      </div>
+      <figure class="home-hero-photo home-hero-award">
+        <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="(max-width:900px) 100vw, 560px" width="3762" height="2508" alt="ATTP, winner of the Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
+        <figcaption><strong>Winner of the Notorium Brand Awards 2025</strong><span>Recognised Brands competition</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="barrier" aria-hidden="true"></div>
+
+  <section class="container section-tight" aria-labelledby="recent-results-title">
+    <div class="results-layout">
+      <div>
+        <div class="eyebrow">Results</div>
+        <h2 id="recent-results-title">Latest matches</h2>
+        <p class="mt-16">Scores from ATTP tournaments, synced automatically from Setka Cup.</p>
         <div class="pingpong-model-shell ball-pair" id="pingpongModelShell">
-          <div class="ball-slot ball-slot--tt">
+          <div class="ball-slot ball-slot--tt" data-sport="tt">
+            <div class="ball-stage">
             <model-viewer
               id="pingpongModel"
               class="pingpong-model"
@@ -489,8 +530,14 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
+            </div>
+            <span class="ball-shadow" aria-hidden="true"></span>
+            <div class="ball-meta">
+              <span class="ball-caption">table tennis</span>
+            </div>
           </div>
-          <div class="ball-slot ball-slot--bb">
+          <div class="ball-slot ball-slot--bb" data-sport="bb">
+            <div class="ball-stage">
             <model-viewer
               id="basketballModel"
               class="pingpong-model"
@@ -514,72 +561,134 @@
               interaction-prompt="none"
               loading="lazy"></model-viewer>
             <div class="pingpong-model-fallback" aria-hidden="true"></div>
+            </div>
+            <span class="ball-shadow" aria-hidden="true"></span>
+            <div class="ball-meta">
+              <span class="ball-caption">basketball</span>
+            </div>
           </div>
         </div>
       </div>
       <div class="scoreboard">
         <div class="scoreboard-head">
           <span class="live-dot">Recent results</span>
-          <span class="muted" style="font-family:var(--font-mono);font-size:11px">via Setka Cup</span>
+          <span class="muted sb-source" id="sbSource">via Setka Cup</span>
         </div>
-        <div id="scoreboardBody">
-          <div class="skeleton" style="height:60px;padding:20px"></div>
+        <div class="sb-tabs" role="tablist" aria-label="Sport">
+          <button type="button" role="tab" id="sbTabTt" aria-controls="scoreboardTt" aria-selected="true">Table tennis</button>
+          <button type="button" role="tab" id="sbTabBb" aria-controls="scoreboardBb" aria-selected="false" tabindex="-1">Basketball</button>
+        </div>
+        <div role="tabpanel" id="scoreboardTt" aria-labelledby="sbTabTt">
+          <p class="sb-legend">Score = the player's matches won : lost in the tournament</p>
+          <div id="scoreboardBody"><div class="skeleton" style="height:60px;margin:20px"></div></div>
+        </div>
+        <div id="scoreboardBb" role="tabpanel" aria-labelledby="sbTabBb" hidden>
+          <div class="skeleton" style="height:60px;margin:20px"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="homepage-flow">
-
-  <section class="container section-tight">
-    <div class="eyebrow">Rankings</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Ranking leaders</h2>
-      <a href="en/players-table-tennis.html" class="btn btn-sm btn-rally">All players →</a>
+  <section class="container section-tight" aria-labelledby="townsTitle">
+    <div class="towns">
+      <figure class="towns-map">
+        <svg viewBox="0 0 504 625" role="img" aria-label="Harta Republicii Moldova cu localitățile sportivilor ATTP">
+          <path class="md-land" d="M10 53.5 11.9 56.4 14 57.8 15.1 57.3 15.7 55.6 16.9 56.2 16.3 57.9 16.8 59 19.4 58.2 21.5 55.2 22.5 57.7 24.3 59 25.7 58.6 25.2 56.7 27.3 57.5 26 59.1 30.4 58.6 32.8 59.7 33.2 58.3 34.7 58.3 36.3 57.4 37.3 59.2 38.6 59.3 39.4 63 42.1 61.5 43.2 64.5 46.7 68 49.9 68 49.1 69.4 47.7 69.7 47.9 70.9 49.1 72.1 51 72.3 50.7 68.5 52.9 68.3 54.8 69.4 55.5 71.5 53.1 74.3 54.8 76.2 59.3 76.2 61.2 78.2 59.4 79.5 56.2 77.9 55.7 79.7 56.8 81.6 58 82.4 60.6 82.7 62.4 83.9 65.1 80.6 66.3 81.1 65.6 83.4 67 82.5 66.9 84.9 67.8 87.8 65.8 90.4 68.1 92.1 68.3 94.2 73.6 98.3 73.8 101.4 77 102 74.9 103.9 74.5 106.5 75.8 107.2 77.9 105.6 79.5 105.6 78.3 108.4 79.1 109.7 81.6 109.9 84.3 109 83.8 111.1 83.2 113.9 81.9 115.2 82.7 116.3 85.8 117.8 86.5 119.5 83.1 124.1 81.6 124.5 82.9 125.5 84 124.8 85.3 125.2 88.8 127 89.6 128.1 90.5 130.1 89.2 133.7 90 134.6 90.3 136.1 91.5 138.3 89.5 138 90.5 140.5 91.7 140.7 92.9 140 96 141.1 94.3 143.3 92.8 141.9 91.8 143.1 91.8 144.8 92.8 145.5 95.3 145.1 93.8 147.1 93.9 148.7 96.4 149.5 96.2 150.8 96.8 152.6 98.6 152.3 98.9 154.7 98.6 156.4 100.5 155.5 101.4 157.2 100.3 158.2 102.4 157.6 103 158.8 101.3 159.4 100.6 160.9 101.4 162.3 102.3 163.6 101 163.5 100.1 162.5 98.8 163 98.5 161.7 96.6 164.4 98.8 165.9 99.2 168.3 100.8 168.1 99.6 170.4 100.9 171.9 102.7 172.2 102.7 174 102.5 175.8 104.4 176.1 105.3 178.6 107.8 182.8 111.7 184.5 111.9 186 113.4 188.1 117.5 191.7 120.7 191.7 119.1 194 119.4 195.3 121.4 195.8 120.2 197.5 122.4 198.5 121.1 198.8 123.2 201.3 124.6 201 122.9 202.1 123.8 203.8 126.1 203 124.5 204.5 124.3 206.8 126.1 208.3 126.1 209.6 127.1 211.3 129.6 210.5 129.4 212.1 131.4 212.6 131.6 211.1 132.8 210.1 132.2 213 133.5 211.8 135.6 212.5 134.8 211.3 135.7 210.5 136.6 213.2 138.2 214.2 138.6 215.6 140.4 215.4 140.6 216.7 140.1 218.3 138.4 218.8 138.8 220.7 137.7 221.6 138.2 223.2 139.3 223.8 140.8 224.5 140.9 226.6 141.6 228.6 139.9 229.5 139.9 233.7 141.8 232.5 140.5 234.5 142.6 235.3 143.7 233.8 144.3 235.1 143.5 238.8 144.9 238.3 144.9 240.4 146.2 240.1 144.3 242.5 142.4 241.9 143.6 242.9 143.1 244 144.2 244.9 144.1 243.7 144.7 242.6 145 244.9 146.5 244.3 147.2 243.1 147.8 244.2 148 246.3 149.4 246 148.7 247.7 150.5 248.4 150.5 246.9 152.3 247.5 154.2 248.4 154.3 246.4 155 248.6 155.5 250.7 156.6 249.9 158.7 250.4 158.2 248.9 159.4 248.5 160.4 249.6 162.2 249.8 163 251.4 163 253.2 164.4 253 164 255.5 165.8 256.8 163.6 256.9 164.8 257.3 165.6 258.2 164.4 258.4 164.1 260 165 260.8 165.4 262.2 168 262.1 167.3 264.1 169.6 264.7 168.3 267.4 170.1 266.7 169.5 268.8 169.6 270.3 171.7 270.1 170.9 274.2 173 275.2 171.7 277 170 277.5 169.7 278.9 170.8 278.4 171.4 279.9 169.3 279.3 174.5 281.3 175.6 280.6 177.3 281.2 178.4 282.5 177.5 283.7 176.8 282.2 175 284 176.2 285.3 179.2 285.8 179.7 287.6 181.7 286.7 180.6 287.7 182.9 288.5 182.3 289.9 184.2 290.9 184.7 293.6 185.9 292.9 187.3 294.9 189.5 295.9 190.7 295.1 191.2 296.2 193.3 297 191.4 297.7 192.2 298.9 193.8 298.4 193.2 300.1 195.2 299.4 196.2 301.3 197.4 300.6 198.1 302.5 201.4 303.7 202.4 302.3 204.5 304.3 205.3 303.3 206.1 305.5 204.5 304.4 203.1 306 204.6 306.7 205.6 308 209.7 310.1 209.4 311.3 211.8 312.6 210.3 313.9 210.4 315.3 210.3 317 211 318.7 211.9 320.1 210.7 319.9 210.8 321.3 212.7 321.8 211.8 322.6 214.1 324.1 212.8 326.4 211.6 326.3 210.5 326.8 210.9 328.4 211.9 329.9 212.9 329.1 213.4 330.5 213.7 329.2 214.1 331.9 213.5 333.7 212.1 334.2 214 334.4 215.6 337 215.5 338.9 214.1 340.2 214.3 343.9 215.8 343.7 215.6 345.5 216.3 347 217.1 347.9 219.6 348.5 219 349.6 220.7 351.5 220.7 350 221.3 351.6 222.8 352.7 220.6 352.8 222.3 353.1 221.5 354.2 223 354.1 223 356.6 222.3 358.2 223.7 358.9 223.7 361.4 225.2 361.3 224.5 362.5 225.3 364 225.5 365.3 226.3 364 227.3 365.9 227.3 367.6 227.7 368.8 227.7 370.8 228.9 370.2 229.2 373.1 230.1 371.9 230.8 373.4 231.4 374.6 231.1 378.1 232.3 379.3 232.1 380.6 231.3 382.2 232.6 382.9 233 384.1 233.2 385.8 232.1 386.7 231.5 388.3 231.4 390.4 230.2 391.3 231.7 392.1 229.1 392.3 229.8 394.7 230.9 398 229.6 397.5 228.9 398.9 228.1 400.7 229.2 401.6 230.2 402.5 229.4 404.2 227.9 403.9 229.1 406 227.3 407.2 227.5 408.5 228.9 407.7 229.2 409.3 229.9 410.6 229.4 412.4 230.9 413.1 232.3 413.2 232.1 414.5 234 415.9 231.4 417.9 233.8 418.9 234.3 420.8 233.5 421.8 234 423 232.9 424.2 230.1 425.2 230.3 426.8 229.4 428.5 231.2 428.1 231.9 429.4 230.7 430.3 228.4 429 229.2 430.5 228.4 431.6 227.2 433.8 225.9 433.6 227.1 434.5 225.8 435.3 227.2 436.4 225 436.8 225.5 438.3 224 437.9 224.5 439.4 225.9 439.5 225.3 440.6 223.8 441.8 225 442.3 225.1 443.8 225.7 442.7 226.2 444.2 226.3 446.2 225.3 447.7 223.1 448.3 224.2 449.5 223.1 450.2 222.4 448.7 221.8 451.8 220.1 451.1 219.7 449.9 219.5 452.5 218.9 451.1 217.4 452.3 217.3 455.4 215.9 455.9 216.6 457.1 218 456.8 218.7 458 217.6 458.7 215.4 460 214.3 459.1 214 461.8 213.2 464 213.4 465.3 214.4 466.1 213.7 467.4 214.6 466.1 215.9 467.5 214.7 469.2 217 469.2 218 469.9 217.9 471.7 216.6 471.3 218.4 472.4 216.4 472.4 218.2 475.4 216.8 477.5 215.6 478.1 216.4 479.5 215.8 480.8 216.3 482.1 215.7 486 214.5 486.4 215.5 487.3 213.8 487.5 213.3 488.6 213.1 490.3 213.3 491.6 211.9 492.7 210.9 494.2 212.5 495.5 210.9 496.3 211.2 497.5 213.1 497.7 212.4 498.8 211 501.3 210.7 504.3 211.8 505.3 210.4 506.6 212.3 510.2 212.1 512.6 213.3 512.6 212.6 513.8 213.5 514.6 214.4 517.5 214.9 519.4 214.3 521.2 215.8 523.7 214.5 526.4 215.1 528 214.9 530.8 215.6 531.9 216.8 533 216.1 535.7 213.1 536.4 214.3 538.5 213.1 539.7 214.1 541.4 214 542.9 214.1 544.1 214.9 545.3 215.3 547 215.5 548.6 214.2 549 214.5 550.3 217.1 552.6 219.7 551.8 219.9 553.3 219.2 555.4 218.3 556.2 219.5 557.5 219.3 559.4 221.5 561 221.4 562.2 220.7 563.3 221.1 564.9 222 566.4 220.5 567.5 221.2 568.9 221.4 571.8 220.8 576.2 221.4 577.6 220.3 578.1 222 578.5 222.1 580.2 220.1 581 218.5 584 217.4 583.2 216.5 584.6 215.2 582.9 214 583 211.1 586.1 210.8 587.4 211.3 588.7 212.5 589.2 213.2 590.7 215.2 592.5 215.3 593.9 216.6 593.2 218.6 595.1 220.1 593.2 219.8 595.3 219.9 597.4 221.3 599.2 221.3 600.9 221.4 602.7 220.1 603.5 221.4 604.3 220.8 606 220.9 608.3 222.2 608.1 224.2 613.5 227.9 614.9 233.6 605.2 240.3 598.9 256.1 605.8 256.1 611.2 269 608.3 265.7 594.1 273 592.3 269.1 575.2 265.1 576.2 264.3 572.7 264.7 571.5 267.7 568.1 269.6 560.9 271.6 561.7 274.4 561 275.5 563.2 279.1 562.5 279.9 561.1 279.3 557.3 278 554.1 279.5 553.9 283.9 555 295.5 552.3 293.8 544.7 305.9 541.8 301.6 522.5 302.9 521.4 301.9 516.9 305.1 516.2 304.6 514.2 332.3 507.6 335.9 498.4 328.4 489.5 344.3 469.2 328.6 456.4 328.9 454.9 333.1 444.6 335.6 445 334.7 444.2 333.8 439.2 330.7 433.3 327.1 422.1 326.6 417.9 325.7 416.7 338.6 415.8 338.3 412.3 332.9 412.7 332.6 410.5 339.7 410.1 340.4 407.1 343.7 406.9 357.4 405.2 357.2 399.4 367.3 396.6 368 408.5 369.9 411.2 365.1 415.6 366.4 416.6 366.7 421.6 368.8 425 363.3 431 368 433.1 371.6 429.6 370.9 428.4 371.3 427 375.5 424.8 376.4 426.6 379.3 425.3 376.9 419.4 378.6 418.8 377.1 415.3 381 413.5 381.3 411.8 380.3 409.1 383 407.5 389.2 423.2 387.9 419 396.3 408.6 403.7 416 401.2 418.8 402.6 422.7 404.1 423.6 412.3 425 414.3 436.1 417 435.7 417.4 437.6 427.7 436 425.2 421.1 427.7 420 428.1 422 428.7 423.1 435.3 421.3 436.4 419.6 434.3 414.9 436.2 413.7 437.4 414.3 439.8 417.7 441 417.4 442.8 423.9 443.4 425.4 447.4 429.1 445 431.2 456.7 437.8 456.1 434 463.2 428.2 469.9 431.5 471.1 430.3 474.4 431.7 479.4 428.6 481.1 428.9 484 431.7 484.8 433.3 486.1 430 493.9 425.6 493.4 423 492 422.7 491.4 425.4 489.8 426.1 490 424.8 488.5 423.2 486.8 422 485.9 422.8 484.6 420.3 484.8 421.9 484.1 423.1 483.5 421.6 482.3 421.7 482.2 423.5 479.3 422.8 479 421.3 480.3 419.7 474.6 419.9 474.9 417.6 472.6 417.6 470.7 415.9 474.4 415.2 474.2 414 471.7 414.2 470.1 411 471.7 409.1 469.8 409.5 470.5 408.1 469.7 406.3 469.2 408.5 467.6 408 466.2 410.2 466.7 407.3 465.8 406.4 465.6 407.9 463 409.5 463.9 407.9 461.1 407.6 461.7 405.7 458.7 405.4 459.7 404 457.3 402.8 458.2 401.8 456.3 398.9 455.2 399.9 464 397.2 464.5 396.1 463.3 396.4 463.7 395.2 462.7 392.3 462.8 390.5 466.5 391.5 467.2 388.6 465.3 384.4 465.3 381.4 464.1 378.7 465.4 376 465.9 372.6 467.5 370.6 467 366 467.2 362.2 468.1 357.5 466.9 357.1 466.9 353.9 462.7 347.1 466.3 344.8 468.6 345.1 467.7 343.5 467.2 341.9 464.4 339.8 461.4 341.3 462 342.6 458.6 344.2 455.8 338.4 456.8 337.6 455.7 331.1 450.6 331.9 450.9 333.2 437.4 336.1 434.8 324.4 433.5 324.6 433.1 321.9 431.8 322.6 423.5 324.4 422.4 317.3 413.2 320.2 411.2 316.7 416.4 315.6 417.3 300 420.9 299.3 418.7 288.6 409.8 289.6 410.1 293.1 407.4 293.2 407.4 291.9 405.5 285.8 403.2 286.5 402.6 282 404.1 282.6 414.2 281.1 410.4 258 416.8 256.8 413.4 234.2 405.7 235.4 401.6 237.1 401.5 238.3 401.6 240.3 402.1 241.7 401.4 247.1 395.8 248.3 393.4 249.9 392.9 247.3 389.5 248.2 387.5 239.3 389.4 237.6 388.4 232.3 381.1 234.2 378.4 218.5 374.8 220.3 372.3 221.4 369.7 223.8 369.4 225.1 368.2 215.9 361.2 223.3 360.1 221.1 360 218.5 361.4 216.4 361 214.8 357.2 217.8 356.6 216.4 360.7 213.2 361.4 210.8 360 209.1 360.3 206 360.4 204.5 355.8 207 351.1 197.4 357.9 194 360.3 193.9 360.3 192.6 360.5 191.1 362.9 188.7 364.8 185.8 363.7 182.6 365 182.9 365.6 181.3 367 179.8 363.7 179.8 363.7 176.7 365.1 176.7 365.1 171.9 366.6 171.5 363 164.5 364.5 160.5 369 158 372.8 147.5 368.8 146.1 366.9 148.8 365 148.6 362.2 144.3 363.4 140.9 364.4 140.2 366.1 137 367.2 136.5 368.3 134.8 371.5 133.2 373.5 130.7 372.2 130.2 364.6 131.1 365.6 130.1 364.6 129.1 364.2 131.1 362.5 131.4 360.4 115.4 359 109.5 352.2 109.6 352.8 111 347.8 111.7 346.6 112.8 348.3 113.6 348.5 116.3 347.5 114.6 346 114 347 119 345.2 119.5 342.2 119.7 340.1 118.7 339.6 119.8 336.8 117 335.4 116.7 334.4 116 329.9 112.5 325 116.3 318.4 108.1 319.8 107.1 320.1 105.9 321.7 105.8 320.2 105.5 319.2 106.2 316.6 104.1 315.5 102.9 313.2 101.3 314.9 96.1 313.8 95.2 314.6 94.2 313.6 93.3 312.4 93.7 313.3 92.6 315.7 87.7 313.5 83.2 312.4 82.5 309.7 83.4 308.7 81.4 307.1 82.4 304 83.3 301.7 81.1 299.1 81.6 297.2 83.1 295.1 82.4 292.5 83.4 291.2 79.7 287 79.6 287.3 77.9 285.4 77.3 282.6 76.4 279.5 73.6 277.7 75 276.5 73.5 277.5 71.8 276.5 73 273.1 74.4 271 77.6 267.3 78.1 269.8 80.6 266.8 82.8 266.9 84.1 266.7 85.4 266.1 88.4 266.6 90.6 265.8 93 267 94.9 265.7 95.1 264.1 94 261.9 93.4 260.5 92.3 258.6 89.4 257.9 86 256.2 83.8 256.5 82 258.7 79.4 258.1 75.3 257.2 73.8 254.9 72.8 251 73.3 249.4 75.3 247.9 79.6 246.4 81.2 242.7 81.7 240.4 80.2 240.7 76.2 246.3 72.5 248.1 70.1 249 67.1 249.2 64 247.9 60 245.4 59 242.6 61.7 241 60.2 230.3 66.3 227.1 67.3 225 66.3 224.1 65.1 223.5 60.3 224.2 58 223 56.9 218.4 55.8 217.7 58.6 216.3 60.1 213 62.1 211.1 61.5 210 60.7 209.5 59.1 211.5 49.6 210.4 46.8 208.3 44.4 204.4 43.1 194.8 43.4 192.5 42.7 187.2 38.6 183.5 34.9 182.2 32.5 182.5 29.6 181.2 27.2 178.1 25.5 174.2 24.4 172.7 21.8 169.6 19 166.3 17.1 164.3 16.7 159.2 18.2 155.5 20.1 150.1 19.9 143 16.1 144.8 11.3 143.7 10 141.4 10.2 134.6 14.4 131.2 17.2 129.4 16.6 126.1 18.5 125.4 21.6 123.3 26.5 119.2 25.6 114.7 26.2 113.9 25.2 113.3 19.9 112.1 19.9 110.5 18.5 110.5 20.2 108.5 18.7 108.4 20.1 105.9 19.6 104.8 22.6 102.9 26.3 101.4 34 98.3 32.2 94.5 33.7 91.4 30.1 89.6 30.5 88.6 29.3 84.3 32.5 81.3 33.4 79.3 32.5 74.3 25.7 73.9 21.4 71.8 21.8 70.8 24 69.4 23.1 67.4 23.6 66.4 22.9 64.3 23.3 65.9 24.7 67.8 26.1 68.4 27.8 68.6 30.1 68.7 33 66.2 31.8 63 32.2 62.6 35.4 61.7 36.4 52.9 33.8 53 35.6 47.9 31.6 48.9 28.9 47.3 26.4 44.7 24.3 42.1 25.7 31.7 24.6 30.7 26.9 28.7 28.5 24.8 26 22.7 27.2 29.7 36.2 30.3 37.6 34.5 39.7 36.1 38 38.3 39.4 38.7 43.3 38.2 44.4 39.3 45.5 38.1 46 38.6 47.5 37.4 49.2 34.3 50.1 30.5 47.8 29.3 43.6 26.4 45.7 25.8 44 20.7 36.3 19 37.2 20.8 42.8 18.1 43.3 18.1 44.9 14.4 47.3 14.5 48.7 13.4 50.3 10 53.5Z"/>
+          <g id="townDots"></g>
+        </svg>
+      </figure>
+      <div>
+        <div class="eyebrow">The players</div>
+        <h2 id="townsTitle">From all over Moldova</h2>
+        <p class="mt-16">The capital has the most players, but people come to the tables from north to south and from both banks of the Dniester.</p>
+        <p class="towns-count"><span>Players</span> <span class="flip" id="statPlayers">—</span><span>Towns</span> <span class="flip" id="statTowns">—</span></p>
+        <ol class="town-roll" id="townRoll" aria-label="The players&#x27; hometowns"></ol>
+        <button type="button" class="btn btn-ghost btn-sm town-more" id="townMore" hidden></button>
+      </div>
     </div>
-    <div class="rank-strip" id="rankStrip">
-      <div class="rank-card skeleton" style="height:150px"></div>
-      <div class="rank-card skeleton" style="height:150px"></div>
-      <div class="rank-card skeleton" style="height:150px"></div>
+  </section>
+
+  <section class="container section-tight" aria-labelledby="leadersTitle">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Rankings</div>
+        <h2 id="leadersTitle">Ranking leaders</h2>
+      </div>
+      <a href="en/players-table-tennis.html" class="sec-link" id="leadersLink">All players →</a>
+    </div>
+    <div class="sport-switch" role="tablist" aria-label="Sport" id="leadersTabs">
+      <button type="button" role="tab" aria-controls="rankStrip" aria-selected="true">Table tennis</button>
+      <button type="button" role="tab" aria-controls="rankStripBb" aria-selected="false" tabindex="-1">Basketball</button>
+    </div>
+    <div class="rank-strip" id="rankStrip" role="tabpanel">
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+    </div>
+    <div class="rank-strip" id="rankStripBb" role="tabpanel" hidden>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
+      <div class="rank-card skeleton" style="height:230px"></div>
     </div>
   </section>
 
-  <section class="container section-tight flow-tourn">
-    <div class="flow-art" aria-hidden="true">
-      <img class="flow-art-player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
-      <img class="flow-art-ball" src="images/sections/attp-tournaments-ball.png" width="41" height="43" loading="lazy" decoding="async" alt="">
-    </div>
-    <div class="eyebrow">Tournaments</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Latest tournaments</h2>
-      <a href="en/tournaments-table-tennis.html" class="btn btn-sm btn-ghost">All tournaments →</a>
-    </div>
-    <div class="grid grid-3" id="tournGrid">
-      <div class="card skeleton" style="height:210px"></div>
-      <div class="card skeleton" style="height:210px"></div>
-      <div class="card skeleton" style="height:210px"></div>
+  <section class="container section-tight" aria-labelledby="tournTitle">
+    <div class="tourn-layout">
+      <div>
+        <div class="sec-head">
+          <div>
+            <div class="eyebrow">Tournaments</div>
+            <h2 id="tournTitle">Latest tournaments</h2>
+          </div>
+          <a href="en/tournaments-table-tennis.html" class="sec-link" id="tournLink">All tournaments →</a>
+        </div>
+        <div class="sport-switch" role="tablist" aria-label="Sport" id="tournTabs">
+          <button type="button" role="tab" aria-controls="tournGrid" aria-selected="true">Table tennis</button>
+          <button type="button" role="tab" aria-controls="tournGridBb" aria-selected="false" tabindex="-1">Basketball</button>
+        </div>
+        <div class="tourn-list" id="tournGrid" role="tabpanel">
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+        </div>
+        <div class="tourn-list" id="tournGridBb" role="tabpanel" hidden>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+          <div class="tourn-mini skeleton" style="height:230px"></div>
+        </div>
+      </div>
+      <div class="serve" aria-hidden="true">
+        <div class="serve-art">
+          <img class="player" src="images/sections/attp-tournaments-player-full.png" width="951" height="1654" loading="lazy" decoding="async" alt="">
+          <img class="ball" src="images/ui/ball.svg" width="40" height="40" loading="lazy" decoding="async" alt="">
+          <img class="player-bb" src="images/ui/attp-basketball-loader.webp" width="360" height="400" loading="lazy" decoding="async" alt="">
+        </div>
+      </div>
     </div>
   </section>
-  </div>
 
-  <section class="container section-tight">
-    <div class="eyebrow">News</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2>Association news</h2>
-      <a href="en/news.html" class="btn btn-sm btn-ghost">All news →</a>
+  <section class="container section-tight" aria-labelledby="newsTitle">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">News</div>
+        <h2 id="newsTitle">Association news</h2>
+      </div>
+      <a href="en/news.html" class="sec-link">All news →</a>
     </div>
     <div class="news-grid" id="newsGrid">
-      <div class="card skeleton" style="height:340px"></div>
-      <div class="card skeleton" style="height:160px"></div>
-      <div class="card skeleton" style="height:160px"></div>
+      <div class="news-card feature skeleton" style="height:380px"></div>
+      <div class="news-card skeleton" style="height:170px"></div>
+      <div class="news-card skeleton" style="height:170px"></div>
     </div>
   </section>
 
   <section class="container section-tight social-stage" aria-labelledby="social-title">
-    <div class="eyebrow">Community</div>
-    <div class="flex items-center justify-between mb-24" style="flex-wrap:wrap;gap:12px">
-      <h2 id="social-title">Follow ATTP</h2>
-      <p class="dim" style="max-width:420px">Matches, people and moments from the hall, every day, on the association’s channels.</p>
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Community</div>
+        <h2 id="social-title">Follow ATTP</h2>
+        <p>Matches, people and moments from the hall, every day, on the association’s channels.</p>
+      </div>
     </div>
     <div class="social-grid">
       <a class="social-card social-card--tiktok" href="https://www.tiktok.com/@attp.md" target="_blank" rel="noopener">
@@ -613,21 +722,28 @@
     </div>
   </section>
 
-  <section class="container section-tight principles-stage">
-    <img class="principles-map-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
-    <div class="eyebrow">Principles</div>
-    <h2 class="mb-24">What defines us</h2>
-    <div class="grid grid-3">
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Respect</h3><p class="dim">Known in sport as fair play — an unwritten code that shapes who we are, at the table and away from it.</p></div>
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Excellence</h3><p class="dim">Pushing past our own limits, however hard it gets, through determination, discipline and steady courage.</p></div>
-      <div class="principle-col"><h3 style="color:var(--spin-hi)">Team</h3><p class="dim">Sport teaches us to treat everyone as equals and to find common goals — that is what makes us an association, not just a list of players.</p></div>
+
+  <section class="container section-tight" aria-labelledby="principlesTitle">
+    <div class="principles">
+      <img class="principles-art" src="images/sections/moldova-paddle-left-accurate.png" alt="" width="1448" height="1086" loading="lazy" decoding="async">
+      <div>
+        <div class="eyebrow">Principles</div>
+        <h2 id="principlesTitle">What defines us</h2>
+        <div class="principle-cols">
+          <div class="principle-col"><h3>Respect</h3><p>Known in sport as fair play — an unwritten code that shapes who we are, at the table and away from it.</p></div>
+          <div class="principle-col"><h3>Excellence</h3><p>Pushing past our own limits, however hard it gets, through determination, discipline and steady courage.</p></div>
+          <div class="principle-col"><h3>Team</h3><p>Sport teaches us to treat everyone as equals and to find common goals — that is what makes us an association, not just a list of players.</p></div>
+        </div>
+        <a href="en/about.html" class="sec-link" style="display:inline-block;margin-top:24px">About us →</a>
+      </div>
     </div>
-    <a href="en/about.html" class="btn btn-sm btn-ghost mt-24">About us →</a>
   </section>
 
-  <section class="section-tight">
-    <div class="container">
-      <div class="eyebrow">Partners</div>
+  <div class="barrier barrier--reverse" aria-hidden="true"></div>
+
+  <section class="section-tight" aria-labelledby="partnersTitle">
+    <div class="container partners-head">
+      <h2 id="partnersTitle" class="eyebrow" style="margin:0">Partners</h2>
     </div>
     <div class="partner-marquee">
       <div class="partner-track">
@@ -679,14 +795,15 @@
     <div class="footer-bottom">
       <span>© 2023–2026 ATTP. All rights reserved.</span>
       <a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a>
-      <span>Rankings via ligas.io · Results via Setka Cup</span>
+      <span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span>
     </div>
   </div>
 </footer>
 
-<script src="data-news.js?v=20260720-fullnews"></script>
+<script src="data-news.js?v=20261102-attpmd"></script>
 <script src="data-news-archive.js?v=20260720-fullnews"></script>
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script src="js/flip.js?v=redesign-1"></script>
 <script>
 // Counts a stat up from 0 — a small nod to the scoreboard's live-data personality.
 // Skips straight to the final value when the user has asked for reduced motion.
@@ -740,6 +857,148 @@ if (ballModels.length) {
   document.addEventListener('visibilitychange', syncModelMotion);
 }
 
+// Hometowns: one dot per town on the map, sized by its players, and the same towns as a
+// roll. The border and the town positions come from OpenStreetMap, projected onto the
+// map's viewBox (equirectangular, cos 47°); a town missing here is listed without a dot.
+const TOWN_XY = {"Anenii Noi":[366.4,332.5],"Avdarma":[313.4,457.6],"Basarabeasca":[331.9,441.8],"Bender":[400.9,343.9],"Briceni":[73.9,36.0],"Bălți":[189.0,155.8],"Cahul":[225.3,527.4],"Camenca":[294.8,101.9],"Cantemir":[226.1,452.8],"Cazaclia":[289.1,507.1],"Ceadîr-Lunga":[311.3,496.8],"Chișinău":[316.5,306.2],"Cimișlia":[305.6,404.0],"Codru":[311.6,314.5],"Comrat":[288.2,448.1],"Congaz":[280.9,486.7],"Copceac":[293.3,537.4],"Cricova":[316.3,280.9],"Criuleni":[356.9,265.6],"Călărași":[242.1,257.9],"Cărpineni":[245.9,355.3],"Căușeni":[390.6,378.4],"Dondușeni":[145.6,60.8],"Drochia":[173.6,101.9],"Dubăsari":[357.2,255.2],"Durlești":[303.0,303.7],"Edineț":[103.0,74.6],"Florești":[239.6,129.5],"Fălești":[158.7,193.6],"Glodeni":[131.1,153.4],"Grigoriopol":[375.2,278.9],"Hîncești":[279.1,342.6],"Ialoveni":[304.7,319.5],"Leova":[233.7,412.2],"Nisporeni":[223.0,292.8],"Ocnița":[127.6,26.2],"Orhei":[311.5,234.7],"Rezina":[329.2,158.5],"Rîbnița":[336.1,155.1],"Rîșcani":[137.5,117.6],"Slobozia":[431.8,362.8],"Soroca":[238.1,77.4],"Strășeni":[282.6,278.8],"Stăuceni":[317.2,289.1],"Sîngera":[331.4,325.5],"Sîngerei":[218.6,181.1],"Taraclia":[289.9,528.7],"Telenești":[248.3,207.7],"Tiraspol":[417.8,337.0],"Ungheni":[171.3,267.1],"Vadul lui Vodă":[346.0,290.7],"Vulcănești":[253.6,571.8],"Șoldănești":[306.9,145.6],"Ștefan Vodă":[425.4,405.2]};
+const ABROAD = new Set(['Odesa','Catania','Zaporojie']);
+async function renderTowns(){
+  const { data } = await db.from('players').select('city');
+  if (!data) return;
+  const home = {}, abroad = {};
+  data.forEach(r => {
+    let c = (r.city || '').trim();
+    if (!c) return;
+    c = townName(c);
+    const bucket = ABROAD.has(c) ? abroad : home;
+    bucket[c] = (bucket[c] || 0) + 1;
+  });
+  const towns = Object.entries(home).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ro'));
+  flipNumber(document.getElementById('statPlayers'), data.length);
+  flipNumber(document.getElementById('statTowns'), towns.length + Object.keys(abroad).length);
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const g = document.getElementById('townDots');
+  // Biggest first. A town whose spot falls inside a bigger dot (the suburbs around
+  // Chișinău) gets no dot of its own; it is still counted in the roll.
+  const drawn = [];
+  towns.forEach(([name, n]) => {
+    const xy = TOWN_XY[name];
+    if (!xy) return;
+    const r = 4 + Math.sqrt(n) * 2.2;
+    if (drawn.some(d => Math.hypot(d.x - xy[0], d.y - xy[1]) < d.r + r * .5)) return;
+    drawn.push({ x:xy[0], y:xy[1], r });
+    const dot = document.createElementNS(svgNS, 'circle');
+    dot.setAttribute('cx', xy[0]); dot.setAttribute('cy', xy[1]);
+    dot.setAttribute('r', r.toFixed(1));
+    dot.setAttribute('class', 'town-dot');
+    const title = document.createElementNS(svgNS, 'title');
+    title.textContent = `${t(name)}: ${n}`;
+    dot.appendChild(title);
+    g.appendChild(dot);
+  });
+  const abroadList = Object.keys(abroad).sort((a,b) => a.localeCompare(b, 'ro'));
+  document.getElementById('townRoll').innerHTML =
+    towns.map(([name, n]) => `<li><a href="en/players-table-tennis.html?oras=${encodeURIComponent(name)}"><span>${escapeHtml(t(name))}</span><b>${n}</b></a></li>`).join('') +
+    (abroadList.length ? `<li class="roll-abroad">${t('Și din afara țării:')} ${abroadList.map(c => escapeHtml(t(c))).join(', ')}</li>` : '');
+  const more = document.getElementById('townMore');
+  if (towns.length > 10) {
+    more.textContent = t('Arată toate localitățile ({n})').replace('{n}', towns.length);
+    more.hidden = false;
+    more.addEventListener('click', () => { document.getElementById('townRoll').classList.add('is-open'); more.hidden = true; }, { once:true });
+  }
+}
+renderTowns();
+// Scoreboard tabs: table tennis (Setka Cup results of ATTP players) or basketball (the latest Bskt Cup
+// matches, team against team). Basketball loads the first time its tab is opened.
+function scoreboardTabs(){
+  const source = document.getElementById('sbSource');
+  let bbLoaded = false;
+  sportTabs(document.querySelector('.sb-tabs'), [document.getElementById('scoreboardTt'), document.getElementById('scoreboardBb')], i => {
+    source.textContent = i ? t('via Bskt Cup') : t('via Setka Cup');
+    if (i === 1 && !bbLoaded) { bbLoaded = true; renderBasketballResults(); }
+  });
+}
+// Leaders and latest tournaments switch sport too; the section link follows the chosen sport, and the
+// illustration beside the tournaments changes from the table tennis player to the basketball figure.
+function sectionTabs(){
+  let leadersBb = false, eveningsBb = false;
+  const leadersLink = document.getElementById('leadersLink'), tournLink = document.getElementById('tournLink');
+  sportTabs(document.getElementById('leadersTabs'), [document.getElementById('rankStrip'), document.getElementById('rankStripBb')], i => {
+    leadersLink.href = i ? 'basketball-players.html' : 'players-table-tennis.html';
+    if (i === 1 && !leadersBb) { leadersBb = true; renderBasketballLeaders(); }
+  });
+  sportTabs(document.getElementById('tournTabs'), [document.getElementById('tournGrid'), document.getElementById('tournGridBb')], i => {
+    tournLink.href = i ? 'tournaments-basketball.html' : 'tournaments-table-tennis.html';
+    document.querySelector('.serve')?.classList.toggle('is-bb', i === 1);
+    if (i === 1 && !eveningsBb) { eveningsBb = true; renderBasketballEvenings(); }
+  });
+}
+async function renderBasketballLeaders(){
+  const el = document.getElementById('rankStripBb');
+  const { data } = await db.from('bskt_jucatori').select('id,nume,prenume,victorii,meciuri,foto_url_mic').order('victorii', { ascending:false }).order('meciuri').limit(6);
+  el.innerHTML = (data || []).map((p, i) => `
+    <a class="rank-card" href="en/player-basketball.html?id=${encodeURIComponent(p.id)}" aria-label="${escapeHtml(t('Vezi profilul lui {n}').replace('{n}', p.prenume + ' ' + p.nume))}">
+      <span class="rank-no">${i + 1}</span>
+      <div class="rank-avatar">${p.foto_url_mic ? `<img src="${escapeHtml(p.foto_url_mic)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : escapeHtml(((p.prenume || '')[0] || '') + ((p.nume || '')[0] || ''))}</div>
+      <div class="rank-name">${escapeHtml(p.prenume)} ${escapeHtml(p.nume)}</div>
+      <div class="rank-sub">${t('{n} meciuri').replace('{n}', p.meciuri)} · ${p.meciuri ? Math.round(p.victorii / p.meciuri * 100) : 0}%</div>
+      <div class="rank-rating">${p.victorii}<small>${t('victorii')}</small></div>
+    </a>`).join('') || `<p class="muted">${t('Clasamentul se actualizează.')}</p>`;
+}
+async function renderBasketballEvenings(){
+  const el = document.getElementById('tournGridBb');
+  const [{ data: teams }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('data,echipa_a,echipa_b,scor_a,scor_b').order('data', { ascending:false }).limit(200),
+  ]);
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  const days = {};
+  (games || []).forEach(m => (days[m.data] ||= []).push(m));
+  const evenings = Object.keys(days).sort().reverse().slice(0, 3);
+  el.innerHTML = evenings.map(d => {
+    const rec = {};
+    days[d].forEach(m => {
+      const a = (rec[m.echipa_a] ||= { v:0, i:0 }), b = (rec[m.echipa_b] ||= { v:0, i:0 });
+      if (m.scor_a > m.scor_b) { a.v++; b.i++; } else { b.v++; a.i++; }
+    });
+    const best = Object.entries(rec).filter(([id]) => byId[id]).sort((x, y) => y[1].v - x[1].v || x[1].i - y[1].i).slice(0, 3);
+    const day = new Date(d + 'T12:00:00').toLocaleDateString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { weekday:'long' });
+    return `<a class="tourn-mini" href="en/tournaments-basketball.html">
+      <div class="tourn-mini-head">
+        <h3>${escapeHtml(t('Seara de {zi}').replace('{zi}', day))}</h3>
+        <div class="tourn-mini-meta">
+          <span class="tourn-mini-date">${fmtDateShort(d)} · Bskt Cup</span>
+          <span class="tag tag-rally">${t('{n} meciuri').replace('{n}', days[d].length)}</span>
+        </div>
+      </div>
+      ${best.map(([id, r], k) => `
+        <div class="tourn-mini-row">
+          <span class="tourn-team"><span class="tourn-pos ${k === 0 ? 'gold' : ''}">${k + 1}</span>${byId[id].logo_url ? `<img src="${escapeHtml(byId[id].logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(byId[id].nume)}</span></span>
+          <span class="num muted">${r.v}:${r.i}</span>
+        </div>`).join('')}
+    </a>`;
+  }).join('') || `<p class="muted">${t('Turneele apar aici imediat ce sunt sincronizate.')}</p>`;
+}
+async function renderBasketballResults(){
+  const el = document.getElementById('scoreboardBb');
+  const [{ data: teams }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(60),
+  ]);
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  // games after midnight belong to the evening before, so they are the latest of their date
+  const key = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
+  const latest = (games || []).filter(m => byId[m.echipa_a] && byId[m.echipa_b]).sort((a, b) => key(b).localeCompare(key(a))).slice(0, 5);
+  if (!latest.length) { el.innerHTML = `<div class="empty-state" style="border:0"><p>${t('Rezultatele apar aici imediat ce sunt sincronizate.')}</p></div>`; return; }
+  const side = (x, won, cls) => `<a class="bb-side ${cls}${won ? ' won' : ''}" href="en/basketball-team.html?id=${encodeURIComponent(x.id)}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(x.nume)}</span></a>`;
+  el.innerHTML = latest.map(m => `
+    <div class="bb-row">
+      ${side(byId[m.echipa_a], m.scor_a > m.scor_b, 'a')}
+      <div class="score-chip">${flipScore(m.scor_a, m.scor_b)}</div>
+      ${side(byId[m.echipa_b], m.scor_b > m.scor_a, 'b')}
+      <div class="score-meta" style="grid-column:1/-1"><span>Bskt Cup${m.prelungiri ? ' · ' + t('prel.') : ''}</span><span>${fmtDateShort(bsktPlayedOn(m.data, m.ora))}${m.ora ? ' · ' + escapeHtml(m.ora) : ''}</span></div>
+    </div>`).join('');
+}
 (async function(){
   const [results, ranked, news, tournRows] = await Promise.all([
     fetchRecentResults(5), fetchTopRanked(6), fetchNews(3),
@@ -752,28 +1011,21 @@ if (ballModels.length) {
     sbBody.innerHTML = `<div class="empty-state" style="border:0"><p>${t('Rezultatele apar aici imediat ce sunt sincronizate.')}</p></div>`;
   } else {
     sbBody.innerHTML = results.map((r,i) => `
-      <div class="score-row" style="animation-delay:${i*60}ms">
-        <div class="score-name">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</div>
-        <div class="score-chip"><span class="score-win">${r.match_win ?? '–'}</span><span class="score-separator">:</span><span class="score-loss">${r.match_lost ?? '–'}</span></div>
-        <div class="score-tournament">${escapeHtml(r.tournament_name || '')}</div>
-        <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.start_date ? fmtDateShort(r.start_date) : ''}</span></div>
+      <div class="score-row">
+        <div class="score-name"><a href="en/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></div>
+        <div class="score-chip">${flipScore(r.match_win, r.match_lost)}</div>
+        <div class="score-tournament"><a href="en/tournament.html?id=${r.tournament_id}">${escapeHtml(tournamentTitle(r.tournament_name))}</a>${r.start_date ? ' · ' + fmtDateShort(r.start_date) : ''}</div>
+        <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.position ? t('locul {n}').replace('{n}', r.position) : ''}</span></div>
       </div>`).join('');
   }
-
-  // Hero stat counters: distinct tournaments and matches involving an ATTP
-  // (Setka-linked) player, counted once each in the database (site_stats).
-  const { data: stats } = await db.rpc('site_stats');
-  if (stats) {
-    countUp(document.getElementById('statPlayers'), stats.players);
-    countUp(document.getElementById('statTournaments'), stats.tournaments);
-    countUp(document.getElementById('statMatches'), stats.matches);
-  }
+  scoreboardTabs();
+  sectionTabs();
 
   // Ranking strip
   const rankStrip = document.getElementById('rankStrip');
   rankStrip.innerHTML = ranked.length ? ranked.map((p,i) => `
     <a class="rank-card" href="en/player.html?id=${encodeURIComponent(p.id)}" aria-label="Vezi profilul lui ${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}">
-      <span class="rank-no">#${p.ligas_ranking[0].position}</span>
+      <span class="rank-no">${p.ligas_ranking[0].position}</span>
       <div class="rank-avatar">${avatarHtml(p)}</div>
       <div class="rank-name">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</div>
       <div class="rank-city">${escapeHtml(p.city || 'Moldova')}</div>
@@ -784,21 +1036,21 @@ if (ballModels.length) {
   const tournGrid = document.getElementById('tournGrid');
   const byTournament = {};
   tournRows.forEach(r => {
-    (byTournament[r.tournament_id] ||= { name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
+    (byTournament[r.tournament_id] ||= { id:r.tournament_id, name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
   });
   const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
   tournGrid.innerHTML = tournaments.length ? tournaments.map(tr => `
     <div class="tourn-mini">
       <div class="tourn-mini-head">
-        <h3>${escapeHtml(tr.name)}</h3>
+        <h3><a class="tourn-mini-link" href="en/tournament.html?id=${tr.id}">${escapeHtml(tournamentTitle(tr.name))}</a></h3>
         <div class="tourn-mini-meta">
           <span class="tourn-mini-date">${fmtDateShort(tr.date)} · ${divisionLabel(tr.division)}</span>
-          <span class="tag tag-rally" style="font-size:10px">${tr.rows.length} ATTP</span>
+          <span class="tag tag-rally">${tr.rows.length} ATTP</span>
         </div>
       </div>
       ${tr.rows.sort((a,b)=>(a.position||99)-(b.position||99)).slice(0,3).map(r => `
         <div class="tourn-mini-row">
-          <span><span class="tourn-pos ${r.position===1?'gold':''}">${r.position ?? '–'}</span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span>
+          <span><span class="tourn-pos ${r.position===1?'gold':''}">${r.position ?? '–'}</span><a href="en/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></span>
           <span class="num muted">${r.match_win ?? '–'}:${r.match_lost ?? '–'}</span>
         </div>`).join('')}
     </div>`).join('') : `<p class="muted">${t('Turneele apar aici imediat ce sunt sincronizate.')}</p>`;
@@ -812,7 +1064,7 @@ if (ballModels.length) {
       <a href="en/news-article.html?slug=${encodeURIComponent(n.slug)}" class="news-card ${i===0?'feature':''}">
         <div class="news-cover">${n.cover_image_url ? `<img src="${n.cover_image_url}" alt="" style="width:100%;height:100%;object-fit:cover">` : `<svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><circle cx="10" cy="10" r="7"/></svg>`}</div>
         <div class="news-body">
-          ${n.tag ? `<span class="tag" style="align-self:flex-start">${escapeHtml(n.tag)}</span>` : ''}
+          ${n.tag ? `<span class="tag" style="align-self:flex-start;margin-top:${i===0?'14px':'0'}">${escapeHtml(n.tag)}</span>` : ''}
           <h3>${escapeHtml(n.title)}</h3>
           <span class="news-date">${fmtDate(n.published_at)}</span>
         </div>
@@ -871,8 +1123,70 @@ if (ballModels.length) {
   requestAnimationFrame(tick);
 })();
 </script>
+<script>
+// Phone opener (see .m-open): live leaders and latest results. Rendered on every screen size (the queries are
+// small); CSS shows it only on phones.
+(async function(){
+  // action photos on file; anyone else at No. 1 is shown with their portrait instead, never someone else's photo
+  const ACTION = { 'ursu vladislav':['images/heroes/players-900.webp','30% 30%'], 'turcan victor':['images/heroes/tournaments-900.webp','55% 30%'], 'demik ying':['images/heroes/news-900.webp','50% 35%'] };
+  const dayMonth = iso => { const d = new Date(iso + 'T12:00:00Z');
+    return (window.ATTP_LANG || 'ro') === 'ro' ? `${d.getUTCDate()} ${MONTHS_RO[d.getUTCMonth()]}` : d.toLocaleDateString(DATE_LOCALE[window.ATTP_LANG], { day:'numeric', month:'long', timeZone:'UTC' }); };
+  const num = n => Number(n).toLocaleString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { minimumFractionDigits:1, maximumFractionDigits:1 });
+  const digits = (n, won) => String(n).split('').map(c => `<span class="mo-dg${won ? ' won' : ''}">${c}</span>`).join('');
+  const pic = (url, txt, crest) => `<span class="mo-pic${crest ? ' crest' : ''}">${url ? `<img src="${escapeHtml(url)}" alt="" loading="lazy">` : escapeHtml(txt)}</span>`;
+
+  const [top, { data: bp }, { data: bt }, { data: teams }, { data: games }, { data: tr }] = await Promise.all([
+    fetchTopRanked(2),
+    db.from('bskt_jucatori').select('id,prenume,nume,victorii,meciuri,foto_url_mic').order('victorii', { ascending:false }).order('meciuri').limit(1),
+    db.from('bskt_echipe_stat').select('id,nume,logo_url,victorii,meciuri').order('coeficient', { ascending:false }).limit(1),
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(40),
+    db.from('tournament_results').select('player_id,first_name,last_name,tournament_id,tournament_name,start_date,match_win,match_lost,position').eq('status','finished').order('start_date', { ascending:false }).limit(60),
+  ]);
+
+  // No. 1 in table tennis
+  const p1 = top[0], hero = document.getElementById('moHero');
+  if (p1) {
+    const key = foldText(`${p1.last_name} ${p1.first_name}`).toLowerCase();
+    const act = ACTION[key];
+    const photo = act ? act[0] : (p1.ligas_photo_url || null);
+    hero.href = `player.html?id=${encodeURIComponent(p1.id)}`;
+    hero.setAttribute('aria-label', `${t('Nr. 1')}: ${p1.first_name} ${p1.last_name}`);
+    hero.innerHTML = `${photo ? `<img src="${escapeHtml(photo)}" alt="" fetchpriority="high" style="object-position:${act ? act[1] : '50% 20%'}">` : ''}
+      <div class="mo-copy"><span class="mo-kick"><span class="mo-no">${t('Nr. 1')}</span>${t('Tenis de masă · Clasamentul FTMM')}</span>
+        <span class="mo-name">${escapeHtml(p1.first_name)}<br>${escapeHtml(p1.last_name)}</span>
+        <span class="mo-meta"><span><b>${num(p1.ligas_ranking[0].rating)}</b>${t('rating')}</span>${p1.city ? `<span><b>${escapeHtml(townName(p1.city))}</b>${t('oraș')}</span>` : ''}</span></div>`;
+  }
+
+  // the other leaders, swipeable
+  const cards = [];
+  if (bp?.[0]) { const b = bp[0]; cards.push(`<a class="mo-card" href="en/player-basketball.html?id=${encodeURIComponent(b.id)}">${pic(b.foto_url_mic, (b.prenume[0] || '') + (b.nume[0] || ''))}<span><small>${t('Nr. 1 · Baschet')}</small><strong>${escapeHtml(b.prenume)} ${escapeHtml(b.nume)}</strong><span>${t('{v} victorii · {m} meciuri').replace('{v}', b.victorii).replace('{m}', b.meciuri)}</span></span></a>`); }
+  if (bt?.[0]) { const e = bt[0]; cards.push(`<a class="mo-card" href="en/basketball-team.html?id=${encodeURIComponent(e.id)}">${pic(e.logo_url, e.nume[0], true)}<span><small>${t('Echipa nr. 1 · Bskt Cup')}</small><strong>${escapeHtml(e.nume)}</strong><span>${t('{v} victorii din {m}').replace('{v}', e.victorii).replace('{m}', e.meciuri)}</span></span></a>`); }
+  const p2 = top[1];
+  if (p2) cards.push(`<a class="mo-card" href="en/player.html?id=${encodeURIComponent(p2.id)}">${pic(p2.ligas_photo_url, p2.first_name[0] + p2.last_name[0])}<span><small>${t('Nr. 2 · Tenis de masă')}</small><strong>${escapeHtml(p2.first_name)} ${escapeHtml(p2.last_name)}</strong><span>${t('rating')} ${num(p2.ligas_ranking[0].rating)}</span></span></a>`);
+  document.getElementById('moRow').innerHTML = cards.join('');
+
+  // latest Bskt Cup game (after-midnight games are the latest of their evening)
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  const key = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
+  const g = (games || []).filter(m => byId[m.echipa_a] && byId[m.echipa_b]).sort((a, b) => key(b).localeCompare(key(a)))[0];
+  const side = (x, won) => `<span class="mo-team${won ? ' won' : ''}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}${escapeHtml(x.nume)}</span>`;
+  document.getElementById('moBb').innerHTML = g ? `<a class="mo-res" href="basketball-team.html?id=${encodeURIComponent(g.scor_a > g.scor_b ? g.echipa_a : g.echipa_b)}">
+      <span class="lbl"><b>${t('Baschet · Bskt Cup')}</b><span>${dayMonth(bsktPlayedOn(g.data, g.ora))}${g.ora ? ' · ' + escapeHtml(g.ora) : ''}</span></span>
+      <span class="mo-bb">${side(byId[g.echipa_a], g.scor_a > g.scor_b)}<span class="mo-score" aria-label="${g.scor_a}:${g.scor_b}">${digits(g.scor_a, g.scor_a > g.scor_b)}<span class="mo-colon">:</span>${digits(g.scor_b, g.scor_b > g.scor_a)}</span>${side(byId[g.echipa_b], g.scor_b > g.scor_a)}</span></a>` : '';
+
+  // latest table tennis tournament, top three
+  const rows = tr || [];
+  const last = rows[0];
+  const podium = last ? rows.filter(r => r.tournament_id === last.tournament_id && r.position).sort((a, b) => a.position - b.position).slice(0, 3) : [];
+  document.getElementById('moTt').innerHTML = podium.length ? `<a class="mo-res" href="en/tournament.html?id=${encodeURIComponent(last.tournament_id)}">
+      <span class="lbl"><b>${t('Tenis de masă · Setka Cup')}</b><span>${escapeHtml(tournamentTitle(last.tournament_name))} · ${dayMonth(String(last.start_date).slice(0, 10))}</span></span>
+      <ol class="mo-tt">${podium.map(r => `<li><span class="mo-pos">${r.position}</span><span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span><span class="mo-wl">${r.match_win ?? '–'}:${r.match_lost ?? '–'}</span></li>`).join('')}</ol></a>` : '';
+})();
+</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>

@@ -6,15 +6,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Турниры · Настольный теннис — ATTP</title>
 <meta name="description" content="Последние турниры с участием игроков ATTP, с результатами в реальном времени через Setka Cup.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/ru/tournaments-table-tennis.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/tournaments-table-tennis.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/tournaments-table-tennis.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/tournaments-table-tennis.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/tournaments-table-tennis.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Турниры · Настольный теннис — ATTP">
+<meta property="og:description" content="Последние турниры с участием игроков ATTP, с результатами в реальном времени через Setka Cup.">
+<meta property="og:url" content="https://geezfully.com/attp/ru/tournaments-table-tennis.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — настольный теннис и баскетбол в Республике Молдова">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=2903529e"></script>
+<script src="js/i18n-ru.js?v=69cccd53"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -63,34 +81,67 @@
   .tourn-date{ font-family:var(--font-mono); font-size:12px; color:var(--muted); margin-top:4px; }
   .participant-row{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--border); font-size:14px; }
   .participant-row:first-of-type{ border-top:0; }
-  .pos-badge{ font-family:var(--font-mono); font-size:11px; font-weight:700; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:10px; }
+  .pos-badge{ font-family:var(--font-mono); font-size:12px; font-weight:700; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); margin-right:10px; }
   .pos-badge.gold{ background:var(--spin-dim); color:var(--spin-hi); }
+  .p-link{ display:inline-block; padding-block:13px; margin-block:-13px; color:inherit; text-decoration:none; }
+  .p-link:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  /* Honours board: the painted board on a club wall, a line per year with the season's winner in gold */
+  .honours{ margin:8px 0 48px; background:var(--table-ink); color:#EEF2F8; border-radius:var(--radius-lg); padding:clamp(20px,3vw,34px); position:relative; box-shadow:var(--shadow-pop); }
+  .honours::before{ content:""; position:absolute; inset:9px; border:1px solid rgba(245,195,48,.42); border-radius:6px; pointer-events:none; }
+  .honours-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px 24px; flex-wrap:wrap; padding-bottom:16px; border-bottom:2px solid rgba(245,195,48,.55); position:relative; }
+  .honours-head .eyebrow{ color:var(--shirt); margin-bottom:6px; }
+  .honours-head h2{ color:#fff; font-size:clamp(30px,4vw,44px); }
+  .honours-head p{ color:#B8C4D6; font-size:14px; max-width:360px; margin:0; }
+  .hon-row{ display:grid; grid-template-columns:96px minmax(0,1.2fr) minmax(0,1fr); gap:6px 24px; align-items:center; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.12); position:relative; }
+  .hon-row:last-of-type{ border-bottom:0; }
+  .hon-year{ font-family:var(--font-display); font-weight:900; font-size:46px; line-height:.9; color:var(--shirt); font-variant-numeric:tabular-nums; }
+  .hon-year small{ display:block; font-family:var(--font-label); font-size:13px; font-weight:700; letter-spacing:.04em; color:#B8C4D6; text-transform:uppercase; margin-top:4px; }
+  .hon-champ a{ font-family:var(--font-display); font-weight:800; font-size:clamp(26px,3vw,34px); line-height:1; color:#fff; text-decoration:none; display:inline-block; padding-block:8px; margin-block:-8px; }
+  .hon-champ a:hover{ color:var(--shirt); }
+  .hon-champ span{ display:block; font-family:var(--font-label); font-size:15px; font-weight:600; color:#D5DDE8; margin-top:4px; }
+  .hon-champ b{ color:var(--shirt); }
+  .hon-rest{ display:grid; gap:6px; font-family:var(--font-label); font-size:15px; color:#D5DDE8; }
+  .hon-rest a{ color:#fff; font-weight:700; text-decoration:none; display:inline-block; padding-block:6px; margin-block:-6px; }
+  .hon-rest a:hover{ color:var(--shirt); text-decoration:underline; text-underline-offset:3px; }
+  .hon-rest .medal{ display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; font-size:12px; font-weight:800; color:var(--text); margin-right:8px; vertical-align:1px; }
+  .medal--2{ background:#C9CED6; } .medal--3{ background:#D49A6A; }
+  .hon-plaque{ margin-top:18px; padding:12px 16px; border-radius:var(--radius); background:rgba(245,195,48,.12); border:1px solid rgba(245,195,48,.35); font-size:14.5px; color:#EEF2F8; position:relative; }
+  .hon-plaque a{ color:var(--shirt); font-weight:700; }
+  @media (max-width:700px){
+    .hon-row{ grid-template-columns:64px minmax(0,1fr); }
+    .hon-year{ font-size:36px; }
+    .hon-rest{ grid-column:2; font-size:14.5px; }
+  }
+  .list-head{ margin-bottom:18px; }
+  .tourn-head h3 a{ color:inherit; text-decoration:none; display:inline-block; padding-block:8px; margin-block:-8px; }
+  .tourn-head h3 a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .tourn-more{ display:inline-flex; align-items:center; min-height:44px; margin:6px 0 -10px; font-family:var(--font-label); font-weight:700; font-size:15px; color:var(--table); text-decoration:none; }
+  .tourn-more:hover{ text-decoration:underline; text-underline-offset:3px; }
 </style>
 </head>
 <body>
 <div id="loadScreen" aria-hidden="true">
-  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
-    <g class="lm-ball-group">
-      <circle class="lm-ball" cx="88" cy="70" r="20"/>
-      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
-    </g>
-    <g class="lm-paddle-group">
-      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
-      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
-      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
-      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
-      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
-      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
-      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
-      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
-    </g>
-  </svg>
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">Гарантия честности</span></span>
+  </div>
 </div>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
+    <a href="ru/index.html" class="brand"><span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">Гарантия честности</span></span></a>
     <nav class="nav-links"><a href="ru/about.html">О нас</a><a href="ru/news.html">Новости</a><a href="ru/players.html">Игроки</a><a href="ru/tournaments.html" class="active">Турниры</a><a href="ru/gallery.html">Медиа</a><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/contact.html">Контакты</a></nav>
     <div class="lang-switch"><a href="tournaments-table-tennis.html" hreflang="ro" lang="ro">RO</a><a href="ru/tournaments-table-tennis.html" hreflang="ru" lang="ru" class="active">RU</a><a href="en/tournaments-table-tennis.html" hreflang="en" lang="en">EN</a></div>
     <button class="nav-toggle" id="navToggle" aria-label="Открыть меню"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
@@ -116,6 +167,14 @@
     </div>
   </section>
   <section class="container section-tight tourn-list-section">
+    <section class="honours" id="honours" aria-labelledby="honoursTitle" hidden>
+      <div class="honours-head">
+        <div><div class="eyebrow">Доска почёта</div><h2 id="honoursTitle">Победители года</h2></div>
+        <p>Игроки ATTP, выигравшие больше всего турниров Setka Cup в каждом году.</p>
+      </div>
+      <div id="honoursRows"></div>
+    </section>
+    <div class="list-head"><div class="eyebrow">Результаты</div><h2>Последние турниры</h2></div>
     <div id="tournamentList">
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
@@ -134,18 +193,18 @@
       <div><h4>Материалы</h4><a href="ru/documents.html">Документы</a><a href="ru/fairplay.html">Фейр-плей</a><a href="ru/gallery.html">Медиа</a></div>
       <div><h4>Ассоциация</h4><a href="ru/contact.html">Контакты</a><a href="ru/privacy.html">Конфиденциальность</a><a href="ru/terms.html">Условия использования</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг: ligas.io · Результаты: Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. Все права защищены.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Написать автору в WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Рейтинг через ligas.io · Результаты через Setka Cup и Bskt Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
 <script>
 (async function(){
   const { data, error } = await db.from('tournament_results').select('*').eq('status','finished').order('start_date', { ascending:false }).limit(300);
   const rows = data || [];
   const byTournament = {};
   rows.forEach(r => {
-    (byTournament[r.tournament_id] ||= { name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
+    (byTournament[r.tournament_id] ||= { id:r.tournament_id, name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
   });
   const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
 
@@ -169,21 +228,56 @@
     <div class="tourn-card">
       <div class="tourn-head">
         <div>
-          <h3>${escapeHtml(tr.name)}</h3>
+          <h3><a href="ru/tournament.html?id=${tr.id}">${escapeHtml(tournamentTitle(tr.name))}</a></h3>
           <div class="tourn-date">${fmtDate(tr.date)} · ${divisionLabel(tr.division)}</div>
         </div>
         <span class="tag tag-rally">${tr.rows.length} ${t('participanți ATTP')}</span>
       </div>
       ${tr.rows.sort((a,b)=>(a.position||99)-(b.position||99)).map(r => `
         <div class="participant-row">
-          <span><span class="pos-badge ${r.position===1?'gold':''}">${r.position ?? '–'}</span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span>
+          <span><span class="pos-badge ${r.position===1?'gold':''}">${r.position ?? '–'}</span><a class="p-link" href="ru/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></span>
           <span class="num muted">${r.match_win ?? '–'}:${r.match_lost ?? '–'} · ${r.points ?? '—'} ${t('pct')}</span>
         </div>`).join('')}
+      <a class="tourn-more" href="ru/tournament.html?id=${tr.id}">${t('Vezi turneul')} <span aria-hidden="true">&nbsp;→</span></a>
     </div>`).join('');
+})();
+
+// Honours board: for every year, the three ATTP players with the most Setka Cup tournaments won
+// (podiums break a tie). The year still running says so.
+(async function(){
+  const { data: first } = await db.from('tournament_wins_yearly').select('an').order('an').limit(1);
+  if (!first?.length) return;
+  const now = new Date().getFullYear();
+  const years = []; for (let y = now; y >= first[0].an; y--) years.push(y);
+  const lists = await Promise.all(years.map(y => db.from('tournament_wins_yearly').select('*').eq('an', y)
+    .order('victorii', { ascending:false }).order('podiumuri', { ascending:false }).limit(3).then(r => r.data || [])));
+  const rows = years.map((y, i) => ({ y, top: lists[i] })).filter(r => r.top.length && r.top[0].victorii > 0);
+  if (!rows.length) return;
+  const link = p => `<a href="ru/player.html?id=${encodeURIComponent(p.player_id)}">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</a>`;
+  const wins = n => t('{n} turnee câștigate').replace('{n}', n);
+  document.getElementById('honoursRows').innerHTML = rows.map(({ y, top }) => `
+    <div class="hon-row">
+      <div class="hon-year">${y}${y === now ? `<small>${t('în curs')}</small>` : ''}</div>
+      <div class="hon-champ">${link(top[0])}<span>${wins(`<b>${top[0].victorii}</b>`)} · ${top[0].podiumuri} ${t('podiumuri')} · ${t('{n} jucate').replace('{n}', top[0].turnee)}</span></div>
+      <div class="hon-rest">${top.slice(1).map((p, k) => `<div><span class="medal medal--${k + 2}" aria-label="${t('Locul {n}').replace('{n}', k + 2)}">${k + 2}</span>${link(p)} · ${wins(p.victorii)}</div>`).join('')}</div>
+    </div>`).join('');
+  // the player who made the yearly top three most often, when it happened at least three times
+  const seen = {};
+  rows.forEach(({ y, top }) => top.forEach(p => { (seen[p.player_id] ||= { p, years: [] }).years.push(y); }));
+  const best = Object.values(seen).sort((a, b) => b.years.length - a.years.length)[0];
+  if (best && best.years.length >= 3) {
+    const plaque = document.createElement('p');
+    plaque.className = 'hon-plaque';
+    plaque.innerHTML = t('{name} a fost în primii trei ai anului de {n} ori: {ani}.')
+      .replace('{name}', link(best.p)).replace('{n}', best.years.length).replace('{ani}', best.years.sort().join(', '));
+    document.getElementById('honours').appendChild(plaque);
+  }
+  document.getElementById('honours').hidden = false;
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>

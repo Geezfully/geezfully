@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none">
+  <!-- The painted lines of a multi-sport hall floor, seen from above: basketball in
+       white, the volleyball court in yellow. Drawn large so only fragments show
+       behind the content, the way a floor reads when you stand on it. -->
+  <g stroke="#FFFFFF" stroke-opacity=".5" stroke-width="4">
+    <!-- basketball: sideline, half-court line, centre circle -->
+    <path d="M-20 92H1620"/>
+    <path d="M1180 92V1100"/>
+    <circle cx="1180" cy="560" r="150"/>
+    <!-- the key and the three-point arc at the left basket -->
+    <path d="M-20 420H250V700H-20"/>
+    <circle cx="250" cy="560" r="150" stroke-dasharray="18 14"/>
+    <path d="M-20 140H40A520 420 0 0 1 40 980H-20"/>
+  </g>
+  <g stroke="#E8B21F" stroke-opacity=".34" stroke-width="4">
+    <!-- volleyball court: attack lines and centre line -->
+    <path d="M520 -20V1020"/>
+    <path d="M820 -20V1020"/>
+    <path d="M300 236H1040"/>
+  </g>
+</svg>

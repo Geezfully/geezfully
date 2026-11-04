@@ -5,15 +5,34 @@
 <base href="../">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Player profile — ATTP</title>
+<meta name="description" content="National Association of Professional Athletes of the Republic of Moldova “ATTP”: table tennis and basketball.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/en/player.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/player.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/player.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/player.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/player.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Player profile — ATTP">
+<meta property="og:description" content="National Association of Professional Athletes of the Republic of Moldova “ATTP”: table tennis and basketball.">
+<meta property="og:url" content="https://geezfully.com/attp/en/player.html">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — table tennis and basketball in the Republic of Moldova">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=9711e515"></script>
+<script src="js/i18n-en.js?v=f5674db9"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -28,40 +47,91 @@
   .kpi-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:32px 0; }
   .kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
   .kpi b{ display:block; font-family:var(--font-mono); font-size:24px; }
-  .kpi span{ font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .kpi span{ display:block; font-size:12.5px; line-height:1.35; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
   @media (max-width:700px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
+  /* palmares: tournaments won, podiums and the share of matches won, under the main numbers */
+  .palmares{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); margin:-12px 0 32px; background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); }
+  .palm{ display:flex; align-items:center; gap:14px; padding:16px 18px; min-width:0; }
+  .palm + .palm{ border-left:1px solid var(--rule); }
+  .palm-mark{ flex:0 0 auto; width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-family:var(--font-display); font-weight:900; font-size:19px; color:var(--text);
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.14); }
+  .palm-mark--gold{ background:linear-gradient(160deg,#F7D774,#D9A92E); }
+  .palm-mark--podium{ background:conic-gradient(#F2C94C 0 33%, #C9CED6 0 66%, #D49A6A 0); }
+  .palm-mark--rate{ background:conic-gradient(var(--felt) calc(var(--p) * 1%), var(--rule) 0); }
+  .palm-mark--rate::after{ content:""; width:28px; height:28px; border-radius:50%; background:var(--paper); grid-area:1/1; }
+  .palm b{ display:block; font-family:var(--font-display); font-size:28px; font-weight:900; line-height:1; color:var(--text); }
+  .palm > div > span{ display:block; margin-top:3px; font-family:var(--font-label); font-size:13px; font-weight:700; color:var(--muted); line-height:1.25; }
+  .tr-link{ color:inherit; font-weight:600; text-decoration:underline; text-decoration-color:var(--rule-2); text-underline-offset:3px; display:inline-block; padding-block:12px; margin-block:-12px; }
+  .tr-link:hover{ color:var(--table); text-decoration-color:currentColor; }
+  /* Setka Cup rating over time: a line on a white sheet, a marker that follows the finger or the arrow keys */
+  .rating-card{ background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); padding:20px clamp(16px,2.4vw,26px) 14px; margin:0 0 32px; }
+  .rc-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:10px 24px; flex-wrap:wrap; margin-bottom:10px; }
+  .rc-head h2{ font-size:clamp(26px,3vw,34px); }
+  .rc-head .eyebrow{ margin-bottom:4px; }
+  .rc-now{ text-align:right; }
+  .rc-now b{ font-family:var(--font-display); font-size:40px; font-weight:900; line-height:1; color:var(--table); font-variant-numeric:tabular-nums; }
+  .rc-delta{ display:inline-block; margin-left:10px; padding:3px 8px; border-radius:var(--radius-sm); font-family:var(--font-label); font-size:15px; font-weight:800; vertical-align:8px; }
+  .rc-delta.up{ background:var(--win-dim); color:var(--felt); }
+  .rc-delta.down{ background:var(--loss-dim); color:var(--rubber); }
+  .rc-delta.same{ background:var(--wash); color:var(--muted); }
+  .rc-now small{ display:block; margin-top:4px; font-family:var(--font-label); font-size:13.5px; font-weight:600; color:var(--muted); }
+  .rc-chart{ position:relative; touch-action:pan-y; }
+  .rc-chart svg{ display:block; width:100%; overflow:visible; }
+  .rc-chart svg:focus{ outline:none; }
+  .rc-chart svg:focus-visible{ outline:3px solid rgba(28,78,148,.35); outline-offset:4px; border-radius:4px; }
+  .rc-grid{ stroke:var(--rule); stroke-width:1; }
+  .rc-axis{ font-family:var(--font-label); font-size:12.5px; font-weight:600; fill:var(--muted); }
+  .rc-area{ fill:rgba(28,78,148,.09); }
+  .rc-line{ fill:none; stroke:var(--table); stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round; }
+  .rc-guide{ stroke:var(--text); stroke-width:1; stroke-dasharray:3 3; opacity:.5; }
+  .rc-dot{ fill:var(--paper); stroke:var(--table); stroke-width:3; }
+  .rc-tip{ position:absolute; top:0; transform:translateX(-50%); pointer-events:none; background:var(--text); color:#fff; border-radius:var(--radius-sm); padding:5px 9px; font-family:var(--font-label); font-size:14px; font-weight:700; white-space:nowrap; }
+  .rc-tip span{ font-weight:500; opacity:.8; margin-left:6px; }
+  .rc-note{ margin:8px 0 0; font-size:13.5px; }
+  .hist-note{ margin:-12px 0 18px; font-size:14.5px; }
+  @media (max-width:640px){
+    .palmares{ grid-template-columns:1fr; }
+    .palm + .palm{ border-left:0; border-top:1px solid var(--rule); }
+    .palm{ padding:12px 16px; }
+  }
 
   .gear-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px 28px; margin-top:16px; }
-  .gear-item .gear-label{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
+  .gear-item .gear-label{ font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
   .gear-item .gear-value{ font-size:14.5px; color:var(--chalk); font-weight:600; }
   @media (max-width:700px){ .gear-grid{ grid-template-columns:1fr 1fr; } }
   @media (max-width:460px){ .gear-grid{ grid-template-columns:1fr; } }
+  /* on a phone the history keeps tournament, date, score and place; division and points drop out */
+  @media (max-width:640px){
+    #statsTable{ min-width:0; }
+    #statsTable th:nth-child(3), #statsTable td:nth-child(3), #statsTable th:nth-child(5), #statsTable td:nth-child(5){ display:none; }
+    #statsTable td, #statsTable th{ padding-inline:8px; }
+    #statsTable td:first-child{ font-size:14px; }
+  }
 </style>
 </head>
 <body>
 <div id="loadScreen" aria-hidden="true">
-  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
-    <g class="lm-ball-group">
-      <circle class="lm-ball" cx="88" cy="70" r="20"/>
-      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
-    </g>
-    <g class="lm-paddle-group">
-      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
-      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
-      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
-      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
-      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
-      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
-      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
-      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
-    </g>
-  </svg>
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">A guarantee of integrity</span></span>
+  </div>
 </div>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="en/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span></a>
+    <a href="en/index.html" class="brand"><span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span></a>
     <nav class="nav-links"><a href="en/about.html">About us</a><a href="en/news.html">News</a><a href="en/players.html" class="active">Players</a><a href="en/tournaments.html">Tournaments</a><a href="en/gallery.html">Media</a><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/contact.html">Contact</a></nav>
     <div class="lang-switch"><a href="player.html" hreflang="ro" lang="ro">RO</a><a href="ru/player.html" hreflang="ru" lang="ru">RU</a><a href="en/player.html" hreflang="en" lang="en" class="active">EN</a></div>
     <button class="nav-toggle" id="navToggle" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
@@ -82,12 +152,22 @@
     </div>
     <section class="container section-tight">
       <div class="kpi-row" id="kpiRow"></div>
+      <div class="palmares" id="palmares" hidden></div>
+      <section class="rating-card" id="ratingCard" aria-labelledby="ratingTitle" hidden>
+        <div class="rc-head">
+          <div><div class="eyebrow">Progress</div><h2 id="ratingTitle">Setka Cup rating</h2></div>
+          <div class="rc-now" id="rcNow"></div>
+        </div>
+        <div class="rc-chart" id="rcChart"></div>
+        <p class="muted rc-note">The value at the end of each day. Touch the chart or use the arrow keys to see a given day.</p>
+      </section>
       <div class="card" id="gearCard" style="display:none;margin-bottom:32px">
         <div class="eyebrow" style="margin-bottom:0">Equipment &amp; style</div>
         <div class="gear-grid" id="gearGrid"></div>
       </div>
       <div class="eyebrow">History</div>
-      <h2 class="mb-24">Recent tournaments</h2>
+      <h2 class="mb-24">Setka Cup tournaments</h2>
+      <p class="muted hist-note" id="histNote" hidden></p>
       <div class="table-scroll">
         <table class="data" id="statsTable">
           <thead><tr><th>Tournament</th><th>Date</th><th>Div.</th><th class="r">Score</th><th class="r">Points</th><th class="r">Place</th></tr></thead>
@@ -106,11 +186,11 @@
       <div><h4>Resources</h4><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/gallery.html">Media</a></div>
       <div><h4>Association</h4><a href="en/contact.html">Contact</a><a href="en/privacy.html">Privacy</a><a href="en/terms.html">Terms and conditions</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
 <script>
 (async function(){
   const id = new URLSearchParams(location.search).get('id');
@@ -156,11 +236,33 @@
       <div class="gear-item"><div class="gear-label">${escapeHtml(label)}</div><div class="gear-value">${escapeHtml(value)}</div></div>`).join('');
   }
 
+  // palmares, from every Setka Cup result of the player: tournaments won and podiums
+  const count = q => q.then(r => r.count || 0);
+  const results = () => db.from('tournament_results').select('player_id', { count:'exact' }).eq('player_id', id).limit(1);
+  const [played, won, podiums] = await Promise.all([count(results()), count(results().eq('position', 1)), count(results().lte('position', 3))]);
+  const matches = (s?.wins || 0) + (s?.losses || 0);
+  if (played) {
+    const rate = matches ? Math.round(s.wins / matches * 100) : null;
+    const pal = document.getElementById('palmares');
+    pal.innerHTML = `
+      <div class="palm"><span class="palm-mark palm-mark--gold" aria-hidden="true">1</span><div><b>${won}</b><span>${t('Turnee câștigate')}</span></div></div>
+      <div class="palm"><span class="palm-mark palm-mark--podium" aria-hidden="true"></span><div><b>${podiums}</b><span>${t('Podiumuri (locurile 1–3) din {n} turnee').replace('{n}', played)}</span></div></div>
+      ${rate != null ? `<div class="palm"><span class="palm-mark palm-mark--rate" style="--p:${rate}" aria-hidden="true"></span><div><b>${rate}%</b><span>${t('Meciuri câștigate')}</span></div></div>` : ''}`;
+    pal.hidden = false;
+  }
+
+  ratingChart(id);
   const stats = (c?.tournament_stats || []).slice().sort((a,b) => new Date(b.startDate) - new Date(a.startDate)).slice(0, 25);
+  // the list can be old (a player who no longer plays Setka Cup): say when the last one was
+  if (stats[0]?.startDate && Date.now() - new Date(stats[0].startDate) > 30 * 864e5) {
+    const note = document.getElementById('histNote');
+    note.textContent = t('Ultimul turneu Setka Cup: {d}.').replace('{d}', fmtDate(stats[0].startDate));
+    note.hidden = false;
+  }
   const body = document.getElementById('statsBody');
   body.innerHTML = stats.length ? stats.map(tr => `
     <tr>
-      <td>${escapeHtml(tr.name||'')}</td>
+      <td>${tr.id ? `<a class="tr-link" href="en/tournament.html?id=${encodeURIComponent(tr.id)}">${escapeHtml(tournamentTitle(tr.name||''))}</a>` : escapeHtml(tournamentTitle(tr.name||''))}</td>
       <td class="num">${tr.startDate ? fmtDateShort(tr.startDate) : '—'}</td>
       <td>${tr.divisionToken ? divisionLabel(tr.divisionToken) : '—'}</td>
       <td class="r num">${tr.matchWin ?? '–'}:${tr.matchLost ?? '–'}</td>
@@ -168,9 +270,74 @@
       <td class="r num">${tr.position ?? '—'}</td>
     </tr>`).join('') : `<tr><td colspan="6"><p class="muted" style="padding:20px 0">${s?.matches != null ? t('Istoricul turneu-cu-turneu apare de îndată ce profilul e confirmat pe Setka Cup — totalurile de mai sus sunt deja disponibile.') : t('Niciun turneu înregistrat încă pe Setka Cup.')}</p></td></tr>`;
 })();
+
+// The Setka Cup rating, one value a day from the nightly snapshot (player_stats_daily). Hidden when it never moved.
+async function ratingChart(id){
+  const { data } = await db.from('player_stats_daily').select('snapshot_date, rating_sc').eq('player_id', id).order('snapshot_date').limit(1000);
+  const pts = (data || []).filter(r => r.rating_sc != null && Number(r.rating_sc) > 0).map(r => ({ d: r.snapshot_date, v: Number(r.rating_sc) }));
+  if (pts.length < 7 || pts.every(p => p.v === pts[0].v)) return;
+  const card = document.getElementById('ratingCard'), box = document.getElementById('rcChart');
+  const first = pts[0], last = pts[pts.length - 1], diff = Math.round((last.v - first.v) * 10) / 10;
+  const day = d => fmtDateShort(d + 'T12:00:00');
+  document.getElementById('rcNow').innerHTML = `<b>${last.v.toFixed(1)}</b><span class="rc-delta ${diff > 0 ? 'up' : diff < 0 ? 'down' : 'same'}">${diff > 0 ? '+' : diff < 0 ? '−' : ''}${Math.abs(diff).toFixed(1)}</span>
+    <small>${t('față de {d}').replace('{d}', day(first.d))}</small>`;
+  card.hidden = false;
+  let sel = pts.length - 1, geo = null;
+  const draw = () => {
+    const W = box.clientWidth || 600, H = W < 520 ? 190 : 230, L = 38, R = 10, T = 34, B = 26;
+    const lo = Math.min(...pts.map(p => p.v)), hi = Math.max(...pts.map(p => p.v));
+    const pad = Math.max((hi - lo) * .12, .5), y0 = lo - pad, y1 = hi + pad;
+    const x = i => L + (W - L - R) * (pts.length === 1 ? 0 : i / (pts.length - 1));
+    const y = v => T + (H - T - B) * (1 - (v - y0) / (y1 - y0));
+    const ticks = [lo, (lo + hi) / 2, hi];
+    // a label at the start of each month
+    const months = []; pts.forEach((p, i) => { if (i === 0 || p.d.slice(5, 7) !== pts[i - 1].d.slice(5, 7)) months.push(i); });
+    const MON = new Intl.DateTimeFormat(({ ro:'ro-RO', en:'en-GB', ru:'ru-RU' })[window.ATTP_LANG || 'ro'], { month:'short' });
+    const line = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(p.v).toFixed(1)}`).join('');
+    const summary = t('Ratingul Setka Cup de la {a} la {b}: de la {v1} la {v2}; minim {lo}, maxim {hi}.')
+      .replace('{a}', day(first.d)).replace('{b}', day(last.d)).replace('{v1}', first.v.toFixed(1)).replace('{v2}', last.v.toFixed(1))
+      .replace('{lo}', lo.toFixed(1)).replace('{hi}', hi.toFixed(1));
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" tabindex="0" aria-label="${escapeHtml(summary)}">
+      ${ticks.map(v => `<line class="rc-grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text class="rc-axis" x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(1)}</text>`).join('')}
+      ${months.filter((i, k) => k === 0 ? x(i) < W - 60 : true).map(i => `<text class="rc-axis" x="${Math.max(x(i), L)}" y="${H - 6}" text-anchor="${i === 0 ? 'start' : 'middle'}">${MON.format(new Date(pts[i].d + 'T12:00:00')).replace('.', '')}</text>`).join('')}
+      <path class="rc-area" d="${line}L${x(pts.length - 1)} ${H - B}L${x(0)} ${H - B}Z"/>
+      <path class="rc-line" d="${line}"/>
+      <line class="rc-guide" id="rcGuide" y1="${T - 6}" y2="${H - B}"/>
+      <circle class="rc-dot" id="rcDot" r="5.5"/>
+    </svg><div class="rc-tip" id="rcTip" aria-live="polite"></div>`;
+    geo = { x, y, W };
+    const svg = box.querySelector('svg');
+    const pick = e => {
+      const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width;
+      sel = Math.round((px - L) / (W - L - R) * (pts.length - 1));
+      show();
+    };
+    svg.addEventListener('pointermove', pick);
+    svg.addEventListener('pointerdown', pick);
+    svg.addEventListener('keydown', e => {
+      const step = { ArrowLeft:-1, ArrowRight:1, PageDown:-7, PageUp:7 }[e.key];
+      if (e.key === 'Home') sel = 0; else if (e.key === 'End') sel = pts.length - 1; else if (step) sel += step; else return;
+      e.preventDefault(); show();
+    });
+    show();
+  };
+  const show = () => {
+    sel = Math.max(0, Math.min(pts.length - 1, sel));
+    const p = pts[sel], cx = geo.x(sel), cy = geo.y(p.v);
+    const g = document.getElementById('rcGuide'), dot = document.getElementById('rcDot'), tip = document.getElementById('rcTip');
+    g.setAttribute('x1', cx); g.setAttribute('x2', cx); dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+    tip.innerHTML = `${p.v.toFixed(1)}<span>${day(p.d)}</span>`;
+    const half = tip.offsetWidth / 2;
+    tip.style.left = Math.max(half, Math.min(box.clientWidth - half, cx * box.clientWidth / geo.W)) + 'px';
+  };
+  draw();
+  let w = box.clientWidth;
+  addEventListener('resize', () => { if (box.clientWidth !== w) { w = box.clientWidth; draw(); } });
+}
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>

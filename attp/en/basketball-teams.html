@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="../">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teams · Basketball — ATTP</title>
+<meta name="description" content="The Bskt Cup teams: standings, head-to-head records and recent results.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/en/basketball-teams.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/basketball-teams.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/basketball-teams.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/basketball-teams.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/basketball-teams.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Teams · Basketball — ATTP">
+<meta property="og:description" content="The Bskt Cup teams: standings, head-to-head records and recent results.">
+<meta property="og:url" content="https://geezfully.com/attp/en/basketball-teams.html">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — table tennis and basketball in the Republic of Moldova">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
+<link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
+<link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
+<script>window.__PAGE_LANG__="en";</script>
+<script src="js/i18n-en.js?v=f5674db9"></script>
+<script src="js/i18n.js?v=20260918-i18n"></script>
+<script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  .tm-logo{ display:inline-grid; place-items:center; flex:0 0 auto; width:34px; height:34px;
+    color:var(--text); font-family:var(--font-display); font-size:12px; font-weight:800; }
+  .tm-logo img{ width:100%; height:100%; object-fit:contain; }
+  .tm-name{ display:inline-flex; align-items:center; gap:10px; min-height:44px; font-weight:700; color:var(--chalk); }
+  a.tm-name:hover{ color:var(--spin-hi); }
+  .tm-note{ font-size:13px; color:var(--muted); margin-top:12px; max-width:760px; }
+  .ot-badge{ display:inline-block; margin-left:6px; padding:1px 6px; border-radius:999px; font-family:var(--font-mono); font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--table); background:var(--rally-dim); }
+  .res-badge{ display:inline-block; padding:2px 9px; border-radius:999px; font-family:var(--font-mono); font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+  .res-badge.win{ color:var(--win); background:var(--win-dim); }
+  .res-badge.loss{ color:var(--loss); background:var(--loss-dim); }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  .standings td.num, .standings th.num{ text-align:right; white-space:nowrap; }
+  .standings .coef{ font-family:var(--font-mono); font-weight:700; font-size:16px; color:var(--spin-hi); }
+  .standings tr{ cursor:pointer; }
+  .standings .rk{ font-family:var(--font-mono); color:var(--muted); width:28px; }
+  /* head-to-head grid: the row team's wins–losses against the column team */
+  .h2h-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--border); border-radius:var(--radius); background:var(--paper); }
+  .h2h{ border-collapse:separate; border-spacing:0; min-width:100%; font-family:var(--font-mono); font-size:13px; }
+  .h2h th, .h2h td{ padding:8px; text-align:center; border-bottom:1px solid var(--border); border-right:1px solid var(--border); white-space:nowrap; }
+  .h2h thead th{ position:sticky; top:0; background:var(--surface); z-index:1; }
+  .h2h thead th .tm-logo{ width:30px; height:30px; }
+  .h2h tbody th{ position:sticky; left:0; z-index:2; background:var(--surface); text-align:left; font-family:var(--font-body); font-size:13.5px; }
+  .h2h thead th:first-child{ left:0; z-index:3; }
+  .h2h td{ min-width:58px; color:var(--chalk); }
+  .h2h td.self{ background:var(--surface-3); }
+  .h2h td.none{ color:var(--muted); }
+  .h2h td b{ font-weight:700; }
+  .h2h td small{ display:block; font-size:12px; color:var(--chalk-dim); opacity:.8; }
+  .match-list td.teams{ min-width:280px; }
+  .m-row{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:12px; }
+  .m-row .tm-name{ font-weight:600; color:var(--chalk-dim); }
+  .m-row .tm-name.won{ font-weight:800; color:var(--chalk); }
+  .m-row .side-b{ justify-content:flex-end; }
+  .m-score{ font-family:var(--font-mono); font-weight:700; font-size:16px; white-space:nowrap; }
+  table.data.match-list{ min-width:0; }
+  @media (max-width:700px){
+    .match-list .col-ora{ display:none; }
+    .match-list td.teams{ min-width:0; }
+    /* each match as two lines: home team over away team, the score on the right */
+    .m-row{ grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"a s" "b s"; gap:6px 10px; }
+    .m-row .side-a{ grid-area:a; }
+    .m-row .side-b{ grid-area:b; justify-content:flex-end; flex-direction:row-reverse; }   /* reversed row: flex-end is the left edge */
+    .m-row .m-score{ grid-area:s; }
+    .m-row .tm-name{ gap:6px; }
+    .m-row .tm-name span:not(.tm-logo){ font-size:13px; }
+    .m-row .tm-logo{ width:26px; height:26px; }
+    .m-score{ font-size:14px; }
+    /* the standings keep #, team, wins, losses and the coefficient */
+    table.data.standings{ min-width:0; }
+    table.data.standings td, table.data.standings th, table.data.match-list td, table.data.match-list th{ padding-inline:8px; }
+    .standings th:nth-child(3), .standings td:nth-child(3), .standings th:nth-child(6), .standings td:nth-child(6), .standings th:nth-child(7), .standings td:nth-child(7){ display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="loadScreen" aria-hidden="true">
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">A guarantee of integrity</span></span>
+  </div>
+</div>
+<header class="topbar">
+  <div class="container topbar-inner">
+    <a href="en/index.html" class="brand"><span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span></a>
+    <nav class="nav-links"><a href="en/about.html">About us</a><a href="en/news.html">News</a><a href="en/players.html" class="active">Players</a><a href="en/tournaments.html">Tournaments</a><a href="en/gallery.html">Media</a><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/contact.html">Contact</a></nav>
+    <div class="lang-switch"><a href="basketball-teams.html" hreflang="ro" lang="ro">RO</a><a href="ru/basketball-teams.html" hreflang="ru" lang="ru">RU</a><a href="en/basketball-teams.html" hreflang="en" lang="en" class="active">EN</a></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+  </div>
+</header>
+<div id="mobileNav">
+  <div class="mobile-head"><span class="brand-word">ATTP</span><button class="nav-toggle" id="navClose" aria-label="Close menu"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg></button></div>
+  <a href="en/about.html">About us</a><a href="en/news.html">News</a><a href="en/players.html">Players</a><a href="en/tournaments.html">Tournaments</a><a href="en/gallery.html">Media</a><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/contact.html">Contact</a>
+</div>
+
+<main>
+  <div class="page-flow">
+    <div class="page-head container">
+      <div class="breadcrumb"><a href="en/index.html">Home</a> / <a href="en/players.html">Players</a> / <a href="en/players-basketball.html">Basketball</a> / Teams</div>
+      <div class="eyebrow">Bskt Cup</div>
+      <h1>Teams</h1>
+      <p class="lede mt-16">Bskt Cup team stats: the standings, head-to-head records between any two teams, and recent results.</p>
+    </div>
+    <section class="container section-tight">
+      <div class="eyebrow">Rankings</div>
+      <h2 class="mb-24">Teams by coefficient</h2>
+      <div class="table-scroll">
+        <table class="data standings">
+          <thead><tr><th>#</th><th>Team</th><th class="num">Matches</th><th class="num">W</th><th class="num">L</th><th class="num">Win %</th><th class="num">Points</th><th class="num">Coefficient</th></tr></thead>
+          <tbody id="standBody"><tr><td colspan="8"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
+        </table>
+      </div>
+      <p class="tm-note">The coefficient is the average of the win rates against each opponent: every team faced counts the same, however many times they played. 1.00 means every game against every opponent was won.</p>
+    </section>
+    <section class="container section-tight">
+      <div class="eyebrow">Head to head</div>
+      <h2 class="mb-24">Every team against every team</h2>
+      <div class="h2h-wrap"><table class="h2h" id="h2h"><tbody><tr><td><div class="skeleton" style="height:40px;width:300px"></div></td></tr></tbody></table></div>
+      <p class="tm-note">Each row shows the wins–losses of the team on the left against the team in the column, and how many games they played.</p>
+    </section>
+    <section class="container section-tight">
+      <div class="eyebrow">Results</div>
+      <h2 class="mb-24">Recent games</h2>
+      <div class="table-scroll">
+        <table class="data match-list">
+          <thead><tr><th>Date</th><th class="col-ora">Time</th><th>Match</th></tr></thead>
+          <tbody id="recentBody"><tr><td colspan="3"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm mt-16" id="recentMore" hidden>Show more</button>
+      <p class="muted mt-16" id="bsktUpdated"></p>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><span class="brand-word">ATTP</span><p class="mt-16" style="max-width:280px">National Association of Professional Athletes of the Republic of Moldova “ATTP”.</p></div>
+      <div><h4>Navigation</h4><a href="en/about.html">About us</a><a href="en/news.html">News</a><a href="en/players.html">Players</a><a href="en/tournaments.html">Tournaments</a></div>
+      <div><h4>Resources</h4><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/gallery.html">Media</a></div>
+      <div><h4>Association</h4><a href="en/contact.html">Contact</a><a href="en/privacy.html">Privacy</a><a href="en/terms.html">Terms and conditions</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span></div>
+  </div>
+</footer>
+
+<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script>
+// Team helpers shared by the two team pages: the team's logo on its own (initials when there is none), and the
+// order of matches — games after midnight belong to the evening session of their date.
+const teamLogo = (t, cls = 'tm-logo') => t && t.logo_url
+  ? `<span class="${cls}"><img src="${escapeHtml(t.logo_url)}" alt="" loading="lazy" decoding="async"></span>`
+  : `<span class="${cls}">${escapeHtml(((t && t.nume) || '?').slice(0, 2).toUpperCase())}</span>`;
+const matchKey = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
+const byRecent = (a, b) => matchKey(b).localeCompare(matchKey(a));
+const pct = (w, n) => n ? Math.round(w / n * 100) : 0;
+const coef = c => c == null ? '—' : Number(c).toFixed(2);
+// Basketball teams, from the BSKT register sync (bskt_echipe, bskt_meciuri and the views bskt_echipe_stat /
+// bskt_echipe_h2h). Only team results are published — never who plays in which team.
+(async function(){
+  const [{ data: stat }, { data: h2h }, { data: games }] = await Promise.all([
+    db.from('bskt_echipe_stat').select('*'),
+    db.from('bskt_echipe_h2h').select('*'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(400),
+  ]);
+  const teams = (stat || []).filter(t => t.meciuri > 0)
+    .sort((a, b) => (b.coeficient ?? 0) - (a.coeficient ?? 0) || pct(b.victorii, b.meciuri) - pct(a.victorii, a.meciuri) || a.nume.localeCompare(b.nume));
+  const byId = Object.fromEntries((stat || []).map(t => [t.id, t]));
+  const href = t => `basketball-team.html?id=${encodeURIComponent(t.id)}`;
+  const standBody = document.getElementById('standBody');
+  if (!teams.length) {
+    standBody.innerHTML = `<tr><td colspan="8"><p class="muted" style="padding:20px 0">${t('Echipele apar aici imediat ce se sincronizează datele din Bskt Cup.')}</p></td></tr>`;
+    document.getElementById('h2h').innerHTML = ''; document.getElementById('recentBody').innerHTML = '';
+    return;
+  }
+  standBody.innerHTML = teams.map((tm, i) => `<tr data-href="${href(tm)}">
+      <td class="rk">${i + 1}</td>
+      <td><a class="tm-name" href="${href(tm)}">${teamLogo(tm)}<span>${escapeHtml(tm.nume)}</span></a></td>
+      <td class="num">${tm.meciuri}</td>
+      <td class="num" style="color:var(--win)">${tm.victorii}</td>
+      <td class="num" style="color:var(--loss)">${tm.infrangeri}</td>
+      <td class="num">${pct(tm.victorii, tm.meciuri)}%</td>
+      <td class="num">${tm.puncte_pentru}:${tm.puncte_contra}</td>
+      <td class="num coef">${coef(tm.coeficient)}</td>
+    </tr>`).join('');
+  standBody.addEventListener('click', e => { const tr = e.target.closest('tr[data-href]'); if (tr && !e.target.closest('a')) location.href = tr.dataset.href; });
+
+  // head-to-head grid, rows and columns in standings order
+  const pair = {};
+  (h2h || []).forEach(r => { pair[`${r.echipa}|${r.adversar}`] = r; });
+  const cell = (a, b) => {
+    if (a.id === b.id) return '<td class="self" aria-hidden="true"></td>';
+    const r = pair[`${a.id}|${b.id}`];
+    const label = `${a.nume} – ${b.nume}`;
+    if (!r) return `<td class="none" title="${escapeHtml(label)}: ${escapeHtml(t('nu s-au întâlnit'))}">—</td>`;
+    const share = r.victorii / r.meciuri, tone = Math.abs(share - .5) * 2;
+    const bg = share >= .5 ? `rgba(31,122,76,${(.06 + tone * .3).toFixed(2)})` : `rgba(201,58,47,${(.06 + tone * .3).toFixed(2)})`;
+    const tip = t('{a} contra {b}: {n} meciuri, {v} victorii, {i} înfrângeri').replace('{a}', a.nume).replace('{b}', b.nume).replace('{n}', r.meciuri).replace('{v}', r.victorii).replace('{i}', r.infrangeri);
+    return `<td style="background:${bg}" title="${escapeHtml(tip)}"><b>${r.victorii}–${r.infrangeri}</b><small>${r.meciuri} ${t('m.')}</small></td>`;
+  };
+  document.getElementById('h2h').innerHTML =
+    `<thead><tr><th scope="col"><span class="sr-only">${t('Echipă')}</span></th>${teams.map(c => `<th scope="col" title="${escapeHtml(c.nume)}">${teamLogo(c)}</th>`).join('')}</tr></thead>` +
+    `<tbody>${teams.map(r => `<tr><th scope="row"><a class="tm-name" href="${href(r)}">${teamLogo(r)}<span>${escapeHtml(r.nume)}</span></a></th>${teams.map(c => cell(r, c)).join('')}</tr>`).join('')}</tbody>`;
+
+  // recent results, 20 at a time
+  const list = (games || []).slice().sort(byRecent);
+  const body = document.getElementById('recentBody'), more = document.getElementById('recentMore');
+  const side = (tm, won, cls) => `<a class="tm-name ${cls}${won ? ' won' : ''}" href="${href(tm)}">${cls === 'side-b' ? `<span>${escapeHtml(tm.nume)}</span>${teamLogo(tm)}` : `${teamLogo(tm)}<span>${escapeHtml(tm.nume)}</span>`}</a>`;
+  const row = m => {
+    const a = byId[m.echipa_a], b = byId[m.echipa_b];
+    if (!a || !b) return '';
+    return `<tr>
+      <td class="num">${fmtDateShort(bsktPlayedOn(m.data, m.ora))}</td>
+      <td class="num col-ora">${escapeHtml(m.ora || '—')}</td>
+      <td class="teams"><div class="m-row">${side(a, m.scor_a > m.scor_b, 'side-a')}<span class="m-score">${m.scor_a}:${m.scor_b}${m.prelungiri ? `<span class="ot-badge">${t('prel.')}</span>` : ''}</span>${side(b, m.scor_b > m.scor_a, 'side-b')}</div></td>
+    </tr>`;
+  };
+  let shown = 0;
+  const showMore = () => { shown += 20; body.innerHTML = list.slice(0, shown).map(row).join(''); more.hidden = shown >= list.length; };
+  showMore();
+  more.textContent = t('Arată mai multe');
+  more.addEventListener('click', showMore);
+  const upd = await db.from('bskt_echipe').select('actualizat_la').order('actualizat_la', { ascending:false }).limit(1);
+  const when = upd.data && upd.data[0] && upd.data[0].actualizat_la;
+  if (when) document.getElementById('bsktUpdated').textContent = t('Actualizat: {d}').replace('{d}',
+    new Date(when).toLocaleString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { dateStyle:'short', timeStyle:'short' }));
+})();
+</script>
+<script src="js/nav.js?v=20260919-social"></script>
+<script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/floor.js?v=2"></script>
+<script src="js/load-screen.js?v=20260929-sport-loaders"></script>
+</body>
+</html>

@@ -6,127 +6,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Players — ATTP</title>
 <meta name="description" content="Official rankings of ATTP athletes in the Republic of Moldova, by sport: table tennis and basketball.">
+<!-- share & search -->
+<link rel="canonical" href="https://geezfully.com/attp/en/players.html">
+<link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/players.html">
+<link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/players.html">
+<link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/players.html">
+<link rel="alternate" hreflang="x-default" href="https://geezfully.com/attp/players.html">
+<meta property="og:site_name" content="ATTP">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Players — ATTP">
+<meta property="og:description" content="Official rankings of ATTP athletes in the Republic of Moldova, by sport: table tennis and basketball.">
+<meta property="og:url" content="https://geezfully.com/attp/en/players.html">
+<meta property="og:locale" content="en_GB">
+<meta property="og:image" content="https://geezfully.com/attp/images/og-attp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATTP — table tennis and basketball in the Republic of Moldova">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /share & search -->
 <link rel="icon" href="images/favicon.svg?v=20260929" type="image/svg+xml">
 <link rel="icon" href="images/favicon-32.png?v=20260929" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png?v=20260929">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260929-sport-loaders-2">
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=9711e515"></script>
+<script src="js/i18n-en.js?v=f5674db9"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  .players-flow{
-    position:relative; isolation:isolate; overflow:hidden;
-    background:linear-gradient(180deg,#0a1929 0%,#0d2034 30%,var(--ink) 85%);
-  }
-  .players-flow::before{
-    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-    background-image:radial-gradient(rgba(242,245,244,.06) 1px, transparent 1px);
-    background-size:26px 26px;
-    -webkit-mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
-    mask-image:radial-gradient(65% 55% at 82% 8%, #000 30%, transparent 100%);
-  }
-  .players-flow::after{
-    content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
-    background:
-      radial-gradient(520px 380px at 88% 4%, rgba(41,197,194,.13), transparent 70%),
-      radial-gradient(360px 300px at 68% 22%, rgba(249,202,80,.08), transparent 68%);
-  }
-  .players-hero{ position:relative; isolation:isolate; min-height:clamp(430px,43vw,560px); overflow:hidden; }
-  .players-hero-art{
-    position:absolute; z-index:-2; inset:0 0 0 auto; width:min(64%,900px); height:100%;
-    object-fit:cover; object-position:center; transform:scale(1.025); filter:saturate(.94) contrast(1.04);
-    -webkit-mask-image:
-      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
-      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
-    -webkit-mask-composite:source-in;
-    mask-image:
-      linear-gradient(90deg,transparent 0%,rgba(0,0,0,.22) 10%,#000 36%),
-      linear-gradient(180deg,transparent 0%,#000 8%,#000 86%,transparent 100%);
-    mask-composite:intersect;
-  }
-  .players-hero::before{
-    content:''; position:absolute; z-index:-1; inset:0; pointer-events:none;
-    background:linear-gradient(90deg,#0a1929 0%,rgba(10,25,41,.94) 30%,rgba(10,25,41,.48) 52%,rgba(10,25,41,.08) 78%);
-  }
-  .players-hero-inner{ min-height:inherit; display:flex; align-items:center; padding-block:clamp(76px,9vw,118px); }
-  .players-hero-copy{ width:min(570px,51%); }
-  .players-hero-copy h1{ font-size:clamp(48px,5.5vw,78px); line-height:1; letter-spacing:-.035em; }
-  .players-hero-note{
-    display:inline-flex; align-items:center; gap:9px; margin-top:28px; padding:9px 13px;
-    border:1px solid rgba(116,207,210,.23); border-radius:999px; background:rgba(8,26,45,.44);
-    color:var(--chalk-dim); font-family:var(--font-mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
-  }
-  .players-hero-note::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--spin); box-shadow:0 0 12px rgba(249,202,80,.56); }
-  .players-list-section{ padding-top:4px; }
-  @media (max-width:820px){
-    .players-hero{ min-height:640px; }
-    .players-hero-art{
-      inset:auto 0 0; width:100%; height:58%; object-position:center; transform:scale(1.035);
-      -webkit-mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
-      mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 18%,#000 42%,#000 92%,transparent 100%);
-    }
-    .players-hero::before{ background:linear-gradient(180deg,#0a1929 0%,rgba(10,25,41,.96) 38%,rgba(10,25,41,.42) 65%,rgba(10,25,41,.06) 100%); }
-    .players-hero-inner{ align-items:flex-start; padding-block:76px 0; }
-    .players-hero-copy{ width:100%; }
-    .players-hero-copy h1{ font-size:clamp(44px,13vw,64px); }
-  }
-
-  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:28px 0; }
-  .filters input, .filters select{
-    padding:11px 14px; border-radius:9px; border:1px solid var(--border-hi); background:var(--surface); color:var(--chalk); font-family:var(--font-body); font-size:16px;
-    min-height:44px;
-  }
-  .filters input{ flex:1; min-width:200px; }
-  @media (max-width:460px){
-    .filters input{ min-width:100%; }
-    .filters select{ width:100%; }
-  }
-  .filters input:focus, .filters select:focus{ outline:2px solid var(--rally); border-color:var(--rally); }
-  .player-row{ display:grid; grid-template-columns:28px 40px 1fr auto auto auto; align-items:center; gap:14px; padding:10px 16px; border-radius:10px; }
-  .player-row:hover{ background:var(--surface); }
-  .player-row .p-rank{ font-family:var(--font-mono); color:var(--muted); font-size:13px; }
-  .p-avatar{ width:40px; height:40px; border-radius:50%; overflow:hidden; background:linear-gradient(135deg,var(--surface-3),var(--surface-2)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--chalk-dim); flex:0 0 auto; }
-  .player-row .p-name{ font-weight:700; }
-  .player-row .p-city{ font-size:12.5px; color:var(--muted); }
-  .player-row .p-rating{ font-family:var(--font-mono); font-weight:700; font-size:17px; color:var(--spin-hi); text-align:right; }
-  .player-row .p-record{ font-family:var(--font-mono); font-size:12.5px; color:var(--muted); text-align:right; white-space:nowrap; }
-  @media (max-width:700px){
-    .player-row{ grid-template-columns:20px 34px 1fr auto; }
-    .p-avatar{ width:34px; height:34px; }
-    .p-record{ display:none; }
-  }
+  /* one search over both sports: a field under the title, matches listed right below it */
+  .p-search{ max-width:640px; margin-top:26px; }
+  .p-search label{ display:block; font-family:var(--font-label); font-weight:800; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--text); margin-bottom:8px; }
+  .ps-field{ position:relative; }
+  .ps-field svg{ position:absolute; left:15px; top:50%; transform:translateY(-50%); width:20px; height:20px; color:var(--muted); pointer-events:none; }
+  .ps-field input{ width:100%; min-height:54px; padding:12px 16px 12px 46px; border-radius:var(--radius); border:2px solid var(--rule-2); background:var(--paper); color:var(--text); font-family:var(--font-body); font-size:17px; box-shadow:var(--shadow-sheet); }
+  .ps-field input:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
+  .ps-field input::-webkit-search-cancel-button{ cursor:pointer; }
+  .ps-status{ margin:10px 2px 0; font-size:14px; color:var(--muted); min-height:1.4em; }
+  .ps-results{ list-style:none; margin:6px 0 0; padding:0; background:var(--paper); border:1px solid var(--rule); border-top:3px solid var(--text); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sheet); }
+  .ps-results:empty{ display:none; }
+  .ps-results li + li{ border-top:1px solid var(--rule); }
+  .ps-results a{ display:grid; grid-template-columns:44px minmax(0,1fr) auto; align-items:center; gap:14px; padding:9px 14px; color:inherit; text-decoration:none; min-height:60px; }
+  .ps-results a:hover, .ps-results a:focus-visible{ background:#EEF3FA; outline:none; }
+  .ps-results a:hover .ps-name, .ps-results a:focus-visible .ps-name{ color:var(--table); }
+  .ps-face{ width:44px; height:44px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font-family:var(--font-display); font-weight:800; font-size:17px; color:var(--table); }
+  .ps-name{ display:block; font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1.05; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ps-sub{ display:block; font-size:13.5px; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ps-sport{ font-family:var(--font-label); font-weight:800; font-size:13px; letter-spacing:.03em; text-transform:uppercase; padding:4px 8px; border-radius:var(--radius-sm); white-space:nowrap; }
+  .ps-sport--tt{ background:rgba(28,78,148,.1); color:var(--table); }
+  .ps-sport--bb{ background:rgba(196,97,42,.12); color:#9A4519; }
+  @media (max-width:460px){ .ps-results a{ grid-template-columns:40px minmax(0,1fr); gap:12px; } .ps-face{ width:40px; height:40px; } .ps-sport{ grid-column:2; justify-self:start; margin-top:-4px; } .ps-name{ font-size:20px; } }
 </style>
 </head>
 <body>
 <div id="loadScreen" aria-hidden="true">
-  <svg class="load-mark" viewBox="0 0 320 260" fill="none">
-    <g class="lm-ball-group">
-      <circle class="lm-ball" cx="88" cy="70" r="20"/>
-      <circle class="lm-ball-outline" cx="88" cy="70" r="20"/>
-    </g>
-    <g class="lm-paddle-group">
-      <path class="lm-handle-side" d="M228,168 L268,190 L268,208 L228,186 Z"/>
-      <path class="lm-handle-front" d="M210,158 L268,190 L228,208 L170,176 Z"/>
-      <path class="lm-handle-top" d="M170,176 L228,144 L268,166 L210,158 Z" opacity="0"/>
-      <path class="lm-blade-rim" d="M60,150 A95,58 0 0 0 210,158 L210,178 A95,58 0 0 1 60,170 Z"/>
-      <path class="lm-blade-face" d="M60,150 A95,58 0 0 1 210,158 L155,192 A95,58 0 0 1 60,150 Z"/>
-      <path class="lm-blade-edge" d="M155,192 L210,158 L210,168 L155,202 Z"/>
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 210,158" />
-      <path class="lm-outline" d="M60,150 A95,58 0 0 0 60,170" />
-      <path class="lm-outline" d="M210,158 L210,178 A95,58 0 0 1 60,170" />
-      <path class="lm-outline" d="M170,176 L210,158 L268,190 L228,208 L170,176 Z"/>
-    </g>
-  </svg>
+  <div class="load-stage">
+    <svg class="load-court load-court--tt" viewBox="0 0 440 300" fill="none">
+      <rect class="lc-surface" x="30" y="60" width="380" height="212" rx="3"/>
+      <rect class="lc-line" x="30" y="60" width="380" height="212" rx="3" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M30 166H410" pathLength="1"/>
+      <path class="lc-line lc-net" d="M220 44V288" pathLength="1"/>
+    </svg>
+    <svg class="load-court load-court--bb" viewBox="0 0 440 300" fill="none">
+      <circle class="lc-line" cx="220" cy="190" r="118" pathLength="1"/>
+      <path class="lc-line lc-centre" d="M-10 190H450" pathLength="1"/>
+    </svg>
+    <span class="load-figure"></span>
+  </div>
+  <div class="load-brand">
+    <img src="images/logo-table.svg" alt="" width="42" height="42">
+    <span class="load-brand-text"><span class="load-brand-word">ATTP</span><span class="load-brand-sub">A guarantee of integrity</span></span>
+  </div>
 </div>
 
 <header class="topbar">
   <div class="container topbar-inner">
-    <a href="en/index.html" class="brand"><span class="brand-mark"><img src="images/logo.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span></a>
+    <a href="en/index.html" class="brand"><span class="brand-mark"><img src="images/logo-table.svg" alt="" width="20" height="20"></span><span><span class="brand-word">ATTP</span><span class="brand-sub" style="display:block">A guarantee of integrity</span></span></a>
     <nav class="nav-links">
       <a href="en/about.html">About us</a><a href="en/news.html">News</a><a href="en/players.html" class="active">Players</a>
       <a href="en/tournaments.html">Tournaments</a><a href="en/gallery.html">Media</a><a href="en/documents.html">Documents</a>
@@ -148,6 +106,15 @@
     <div class="eyebrow">Rankings</div>
     <h1 id="playersTitle">ATTP players</h1>
     <p class="lede mt-16">The official rankings of the national sports federations and accredited organisations. Choose a sport.</p>
+    <form class="p-search" role="search" onsubmit="return false">
+      <label for="pSearch">Find a player</label>
+      <div class="ps-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <input type="search" id="pSearch" placeholder="First or last name, in both sports" autocomplete="off" spellcheck="false" aria-describedby="pStatus" aria-controls="pResults">
+      </div>
+      <p class="ps-status" id="pStatus" aria-live="polite"></p>
+      <ul class="ps-results" id="pResults" aria-label="Players found"></ul>
+    </form>
   </section>
   <section class="container sport-choice" aria-label="Sports">
       <a class="sport-card sport-card--tt" href="en/players-table-tennis.html">
@@ -177,13 +144,72 @@
       <div><h4>Resources</h4><a href="en/documents.html">Documents</a><a href="en/fairplay.html">Fair Play</a><a href="en/gallery.html">Media</a></div>
       <div><h4>Association</h4><a href="en/contact.html">Contact</a><a href="en/privacy.html">Privacy</a><a href="en/terms.html">Terms and conditions</a></div>
     </div>
-    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup</span></div>
+    <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span></div>
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20260923-rankpill"></script>
+<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script>
+// Table tennis (players) and basketball (bskt_jucatori) in one list. Loaded on the first keystroke;
+// accents and the order of the names do not matter.
+(function(){
+  const input = document.getElementById('pSearch'), list = document.getElementById('pResults'), status = document.getElementById('pStatus');
+  let people = null, loading = null;
+  const load = () => loading ||= Promise.all([
+    db.from('players').select('id, first_name, last_name, city, photo_url, ligas_match_status, setka_cup_cache(photo_token), ligas_ranking(position, ranking, rating)'),
+    db.from('bskt_jucatori').select('id, nume, prenume, meciuri, victorii, foto_url_mic'),
+  ]).then(([tt, bb]) => {
+    people = [
+      ...(tt.data || []).map(p => ({ sport:'tt', p, first:p.first_name, last:p.last_name, href:`player.html?id=${encodeURIComponent(p.id)}` })),
+      ...(bb.data || []).map(p => ({ sport:'bb', p, first:p.prenume, last:p.nume, href:`player-basketball.html?id=${encodeURIComponent(p.id)}` })),
+    ].map(x => ({ ...x, key: foldText(`${x.first} ${x.last} ${x.first}`) }));
+  });
+  const LIST = { masculin:t('clasamentul masculin'), feminin:t('clasamentul feminin') };
+  const row = x => {
+    const ini = escapeHtml(((x.first || '')[0] || '') + ((x.last || '')[0] || '')).toUpperCase();
+    let face, sub;
+    if (x.sport === 'tt') {
+      face = avatarHtml(x.p);
+      const r = playerRanking(x.p);
+      sub = [townName(x.p.city) || 'Moldova', r ? t('locul {n} în {lista}').replace('{n}', r.position).replace('{lista}', LIST[r.list] || r.list) : ''].filter(Boolean).join(' · ');
+    } else {
+      face = x.p.foto_url_mic ? `<img src="${escapeHtml(x.p.foto_url_mic)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : ini;
+      sub = t('{m} meciuri · {v} victorii').replace('{m}', x.p.meciuri ?? 0).replace('{v}', x.p.victorii ?? 0);
+    }
+    return `<li><a href="${x.href}"><span class="ps-face">${face}</span><span><span class="ps-name">${escapeHtml(x.first)} ${escapeHtml(x.last)}</span><span class="ps-sub">${escapeHtml(sub)}</span></span><span class="ps-sport ps-sport--${x.sport}">${x.sport === 'tt' ? t('Tenis de masă') : t('Baschet')}</span></a></li>`;
+  };
+  const MAX = 8;
+  const run = async () => {
+    const q = foldText(input.value.trim()).replace(/\s+/g, ' ');
+    if (q.length < 2) { list.innerHTML = ''; status.textContent = q ? t('Mai scrie o literă.') : ''; return; }
+    if (!people) { status.textContent = t('Se caută…'); await load(); }
+    if (foldText(input.value.trim()).replace(/\s+/g, ' ') !== q) return;   // the text changed while loading
+    const words = q.split(' ');
+    const hits = people.filter(x => words.every(w => x.key.includes(w)))
+      .sort((a, b) => (b.key.startsWith(q) - a.key.startsWith(q)) || a.last.localeCompare(b.last, 'ro'));
+    list.innerHTML = hits.slice(0, MAX).map(row).join('');
+    status.textContent = !hits.length ? t('Niciun jucător cu acest nume.')
+      : hits.length > MAX ? t('{n} jucători găsiți; primii {k} mai jos. Scrie mai mult ca să restrângi.').replace('{n}', hits.length).replace('{k}', MAX)
+      : hits.length === 1 ? t('Un jucător găsit.') : t('{n} jucători găsiți.').replace('{n}', hits.length);
+  };
+  input.addEventListener('focus', load, { once:true });
+  input.addEventListener('input', run);
+  // Enter opens the first match; arrow down goes into the list
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { const a = list.querySelector('a'); if (a) location.href = a.href; }
+    if (e.key === 'ArrowDown') { const a = list.querySelector('a'); if (a) { e.preventDefault(); a.focus(); } }
+  });
+  list.addEventListener('keydown', e => {
+    const links = [...list.querySelectorAll('a')], i = links.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' && i < links.length - 1) { e.preventDefault(); links[i + 1].focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); (i > 0 ? links[i - 1] : input).focus(); }
+    if (e.key === 'Escape') { input.focus(); }
+  });
+})();
+</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
+<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>

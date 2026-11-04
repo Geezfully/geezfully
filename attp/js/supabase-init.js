@@ -15,6 +15,59 @@ function fmtDateShort(iso){
   const d = new Date(iso);
   return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
 }
+// Setka Cup names a tournament "2026-11-03 Men Night1 Mexico": the date, the division, the session (with a
+// number when there are two) and the table area. The site shows the date on its own, so the title is the
+// session and the area, in the page's language: "Noaptea I · Mexico". Unknown names are shown as they are.
+const SESSIONS = { morning:'Dimineața', day:'Ziua', evening:'Seara', night:'Noaptea' };
+function tournamentTitle(name){
+  const clean = (name || '').replace(/[\u0415\u0435]/g, c => c === '\u0415' ? 'E' : 'e');   // a Cyrillic "Е" in some names
+  const m = /^(?:\d{4}-\d{2}-\d{2}\s+)?(?:Men|Women)\s+(Morning|Day|Evening|Night)\s*([1-3])?\s+(.+)$/i.exec(clean.trim());
+  if (!m) return name || '';
+  return `${t(SESSIONS[m[1].toLowerCase()])}${m[2] ? ' ' + ['', 'I', 'II', 'III'][+m[2]] : ''} · ${m[3]}`;
+}
+// A Bskt Cup game keeps the date of its evening even when it starts after midnight; this is the day it was played.
+function bsktPlayedOn(data, ora){
+  if (!data || !ora || ora >= '06:00') return data;
+  const d = new Date(data + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+// Bskt Cup games on the schedule (no score yet), soonest first. An evening stays "upcoming" until 06:00 the
+// next morning, because its last games start after midnight.
+async function fetchBsktUpcoming(filter){
+  let q = db.from('bskt_programate').select('*').order('data').order('ora').limit(200);
+  if (filter) q = filter(q);
+  const { data } = await q;
+  const now = new Date(), local = new Date(now.toLocaleString('en-US', { timeZone:'Europe/Chisinau' }));
+  if (local.getHours() < 6) local.setDate(local.getDate() - 1);
+  const evening = `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2, '0')}-${String(local.getDate()).padStart(2, '0')}`;
+  const late = ora => (ora || '') < '06:00';
+  return (data || []).filter(m => m.data >= evening)
+    .sort((a, b) => a.data.localeCompare(b.data) || (late(a.ora) - late(b.ora)) || (a.ora || '').localeCompare(b.ora || ''));
+}
+// Two tabs, table tennis and basketball, for a block that shows either sport. `panels` are the two panel
+// elements; `onShow(i)` runs every time a tab is chosen. Arrow keys move between the tabs.
+function sportTabs(tablist, panels, onShow){
+  const tabs = [...tablist.querySelectorAll('[role=tab]')];
+  const select = (i, focus) => {
+    tabs.forEach((tab, k) => { tab.setAttribute('aria-selected', String(k === i)); tab.tabIndex = k === i ? 0 : -1; panels[k].hidden = k !== i; });
+    if (focus) tabs[i].focus();
+    if (onShow) onShow(i);
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(i));
+    tab.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); select((i + 1) % tabs.length, true); } });
+  });
+  return select;
+}
+// Players type their town in several spellings and alphabets; one name per town for lists and filters.
+const TOWN_ALIAS = { 'Кишинів':'Chișinău', 'Кишинев':'Chișinău', 'Chisinau':'Chișinău', 'Odessa':'Odesa', 'Сороки':'Soroca', 'Сорока':'Soroca' };
+function townName(c){ c = (c || '').trim(); return TOWN_ALIAS[c] || c; }
+// For search: lower case, no diacritics (ș, ț, ă, î, â all match their plain letters), й kept as й.
+function foldText(s){
+  return (s || '').toLowerCase().replace(/й/g, '\u0000').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0000/g, 'й')
+    .replace(/[şș]/g, 's').replace(/[ţț]/g, 't');
+}
 function divisionLabel(d){
   return d === 'man' ? t('Bărbați') : d === 'woman' ? t('Femei') : (d || '');
 }

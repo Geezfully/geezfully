@@ -19,7 +19,8 @@ import re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LANGS = ('en', 'ru')
 PAGES = ['index', 'about', 'news', 'news-article', 'players', 'players-table-tennis', 'players-basketball',
-         'player', 'player-basketball', 'tournaments', 'tournaments-table-tennis', 'tournaments-basketball',
+         'basketball-players', 'basketball-teams', 'basketball-team',
+         'player', 'player-basketball', 'tournaments', 'tournaments-table-tennis', 'tournaments-basketball', 'tournament',
          'gallery', 'documents', 'fairplay', 'contact', 'privacy', 'terms']
 
 INLINE = r'(?:a|strong|em|b|i|br|span|small|code|abbr|time|sup|sub)'
@@ -31,7 +32,7 @@ INNER_BLOCK = r'(?:div|p|section|article|aside|ul|ol|li|dl|dt|dd|h[1-6]|table|th
 LEAF_RE = re.compile(r'<(' + LEAF_TAGS + r')(\s[^<>]*)?>((?:(?!<\1[\s>]|<' + INNER_BLOCK + r'[\s>]).)*?)</\1>', re.S | re.I)
 PH_RE = re.compile(r'\x00\d+\x00')
 ATTR_RE = re.compile(r'\b(placeholder|aria-label|title|alt)="([^"]*)"')
-META_RE = re.compile(r'(<meta\s+(?:name|property)="(?:description|og:title|og:description|twitter:title|twitter:description)"\s+content=")([^"]*)(")', re.I)
+META_RE = re.compile(r'(<meta\s+(?:name|property)="(?:description|og:title|og:description|og:image:alt|twitter:title|twitter:description)"\s+content=")([^"]*)(")', re.I)
 TITLE_RE = re.compile(r'(<title>)(.*?)(</title>)', re.S)
 SKIP_BLOCKS = re.compile(r'<(script|style|svg)\b.*?</\1>', re.S | re.I)
 LETTERS = re.compile(r'[A-Za-zĂÂÎȘȚăâîșțА-Яа-я]')
