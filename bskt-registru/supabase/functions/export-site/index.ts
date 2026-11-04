@@ -1,8 +1,11 @@
-// BSKT Pontaj → ATTP website (geezfully.com/attp): read-only export of public basketball player profiles.
-// Called by the ATTP project's sync on a schedule with header x-export-key; the key's SHA-256 must be in
-// export_chei (not revoked). What is published is decided by the SQL function export_site_attp(): name, age,
-// games/wins/losses and per-game date + score, never the team or any other personal field; photos only for
-// players who gave consent, as short-lived signed links (the consumer copies the image to its own storage).
+// BSKT Pontaj → ATTP website (geezfully.com/attp): read-only export of public basketball player profiles and
+// team results. Called by the ATTP project's sync on a schedule with header x-export-key; the key's SHA-256 must
+// be in export_chei (not revoked). What is published is decided by the SQL function export_site_attp():
+//   jucatori: name, age, matches/wins/losses and photo — totals only, never a team or a per-game list;
+//   echipe + meciuri: team name/colour/logo and every scored match between two teams — never a player;
+//   programate: the scheduled games (date, time, the two teams), also without players.
+// The two halves share nothing that could be matched up, so a visitor cannot tell who plays for which team.
+// Photos go out as short-lived signed links (the consumer copies the image to its own storage).
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -44,5 +47,5 @@ Deno.serve(async (req) => {
     return { ...p, foto: path && url ? { versiune: path.split("/").pop(), url } : null };
   });
 
-  return json({ generat_la: data?.generat_la, jucatori });
+  return json({ generat_la: data?.generat_la, jucatori, echipe: data?.echipe ?? [], meciuri: data?.meciuri ?? [], programate: data?.programate ?? [] });
 });
