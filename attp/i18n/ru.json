@@ -740,5 +740,18 @@
  "Între ele: {v} victorii, {i} înfrângeri": "Личные встречи: {v} побед, {i} поражений",
  "în curs": "идёт",
  "{n} jucate": "сыграно {n}",
- "1 meci": "1 матч"
+ "1 meci": "1 матч",
+ "Liderii clasamentelor": "Лидеры рейтингов",
+ "Nr. 1": "№ 1",
+ "Tenis de masă · Clasamentul FTMM": "Настольный теннис · рейтинг FTMM",
+ "Tenis de masă și baschet, <em>scor cu scor.</em>": "Настольный теннис и баскетбол — <em>счёт за счётом.</em>",
+ "Ultimele rezultate": "Последние результаты",
+ "oraș": "город",
+ "Nr. 1 · Baschet": "№ 1 · Баскетбол",
+ "{v} victorii · {m} meciuri": "{v} побед · {m} матчей",
+ "Echipa nr. 1 · Bskt Cup": "Команда № 1 · Bskt Cup",
+ "{v} victorii din {m}": "{v} побед из {m}",
+ "Nr. 2 · Tenis de masă": "№ 2 · Настольный теннис",
+ "Baschet · Bskt Cup": "Баскетбол · Bskt Cup",
+ "Tenis de masă · Setka Cup": "Настольный теннис · Setka Cup"
 }

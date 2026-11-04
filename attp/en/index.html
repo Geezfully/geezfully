@@ -40,7 +40,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=7f62f092"></script>
+<script src="js/i18n-en.js?v=f5674db9"></script>
 <script src="js/news-en.js?v=f1a6c1da"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -340,33 +340,67 @@
   @media (max-width:900px){
     .home-hero-grid{ grid-template-columns:1fr; }
   }
-  /* Phone: a short opener, then straight to the results. One compact headline, the two sports as equal
-     buttons (ball beside the name), the award as a slim line under them, and no barrier band before the
-     results — so the latest scores start on the first screen instead of after a full screen of intro.
-     The award ribbon and the sport buttons exist only on phones; wider screens keep the picture and buttons. */
-  .award-ribbon, .hero-sports{ display:none; }
+
+  /* ── Phone opener: the current No. 1 in an action photo, the other leaders as swipeable cards, then the
+     latest results on a deep-blue board (last Bskt Cup game in flip digits, last table tennis tournament's
+     top three). Phones only; wider screens keep the hero with the award picture. ── */
+  .m-open{ display:none; }
   @media (max-width:640px){
-    .home-hero{ padding-block:16px 6px; }
-    .home-hero-award, .hero-actions, .home-kicker, .home-hero .lede{ display:none; }
-    .home-hero h1{ font-size:clamp(31px,8.8vw,38px); line-height:.95; max-width:15ch; }
-    .hero-sports{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
-    .hero-sport{ position:relative; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:10px;
-      min-height:64px; padding:10px 12px; border-radius:var(--radius); color:#fff; text-decoration:none; isolation:isolate;
-      box-shadow:0 10px 22px -18px rgba(20,28,40,.8); }
-    .hero-sport--tt{ background:var(--table); }
-    .hero-sport--bb{ background:#C4612A; }
-    .hero-sport::before{ content:""; position:absolute; inset:5px; z-index:-1; border:1.5px solid rgba(255,255,255,.3); border-radius:7px; }
-    .hero-sport img{ grid-row:1 / span 2; width:40px; height:40px; object-fit:contain; filter:drop-shadow(0 3px 4px rgba(0,0,0,.3)); }
-    .hs-name{ font-family:var(--font-display); font-size:clamp(17px,5vw,20px); font-weight:900; line-height:1; align-self:end; }
-    .hs-what{ font-family:var(--font-label); font-size:12.5px; font-weight:800; color:var(--shirt); align-self:start; margin-top:2px; }
-    .hero-sport:active{ transform:scale(.98); }
-    .award-ribbon{ display:flex; align-items:center; gap:9px; margin-top:12px; color:var(--text-2); text-decoration:none; }
-    .award-ribbon img{ width:28px; height:28px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
-    .award-ribbon strong{ display:block; font-family:var(--font-label); font-size:13.5px; font-weight:800; line-height:1.15; color:var(--text); }
-    .award-ribbon span span{ display:block; font-size:12px; line-height:1.2; }
-    .home-hero + .barrier{ display:none; }
+    .home-hero, .home-hero + .barrier{ display:none; }
+    .m-open{ display:block; }
+    .mo-hero{ position:relative; display:block; height:min(118vw,440px); overflow:hidden; color:#fff; isolation:isolate; background:var(--table-ink); text-decoration:none; }
+    .mo-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2; }
+    .mo-hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(8,16,30,0) 30%,rgba(8,16,30,.55) 58%,rgba(8,16,30,.95) 100%); }
+    .mo-copy{ position:absolute; left:18px; right:18px; bottom:20px; }
+    .mo-kick{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; font:800 12.5px/1.1 var(--font-label); letter-spacing:.08em; text-transform:uppercase; }
+    .mo-no{ display:inline-grid; place-items:center; height:26px; padding:0 8px; border-radius:5px; background:var(--shirt); color:var(--text); font:900 18px/1 var(--font-display); letter-spacing:0; }
+    .mo-name{ display:block; font:900 clamp(44px,13.5vw,56px)/.86 var(--font-display); margin:12px 0 10px; }
+    .mo-meta{ display:flex; gap:20px; font:600 13.5px/1.2 var(--font-body); color:rgba(255,255,255,.82); }
+    .mo-meta b{ display:block; font:900 26px/1 var(--font-display); color:#fff; }
+    .mo-row{ display:flex; gap:10px; overflow-x:auto; padding:14px 18px 16px; scroll-snap-type:x mandatory; scroll-padding:0 18px; scrollbar-width:none; }
+    .mo-row::-webkit-scrollbar{ display:none; }
+    .mo-card{ flex:0 0 74%; scroll-snap-align:start; display:grid; grid-template-columns:56px minmax(0,1fr); gap:12px; align-items:center;
+      background:var(--paper); border-radius:var(--radius-lg); padding:12px; color:var(--text); text-decoration:none; box-shadow:var(--shadow-sheet); }
+    .mo-card .mo-pic{ width:56px; height:56px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font:900 20px/1 var(--font-display); color:var(--text-2); }
+    .mo-card .mo-pic img{ width:100%; height:100%; object-fit:cover; }
+    .mo-card .mo-pic.crest{ border-radius:0; background:none; }
+    .mo-card .mo-pic.crest img{ object-fit:contain; }
+    .mo-card small{ display:block; font:800 11.5px/1 var(--font-label); letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+    .mo-card strong{ display:block; font:900 22px/1 var(--font-display); margin:5px 0 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mo-card span{ font:600 13px/1.2 var(--font-body); color:var(--text-2); }
+    .mo-board{ background:var(--table-ink); color:#fff; padding:20px 18px 24px; position:relative; overflow:hidden; isolation:isolate; }
+    .mo-board::before{ content:""; position:absolute; inset:0; z-index:-1; opacity:.13; background:
+      linear-gradient(90deg,transparent calc(50% - 1px),#fff calc(50% - 1px),#fff calc(50% + 1px),transparent calc(50% + 1px)),
+      radial-gradient(circle at 50% 108%,transparent 118px,#fff 119px,#fff 121px,transparent 122px); }
+    .mo-live{ display:inline-flex; align-items:center; gap:7px; font:700 13px/1 var(--font-label); letter-spacing:.06em; text-transform:uppercase; color:var(--shirt); }
+    .mo-live::before{ content:""; width:8px; height:8px; border-radius:50%; background:var(--shirt); box-shadow:0 0 0 4px rgba(245,195,48,.22); }
+    .mo-board h1{ color:#fff; font:900 clamp(34px,10.4vw,40px)/.9 var(--font-display); margin:14px 0 16px; }
+    .mo-board h1 em{ font-style:normal; color:var(--shirt); }
+    .mo-res{ display:block; background:var(--paper); color:var(--text); border-radius:var(--radius-lg); padding:14px; text-decoration:none; margin-top:10px; box-shadow:0 16px 30px -22px rgba(0,0,0,.7); }
+    .mo-res .lbl{ display:flex; justify-content:space-between; gap:10px; font:800 12px/1.1 var(--font-label); letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+    .mo-res .lbl b{ color:var(--table); }
+    .mo-bb{ display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:8px; margin-top:12px; }
+    .mo-team{ display:flex; flex-direction:column; align-items:center; gap:6px; font:800 15px/1.05 var(--font-label); text-align:center; color:var(--muted); overflow-wrap:anywhere; }
+    .mo-team.won{ color:var(--text); }
+    .mo-team img{ width:46px; height:46px; object-fit:contain; }
+    .mo-score{ display:flex; align-items:center; gap:4px; }
+    .mo-dg{ display:inline-grid; place-items:center; width:30px; height:42px; border-radius:5px; background:var(--table-ink); color:#fff; font:900 30px/1 var(--font-display); position:relative; }
+    .mo-dg::after{ content:""; position:absolute; left:0; right:0; top:50%; height:1px; background:rgba(255,255,255,.18); }
+    .mo-dg.won{ background:var(--table); }
+    .mo-colon{ font:900 26px/1 var(--font-display); color:var(--muted); margin:0 2px; }
+    .mo-tt{ list-style:none; margin:10px 0 0; padding:0; }
+    .mo-tt li{ display:grid; grid-template-columns:26px minmax(0,1fr) auto; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--rule); font:600 15px/1.2 var(--font-body); }
+    .mo-tt li:first-child{ border-top:0; }
+    .mo-pos{ display:grid; place-items:center; width:24px; height:24px; border-radius:5px; background:var(--wash); font:900 15px/1 var(--font-display); }
+    .mo-tt li:first-child .mo-pos{ background:var(--shirt); }
+    .mo-wl{ font:800 15px/1 var(--font-label); color:var(--muted); }
+    .mo-links{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .mo-links a{ display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:48px; padding:0 14px; border:1.5px solid rgba(255,255,255,.35); border-radius:var(--radius-lg); color:#fff; text-decoration:none; font:800 15px/1 var(--font-label); }
+    .mo-award{ display:flex; align-items:center; gap:9px; margin-top:16px; color:rgba(255,255,255,.75); font:600 12.5px/1.25 var(--font-body); text-decoration:none; }
+    .mo-award img{ width:30px; height:30px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
+    .mo-award b{ color:#fff; font-family:var(--font-label); font-weight:800; }
+    .mo-sk{ background:rgba(255,255,255,.08); border-radius:var(--radius-lg); }
   }
-  @media (max-width:640px) and (prefers-reduced-motion:reduce){ .hero-sport:active{ transform:none; } }
 </style>
 </head>
 <body>
@@ -431,6 +465,19 @@
 </div>
 
 <main>
+  <section class="m-open" aria-labelledby="mobileTitle">
+    <a class="mo-hero" id="moHero" href="en/players-table-tennis.html"><div class="mo-copy"><span class="mo-kick"><span class="mo-no">No. 1</span>Table tennis · FTMM rankings</span><span class="mo-name">&nbsp;</span></div></a>
+    <div class="mo-row" id="moRow" aria-label="Ranking leaders"></div>
+    <div class="mo-board">
+      <span class="mo-live">Latest results</span>
+      <h1 id="mobileTitle">Table tennis and basketball, <em>score by score.</em></h1>
+      <div id="moBb"><div class="mo-sk" style="height:132px"></div></div>
+      <div id="moTt"><div class="mo-sk" style="height:150px;margin-top:10px"></div></div>
+      <div class="mo-links"><a href="en/players-table-tennis.html">FTMM ranking <span aria-hidden="true">→</span></a><a href="en/players-basketball.html">Bskt Cup <span aria-hidden="true">→</span></a></div>
+      <a class="mo-award" href="en/about.html"><img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async"><span><b>Winner of the Notorium Brand Awards 2025</b><br>Recognised Brands competition</span></a>
+    </div>
+  </section>
+
   <section class="home-hero" aria-labelledby="homeTitle">
     <div class="container home-hero-grid">
       <div class="home-hero-copy">
@@ -441,22 +488,6 @@
           <a href="en/players-table-tennis.html" class="btn btn-primary">See the FTMM rankings</a>
           <a href="en/players-basketball.html" class="btn btn-ghost">See the Bskt Cup rankings</a>
         </div>
-        <nav class="hero-sports" aria-label="Rankings">
-          <a class="hero-sport hero-sport--tt" href="en/players-table-tennis.html">
-            <img src="images/ui/ball-tt.webp" width="300" height="244" alt="" decoding="async">
-            <span class="hs-name">Table tennis</span>
-            <span class="hs-what">FTMM ranking <span aria-hidden="true">→</span></span>
-          </a>
-          <a class="hero-sport hero-sport--bb" href="en/players-basketball.html">
-            <img src="images/ui/ball-bb.webp" width="300" height="244" alt="" decoding="async">
-            <span class="hs-name">Basketball</span>
-            <span class="hs-what">Bskt Cup <span aria-hidden="true">→</span></span>
-          </a>
-        </nav>
-        <a class="award-ribbon" href="en/about.html">
-          <img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async">
-          <span><strong>Winner of the Notorium Brand Awards 2025</strong><span>Recognised Brands competition</span></span>
-        </a>
       </div>
       <figure class="home-hero-photo home-hero-award">
         <img src="images/heroes/award-hero-1880.webp" srcset="images/heroes/award-hero-1880.webp 1880w, images/heroes/award-hero-3762.webp 3762w" sizes="(max-width:900px) 100vw, 560px" width="3762" height="2508" alt="ATTP, winner of the Notorium Brand Awards 2025" fetchpriority="high" decoding="async">
@@ -1090,6 +1121,67 @@ async function renderBasketballResults(){
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
+})();
+</script>
+<script>
+// Phone opener (see .m-open): live leaders and latest results. Rendered on every screen size (the queries are
+// small); CSS shows it only on phones.
+(async function(){
+  // action photos on file; anyone else at No. 1 is shown with their portrait instead, never someone else's photo
+  const ACTION = { 'ursu vladislav':['images/heroes/players-900.webp','30% 30%'], 'turcan victor':['images/heroes/tournaments-900.webp','55% 30%'], 'demik ying':['images/heroes/news-900.webp','50% 35%'] };
+  const dayMonth = iso => { const d = new Date(iso + 'T12:00:00Z');
+    return (window.ATTP_LANG || 'ro') === 'ro' ? `${d.getUTCDate()} ${MONTHS_RO[d.getUTCMonth()]}` : d.toLocaleDateString(DATE_LOCALE[window.ATTP_LANG], { day:'numeric', month:'long', timeZone:'UTC' }); };
+  const num = n => Number(n).toLocaleString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { minimumFractionDigits:1, maximumFractionDigits:1 });
+  const digits = (n, won) => String(n).split('').map(c => `<span class="mo-dg${won ? ' won' : ''}">${c}</span>`).join('');
+  const pic = (url, txt, crest) => `<span class="mo-pic${crest ? ' crest' : ''}">${url ? `<img src="${escapeHtml(url)}" alt="" loading="lazy">` : escapeHtml(txt)}</span>`;
+
+  const [top, { data: bp }, { data: bt }, { data: teams }, { data: games }, { data: tr }] = await Promise.all([
+    fetchTopRanked(2),
+    db.from('bskt_jucatori').select('id,prenume,nume,victorii,meciuri,foto_url_mic').order('victorii', { ascending:false }).order('meciuri').limit(1),
+    db.from('bskt_echipe_stat').select('id,nume,logo_url,victorii,meciuri').order('coeficient', { ascending:false }).limit(1),
+    db.from('bskt_echipe').select('id,nume,logo_url'),
+    db.from('bskt_meciuri').select('*').order('data', { ascending:false }).limit(40),
+    db.from('tournament_results').select('player_id,first_name,last_name,tournament_id,tournament_name,start_date,match_win,match_lost,position').eq('status','finished').order('start_date', { ascending:false }).limit(60),
+  ]);
+
+  // No. 1 in table tennis
+  const p1 = top[0], hero = document.getElementById('moHero');
+  if (p1) {
+    const key = foldText(`${p1.last_name} ${p1.first_name}`).toLowerCase();
+    const act = ACTION[key];
+    const photo = act ? act[0] : (p1.ligas_photo_url || null);
+    hero.href = `player.html?id=${encodeURIComponent(p1.id)}`;
+    hero.setAttribute('aria-label', `${t('Nr. 1')}: ${p1.first_name} ${p1.last_name}`);
+    hero.innerHTML = `${photo ? `<img src="${escapeHtml(photo)}" alt="" fetchpriority="high" style="object-position:${act ? act[1] : '50% 20%'}">` : ''}
+      <div class="mo-copy"><span class="mo-kick"><span class="mo-no">${t('Nr. 1')}</span>${t('Tenis de masă · Clasamentul FTMM')}</span>
+        <span class="mo-name">${escapeHtml(p1.first_name)}<br>${escapeHtml(p1.last_name)}</span>
+        <span class="mo-meta"><span><b>${num(p1.ligas_ranking[0].rating)}</b>${t('rating')}</span>${p1.city ? `<span><b>${escapeHtml(townName(p1.city))}</b>${t('oraș')}</span>` : ''}</span></div>`;
+  }
+
+  // the other leaders, swipeable
+  const cards = [];
+  if (bp?.[0]) { const b = bp[0]; cards.push(`<a class="mo-card" href="en/player-basketball.html?id=${encodeURIComponent(b.id)}">${pic(b.foto_url_mic, (b.prenume[0] || '') + (b.nume[0] || ''))}<span><small>${t('Nr. 1 · Baschet')}</small><strong>${escapeHtml(b.prenume)} ${escapeHtml(b.nume)}</strong><span>${t('{v} victorii · {m} meciuri').replace('{v}', b.victorii).replace('{m}', b.meciuri)}</span></span></a>`); }
+  if (bt?.[0]) { const e = bt[0]; cards.push(`<a class="mo-card" href="en/basketball-team.html?id=${encodeURIComponent(e.id)}">${pic(e.logo_url, e.nume[0], true)}<span><small>${t('Echipa nr. 1 · Bskt Cup')}</small><strong>${escapeHtml(e.nume)}</strong><span>${t('{v} victorii din {m}').replace('{v}', e.victorii).replace('{m}', e.meciuri)}</span></span></a>`); }
+  const p2 = top[1];
+  if (p2) cards.push(`<a class="mo-card" href="en/player.html?id=${encodeURIComponent(p2.id)}">${pic(p2.ligas_photo_url, p2.first_name[0] + p2.last_name[0])}<span><small>${t('Nr. 2 · Tenis de masă')}</small><strong>${escapeHtml(p2.first_name)} ${escapeHtml(p2.last_name)}</strong><span>${t('rating')} ${num(p2.ligas_ranking[0].rating)}</span></span></a>`);
+  document.getElementById('moRow').innerHTML = cards.join('');
+
+  // latest Bskt Cup game (after-midnight games are the latest of their evening)
+  const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  const key = m => `${m.data}|${(m.ora || '') < '06:00' ? 1 : 0}|${m.ora || ''}`;
+  const g = (games || []).filter(m => byId[m.echipa_a] && byId[m.echipa_b]).sort((a, b) => key(b).localeCompare(key(a)))[0];
+  const side = (x, won) => `<span class="mo-team${won ? ' won' : ''}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}${escapeHtml(x.nume)}</span>`;
+  document.getElementById('moBb').innerHTML = g ? `<a class="mo-res" href="basketball-team.html?id=${encodeURIComponent(g.scor_a > g.scor_b ? g.echipa_a : g.echipa_b)}">
+      <span class="lbl"><b>${t('Baschet · Bskt Cup')}</b><span>${dayMonth(bsktPlayedOn(g.data, g.ora))}${g.ora ? ' · ' + escapeHtml(g.ora) : ''}</span></span>
+      <span class="mo-bb">${side(byId[g.echipa_a], g.scor_a > g.scor_b)}<span class="mo-score" aria-label="${g.scor_a}:${g.scor_b}">${digits(g.scor_a, g.scor_a > g.scor_b)}<span class="mo-colon">:</span>${digits(g.scor_b, g.scor_b > g.scor_a)}</span>${side(byId[g.echipa_b], g.scor_b > g.scor_a)}</span></a>` : '';
+
+  // latest table tennis tournament, top three
+  const rows = tr || [];
+  const last = rows[0];
+  const podium = last ? rows.filter(r => r.tournament_id === last.tournament_id && r.position).sort((a, b) => a.position - b.position).slice(0, 3) : [];
+  document.getElementById('moTt').innerHTML = podium.length ? `<a class="mo-res" href="en/tournament.html?id=${encodeURIComponent(last.tournament_id)}">
+      <span class="lbl"><b>${t('Tenis de masă · Setka Cup')}</b><span>${escapeHtml(tournamentTitle(last.tournament_name))} · ${dayMonth(String(last.start_date).slice(0, 10))}</span></span>
+      <ol class="mo-tt">${podium.map(r => `<li><span class="mo-pos">${r.position}</span><span>${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</span><span class="mo-wl">${r.match_win ?? '–'}:${r.match_lost ?? '–'}</span></li>`).join('')}</ol></a>` : '';
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
