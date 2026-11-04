@@ -89,7 +89,7 @@ def build_sitemap():
                 src = fh.read()
             out += json.loads(src[src.index('['):src.rindex(']') + 1])
         return out
-    entries = [('' if p == 'index' else f'{p}.html', None) for p in PAGES if p not in ('news-article', 'player', 'player-basketball', 'basketball-team')]
+    entries = [('' if p == 'index' else f'{p}.html', None) for p in PAGES if p not in ('news-article', 'player', 'player-basketball', 'basketball-team', 'tournament')]
     entries += [(f'news-article.html?slug={n["slug"]}', n.get('date')) for n in news()]
     urls = []
     for path, date in entries:

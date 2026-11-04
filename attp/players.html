@@ -34,39 +34,28 @@
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:28px 0 18px; }
-  .filters input, .filters select{
-    padding:11px 14px; border-radius:var(--radius); border:2px solid var(--rule-2); background:var(--paper); color:var(--text);
-    font-family:var(--font-body); font-size:16px; min-height:48px;
-  }
-  .filters select{ font-family:var(--font-label); font-weight:700; font-size:17px; }
-  .filters input{ flex:1; min-width:200px; }
-  .filters input:focus, .filters select:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
-  @media (max-width:460px){ .filters input{ min-width:100%; } .filters select{ width:100%; } }
-
-  /* The ranking, printed like the sheet pinned on the club board */
-  #playerList{ background:var(--paper); border:1px solid var(--rule); border-top:3px solid var(--text); border-radius:var(--radius); overflow:hidden; }
-  .player-row{ display:grid; grid-template-columns:52px 48px 1fr auto auto auto; align-items:center; gap:16px; padding:10px 18px; border-top:1px solid var(--rule); }
-  .player-row:first-child{ border-top:0; }
-  .player-row:nth-child(even){ background:var(--surface-2); }
-  .player-row:hover{ background:#EEF3FA; }
-  .player-row:hover .p-name{ color:var(--table); }
-  .player-row .p-rank{ font-family:var(--font-display); font-size:28px; font-weight:800; line-height:1; color:var(--table); font-variant-numeric:tabular-nums; }
-  .player-row:nth-child(-n+3) .p-rank{ color:var(--text); }
-  .player-row:first-child .p-rank{ background:var(--shirt); border-radius:var(--radius-sm); padding:3px 6px 1px; justify-self:start; }
-  .p-avatar{ width:48px; height:48px; border-radius:50%; overflow:hidden; background:var(--wash); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:800; font-size:18px; color:var(--table); flex:0 0 auto; }
-  .player-row .p-name{ font-family:var(--font-display); font-size:23px; font-weight:800; line-height:1; transition:color .15s ease; }
-  .player-row .p-city{ font-size:13.5px; color:var(--muted); }
-  .player-row .p-rating{ font-family:var(--font-display); font-weight:800; font-size:28px; color:var(--table); text-align:right; min-width:64px; font-variant-numeric:tabular-nums; }
-  .player-row .p-record{ font-family:var(--font-label); font-size:15px; font-weight:600; color:var(--muted); text-align:right; white-space:nowrap; }
-  @media (max-width:700px){
-    .player-row{ grid-template-columns:34px 40px 1fr auto; gap:10px; padding:10px 12px; }
-    .player-row .p-rank{ font-size:22px; }
-    .p-avatar{ width:40px; height:40px; }
-    .player-row .p-name{ font-size:20px; }
-    .player-row .p-rating{ font-size:22px; min-width:0; }
-    .p-record{ display:none; }
-  }
+  /* one search over both sports: a field under the title, matches listed right below it */
+  .p-search{ max-width:640px; margin-top:26px; }
+  .p-search label{ display:block; font-family:var(--font-label); font-weight:800; font-size:15px; letter-spacing:.04em; text-transform:uppercase; color:var(--text); margin-bottom:8px; }
+  .ps-field{ position:relative; }
+  .ps-field svg{ position:absolute; left:15px; top:50%; transform:translateY(-50%); width:20px; height:20px; color:var(--muted); pointer-events:none; }
+  .ps-field input{ width:100%; min-height:54px; padding:12px 16px 12px 46px; border-radius:var(--radius); border:2px solid var(--rule-2); background:var(--paper); color:var(--text); font-family:var(--font-body); font-size:17px; box-shadow:var(--shadow-sheet); }
+  .ps-field input:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
+  .ps-field input::-webkit-search-cancel-button{ cursor:pointer; }
+  .ps-status{ margin:10px 2px 0; font-size:14px; color:var(--muted); min-height:1.4em; }
+  .ps-results{ list-style:none; margin:6px 0 0; padding:0; background:var(--paper); border:1px solid var(--rule); border-top:3px solid var(--text); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-sheet); }
+  .ps-results:empty{ display:none; }
+  .ps-results li + li{ border-top:1px solid var(--rule); }
+  .ps-results a{ display:grid; grid-template-columns:44px minmax(0,1fr) auto; align-items:center; gap:14px; padding:9px 14px; color:inherit; text-decoration:none; min-height:60px; }
+  .ps-results a:hover, .ps-results a:focus-visible{ background:#EEF3FA; outline:none; }
+  .ps-results a:hover .ps-name, .ps-results a:focus-visible .ps-name{ color:var(--table); }
+  .ps-face{ width:44px; height:44px; border-radius:50%; overflow:hidden; background:var(--wash); display:grid; place-items:center; font-family:var(--font-display); font-weight:800; font-size:17px; color:var(--table); }
+  .ps-name{ display:block; font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1.05; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ps-sub{ display:block; font-size:13.5px; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ps-sport{ font-family:var(--font-label); font-weight:800; font-size:13px; letter-spacing:.03em; text-transform:uppercase; padding:4px 8px; border-radius:var(--radius-sm); white-space:nowrap; }
+  .ps-sport--tt{ background:rgba(28,78,148,.1); color:var(--table); }
+  .ps-sport--bb{ background:rgba(196,97,42,.12); color:#9A4519; }
+  @media (max-width:460px){ .ps-results a{ grid-template-columns:40px minmax(0,1fr); gap:12px; } .ps-face{ width:40px; height:40px; } .ps-sport{ grid-column:2; justify-self:start; margin-top:-4px; } .ps-name{ font-size:20px; } }
 </style>
 </head>
 <body>
@@ -114,6 +103,15 @@
     <div class="eyebrow">Clasament</div>
     <h1 id="playersTitle">Jucători ATTP</h1>
     <p class="lede mt-16">Clasamentele oficiale ale federațiilor naționale sportive și organizațiilor acreditate. Alege disciplina.</p>
+    <form class="p-search" role="search" onsubmit="return false">
+      <label for="pSearch">Caută un jucător</label>
+      <div class="ps-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+        <input type="search" id="pSearch" placeholder="Nume sau prenume, la ambele sporturi" autocomplete="off" spellcheck="false" aria-describedby="pStatus" aria-controls="pResults">
+      </div>
+      <p class="ps-status" id="pStatus" aria-live="polite"></p>
+      <ul class="ps-results" id="pResults" aria-label="Jucători găsiți"></ul>
+    </form>
   </section>
   <section class="container sport-choice" aria-label="Discipline sportive">
       <a class="sport-card sport-card--tt" href="players-table-tennis.html">
@@ -148,6 +146,64 @@
 </footer>
 
 <script src="js/supabase-init.js?v=20261104-batch"></script>
+<script>
+// Table tennis (players) and basketball (bskt_jucatori) in one list. Loaded on the first keystroke;
+// accents and the order of the names do not matter.
+(function(){
+  const input = document.getElementById('pSearch'), list = document.getElementById('pResults'), status = document.getElementById('pStatus');
+  let people = null, loading = null;
+  const load = () => loading ||= Promise.all([
+    db.from('players').select('id, first_name, last_name, city, photo_url, ligas_match_status, setka_cup_cache(photo_token), ligas_ranking(position, ranking, rating)'),
+    db.from('bskt_jucatori').select('id, nume, prenume, meciuri, victorii, foto_url_mic'),
+  ]).then(([tt, bb]) => {
+    people = [
+      ...(tt.data || []).map(p => ({ sport:'tt', p, first:p.first_name, last:p.last_name, href:`player.html?id=${encodeURIComponent(p.id)}` })),
+      ...(bb.data || []).map(p => ({ sport:'bb', p, first:p.prenume, last:p.nume, href:`player-basketball.html?id=${encodeURIComponent(p.id)}` })),
+    ].map(x => ({ ...x, key: foldText(`${x.first} ${x.last} ${x.first}`) }));
+  });
+  const LIST = { masculin:t('clasamentul masculin'), feminin:t('clasamentul feminin') };
+  const row = x => {
+    const ini = escapeHtml(((x.first || '')[0] || '') + ((x.last || '')[0] || '')).toUpperCase();
+    let face, sub;
+    if (x.sport === 'tt') {
+      face = avatarHtml(x.p);
+      const r = playerRanking(x.p);
+      sub = [townName(x.p.city) || 'Moldova', r ? t('locul {n} în {lista}').replace('{n}', r.position).replace('{lista}', LIST[r.list] || r.list) : ''].filter(Boolean).join(' · ');
+    } else {
+      face = x.p.foto_url_mic ? `<img src="${escapeHtml(x.p.foto_url_mic)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">` : ini;
+      sub = t('{m} meciuri · {v} victorii').replace('{m}', x.p.meciuri ?? 0).replace('{v}', x.p.victorii ?? 0);
+    }
+    return `<li><a href="${x.href}"><span class="ps-face">${face}</span><span><span class="ps-name">${escapeHtml(x.first)} ${escapeHtml(x.last)}</span><span class="ps-sub">${escapeHtml(sub)}</span></span><span class="ps-sport ps-sport--${x.sport}">${x.sport === 'tt' ? t('Tenis de masă') : t('Baschet')}</span></a></li>`;
+  };
+  const MAX = 8;
+  const run = async () => {
+    const q = foldText(input.value.trim()).replace(/\s+/g, ' ');
+    if (q.length < 2) { list.innerHTML = ''; status.textContent = q ? t('Mai scrie o literă.') : ''; return; }
+    if (!people) { status.textContent = t('Se caută…'); await load(); }
+    if (foldText(input.value.trim()).replace(/\s+/g, ' ') !== q) return;   // the text changed while loading
+    const words = q.split(' ');
+    const hits = people.filter(x => words.every(w => x.key.includes(w)))
+      .sort((a, b) => (b.key.startsWith(q) - a.key.startsWith(q)) || a.last.localeCompare(b.last, 'ro'));
+    list.innerHTML = hits.slice(0, MAX).map(row).join('');
+    status.textContent = !hits.length ? t('Niciun jucător cu acest nume.')
+      : hits.length > MAX ? t('{n} jucători găsiți; primii {k} mai jos. Scrie mai mult ca să restrângi.').replace('{n}', hits.length).replace('{k}', MAX)
+      : hits.length === 1 ? t('Un jucător găsit.') : t('{n} jucători găsiți.').replace('{n}', hits.length);
+  };
+  input.addEventListener('focus', load, { once:true });
+  input.addEventListener('input', run);
+  // Enter opens the first match; arrow down goes into the list
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { const a = list.querySelector('a'); if (a) location.href = a.href; }
+    if (e.key === 'ArrowDown') { const a = list.querySelector('a'); if (a) { e.preventDefault(); a.focus(); } }
+  });
+  list.addEventListener('keydown', e => {
+    const links = [...list.querySelectorAll('a')], i = links.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown' && i < links.length - 1) { e.preventDefault(); links[i + 1].focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); (i > 0 ? links[i - 1] : input).focus(); }
+    if (e.key === 'Escape') { input.focus(); }
+  });
+})();
+</script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/floor.js?v=2"></script>

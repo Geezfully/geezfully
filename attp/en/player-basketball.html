@@ -32,7 +32,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=c6a924f5"></script>
+<script src="js/i18n-en.js?v=7f62f092"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -49,6 +49,11 @@
   .kpi b{ display:block; font-family:var(--font-mono); font-size:24px; }
   .kpi span{ display:block; font-size:12.5px; line-height:1.35; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; }
   @media (max-width:700px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
+  /* place in the Bskt Cup list by wins, as a link back to that list */
+  .bb-rank{ display:inline-flex; align-items:center; gap:10px; margin-top:14px; min-height:44px; padding:6px 14px 6px 6px; border-radius:999px; background:var(--paper); border:1px solid var(--rule); box-shadow:var(--shadow-sheet); color:var(--text); text-decoration:none; font-family:var(--font-label); font-size:15.5px; font-weight:600; }
+  .bb-rank b{ display:grid; place-items:center; min-width:34px; height:34px; padding:0 8px; border-radius:999px; background:#C4612A; color:#fff; font-family:var(--font-display); font-size:20px; font-weight:900; }
+  .bb-rank.top b{ background:var(--shirt); color:var(--text); }
+  .bb-rank:hover{ border-color:#C4612A; }
 
   .gear-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px 28px; margin-top:16px; }
   .gear-item .gear-label{ font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:4px; }
@@ -137,7 +142,18 @@
     <div>
       <h1>${escapeHtml(name)}</h1>
       <p class="dim mt-8">${t('Baschet')}${p.varsta != null ? ' · ' + t('Vârsta: {n}').replace('{n}', p.varsta) : ''}</p>
+      <div id="bbRank"></div>
     </div>`;
+  // place by wins among every Bskt Cup player on the site; equal wins share the place
+  if (p.meciuri > 0) {
+    const n = q => q.then(r => r.count || 0);
+    const all = () => db.from('bskt_jucatori').select('id', { count:'exact' }).limit(1);
+    const [ahead, total] = await Promise.all([n(all().gt('victorii', p.victorii)), n(all())]);
+    if (total) {
+      const place = ahead + 1;
+      document.getElementById('bbRank').innerHTML = `<a class="bb-rank${place <= 3 ? ' top' : ''}" href="en/basketball-players.html"><b>${place}</b>${t('din {n} după victorii').replace('{n}', total)}</a>`;
+    }
+  }
 
   const rate = p.meciuri ? Math.round(p.victorii / p.meciuri * 100) : null;
   document.getElementById('kpiRow').innerHTML = `

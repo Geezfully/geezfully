@@ -32,7 +32,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=b5860c94"></script>
+<script src="js/i18n-ru.js?v=49e9de29"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -45,7 +45,8 @@
   .filters select{ font-family:var(--font-label); font-weight:700; font-size:17px; }
   .filters input{ flex:1; min-width:200px; }
   .filters input:focus, .filters select:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
-  @media (max-width:460px){ .filters input{ min-width:100%; } .filters select{ width:100%; } }
+  @media (max-width:820px){ .filters input{ min-width:100%; } .filters select{ flex:1 1 0; min-width:0; } }
+  @media (max-width:460px){ .filters select{ flex:1 1 calc(50% - 5px); font-size:16px; padding-inline:12px; } #sortSelect{ flex-basis:100%; } }
 
   /* The ranking, printed like the sheet pinned on the club board */
   #playerList{ background:var(--paper); border:1px solid var(--rule); border-top:3px solid var(--text); border-radius:var(--radius); overflow:hidden; }
@@ -63,7 +64,8 @@
   .player-row .p-rating{ font-family:var(--font-display); font-weight:800; font-size:28px; color:var(--table); text-align:right; min-width:64px; font-variant-numeric:tabular-nums; }
   .player-row .p-record{ font-family:var(--font-label); font-size:15px; font-weight:600; color:var(--muted); text-align:right; white-space:nowrap; }
   @media (max-width:700px){
-    .player-row{ grid-template-columns:34px 40px 1fr auto; gap:10px; padding:10px 12px; }
+    .player-row{ grid-template-columns:minmax(34px,auto) 40px 1fr auto; gap:10px; padding:10px 12px; }
+    .player-row .p-rank{ white-space:nowrap; }
     .player-row .p-rank{ font-size:22px; }
     .p-avatar{ width:40px; height:40px; }
     .player-row .p-name{ font-size:20px; }
@@ -135,6 +137,9 @@
         <option value="feminin">Женский рейтинг</option>
         <option value="all">Все игроки</option>
       </select>
+      <select id="townSelect" aria-label="Населённый пункт">
+        <option value="">Все населённые пункты</option>
+      </select>
       <select id="sortSelect" aria-label="Сортировка">
         <option value="rating">Сортировка: рейтинг</option>
         <option value="matches">Сортировка: сыграно матчей</option>
@@ -167,11 +172,13 @@
 <script>
 let ALL_PLAYERS = [];
 function render(){
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const q = foldText(document.getElementById('searchInput').value.trim());
+  const town = document.getElementById('townSelect').value;
   const listName = document.getElementById('listSelect').value;
   const sort = document.getElementById('sortSelect').value;
   let list = ALL_PLAYERS.filter(p => {
-    if (q && !`${p.first_name} ${p.last_name}`.toLowerCase().includes(q)) return false;
+    if (q && !foldText(`${p.first_name} ${p.last_name}`).includes(q) && !foldText(`${p.last_name} ${p.first_name}`).includes(q)) return false;
+    if (town && townName(p.city) !== town) return false;
     return listName === 'all' || playerRanking(p)?.list === listName;
   });
   list.sort((a,b) => {
@@ -202,6 +209,20 @@ function render(){
 }
 (async function(){
   ALL_PLAYERS = await fetchAllPlayers();
+  // towns, most players first; the choice stays in the address (?oras=) so a filtered list can be shared
+  const towns = {};
+  ALL_PLAYERS.forEach(p => { const c = townName(p.city); if (c) towns[c] = (towns[c] || 0) + 1; });
+  const townSel = document.getElementById('townSelect');
+  townSel.insertAdjacentHTML('beforeend', Object.entries(towns).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'ro'))
+    .map(([c, n]) => `<option value="${escapeHtml(c)}">${escapeHtml(c)} (${n})</option>`).join(''));
+  const want = new URLSearchParams(location.search).get('oras');
+  if (want && towns[want]) { townSel.value = want; document.getElementById('listSelect').value = 'all'; }
+  townSel.addEventListener('change', () => {
+    const u = new URL(location.href);
+    if (townSel.value) u.searchParams.set('oras', townSel.value); else u.searchParams.delete('oras');
+    history.replaceState(null, '', u);
+    render();
+  });
   render();
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('sortSelect').addEventListener('change', render);

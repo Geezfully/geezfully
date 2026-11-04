@@ -40,7 +40,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=b5860c94"></script>
+<script src="js/i18n-ru.js?v=49e9de29"></script>
 <script src="js/news-ru.js?v=d91bfff6"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -84,6 +84,8 @@
     background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet);
   }
   .town-roll li{ display:flex; justify-content:space-between; gap:12px; break-inside:avoid; padding:7px 0; border-bottom:1px solid var(--rule); font-size:15.5px; }
+  .town-roll li a{ display:flex; justify-content:space-between; gap:12px; flex:1; color:inherit; text-decoration:none; padding-block:6px; margin-block:-6px; }
+  .town-roll li a:hover span{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
   .town-roll li b{ font-family:var(--font-label); font-weight:800; font-variant-numeric:tabular-nums; color:var(--table); }
   .town-roll .roll-abroad{ column-span:all; border-bottom:0; padding-top:12px; font-size:14.5px; color:var(--text-2); }
   .town-more{ display:none; }
@@ -238,6 +240,11 @@
     .serve{ display:none; }
   }
   @media (max-width:900px){ .tourn-list{ grid-template-columns:1fr; } }
+  .tourn-mini-link{ color:inherit; text-decoration:none; display:inline-block; padding-block:10px; margin-block:-10px; }
+  .tourn-mini-link:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .score-tournament a{ color:inherit; text-decoration:underline; text-decoration-color:var(--rule-2); text-underline-offset:3px; display:inline-block; padding-block:12px; margin-block:-12px; }
+  .score-tournament a:hover{ color:var(--table); }
+  .score-tournament a:hover{ text-decoration-color:currentColor; }
 
   /* ── News: one story leads, two follow ── */
   .news-grid{ display:grid; grid-template-columns:1.25fr 1fr; grid-template-rows:auto auto; gap:18px; }
@@ -815,7 +822,6 @@ if (ballModels.length) {
 // roll. The border and the town positions come from OpenStreetMap, projected onto the
 // map's viewBox (equirectangular, cos 47°); a town missing here is listed without a dot.
 const TOWN_XY = {"Anenii Noi":[366.4,332.5],"Avdarma":[313.4,457.6],"Basarabeasca":[331.9,441.8],"Bender":[400.9,343.9],"Briceni":[73.9,36.0],"Bălți":[189.0,155.8],"Cahul":[225.3,527.4],"Camenca":[294.8,101.9],"Cantemir":[226.1,452.8],"Cazaclia":[289.1,507.1],"Ceadîr-Lunga":[311.3,496.8],"Chișinău":[316.5,306.2],"Cimișlia":[305.6,404.0],"Codru":[311.6,314.5],"Comrat":[288.2,448.1],"Congaz":[280.9,486.7],"Copceac":[293.3,537.4],"Cricova":[316.3,280.9],"Criuleni":[356.9,265.6],"Călărași":[242.1,257.9],"Cărpineni":[245.9,355.3],"Căușeni":[390.6,378.4],"Dondușeni":[145.6,60.8],"Drochia":[173.6,101.9],"Dubăsari":[357.2,255.2],"Durlești":[303.0,303.7],"Edineț":[103.0,74.6],"Florești":[239.6,129.5],"Fălești":[158.7,193.6],"Glodeni":[131.1,153.4],"Grigoriopol":[375.2,278.9],"Hîncești":[279.1,342.6],"Ialoveni":[304.7,319.5],"Leova":[233.7,412.2],"Nisporeni":[223.0,292.8],"Ocnița":[127.6,26.2],"Orhei":[311.5,234.7],"Rezina":[329.2,158.5],"Rîbnița":[336.1,155.1],"Rîșcani":[137.5,117.6],"Slobozia":[431.8,362.8],"Soroca":[238.1,77.4],"Strășeni":[282.6,278.8],"Stăuceni":[317.2,289.1],"Sîngera":[331.4,325.5],"Sîngerei":[218.6,181.1],"Taraclia":[289.9,528.7],"Telenești":[248.3,207.7],"Tiraspol":[417.8,337.0],"Ungheni":[171.3,267.1],"Vadul lui Vodă":[346.0,290.7],"Vulcănești":[253.6,571.8],"Șoldănești":[306.9,145.6],"Ștefan Vodă":[425.4,405.2]};
-const TOWN_ALIAS = { 'Кишинів':'Chișinău', 'Кишинев':'Chișinău', 'Chisinau':'Chișinău', 'Odessa':'Odesa', 'Сороки':'Soroca', 'Сорока':'Soroca' };
 const ABROAD = new Set(['Odesa','Catania','Zaporojie']);
 async function renderTowns(){
   const { data } = await db.from('players').select('city');
@@ -824,7 +830,7 @@ async function renderTowns(){
   data.forEach(r => {
     let c = (r.city || '').trim();
     if (!c) return;
-    c = TOWN_ALIAS[c] || c;
+    c = townName(c);
     const bucket = ABROAD.has(c) ? abroad : home;
     bucket[c] = (bucket[c] || 0) + 1;
   });
@@ -853,7 +859,7 @@ async function renderTowns(){
   });
   const abroadList = Object.keys(abroad).sort((a,b) => a.localeCompare(b, 'ro'));
   document.getElementById('townRoll').innerHTML =
-    towns.map(([name, n]) => `<li><span>${escapeHtml(t(name))}</span><b>${n}</b></li>`).join('') +
+    towns.map(([name, n]) => `<li><a href="ru/players-table-tennis.html?oras=${encodeURIComponent(name)}"><span>${escapeHtml(t(name))}</span><b>${n}</b></a></li>`).join('') +
     (abroadList.length ? `<li class="roll-abroad">${t('Și din afara țării:')} ${abroadList.map(c => escapeHtml(t(c))).join(', ')}</li>` : '');
   const more = document.getElementById('townMore');
   if (towns.length > 10) {
@@ -969,7 +975,7 @@ async function renderBasketballResults(){
       <div class="score-row">
         <div class="score-name"><a href="ru/player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></div>
         <div class="score-chip">${flipScore(r.match_win, r.match_lost)}</div>
-        <div class="score-tournament">${escapeHtml(tournamentTitle(r.tournament_name))}${r.start_date ? ' · ' + fmtDateShort(r.start_date) : ''}</div>
+        <div class="score-tournament"><a href="ru/tournament.html?id=${r.tournament_id}">${escapeHtml(tournamentTitle(r.tournament_name))}</a>${r.start_date ? ' · ' + fmtDateShort(r.start_date) : ''}</div>
         <div class="score-meta"><span>${divisionLabel(r.division)}</span><span>${r.position ? t('locul {n}').replace('{n}', r.position) : ''}</span></div>
       </div>`).join('');
   }
@@ -991,13 +997,13 @@ async function renderBasketballResults(){
   const tournGrid = document.getElementById('tournGrid');
   const byTournament = {};
   tournRows.forEach(r => {
-    (byTournament[r.tournament_id] ||= { name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
+    (byTournament[r.tournament_id] ||= { id:r.tournament_id, name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
   });
   const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
   tournGrid.innerHTML = tournaments.length ? tournaments.map(tr => `
     <div class="tourn-mini">
       <div class="tourn-mini-head">
-        <h3>${escapeHtml(tournamentTitle(tr.name))}</h3>
+        <h3><a class="tourn-mini-link" href="ru/tournament.html?id=${tr.id}">${escapeHtml(tournamentTitle(tr.name))}</a></h3>
         <div class="tourn-mini-meta">
           <span class="tourn-mini-date">${fmtDateShort(tr.date)} · ${divisionLabel(tr.division)}</span>
           <span class="tag tag-rally">${tr.rows.length} ATTP</span>

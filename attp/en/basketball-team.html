@@ -32,7 +32,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="en";</script>
-<script src="js/i18n-en.js?v=c6a924f5"></script>
+<script src="js/i18n-en.js?v=7f62f092"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -58,6 +58,15 @@
   @media (max-width:900px){ .kpi-row{ grid-template-columns:repeat(3,1fr); } }
   @media (max-width:520px){ .kpi-row{ grid-template-columns:1fr 1fr; } }
   /* form and streaks: the last five results as chips, then the few numbers a fan asks about first */
+  /* the team's next scheduled game, with the record against that opponent */
+  .next-game{ display:flex; align-items:center; gap:14px 18px; flex-wrap:wrap; margin:-8px 0 28px; padding:14px 18px; background:var(--paper); border:1px solid var(--rule); border-left:4px solid #C4612A; border-radius:var(--radius); box-shadow:var(--shadow-sheet); color:var(--text); text-decoration:none; min-height:44px; }
+  .next-game:hover{ border-color:#C4612A; }
+  .ng-label{ font-family:var(--font-label); font-weight:800; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:#9A4519; }
+  .ng-when{ font-family:var(--font-label); font-weight:700; font-size:16px; }
+  .ng-opp{ display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1; }
+  .ng-opp img{ width:30px; height:30px; object-fit:contain; }
+  .ng-rec{ font-size:14px; color:var(--muted); margin-left:auto; }
+  @media (max-width:560px){ .ng-rec{ margin-left:0; flex-basis:100%; } }
   .form-card{ display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:20px 32px; margin:-8px 0 36px; padding:20px 22px;
     background:var(--paper); border:1px solid var(--rule); border-radius:var(--radius-lg); box-shadow:var(--shadow-sheet); }
   .form-title{ font-size:26px; }
@@ -122,6 +131,7 @@
     </div>
     <section class="container section-tight">
       <div class="kpi-row" id="kpiRow"></div>
+      <a class="next-game" id="nextGame" hidden></a>
       <section class="form-card" id="formCard" aria-labelledby="formTitle" hidden>
         <div class="form-main">
           <h2 class="form-title" id="formTitle">Form</h2>
@@ -260,6 +270,20 @@ function renderForm(list, vs, byId){
     return { ...m, opp: byId[home ? m.echipa_b : m.echipa_a], pentru: home ? m.scor_a : m.scor_b, contra: home ? m.scor_b : m.scor_a };
   }).filter(m => m.opp);
   renderForm(list, rows, byId);
+  // next game on the schedule, if the BSKT register has one
+  fetchBsktUpcoming(q => q.or(`echipa_a.eq.${id},echipa_b.eq.${id}`)).then(next => {
+    const m = next[0], o = m && byId[m.echipa_a === id ? m.echipa_b : m.echipa_a];
+    if (!o) return;
+    const day = new Date(m.data + 'T12:00:00').toLocaleDateString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { weekday:'long', day:'numeric', month:'long' });
+    const h = rows.find(r => r.adversar === o.id);
+    const el = document.getElementById('nextGame');
+    el.href = href(o);
+    el.innerHTML = `<span class="ng-label">${t('Următorul meci')}</span>
+      <span class="ng-when">${escapeHtml(day.charAt(0).toUpperCase() + day.slice(1))}${m.ora ? ', ' + escapeHtml(m.ora) : ''}</span>
+      <span class="ng-opp"><span class="muted" style="font-size:16px">${t('vs')}</span>${o.logo_url ? `<img src="${escapeHtml(o.logo_url)}" alt="">` : ''}${escapeHtml(o.nume)}</span>
+      <span class="ng-rec">${h ? t('Între ele: {v} victorii, {i} înfrângeri').replace('{v}', h.victorii).replace('{i}', h.infrangeri) : t('Primul meci între ele')}</span>`;
+    el.hidden = false;
+  });
   const body = document.getElementById('gamesBody'), more = document.getElementById('gamesMore');
   const SHOW = 25;
   const render = n => list.slice(0, n).map(m => {

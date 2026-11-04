@@ -82,6 +82,38 @@
   .pos-badge.gold{ background:var(--spin-dim); color:var(--spin-hi); }
   .p-link{ display:inline-block; padding-block:13px; margin-block:-13px; color:inherit; text-decoration:none; }
   .p-link:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  /* Honours board: the painted board on a club wall, a line per year with the season's winner in gold */
+  .honours{ margin:8px 0 48px; background:var(--table-ink); color:#EEF2F8; border-radius:var(--radius-lg); padding:clamp(20px,3vw,34px); position:relative; box-shadow:var(--shadow-pop); }
+  .honours::before{ content:""; position:absolute; inset:9px; border:1px solid rgba(245,195,48,.42); border-radius:6px; pointer-events:none; }
+  .honours-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px 24px; flex-wrap:wrap; padding-bottom:16px; border-bottom:2px solid rgba(245,195,48,.55); position:relative; }
+  .honours-head .eyebrow{ color:var(--shirt); margin-bottom:6px; }
+  .honours-head h2{ color:#fff; font-size:clamp(30px,4vw,44px); }
+  .honours-head p{ color:#B8C4D6; font-size:14px; max-width:360px; margin:0; }
+  .hon-row{ display:grid; grid-template-columns:96px minmax(0,1.2fr) minmax(0,1fr); gap:6px 24px; align-items:center; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.12); position:relative; }
+  .hon-row:last-of-type{ border-bottom:0; }
+  .hon-year{ font-family:var(--font-display); font-weight:900; font-size:46px; line-height:.9; color:var(--shirt); font-variant-numeric:tabular-nums; }
+  .hon-year small{ display:block; font-family:var(--font-label); font-size:13px; font-weight:700; letter-spacing:.04em; color:#B8C4D6; text-transform:uppercase; margin-top:4px; }
+  .hon-champ a{ font-family:var(--font-display); font-weight:800; font-size:clamp(26px,3vw,34px); line-height:1; color:#fff; text-decoration:none; display:inline-block; padding-block:8px; margin-block:-8px; }
+  .hon-champ a:hover{ color:var(--shirt); }
+  .hon-champ span{ display:block; font-family:var(--font-label); font-size:15px; font-weight:600; color:#D5DDE8; margin-top:4px; }
+  .hon-champ b{ color:var(--shirt); }
+  .hon-rest{ display:grid; gap:6px; font-family:var(--font-label); font-size:15px; color:#D5DDE8; }
+  .hon-rest a{ color:#fff; font-weight:700; text-decoration:none; display:inline-block; padding-block:6px; margin-block:-6px; }
+  .hon-rest a:hover{ color:var(--shirt); text-decoration:underline; text-underline-offset:3px; }
+  .hon-rest .medal{ display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; font-size:12px; font-weight:800; color:var(--text); margin-right:8px; vertical-align:1px; }
+  .medal--2{ background:#C9CED6; } .medal--3{ background:#D49A6A; }
+  .hon-plaque{ margin-top:18px; padding:12px 16px; border-radius:var(--radius); background:rgba(245,195,48,.12); border:1px solid rgba(245,195,48,.35); font-size:14.5px; color:#EEF2F8; position:relative; }
+  .hon-plaque a{ color:var(--shirt); font-weight:700; }
+  @media (max-width:700px){
+    .hon-row{ grid-template-columns:64px minmax(0,1fr); }
+    .hon-year{ font-size:36px; }
+    .hon-rest{ grid-column:2; font-size:14.5px; }
+  }
+  .list-head{ margin-bottom:18px; }
+  .tourn-head h3 a{ color:inherit; text-decoration:none; display:inline-block; padding-block:8px; margin-block:-8px; }
+  .tourn-head h3 a:hover{ color:var(--table); text-decoration:underline; text-underline-offset:3px; }
+  .tourn-more{ display:inline-flex; align-items:center; min-height:44px; margin:6px 0 -10px; font-family:var(--font-label); font-weight:700; font-size:15px; color:var(--table); text-decoration:none; }
+  .tourn-more:hover{ text-decoration:underline; text-underline-offset:3px; }
 </style>
 </head>
 <body>
@@ -132,6 +164,14 @@
     </div>
   </section>
   <section class="container section-tight tourn-list-section">
+    <section class="honours" id="honours" aria-labelledby="honoursTitle" hidden>
+      <div class="honours-head">
+        <div><div class="eyebrow">Panou de onoare</div><h2 id="honoursTitle">Câștigătorii anului</h2></div>
+        <p>Jucătorii ATTP cu cele mai multe turnee Setka Cup câștigate în fiecare an.</p>
+      </div>
+      <div id="honoursRows"></div>
+    </section>
+    <div class="list-head"><div class="eyebrow">Rezultate</div><h2>Turnee recente</h2></div>
     <div id="tournamentList">
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
       <div class="card skeleton" style="height:120px;margin-bottom:16px"></div>
@@ -161,7 +201,7 @@
   const rows = data || [];
   const byTournament = {};
   rows.forEach(r => {
-    (byTournament[r.tournament_id] ||= { name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
+    (byTournament[r.tournament_id] ||= { id:r.tournament_id, name:r.tournament_name, date:r.start_date, division:r.division, rows:[] }).rows.push(r);
   });
   const tournaments = Object.values(byTournament).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
 
@@ -185,7 +225,7 @@
     <div class="tourn-card">
       <div class="tourn-head">
         <div>
-          <h3>${escapeHtml(tournamentTitle(tr.name))}</h3>
+          <h3><a href="tournament.html?id=${tr.id}">${escapeHtml(tournamentTitle(tr.name))}</a></h3>
           <div class="tourn-date">${fmtDate(tr.date)} · ${divisionLabel(tr.division)}</div>
         </div>
         <span class="tag tag-rally">${tr.rows.length} ${t('participanți ATTP')}</span>
@@ -195,7 +235,41 @@
           <span><span class="pos-badge ${r.position===1?'gold':''}">${r.position ?? '–'}</span><a class="p-link" href="player.html?id=${encodeURIComponent(r.player_id)}">${escapeHtml(r.first_name)} ${escapeHtml(r.last_name)}</a></span>
           <span class="num muted">${r.match_win ?? '–'}:${r.match_lost ?? '–'} · ${r.points ?? '—'} ${t('pct')}</span>
         </div>`).join('')}
+      <a class="tourn-more" href="tournament.html?id=${tr.id}">${t('Vezi turneul')} <span aria-hidden="true">&nbsp;→</span></a>
     </div>`).join('');
+})();
+
+// Honours board: for every year, the three ATTP players with the most Setka Cup tournaments won
+// (podiums break a tie). The year still running says so.
+(async function(){
+  const { data: first } = await db.from('tournament_wins_yearly').select('an').order('an').limit(1);
+  if (!first?.length) return;
+  const now = new Date().getFullYear();
+  const years = []; for (let y = now; y >= first[0].an; y--) years.push(y);
+  const lists = await Promise.all(years.map(y => db.from('tournament_wins_yearly').select('*').eq('an', y)
+    .order('victorii', { ascending:false }).order('podiumuri', { ascending:false }).limit(3).then(r => r.data || [])));
+  const rows = years.map((y, i) => ({ y, top: lists[i] })).filter(r => r.top.length && r.top[0].victorii > 0);
+  if (!rows.length) return;
+  const link = p => `<a href="player.html?id=${encodeURIComponent(p.player_id)}">${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</a>`;
+  const wins = n => t('{n} turnee câștigate').replace('{n}', n);
+  document.getElementById('honoursRows').innerHTML = rows.map(({ y, top }) => `
+    <div class="hon-row">
+      <div class="hon-year">${y}${y === now ? `<small>${t('în curs')}</small>` : ''}</div>
+      <div class="hon-champ">${link(top[0])}<span>${wins(`<b>${top[0].victorii}</b>`)} · ${top[0].podiumuri} ${t('podiumuri')} · ${t('{n} jucate').replace('{n}', top[0].turnee)}</span></div>
+      <div class="hon-rest">${top.slice(1).map((p, k) => `<div><span class="medal medal--${k + 2}" aria-label="${t('Locul {n}').replace('{n}', k + 2)}">${k + 2}</span>${link(p)} · ${wins(p.victorii)}</div>`).join('')}</div>
+    </div>`).join('');
+  // the player who made the yearly top three most often, when it happened at least three times
+  const seen = {};
+  rows.forEach(({ y, top }) => top.forEach(p => { (seen[p.player_id] ||= { p, years: [] }).years.push(y); }));
+  const best = Object.values(seen).sort((a, b) => b.years.length - a.years.length)[0];
+  if (best && best.years.length >= 3) {
+    const plaque = document.createElement('p');
+    plaque.className = 'hon-plaque';
+    plaque.innerHTML = t('{name} a fost în primii trei ai anului de {n} ori: {ani}.')
+      .replace('{name}', link(best.p)).replace('{n}', best.years.length).replace('{ani}', best.years.sort().join(', '));
+    document.getElementById('honours').appendChild(plaque);
+  }
+  document.getElementById('honours').hidden = false;
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>

@@ -95,6 +95,9 @@
   .bb-team.won{ color:var(--text); font-weight:800; }
   .bb-team.b{ flex-direction:row-reverse; text-align:right; }
   .bb-team img{ width:28px; height:28px; object-fit:contain; flex:0 0 auto; }
+  .bb-vs{ font-family:var(--font-label); font-size:14px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:4px 10px; border:1px solid var(--rule); border-radius:999px; }
+  .bb-next .bb-day{ border-top:3px solid #C4612A; }
+  .bb-next{ padding-bottom:0; }
   .bb-score{ font-family:var(--font-display); font-size:22px; font-weight:800; white-space:nowrap; }
   .bb-ot{ margin-left:4px; font-family:var(--font-label); font-size:12px; font-weight:800; color:var(--table); }
   .day-more{ display:flex; justify-content:center; width:100%; max-width:420px; margin:8px auto 0; }
@@ -151,6 +154,15 @@
     <h1 id="tournamentsTitle">Baschet</h1>
     <p class="lede mt-16">Meciurile și turneele de baschet cu participare ATTP, sincronizate din Bskt Cup.</p>
   </section>
+  <section class="container section-tight bb-next" id="nextBlock" aria-labelledby="nextTitle" hidden>
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Programul Bskt Cup</div>
+        <h2 id="nextTitle">Urmează</h2>
+      </div>
+    </div>
+    <div id="nextList"></div>
+  </section>
   <section class="container section-tight bb-days" aria-labelledby="daysTitle">
     <div class="sec-head">
       <div>
@@ -181,6 +193,28 @@
 <script>
 // Bskt Cup results by evening, from the BSKT register sync (bskt_meciuri, bskt_echipe). A match's date is
 // its evening: games after midnight belong to the evening before, so they come last within it.
+// the next evenings on the schedule, in the same cards as the results, with "vs" in place of the score
+async function upcoming(byId){
+  const games = await fetchBsktUpcoming();
+  if (!games.length) return;
+  const days = {};
+  games.forEach(m => (days[m.data] ||= []).push(m));
+  const href = id => `basketball-team.html?id=${encodeURIComponent(id)}`;
+  const team = (x, side) => x ? `<a class="bb-team ${side}" href="${href(x.id)}">${x.logo_url ? `<img src="${escapeHtml(x.logo_url)}" alt="" loading="lazy">` : ''}<span>${escapeHtml(x.nume)}</span></a>` : `<span class="bb-team ${side}">—</span>`;
+  document.getElementById('nextList').innerHTML = Object.keys(days).slice(0, 3).map(d => {
+    const title = new Date(d + 'T12:00:00').toLocaleDateString(DATE_LOCALE[window.ATTP_LANG] || 'ro-RO', { weekday:'long', day:'numeric', month:'long' });
+    return `<article class="bb-day">
+      <div class="bb-day-head"><h3>${escapeHtml(title.charAt(0).toUpperCase() + title.slice(1))}</h3><span>${days[d].length === 1 ? t('1 meci') : t('{n} meciuri').replace('{n}', days[d].length)}</span></div>
+      ${days[d].map(m => `<div class="bb-match">
+        <span class="bb-time">${escapeHtml(m.ora || '')}</span>
+        ${team(byId[m.echipa_a], 'a')}
+        <span class="bb-vs">${t('vs')}</span>
+        ${team(byId[m.echipa_b], 'b')}
+      </div>`).join('')}
+    </article>`;
+  }).join('');
+  document.getElementById('nextBlock').hidden = false;
+}
 (async function(){
   const [{ data: teams }, { data: games }] = await Promise.all([
     db.from('bskt_echipe').select('id,nume,logo_url'),
@@ -188,6 +222,7 @@
   ]);
   const list = document.getElementById('dayList'), more = document.getElementById('dayMore');
   const byId = Object.fromEntries((teams || []).map(x => [x.id, x]));
+  upcoming(byId);
   if (!games || !games.length) { list.innerHTML = `<div class="empty-state"><p>${t('Rezultatele apar aici imediat ce se sincronizează datele din Bskt Cup.')}</p></div>`; return; }
   const late = ora => (ora || '') < '06:00';
   const days = {};

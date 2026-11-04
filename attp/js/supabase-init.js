@@ -32,6 +32,19 @@ function bsktPlayedOn(data, ora){
   d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
 }
+// Bskt Cup games on the schedule (no score yet), soonest first. An evening stays "upcoming" until 06:00 the
+// next morning, because its last games start after midnight.
+async function fetchBsktUpcoming(filter){
+  let q = db.from('bskt_programate').select('*').order('data').order('ora').limit(200);
+  if (filter) q = filter(q);
+  const { data } = await q;
+  const now = new Date(), local = new Date(now.toLocaleString('en-US', { timeZone:'Europe/Chisinau' }));
+  if (local.getHours() < 6) local.setDate(local.getDate() - 1);
+  const evening = `${local.getFullYear()}-${String(local.getMonth() + 1).padStart(2, '0')}-${String(local.getDate()).padStart(2, '0')}`;
+  const late = ora => (ora || '') < '06:00';
+  return (data || []).filter(m => m.data >= evening)
+    .sort((a, b) => a.data.localeCompare(b.data) || (late(a.ora) - late(b.ora)) || (a.ora || '').localeCompare(b.ora || ''));
+}
 // Two tabs, table tennis and basketball, for a block that shows either sport. `panels` are the two panel
 // elements; `onShow(i)` runs every time a tab is chosen. Arrow keys move between the tabs.
 function sportTabs(tablist, panels, onShow){
@@ -46,6 +59,14 @@ function sportTabs(tablist, panels, onShow){
     tab.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); select((i + 1) % tabs.length, true); } });
   });
   return select;
+}
+// Players type their town in several spellings and alphabets; one name per town for lists and filters.
+const TOWN_ALIAS = { 'Кишинів':'Chișinău', 'Кишинев':'Chișinău', 'Chisinau':'Chișinău', 'Odessa':'Odesa', 'Сороки':'Soroca', 'Сорока':'Soroca' };
+function townName(c){ c = (c || '').trim(); return TOWN_ALIAS[c] || c; }
+// For search: lower case, no diacritics (ș, ț, ă, î, â all match their plain letters), й kept as й.
+function foldText(s){
+  return (s || '').toLowerCase().replace(/й/g, '\u0000').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\u0000/g, 'й')
+    .replace(/[şș]/g, 's').replace(/[ţț]/g, 't');
 }
 function divisionLabel(d){
   return d === 'man' ? t('Bărbați') : d === 'woman' ? t('Femei') : (d || '');
