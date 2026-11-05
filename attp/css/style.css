@@ -442,12 +442,28 @@ footer p, footer .dim{ color:rgba(255,255,255,.82); }
 }
 footer :focus-visible{ outline-color:var(--shirt); }
 @media (max-width:800px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
-@media (max-width:520px){ .footer-grid{ grid-template-columns:1fr; gap:28px; } footer::before{ inset:10px; } }
+/* Phones: the name across the top, then the link groups side by side — Navigation over
+   Resources on the left, Association (the longest words) on the right — instead of one
+   column of eleven stacked links. */
+@media (max-width:520px){
+  footer::before{ inset:10px; }
+  .footer-grid{
+    grid-template-columns:auto minmax(0,1fr); gap:26px 28px; margin-bottom:32px;
+    grid-template-areas:"brand brand" "nav assoc" "res assoc";
+  }
+  .footer-grid > div:nth-child(1){ grid-area:brand; }
+  .footer-grid > div:nth-child(2){ grid-area:nav; }
+  .footer-grid > div:nth-child(3){ grid-area:res; }
+  .footer-grid > div:nth-child(4){ grid-area:assoc; }
+  .footer-grid h4{ margin-bottom:6px; }
+  .footer-grid a{ overflow-wrap:anywhere; hyphens:auto; }
+  footer .brand-word{ font-size:38px; }
+}
 /* the white edge of the table is painted 10-16px in; keep the words a comfortable step inside it */
 @media (max-width:760px){
   footer{ padding-top:48px; }
   footer .container{ padding-inline:calc(var(--gutter) + 22px); }
-  .footer-grid a{ padding:10px 0; }
+  .footer-grid a{ padding:8px 0; }
 }
 
 /* ── Interior pages ── */
@@ -479,6 +495,21 @@ table.data td.r, table.data th.r{ text-align:right; }
   background:var(--paper); color:var(--text); font-family:var(--font-body); font-size:16px; min-height:48px;
 }
 .field textarea{ min-height:0; }
+
+/* Every dropdown gets the same chevron with a fixed gap from the edge, instead of the
+   browser's own arrow pressed against the border (it sat differently in each select). */
+select:not([multiple]):not([size]){
+  -webkit-appearance:none; appearance:none;
+  padding-right:44px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5 7 7l5.5-5.5' fill='none' stroke='%23141C28' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 16px center; background-size:14px 9px;
+  text-overflow:ellipsis; cursor:pointer;
+}
+select:not([multiple]):not([size]):disabled{ opacity:.55; cursor:not-allowed; }
+/* half-width dropdowns on phones: a smaller arrow lane so labels like "Clasament masculin" still fit */
+@media (max-width:460px){
+  select:not([multiple]):not([size]){ padding-right:32px; background-position:right 12px center; background-size:12px 8px; }
+}
 .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--table); box-shadow:0 0 0 3px rgba(28,78,148,.18); }
 
 /* ── Utility ── */

@@ -37,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-13">
+<link rel="stylesheet" href="css/style.css?v=redesign-14">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -50,6 +50,13 @@
   .home-hero h1{ font-size:clamp(50px,6.3vw,94px); line-height:.88; letter-spacing:-.01em; }
   .home-hero .lede{ margin-top:22px; max-width:560px; }
   .hero-actions{ display:flex; gap:12px; margin-top:30px; flex-wrap:wrap; }
+  /* The federation's own ranking on ligas.io: the one yellow sign in the hero, on a line of its own */
+  .btn-ligas{ flex-basis:100%; max-width:max-content; font-size:18px; min-height:56px; padding-inline:24px; }
+  .btn-ligas .ext{ font-size:1.1em; line-height:1; transition:transform .15s ease; }
+  .btn-ligas:hover .ext, .btn-ligas:focus-visible .ext{ transform:translate(2px,-2px); }
+  .btn-ligas .live-dot, .mo-ligas .live-dot{ display:inline-flex; }
+  .btn-ligas .live-dot::before, .mo-ligas .live-dot::before{ background:var(--rubber); box-shadow:0 0 0 3px rgba(255,255,255,.55); }
+  @media (prefers-reduced-motion:reduce){ .btn-ligas .ext{ transition:none; } }
   .home-hero-photo{ margin:0; position:relative; }
   .home-hero-photo img{ width:100%; height:auto; aspect-ratio:1800/1286; object-fit:cover; border-radius:var(--radius-lg); background:#0B1A2A; box-shadow:0 30px 60px -36px rgba(20,28,40,.6); }
   /* the award, at most ~640px wide so the 1881px original stays sharp on high-density screens */
@@ -394,6 +401,8 @@
     .mo-wl{ font:800 15px/1 var(--font-label); color:var(--muted); }
     .mo-links{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
     .mo-links a{ display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:48px; padding:0 14px; border:1.5px solid rgba(255,255,255,.35); border-radius:var(--radius-lg); color:#fff; text-decoration:none; font:800 15px/1 var(--font-label); }
+    .mo-links .mo-ligas{ grid-column:1 / -1; min-height:54px; background:var(--shirt); border-color:var(--shirt); color:var(--text); font-size:16px; box-shadow:inset 0 -3px 0 var(--shirt-deep); }
+    .mo-links .mo-ligas > span:first-child{ display:inline-flex; align-items:center; gap:10px; }
     .mo-award{ display:flex; align-items:center; gap:9px; margin-top:16px; color:rgba(255,255,255,.75); font:600 12.5px/1.25 var(--font-body); text-decoration:none; }
     .mo-award img{ width:30px; height:30px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
     .mo-award b{ color:#fff; font-family:var(--font-label); font-weight:800; }
@@ -479,7 +488,7 @@
       <h1 id="mobileTitle">Tenis de masă și baschet, <em>scor cu scor.</em></h1>
       <div id="moBb"><div class="mo-sk" style="height:132px"></div></div>
       <div id="moTt"><div class="mo-sk" style="height:150px;margin-top:10px"></div></div>
-      <div class="mo-links"><a href="players-table-tennis.html">Clasament FTMM <span aria-hidden="true">→</span></a><a href="players-basketball.html">Bskt Cup <span aria-hidden="true">→</span></a></div>
+      <div class="mo-links"><a href="players-table-tennis.html">Clasament FTMM <span aria-hidden="true">→</span></a><a href="players-basketball.html">Bskt Cup <span aria-hidden="true">→</span></a><a class="mo-ligas" href="https://ligas.io/mttf" target="_blank" rel="noopener" aria-label="Clasamentul oficial FTMM pe ligas.io (se deschide într-o filă nouă)"><span><span class="live-dot" aria-hidden="true"></span>Clasamentul oficial pe ligas.io</span><span aria-hidden="true">↗</span></a></div>
       <a class="mo-award" href="about.html"><img src="images/heroes/award-badge.webp" width="88" height="88" alt="" decoding="async"><span><b>Câștigător Notorium Brand Awards 2025</b><br>concursul mărcilor recunoscute</span></a>
     </div>
   </section>
@@ -493,6 +502,7 @@
         <div class="hero-actions">
           <a href="players-table-tennis.html" class="btn btn-primary">Vezi clasamentul FTMM</a>
           <a href="players-basketball.html" class="btn btn-ghost">Vezi clasamentul Bskt Cup</a>
+          <a href="https://ligas.io/mttf" class="btn btn-rally btn-ligas" target="_blank" rel="noopener" aria-label="Clasamentul oficial FTMM pe ligas.io (se deschide într-o filă nouă)"><span class="live-dot" aria-hidden="true"></span>Clasamentul oficial pe ligas.io<span class="ext" aria-hidden="true">↗</span></a>
         </div>
       </div>
       <figure class="home-hero-photo home-hero-award">

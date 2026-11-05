@@ -708,7 +708,7 @@
  "Programul Bskt Cup": "Расписание Bskt Cup",
  "Ratingul Setka Cup": "Рейтинг Setka Cup",
  "Seturi": "Сеты",
- "Toate localitățile": "Все населённые пункты",
+ "Toate localitățile": "Все города",
  "Turneu Setka Cup — ATTP": "Турнир Setka Cup — ATTP",
  "Urmează": "Предстоящие матчи",
  "Valoarea de la sfârșitul fiecărei zile. Atinge graficul sau folosește săgețile pentru o zi anume.": "Значение на конец каждого дня. Коснитесь графика или используйте стрелки, чтобы выбрать день.",
@@ -756,5 +756,7 @@
  "{v} victorii din {m}": "{v} побед из {m}",
  "Nr. 2 · Tenis de masă": "№ 2 · Настольный теннис",
  "Baschet · Bskt Cup": "Баскетбол · Bskt Cup",
- "Tenis de masă · Setka Cup": "Настольный теннис · Setka Cup"
+ "Tenis de masă · Setka Cup": "Настольный теннис · Setka Cup",
+ "Clasamentul oficial pe ligas.io": "Официальный рейтинг на ligas.io",
+ "Clasamentul oficial FTMM pe ligas.io (se deschide într-o filă nouă)": "Официальный рейтинг FTMM на ligas.io (откроется в новой вкладке)"
 }
