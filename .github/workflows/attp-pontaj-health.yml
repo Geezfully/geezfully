@@ -1,0 +1,65 @@
+name: ATTP Pontaj health watcher
+
+# Every 5 minutes: is ATTP Pontaj's Data API answering? If not, email and
+# restart the project through the Supabase Management API, then report whether
+# it came back. Logic and limits are in scripts/attp-pontaj-health.sh.
+# GitHub may start scheduled runs a few minutes late; that is fine here.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "watch = normal check; test-alert = send a test email; check-token = verify the restart token"
+        required: true
+        default: watch
+        type: choice
+        options: [watch, test-alert, check-token]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: attp-pontaj-health
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PROJECT_REF: ildoegipvcgxboijfksw
+      # The public (anon) key, the same one served in attp-pontaj/index.html.
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsZG9lZ2lwdmNneGJvaWpma3N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0NTE1MDIsImV4cCI6MjEwMDAyNzUwMn0.P4bSmuSQn58A5ag6KODWebsU4A2xPqv8mLKCzxJmy5I
+      RESTART_TOKEN: ${{ secrets.ATTP_PONTAJ_RESTART_TOKEN }}
+      ALERT_KEY: ${{ secrets.BACKUP_ALERT_RESEND_KEY }}
+      ALERT_TO: ${{ secrets.BACKUP_ALERT_EMAIL }}
+      MODE: ${{ inputs.mode || 'watch' }}
+      STATE_FILE: state/health.json
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Check out the watcher script
+        uses: actions/checkout@v5
+        with:
+          sparse-checkout: scripts/attp-pontaj-health.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Load the watcher's state from the last run
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: attp-pontaj-health-${{ github.run_id }}
+          restore-keys: attp-pontaj-health-
+
+      - name: Check ATTP Pontaj
+        id: check
+        run: |
+          mkdir -p state
+          bash scripts/attp-pontaj-health.sh
+
+      - name: Save the watcher's state
+        if: ${{ always() && steps.check.outputs.changed == 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: attp-pontaj-health-${{ github.run_id }}

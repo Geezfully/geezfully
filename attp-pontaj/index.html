@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="attp-build" content="2026-11-01-platouri-3">
+<meta name="attp-build" content="2026-11-05-server-problem-1">
 <link rel="icon" type="image/png" href="favicon.png?v=2">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pontaj — Registru Electronic Locație</title>
@@ -1100,6 +1100,8 @@ ro: {
   st_profileTitle:'Rating Setka Cup', al_typeSetka:'Setka', st_retry:'Reîncearcă',
   conn_title:'Fără conexiune la server.', conn_text:'Nimic nu s-a pierdut și schimbul rămâne deschis, dar până revine conexiunea nu se poate salva nimic și schimbul NU poate fi încheiat. Se reîncearcă automat.',
   conn_retry:'Reîncearcă acum', conn_waitTitle:'Se conectează la server…', conn_waitText:'Nu s-au putut încărca datele. Se reîncearcă automat; verificați conexiunea la internet.',
+  conn_serverTitle:'Problemă la server.', conn_serverText:'Nu e de la internetul vostru. Nimic nu s-a pierdut și schimbul rămâne deschis, dar până revine serverul nu se poate salva nimic și schimbul NU poate fi încheiat. Administratorul a fost anunțat; se reîncearcă automat.',
+  conn_serverWaitTitle:'Serverul nu răspunde momentan…', conn_serverWaitText:'Nu e de la internetul vostru și nu trebuie să faceți nimic. Administratorul a fost anunțat; se reîncearcă automat.',
   conn_noServer:'Serverul nu poate fi contactat. Verificați conexiunea și încercați din nou — schimbul rămâne deschis și nimic nu s-a pierdut.',
   au_sessionExpired:'Sesiunea a expirat. Autentificați-vă din nou — schimbul deschis și datele rămân neschimbate.',
   sh_resumedOpen:'Pe acest cont există deja un schimb deschis. A fost reluat.',
@@ -1411,6 +1413,8 @@ ru: {
   st_profileTitle:'Рейтинг Setka Cup', al_typeSetka:'Setka', st_retry:'Повторить',
   conn_title:'Нет связи с сервером.', conn_text:'Ничего не потеряно, смена остаётся открытой, но пока связь не восстановится, ничего нельзя сохранить и смену НЕЛЬЗЯ завершить. Повтор выполняется автоматически.',
   conn_retry:'Повторить сейчас', conn_waitTitle:'Подключение к серверу…', conn_waitText:'Не удалось загрузить данные. Повтор выполняется автоматически; проверьте подключение к интернету.',
+  conn_serverTitle:'Проблема на сервере.', conn_serverText:'Дело не в вашем интернете. Ничего не потеряно, смена остаётся открытой, но пока сервер не восстановится, ничего нельзя сохранить и смену НЕЛЬЗЯ завершить. Администратор уведомлён; повтор выполняется автоматически.',
+  conn_serverWaitTitle:'Сервер временно не отвечает…', conn_serverWaitText:'Дело не в вашем интернете, ничего делать не нужно. Администратор уведомлён; повтор выполняется автоматически.',
   conn_noServer:'Сервер недоступен. Проверьте подключение и повторите попытку — смена остаётся открытой, ничего не потеряно.',
   au_sessionExpired:'Сессия истекла. Войдите снова — открытая смена и данные не изменились.',
   sh_resumedOpen:'На этом аккаунте уже есть открытая смена. Она восстановлена.',
@@ -1425,7 +1429,7 @@ let DB = null;
 let currentView = 'dashboard';
 let currentAdmin = null;      // "Nume Prenume" afișat
 let currentAdminId = null;    // uuid din auth.users / administratori
-const APP_BUILD = '2026-11-01-platouri-3';
+const APP_BUILD = '2026-11-05-server-problem-1';
 let currentRole = null;       // 'admin' | 'locatie'
 let currentProfileId = null;
 let currentArbitruId = null;
@@ -1660,8 +1664,8 @@ function showConnectionLost(failed){
   }
   const banner = document.getElementById('conn-banner');
   if(banner){
-    document.getElementById('conn-banner-title').textContent = t('conn_title');
-    document.getElementById('conn-banner-text').textContent = t('conn_text');
+    document.getElementById('conn-banner-title').textContent = connText('title');
+    document.getElementById('conn-banner-text').textContent = connText('text');
     const btn = document.getElementById('conn-banner-retry');
     btn.textContent = t('conn_retry'); btn.disabled = false;
     banner.hidden = false;
@@ -1743,6 +1747,22 @@ async function retryIfTokenExpired(response, input, init){
   return fetch(input, { ...init, headers });
 }
 
+// Whether the last failure came from the server itself (HTTP 5xx: on 5 Nov the Data API was
+// stuck for 70 minutes while the location's internet was fine) rather than from the network.
+// The messages then say "server problem, nothing for you to do" instead of "check the internet".
+// var, not let: the auth client can call monitoredFetch before this line has run.
+var serverFaultSeen = false;
+function noteServerAnswer(input, status){
+  const url = typeof input === 'string' ? input : (input?.url || '');
+  if(!/\/(rest|auth|functions)\/v1\//.test(url)) return;
+  if(status >= 500) serverFaultSeen = true;
+  else if(status >= 200 && status < 400) serverFaultSeen = false;
+}
+function connText(kind){   // kind: 'title' | 'text' | 'waitTitle' | 'waitText'
+  const key = 'conn_' + (serverFaultSeen ? 'server' + kind[0].toUpperCase() + kind.slice(1) : kind);
+  return t(key);
+}
+
 // fetch() rejects only when the server could not be reached at all (offline, DNS, dropped
 // connection) — that is exactly the case the register used to hide.
 async function monitoredFetch(input, init){
@@ -1751,6 +1771,7 @@ async function monitoredFetch(input, init){
   const state = ()=>{ try{ return { lost: connectionLostAt, user: currentAdminId }; }catch(_e){ return {}; } };
   try{
     const response = await retryIfTokenExpired(await fetch(input, init), input, init);
+    noteServerAnswer(input, response.status);
     if(state().lost && response.ok) setTimeout(retryConnection, 0);
     return response;
   }catch(error){
@@ -2038,7 +2059,7 @@ async function enterApp(userId, displayName, rol){
   enterAppPending = true;
   if(!(await fetchAll())){
     document.getElementById('sb-nav').innerHTML = '';
-    document.getElementById('main').innerHTML = `<div class="conn-wait"><strong>${esc(t('conn_waitTitle'))}</strong>${esc(t('conn_waitText'))}</div>`;
+    document.getElementById('main').innerHTML = `<div class="conn-wait"><strong>${esc(connText('waitTitle'))}</strong>${esc(connText('waitText'))}</div>`;
     return;   // retryConnection() finishes entering once the data loads
   }
   finishEnterApp();
@@ -2102,7 +2123,7 @@ async function resumeSession(afterRefresh=false){
   if(profileError && !profile){
     // Without the profile the role is unknown; never guess "admin" for the location PC.
     const msg = document.getElementById('login-msg'), msgLoc = document.getElementById('login-locatie-msg');
-    [msg, msgLoc].forEach(m=>{ if(m){ m.textContent = t('conn_waitTitle')+' '+t('conn_waitText'); m.style.color = 'var(--yellow)'; } });
+    [msg, msgLoc].forEach(m=>{ if(m){ m.textContent = connText('waitTitle')+' '+connText('waitText'); m.style.color = 'var(--yellow)'; } });
     setTimeout(()=>resumeSession(), CONNECTION_RETRY_MS);
     return;
   }
