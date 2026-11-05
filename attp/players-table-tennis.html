@@ -165,7 +165,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script src="js/supabase-init.js?v=20261105-women"></script>
 <script>
 let ALL_PLAYERS = [];
 function render(){
@@ -176,7 +176,10 @@ function render(){
   let list = ALL_PLAYERS.filter(p => {
     if (q && !foldText(`${p.first_name} ${p.last_name}`).includes(q) && !foldText(`${p.last_name} ${p.first_name}`).includes(q)) return false;
     if (town && townName(p.city) !== town) return false;
-    return listName === 'all' || playerRanking(p)?.list === listName;
+    if (listName === 'all') return true;
+    // Unranked women still belong in the women's list (they are listed without Setka).
+    const r = playerRanking(p);
+    return r ? r.list === listName : (listName === 'feminin' && p.sex === 'f');
   });
   list.sort((a,b) => {
     const sa = playerStats(a), sb = playerStats(b);

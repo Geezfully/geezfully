@@ -162,6 +162,7 @@
         <div class="eyebrow" style="margin-bottom:0">Echipament &amp; stil</div>
         <div class="gear-grid" id="gearGrid"></div>
       </div>
+      <div id="histBlock">
       <div class="eyebrow">Istoric</div>
       <h2 class="mb-24">Turnee Setka Cup</h2>
       <p class="muted hist-note" id="histNote" hidden></p>
@@ -170,6 +171,7 @@
           <thead><tr><th>Turneu</th><th>Dată</th><th>Div.</th><th class="r">Scor</th><th class="r">Puncte</th><th class="r">Loc</th></tr></thead>
           <tbody id="statsBody"><tr><td colspan="6"><div class="skeleton" style="height:40px"></div></td></tr></tbody>
         </table>
+      </div>
       </div>
     </section>
   </div>
@@ -207,11 +209,15 @@
     </div>`;
 
   const LIST_LABELS = { masculin:t('în clasamentul masculin'), feminin:t('în clasamentul feminin') };
+  // Totals come from Setka Cup when the player has an account there; the women's roster
+  // (not on Setka) keeps the counts recorded on the former ATTP site.
+  const src = c && c.total_matches != null ? 'Setka Cup' : 'ATTP';
+  if (!p.setka_cup_player_id) document.getElementById('histBlock').hidden = true;
   document.getElementById('kpiRow').innerHTML = s ? `
     <div class="kpi"><b class="num" style="color:var(--spin-hi)">${s.rating != null ? s.rating.toFixed(1) : '—'}</b><span>${s.position != null ? `${t('Rating · locul')} ${s.position} ${LIST_LABELS[s.list] || s.list}` : t('Rating (nu apare în clasament)')}</span></div>
-    <div class="kpi"><b class="num">${s.tournaments ?? '—'}</b><span>${t('Turnee jucate · Setka Cup')}</span></div>
-    <div class="kpi"><b class="num" style="color:var(--win)">${s.wins ?? '—'}</b><span>${t('Victorii · Setka Cup')}</span></div>
-    <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses ?? '—'}</b><span>${t('Înfrângeri · Setka Cup')}</span></div>
+    <div class="kpi"><b class="num">${s.tournaments ?? '—'}</b><span>${t(`Turnee jucate · ${src}`)}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--win)">${s.wins ?? '—'}</b><span>${t(`Victorii · ${src}`)}</span></div>
+    <div class="kpi"><b class="num" style="color:var(--loss)">${s.losses ?? '—'}</b><span>${t(`Înfrângeri · ${src}`)}</span></div>
   ` : `<p class="muted">${t('Acest jucător nu apare încă în clasamentul oficial și nu are meciuri înregistrate.')}</p>`;
 
   const RANK_LABELS = Object.fromEntries(Object.entries(RANK_PILL).map(([k, v]) => [k, t(v[1])]));

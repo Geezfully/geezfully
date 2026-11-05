@@ -32,7 +32,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-13">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=69cccd53"></script>
+<script src="js/i18n-ru.js?v=a9cb7a11"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -168,7 +168,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script src="js/supabase-init.js?v=20261105-women"></script>
 <script>
 let ALL_PLAYERS = [];
 function render(){
@@ -179,7 +179,10 @@ function render(){
   let list = ALL_PLAYERS.filter(p => {
     if (q && !foldText(`${p.first_name} ${p.last_name}`).includes(q) && !foldText(`${p.last_name} ${p.first_name}`).includes(q)) return false;
     if (town && townName(p.city) !== town) return false;
-    return listName === 'all' || playerRanking(p)?.list === listName;
+    if (listName === 'all') return true;
+    // Unranked women still belong in the women's list (they are listed without Setka).
+    const r = playerRanking(p);
+    return r ? r.list === listName : (listName === 'feminin' && p.sex === 'f');
   });
   list.sort((a,b) => {
     const sa = playerStats(a), sb = playerStats(b);

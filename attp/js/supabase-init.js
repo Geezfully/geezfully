@@ -167,8 +167,9 @@ async function fetchFeaturedPlayers(){
   return data || [];
 }
 // Only professionals are listed: a player needs a Setka Cup account (staff without one stay on About only).
+// Women are the exception — their game is not on Setka, so the curated women's roster (sex 'f') is listed as is.
 async function fetchAllPlayers(){
-  const { data, error } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').contains('roles', ['player']).not('setka_cup_player_id', 'is', null).order('last_name');
+  const { data, error } = await db.from('players').select('*, setka_cup_cache(*), ligas_ranking(ranking,position,rating)').contains('roles', ['player']).or('setka_cup_player_id.not.is.null,sex.eq.f').order('last_name');
   if (error) { console.error(error); return []; }
   return data || [];
 }
