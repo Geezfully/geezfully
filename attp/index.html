@@ -187,8 +187,9 @@
     .results-layout{ grid-template-columns:1fr; }
     .pingpong-model{ height:190px; }
   }
-  /* Phone: the scores come first, right under the heading; the two balls follow as decoration */
-  @media (max-width:640px){
+  /* Phones and portrait tablets (one column): the scores come first, right under the heading; the two
+     balls follow as decoration */
+  @media (max-width:900px){
     .results-layout{ gap:0; }
     .results-layout .scoreboard{ margin-top:16px; }
     .results-layout > div:first-child{ display:contents; }
@@ -339,9 +340,10 @@
 
   /* ── Phone opener: the current No. 1 in an action photo, the other leaders as swipeable cards, then the
      latest results on a deep-blue board (last Bskt Cup game in flip digits, last table tennis tournament's
-     top three). Phones only; wider screens keep the hero with the award picture. ── */
+     top three). Phones and portrait tablets (≤900px, where the desktop hero stacks into a page of intro);
+     wider screens keep the hero with the award picture. ── */
   .m-open{ display:none; }
-  @media (max-width:640px){
+  @media (max-width:900px){
     .home-hero, .home-hero + .barrier{ display:none; }
     .m-open{ display:block; }
     .mo-hero{ position:relative; display:block; height:min(118vw,440px); overflow:hidden; color:#fff; isolation:isolate; background:var(--table-ink); text-decoration:none; }
@@ -396,6 +398,14 @@
     .mo-award img{ width:30px; height:30px; border-radius:50%; object-fit:cover; flex:0 0 auto; }
     .mo-award b{ color:#fff; font-family:var(--font-label); font-weight:800; }
     .mo-sk{ background:rgba(255,255,255,.08); border-radius:var(--radius-lg); }
+  }
+  /* Portrait tablets: the same opener in a centred 640px column instead of stretched edge to edge */
+  @media (min-width:641px) and (max-width:900px){
+    .mo-hero{ height:460px; }
+    .mo-copy{ left:max(24px, calc((100% - 640px) / 2)); right:max(24px, calc((100% - 640px) / 2)); }
+    .mo-row{ padding-inline:max(24px, calc((100% - 640px) / 2)); scroll-padding:0 max(24px, calc((100% - 640px) / 2)); }
+    .mo-card{ flex:0 0 300px; }
+    .mo-board{ padding-inline:max(24px, calc((100% - 640px) / 2)); }
   }
 </style>
 </head>
