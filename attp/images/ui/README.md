@@ -34,8 +34,8 @@ node scripts/test-load-screen.cjs
 
 ## Hall-floor intro (redesign)
 
-The intro now plays on the same hall floor as the pages (colour, grain and
-`hall-floor.svg`), so lifting it changes nothing underneath. The court for the
+The intro now plays on the same floor as the pages (`images/bg/attp-figure.webp`
+over the hall colour), so lifting it changes nothing underneath. The court for the
 drawn sport paints itself in (`.load-court--tt` table with net, `.load-court--bb`
 centre circle), the animation stands on it, and the crest with "Garanția
 integrității" rises beneath. Markup is identical on every page (`#loadScreen`);

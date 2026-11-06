@@ -77,32 +77,12 @@ body{
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
 }
-/* The floor under everything: a fine grain, over a photo of the ATTP hall (Super Cup,
-   summer 2024) toned into the hall colour and fixed in place, so the page moves over it.
-   The painted court lines sit on top of it in .floor-live (js/floor.js); without
-   JavaScript they come from the same SVG here. */
+/* The floor under everything: the hall-blue backdrop with ATTP's own figure embossed
+   into it (the real logo vector, not a redrawing) and the yellow ball, fixed in place so
+   the page moves over it. */
 body::before{
   content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
-    url('../images/ui/hall-floor.svg') center / cover no-repeat,
-    linear-gradient(180deg, rgba(214,222,231,0) 0 40%, rgba(214,222,231,.55) 100%),
-    url('../images/bg/hall-photo.webp?v=2') center top / cover no-repeat;
-}
-html.floor-live-on body::before{
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, rgba(214,222,231,0) 0 40%, rgba(214,222,231,.55) 100%),
-    url('../images/bg/hall-photo.webp?v=2') center top / cover no-repeat;
-}
-/* The court lines, drawn in on the first page of a visit, drifting a little slower than the page. */
-.floor-live{ position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden; }
-.floor-live svg{ position:absolute; left:0; top:0; width:100%; height:125%; will-change:transform; }
-.floor-live.is-drawing path, .floor-live.is-drawing circle{ stroke-dasharray:1; stroke-dashoffset:1; animation:line-draw 1.8s cubic-bezier(.6,.1,.2,1) forwards; }
-.floor-live.is-drawing g:last-child path{ animation-delay:.5s; }
-@keyframes line-draw{ to{ stroke-dashoffset:0; } }
-@media (prefers-reduced-motion:reduce){
-  .floor-live.is-drawing path, .floor-live.is-drawing circle{ animation:none; stroke-dashoffset:0; }
+  background:var(--hall) url('../images/bg/attp-figure.webp?v=1') center top / cover no-repeat;
 }
 main{ flex:1 0 auto; }
 img{ max-width:100%; display:block; }
@@ -187,6 +167,18 @@ footer::after{ top:0; }
 @media (min-width:981px){ .brand-sub{ white-space:nowrap; } }
 @media (min-width:981px) and (max-width:1060px){ .nav-links a{ padding:10px 5px; } .nav-links a::after{ left:5px; right:5px; } }
 
+/* Desktop monitors: a fuller header. Bigger mark, words and touch room once the
+   window is wide enough that all eight links still fit on one line. */
+@media (min-width:1440px){
+  .topbar-inner{ padding-top:16px; padding-bottom:16px; gap:32px; }
+  .brand{ gap:14px; }
+  .brand-mark img{ height:56px; }
+  .brand-word{ font-size:33px; }
+  .brand-sub{ font-size:14px; margin-top:3px; }
+  .nav-links a{ padding:12px 13px; font-size:20px; }
+  .nav-links a::after{ left:13px; right:13px; bottom:4px; }
+}
+
 /* Language: three plain words, the current one set solid. */
 .lang-switch{ display:flex; align-items:center; gap:0; }
 .lang-switch a{
@@ -196,6 +188,7 @@ footer::after{ top:0; }
 .lang-switch a + a{ border-left:1px solid var(--rule); }
 .lang-switch a:hover{ color:var(--text); }
 .lang-switch a.active{ color:var(--table); text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:5px; }
+@media (min-width:1440px){ .lang-switch a{ min-width:42px; min-height:44px; font-size:16.5px; } }
 @media (max-width:980px){ .lang-switch{ flex:0 0 auto; } .lang-switch a{ min-width:40px; min-height:44px; } }
 
 .nav-toggle{ display:none; }
@@ -545,11 +538,7 @@ html.lb-lock, html.lb-lock body{ overflow:hidden; height:100%; }
    "Garanția integrității" come up beneath. */
 #loadScreen{
   position:fixed; inset:0; z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; gap:clamp(18px,3vh,30px);
-  background-color:var(--hall);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .12 0 0 0 0 .2 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
-    url('../images/ui/hall-floor.svg');
-  background-size:auto, cover; background-position:0 0, center; background-repeat:repeat, no-repeat;
+  background:var(--hall) url('../images/bg/attp-figure.webp?v=1') center top / cover no-repeat;
   transition:opacity .45s ease;
 }
 html.show-load-screen #loadScreen{ display:flex; }
@@ -758,3 +747,15 @@ h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2p
 .barrier--reverse{ animation-direction:reverse; }
 @keyframes barrier-drift{ to{ background-position:-1200px 0; } }
 @media (prefers-reduced-motion:reduce){ .barrier{ animation:none; } }
+
+/* Big screens: everything above is drawn for laptops (content column 1240px), so on a
+   desktop monitor the page would sit as a small island in the middle. From 1660px up the
+   whole page is zoomed, so a 1920 screen lays out like a 1536 one, a 2560 like a 1600 and
+   4K like a 1745, keeping every proportion. Width AND height must allow it, so a wide but short
+   window (or an ultrawide) is not blown up past the fold. Media queries still read the real
+   window, so phones and laptops never see this. */
+@media (min-width:1660px) and (min-height:860px){ html{ zoom:1.1; } }
+@media (min-width:1850px) and (min-height:900px){ html{ zoom:1.25; } }
+@media (min-width:2200px) and (min-height:1100px){ html{ zoom:1.4; } }
+@media (min-width:2500px) and (min-height:1300px){ html{ zoom:1.6; } }
+@media (min-width:3600px) and (min-height:1900px){ html{ zoom:2.2; } }

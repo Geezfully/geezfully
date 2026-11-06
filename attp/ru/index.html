@@ -38,9 +38,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-14">
+<link rel="stylesheet" href="css/style.css?v=redesign-15">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=4ede0427"></script>
+<script src="js/i18n-ru.js?v=23685d1a"></script>
 <script src="js/news-ru.js?v=d91bfff6"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
@@ -327,11 +327,11 @@
 
 
   /* ── Partners: the strip of logos, drifting slowly ── */
-  .partners-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:8px; }
+  .partners-head{ margin-bottom:14px; }
   .partner-marquee{ overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
-  .partner-track{ display:flex; width:max-content; padding-block:10px; animation:scroll 40s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
-  .partner{ display:flex; align-items:center; gap:16px; margin-right:64px; font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text-2); white-space:nowrap; }
-  .partner-logo{ height:84px; width:84px; border-radius:50%; object-fit:cover; flex:0 0 auto; box-shadow:0 0 0 1px var(--rule); transition:transform .2s ease; }
+  .partner-track{ display:flex; width:max-content; padding-block:14px 22px; animation:scroll 40s linear infinite; align-items:center; will-change:transform; backface-visibility:hidden; }
+  .partner{ display:flex; align-items:center; gap:20px; margin-right:88px; font-family:var(--font-display); font-size:34px; font-weight:800; color:var(--table-ink); white-space:nowrap; }
+  .partner-logo{ height:124px; width:124px; border-radius:50%; object-fit:cover; flex:0 0 auto; background:#fff; box-shadow:0 0 0 1px var(--rule), 0 10px 24px -14px rgba(14,43,87,.45); transition:transform .2s ease; }
   a.partner:hover, a.partner:focus-visible{ color:var(--table); }
   a.partner:hover .partner-logo, a.partner:focus-visible .partner-logo{ transform:scale(1.05); }
   @media (hover:hover) and (pointer:fine){ .partner-marquee:hover .partner-track{ animation-play-state:paused; } }
@@ -341,7 +341,8 @@
     .partner-marquee::-webkit-scrollbar{ display:none; }
     .partner-track{ animation:none; will-change:transform; }
   }
-  @media (max-width:600px){ .partner{ gap:12px; margin-right:44px; font-size:22px; } .partner-logo{ height:64px; width:64px; } }
+  @media (max-width:900px){ .partner{ gap:16px; margin-right:64px; font-size:28px; } .partner-logo{ height:100px; width:100px; } }
+  @media (max-width:600px){ .partner{ gap:14px; margin-right:48px; font-size:24px; } .partner-logo{ height:80px; width:80px; } }
   @media (prefers-reduced-motion:reduce){ .partner-track{ animation:none; } .partner-marquee{ overflow-x:auto; } }
   @keyframes scroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
 
@@ -762,25 +763,28 @@
   <div class="barrier barrier--reverse" aria-hidden="true"></div>
 
   <section class="section-tight" aria-labelledby="partnersTitle">
-    <div class="container partners-head">
-      <h2 id="partnersTitle" class="eyebrow" style="margin:0">Партнёры</h2>
+    <div class="container sec-head partners-head">
+      <div>
+        <div class="eyebrow">Вместе с ATTP</div>
+        <h2 id="partnersTitle">Партнёры</h2>
+      </div>
     </div>
     <div class="partner-marquee">
       <div class="partner-track">
-        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">SETKA PRO</a>
-        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FMF</a>
-        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">BuN&amp;Partener</a>
-        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">ULTRA</a>
-        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">WESPORT</a>
-        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">EXTERIOR</a>
-        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FTMM</a>
-        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">SETKA PRO</a>
-        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FMF</a>
-        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">BuN&amp;Partener</a>
-        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">ULTRA</a>
-        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">WESPORT</a>
-        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">EXTERIOR</a>
-        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="96" height="96" decoding="async">FTMM</a>
+        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">SETKA PRO</a>
+        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">FMF</a>
+        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">BuN&amp;Partener</a>
+        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">ULTRA</a>
+        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">WESPORT</a>
+        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">EXTERIOR</a>
+        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">FTMM</a>
+        <a class="partner" href="https://tabletennis.setkacup.com/en/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/setka-pro.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">SETKA PRO</a>
+        <a class="partner" href="https://www.fmf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/fmf.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">FMF</a>
+        <a class="partner" href="https://bunpartener.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/bun-partener.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">BuN&amp;Partener</a>
+        <a class="partner" href="https://ultra.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ultra.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">ULTRA</a>
+        <a class="partner" href="https://fmf.md/home/fmf/we-sport-tv/wesport-tv" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/wesport.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">WESPORT</a>
+        <a class="partner" href="https://exterior.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/exterior.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">EXTERIOR</a>
+        <a class="partner" href="https://mttf.md/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><img class="partner-logo" src="images/partners/ftmm.webp?v=20260918-equal" alt="" width="124" height="124" decoding="async">FTMM</a>
       </div>
     </div>
   </section>
@@ -1206,7 +1210,6 @@ async function renderBasketballResults(){
 </script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
-<script src="js/floor.js?v=2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
 </body>
 </html>
