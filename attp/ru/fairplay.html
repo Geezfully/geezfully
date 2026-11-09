@@ -30,9 +30,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-15">
+<link rel="stylesheet" href="css/style.css?v=redesign-16">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=23685d1a"></script>
+<script src="js/i18n-ru.js?v=287219d4"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <style>
@@ -126,8 +126,6 @@
   .rule-item:first-child{ border-top:0; }
   .rule-num{ font-family:var(--font-display); font-size:30px; line-height:.9; color:var(--table); font-weight:800; flex:0 0 34px; }
   .rule-item p{ color:var(--text); font-size:16.5px; }
-  .sanction-box{ background:var(--paper); border:1px solid var(--rule); border-left:5px solid var(--rubber); border-radius:var(--radius); padding:22px; margin-top:28px; }
-  .sanction-box h3{ color:var(--rubber); font-size:28px; margin-bottom:8px; }
   /* ── Fair Play documents ── */
   .fp-docs{ padding-top:8px; }
   .fp-docs-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
@@ -136,7 +134,8 @@
   .fp-doc-group{ padding:22px 18px 14px; border:1px solid var(--border); border-radius:var(--radius-lg); background:var(--surface); }
   .fp-doc-group h3{ font-size:16px; margin:0 0 6px; padding:0 8px; }
   .fp-doc-group > p{ font-size:13px; padding:0 8px; margin-bottom:10px; }
-  .fp-doc{ display:flex; align-items:center; gap:12px; padding:11px 8px; border-radius:10px; transition:background .15s ease; }
+  .fp-doc{ display:flex; align-items:center; gap:12px; width:100%; padding:11px 8px; border:0; border-radius:10px; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; transition:background .15s ease; }
+  .fp-doc:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
   .fp-doc:hover{ background:var(--surface-2); }
   .fp-doc-icon{ width:34px; height:34px; border-radius:8px; background:var(--surface-2); color:var(--rally); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
   .fp-doc:hover .fp-doc-icon{ background:var(--surface-3); }
@@ -240,10 +239,6 @@
           <div class="rule-item"><span class="rule-num">03</span><p class="dim">Честная борьба — без запрещённых методов и обмана ради победы.</p></div>
           <div class="rule-item"><span class="rule-num">04</span><p class="dim">Нулевая терпимость к любой форме коррупции или вознаграждения за манипулирование спортивным результатом.</p></div>
         </div>
-        <div class="sanction-box">
-          <h3>Последствия нарушений</h3>
-          <p class="dim">Нарушение этих принципов влечёт дисциплинарные санкции — от дисквалификации до исключения из ATTP и утраты статуса честного спортсмена с внесением имени в публичный список наказанных лиц. В серьёзных случаях возможна также уголовная или административная ответственность.</p>
-        </div>
       </div>
       <div>
         <h2>Почему мы на этом настаиваем</h2>
@@ -297,43 +292,30 @@
    PDFs stay as issued. Where the association published a Russian version, the
    Russian page links to it (ru); otherwise every language gets the Romanian PDF. */
 (function(){
-  const DIR = 'documents/pdfs/fairplay/';
   const GROUPS = [
     { title:'Coduri și politici', note:'Aprobate de Consiliul ATTP.', docs:[
-      { t:'Codul de etică și disciplină', f:'CODUL_DE_ETICA_SI_DISCIPLINA_ATTP_8052abec9e.pdf', pages:13 },
-      { t:'Politica de integritate sportivă', f:'Politica_de_integritate_sportiva_287a7657ed.pdf', pages:10 },
-      { t:'Politica antimanipulare', f:'Politica_antimanipulare_4234cf33b3.pdf', pages:18 },
-      { t:'Politica de conflict de interes', f:'Politica_de_conflict_de_interes_0eba29e5a2.pdf', pages:5 },
-      { t:'Declarație de integritate', f:'Declaratie_integritate_792c70000b.pdf', pages:1,
-        ru:{ f:'Deklaracziya_nepodkupnosti_4c9127ba49.pdf', pages:1 } },
+      { t:'Codul de etică și disciplină', slug:'codul-etica-2026', pages:13, updated:'10.10.2026' },
+      { t:'Politica de avertizare internă', slug:'avertizare-interna-2026', pages:10, updated:'10.10.2026' },
+      { t:'Politica de conflict de interes', slug:'conflict-interese-2026', pages:8, updated:'10.10.2026' },
+      { t:'Politica antimanipulare', slug:'antimanipulare-2026', pages:8, updated:'10.10.2026' },
+      { t:'Politica de integritate sportivă', slug:'integritate-sportiva-2026', pages:10, updated:'10.10.2026' },
     ]},
-    { title:'Materiale utile', note:'Departamentul de integritate, ghiduri și formulare.', docs:[
-      { t:'Regulamentul Departamentului de integritate ATTP', f:'Regulament_Departamentul_de_integritate_78e653c02d.pdf', pages:4,
-        ru:{ f:'Reglament_Departamenta_nepodkupnosti1_7e362e1bb5.pdf', pages:4 } },
-      { t:'Ghidul sportivului onest', f:'GHID_integritate_sport_fin_dbff86189a.pdf', pages:47 },
-      { t:'Identificarea meciurilor aranjate', f:'schema_identificare_meci_aranjat_bf74a92eb3.pdf', pages:1, lang:'ru' },
-      { t:'Cerere de reabilitare sportivă', f:'Cerere_de_reabilitare_sportiva_829d5b0dcc.pdf', pages:2 },
-    ]},
-    { title:'Sancțiuni și rapoarte', note:'Lista publică a persoanelor sancționate și rapoartele asociației.', docs:[
-      { t:'Lista persoanelor descalificate', f:'LISTA_persoanelor_discalificate_b6fa8a4c16.pdf', pages:1, updated:'01.01.2026',
-        ru:{ f:'SPISOK_diskvalificzirovannyh_licz_aa26b16437.pdf', pages:1 } },
-      { t:'Raport de autoevaluare ATTP', f:'RAPORT_autoevaluare_ATTP_f5ed0464b2.pdf', pages:5 },
-      { t:'Raportul anual ATTP 2025', f:'../RAPORT_anual_ATTP_2025_ac08054f5d.pdf', pages:36 },
-    ]},
+    { title:'Materiale utile', note:'Departamentul de integritate, ghiduri și formulare.', docs:[]},
+    { title:'Sancțiuni și rapoarte', note:'Lista publică a persoanelor sancționate și rapoartele asociației.', docs:[]},
   ];
   const lang = window.ATTP_LANG || 'ro';
   const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const icon = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg>';
+  // Every document opens in the viewer as page images (js/doc-viewer.js); there is no file to download.
+  const ALL = GROUPS.flatMap(g => g.docs);
   const row = d => {
-    const v = (lang !== 'ro' && d[lang]) || d;
-    const docLang = d[lang] ? lang : (d.lang || 'ro');
-    const langTag = docLang !== lang ? `<span class="fp-doc-lang">${docLang.toUpperCase()}</span>` : '';
     const updated = d.updated ? ` · ${t('actualizat')} ${d.updated}` : '';
-    return `<a class="fp-doc" href="${DIR}${v.f}" target="_blank" rel="noopener">
+    const langTag = (d.lang || 'ro') !== lang ? `<span class="fp-doc-lang">${(d.lang || 'ro').toUpperCase()}</span>` : '';
+    return `<button type="button" class="fp-doc" data-doc="${ALL.indexOf(d)}">
       <span class="fp-doc-icon">${icon}</span>
       <span><span class="fp-doc-title">${esc(t(d.t))}</span>
-      <span class="fp-doc-meta">PDF · ${v.pages} ${tp(v.pages, 'pagină', 'pagini')}${updated}${langTag}</span></span>
-    </a>`;
+      <span class="fp-doc-meta">${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${updated}${langTag}</span></span>
+    </button>`;
   };
   document.getElementById('fpDocGroups').innerHTML = GROUPS.map(g => `
     <div class="fp-doc-group">
@@ -341,8 +323,15 @@
       <p class="dim">${esc(t(g.note))}</p>
       ${g.docs.map(row).join('')}
     </div>`).join('');
+  document.getElementById('fpDocGroups').addEventListener('click', e => {
+    const b = e.target.closest('[data-doc]');
+    if (!b) return;
+    const d = ALL[+b.dataset.doc];
+    openDocument({ title:d.t, slug:d.slug, pages:d.pages, w:1240, h:1753 }, b);
+  });
 })();
 </script>
+<script src="js/doc-viewer.js?v=2"></script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>

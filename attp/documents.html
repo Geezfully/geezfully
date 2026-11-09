@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-15">
+<link rel="stylesheet" href="css/style.css?v=redesign-16">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -100,7 +100,8 @@
   }
   .documents-hero-note::before{ content:""; width:28px; height:1px; background:currentColor; }
   .documents-content{ position:relative; z-index:1; padding-top:clamp(60px,7vw,94px); }
-  .doc-row{ display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:10px; border:1px solid transparent; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
+  .doc-row{ display:flex; align-items:center; gap:14px; width:100%; padding:14px 16px; border-radius:10px; border:1px solid transparent; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; transition:background .15s ease,border-color .15s ease,transform .15s ease; }
+  .doc-row:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
   .doc-row:hover{ background:var(--surface); border-color:var(--border); transform:translateX(3px); }
   .doc-icon{ width:36px; height:36px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--muted); }
   .doc-title{ min-width:0; flex:1; }
@@ -184,7 +185,14 @@
       </div>
     </section>
   <section class="container section-tight documents-content" id="docSections">
-    <div class="skeleton" style="height:200px"></div>
+    <h3 class="doc-cat" data-cat="Statutul ATTP"><span>Statutul ATTP</span></h3>
+    <h3 class="doc-cat"><span>Calendarul evenimentelor sportive ATTP</span></h3>
+    <h3 class="doc-cat"><span>Documente importante ATTP</span></h3>
+    <h3 class="doc-cat"><span>Documente actualizate</span></h3>
+    <h3 class="doc-cat"><span>Informații utile</span></h3>
+    <h3 class="doc-cat"><span>Regulamente și programe turnee ATTP</span></h3>
+    <h3 class="doc-cat"><span>Istoria tenisului de masă</span></h3>
+    <h3 class="doc-cat"><span>Arbitraj sportiv</span></h3>
   </section>
   </div>
 </main>
@@ -202,56 +210,36 @@
 </footer>
 
 <script src="js/supabase-init.js?v=20261104-batch"></script>
-<script src="data-documents.js"></script>
 <script>
-const CATEGORY_ORDER = [
-  'Statutul ATTP',
-  'Calendarul evenimentelor sportive ATTP',
-  'Documente importante ATTP',
-  'Documente actualizate',
-  'Informații utile',
-  'Regulamente și programe turnee ATTP',
-  'Istoria tenisului de masă',
-  'Arbitraj sportiv'
-];
-(async function(){
-  const localDocs = window.ATTP_DOCUMENTS || [];
-  const databaseDocs = await fetchDocuments();
-  const localTitles = new Set(localDocs.map(d => d.title.toLocaleLowerCase('ro')));
-  const docs = [
-    ...localDocs,
-    ...databaseDocs.filter(d =>
-      d.file_url &&
-      !localTitles.has((d.title || '').toLocaleLowerCase('ro'))
-    )
+/* Documents on the page, by section (the heading's data-cat). Each opens in the viewer as
+   page images (js/doc-viewer.js); there is no file to download. Sections without
+   documents stay as plain headings. */
+(function(){
+  const DOCS = [
+    { cat:'Statutul ATTP', title:'Statutul ATTP', slug:'statut-2026', pages:15, w:1240, h:1605, updated:'25.08.2026' },
   ];
-  const el = document.getElementById('docSections');
-  if (!docs.length) {
-    el.innerHTML = `<div class="empty-state"><span class="tag tag-muted">${t('În curând')}</span><p class="mt-16">${t('Documentele oficiale (statut, regulamente, calendar competițional) vor fi încărcate aici.')}</p></div>`;
-    return;
-  }
-  const byCat = {};
-  docs.forEach(d => (byCat[d.category] ||= []).push(d));
-  const categories = Object.keys(byCat).sort((a,b) => {
-    const ai = CATEGORY_ORDER.indexOf(a), bi = CATEGORY_ORDER.indexOf(b);
-    return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
-  });
-  el.innerHTML = categories.map(cat => {
-    const items = byCat[cat].sort((a,b) => (a.sort_order || 999) - (b.sort_order || 999));
-    return `
-    <h3 class="doc-cat"><span>${escapeHtml(t(cat))}</span><small>${items.length} ${tp(items.length, 'document', 'documente')}</small></h3>
-    ${items.map(d => `
-      <a class="doc-row" href="${d.file_url || '#'}" ${d.file_url ? 'target="_blank" rel="noopener"' : ''}>
-        <span class="doc-icon"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg></span>
+  const icon = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg>';
+  document.querySelectorAll('.doc-cat[data-cat]').forEach(h => {
+    const items = DOCS.filter(d => d.cat === h.dataset.cat);
+    if (!items.length) return;
+    h.insertAdjacentHTML('beforeend', `<small>${items.length} ${tp(items.length, 'document', 'documente')}</small>`);
+    h.insertAdjacentHTML('afterend', items.map(d => `
+      <button type="button" class="doc-row" data-doc="${DOCS.indexOf(d)}">
+        <span class="doc-icon">${icon}</span>
         <span class="doc-title">
-          <strong>${escapeHtml(d.title)}</strong>
-          ${d.pages ? `<span class="doc-meta">PDF · ${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${d.size_mb ? ` · ${Number(d.size_mb).toFixed(2)} MB` : ''}</span>` : ''}
+          <strong>${escapeHtml(t(d.title))}</strong>
+          <span class="doc-meta">${d.pages} ${tp(d.pages, 'pagină', 'pagini')} · ${t('actualizat')} ${d.updated}</span>
         </span>
-        ${d.file_url ? `<span class="doc-open">${t('DESCHIDE')} ↗</span>` : `<span class="tag tag-muted">${t('În curând')}</span>`}
-      </a>`).join('')}
-  `}).join('');
+        <span class="doc-open">${t('DESCHIDE')}</span>
+      </button>`).join(''));
+  });
+  document.getElementById('docSections').addEventListener('click', e => {
+    const b = e.target.closest('[data-doc]');
+    if (b) openDocument(DOCS[+b.dataset.doc], b);
+  });
 })();
 </script>
+<script src="js/doc-viewer.js?v=2"></script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>

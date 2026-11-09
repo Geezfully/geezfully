@@ -759,3 +759,38 @@ h1 .rank-pill{ font-size:16px; vertical-align:12px; margin-left:12px; padding:2p
 @media (min-width:2200px) and (min-height:1100px){ html{ zoom:1.4; } }
 @media (min-width:2500px) and (min-height:1300px){ html{ zoom:1.6; } }
 @media (min-width:3600px) and (min-height:1900px){ html{ zoom:2.2; } }
+
+/* ── Document viewer (js/doc-viewer.js): a document's pages as images, full screen, on
+   the deep blue of the scoreboard. Pages can't be selected, dragged or long-pressed
+   (a clear sheet lies over each image), and printing while it is open gives nothing. */
+.doc-viewer{
+  position:fixed; inset:0; width:100%; height:100%; max-width:none; max-height:none; margin:0; padding:0; border:0;
+  background:rgba(14,43,87,.96); color:#fff; overflow:hidden;
+}
+.doc-viewer[open]{ display:flex; flex-direction:column; }
+.doc-viewer::backdrop{ background:rgba(14,43,87,.7); }
+.dv-bar{ display:flex; align-items:center; gap:16px; padding:12px max(16px, calc((100% - 940px) / 2)); background:var(--table-ink); box-shadow:0 8px 20px -14px rgba(0,0,0,.6); }
+.dv-head{ flex:1; min-width:0; display:flex; align-items:baseline; gap:14px; }
+.dv-title{ color:#fff; font-family:var(--font-display); font-size:24px; font-weight:800; line-height:1.1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.dv-count{ font-family:var(--font-label); font-size:14px; color:rgba(255,255,255,.7); white-space:nowrap; }
+.dv-close{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; transition:background .15s ease; }
+.dv-close:hover{ background:rgba(255,255,255,.24); }
+.dv-close:focus-visible{ outline:3px solid var(--shirt); outline-offset:2px; }
+.dv-pages{
+  flex:1; overflow-y:auto; overscroll-behavior:contain; padding:24px 12px 48px;
+  display:flex; flex-direction:column; align-items:center; gap:18px;
+  -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+}
+.dv-pages:focus{ outline:none; }
+.dv-page{ position:relative; flex:0 0 auto; width:min(100%, 900px); background:#fff; border-radius:3px; box-shadow:0 14px 34px -16px rgba(0,0,0,.7); }
+.dv-page img{ display:block; width:100%; height:auto; pointer-events:none; -webkit-user-drag:none; user-select:none; }
+.dv-page::after{ content:''; position:absolute; inset:0; }
+html.dv-open{ overflow:hidden; }
+@media (max-width:600px){
+  .dv-bar{ padding:10px 12px; gap:10px; }
+  .dv-head{ flex-direction:column; gap:2px; }
+  .dv-title{ font-size:19px; max-width:100%; }
+  .dv-count{ font-size:13px; }
+  .dv-pages{ padding:14px 8px 32px; gap:12px; }
+}
+@media print{ html.dv-open body{ display:none !important; } }
