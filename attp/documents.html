@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-16">
+<link rel="stylesheet" href="css/style.css?v=redesign-17">
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -187,7 +187,7 @@
   <section class="container section-tight documents-content" id="docSections">
     <h3 class="doc-cat" data-cat="Statutul ATTP"><span>Statutul ATTP</span></h3>
     <h3 class="doc-cat"><span>Calendarul evenimentelor sportive ATTP</span></h3>
-    <h3 class="doc-cat"><span>Documente importante ATTP</span></h3>
+    <h3 class="doc-cat" data-cat="Documente importante ATTP"><span>Documente importante ATTP</span></h3>
     <h3 class="doc-cat"><span>Documente actualizate</span></h3>
     <h3 class="doc-cat"><span>Informații utile</span></h3>
     <h3 class="doc-cat"><span>Regulamente și programe turnee ATTP</span></h3>
@@ -217,6 +217,7 @@
 (function(){
   const DOCS = [
     { cat:'Statutul ATTP', title:'Statutul ATTP', slug:'statut-2026', pages:15, w:1240, h:1605, updated:'25.08.2026' },
+    { cat:'Documente importante ATTP', title:'Cerere de aderare (persoană fizică)', slug:'cerere-aderare-2026', pages:2, w:1240, h:1753, updated:'10.10.2026' },
   ];
   const icon = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 2h6l4 4v12H6z"/><path d="M12 2v4h4"/></svg>';
   document.querySelectorAll('.doc-cat[data-cat]').forEach(h => {
@@ -239,7 +240,7 @@
   });
 })();
 </script>
-<script src="js/doc-viewer.js?v=2"></script>
+<script src="js/doc-viewer.js?v=3"></script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
