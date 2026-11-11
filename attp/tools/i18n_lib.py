@@ -21,7 +21,7 @@ LANGS = ('en', 'ru')
 PAGES = ['index', 'about', 'news', 'news-article', 'players', 'players-table-tennis', 'players-basketball',
          'basketball-players', 'basketball-teams', 'basketball-team',
          'player', 'player-basketball', 'tournaments', 'tournaments-table-tennis', 'tournaments-basketball', 'tournament',
-         'gallery', 'documents', 'fairplay', 'contact', 'privacy', 'terms']
+         'gallery', 'documents', 'fairplay', 'dincolo-de-victorie', 'contact', 'privacy', 'terms']
 
 INLINE = r'(?:a|strong|em|b|i|br|span|small|code|abbr|time|sup|sub)'
 BLOCK_OR_MEDIA = re.compile(r'<(?:div|p|section|article|ul|ol|li|h[1-6]|table|form|nav|header|footer|main|figure|svg|img|video|picture|button|select|input|textarea|script|style)\b', re.I)

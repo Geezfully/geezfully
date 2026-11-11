@@ -253,6 +253,24 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/fairplay.html"/>
   </url>
   <url>
+    <loc>https://geezfully.com/attp/dincolo-de-victorie.html</loc>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/dincolo-de-victorie.html"/>
+  </url>
+  <url>
+    <loc>https://geezfully.com/attp/en/dincolo-de-victorie.html</loc>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/dincolo-de-victorie.html"/>
+  </url>
+  <url>
+    <loc>https://geezfully.com/attp/ru/dincolo-de-victorie.html</loc>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/dincolo-de-victorie.html"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://geezfully.com/attp/ru/dincolo-de-victorie.html"/>
+  </url>
+  <url>
     <loc>https://geezfully.com/attp/contact.html</loc>
     <xhtml:link rel="alternate" hreflang="ro" href="https://geezfully.com/attp/contact.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://geezfully.com/attp/en/contact.html"/>

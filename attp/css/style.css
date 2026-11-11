@@ -598,25 +598,34 @@ html[data-load-sport="basketball"] .load-figure{
   html[data-load-sport="basketball"] .load-figure{ background-image:url('../images/ui/attp-basketball-loader-still.webp?v=20260929'); }
 }
 
-/* ── Section heroes: the copy on the hall floor, the photo framed beside it ──
-   The photographs are shown whole, as photographs — each carries the player's
-   name in the photographer's own hand in its corner. */
-.photo-hero{ position:relative; border-bottom:2px solid var(--text); --hero-gap:clamp(28px,4vw,56px); }
-/* The image sits outside the container in the markup, so it is placed over the
-   right half of the content column; the copy keeps the left half. */
+/* ── Section heroes: the copy on the hall floor, the athlete beside it ──
+   The hero art (players on a pale, icy backdrop) is not framed: it runs to the right edge of
+   the screen and fades into the hall on its left, top and bottom, so the players seem to
+   come out of the page. The image sits outside the container in the markup; the copy keeps
+   the left half above it. --focus places the players (object-position). */
+.photo-hero{ position:relative; overflow:hidden; border-bottom:2px solid var(--text); --hero-gap:clamp(28px,4vw,56px); }
 .photo-hero-inner{
+  position:relative; z-index:1;
   display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:var(--hero-gap); align-items:center;
-  min-height:clamp(380px,36vw,540px); padding-block:clamp(36px,5vw,64px);
+  min-height:clamp(400px,38vw,560px); padding-block:clamp(36px,5vw,64px);
 }
 .photo-hero-copy{ grid-column:1; }
 .photo-hero-img{
-  position:absolute; z-index:1;
-  top:clamp(36px,5vw,64px); bottom:clamp(36px,5vw,64px);
-  right:max(var(--gutter), calc((100% - 1240px) / 2 + var(--gutter)));
-  width:calc((min(100%, 1240px) - 2 * var(--gutter) - var(--hero-gap)) / 2);
-  height:auto; object-fit:cover; object-position:var(--focus,50% 30%);
-  border-radius:var(--radius-lg); background:#0B1A2A;
-  box-shadow:0 26px 50px -30px rgba(20,28,40,.55);
+  position:absolute; z-index:0; top:0; bottom:0; right:0;
+  width:min(60vw, 1200px); height:100%;
+  object-fit:cover; object-position:var(--focus,60% 50%);
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 16%, #000 36%), linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 16%, #000 36%), linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-composite:intersect;
+  pointer-events:none; user-select:none;
+}
+/* wide screens: the right edge fades too, so the art never ends on a hard line */
+@media (min-width:1500px){
+  .photo-hero-img{
+    -webkit-mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 16%, #000 36%, #000 84%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+    mask-image:linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 16%, #000 36%, #000 84%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  }
 }
 .photo-hero-copy h1{ font-size:clamp(48px,5.6vw,88px); line-height:.9; }
 .photo-hero-copy .lede{ margin-top:18px; }
@@ -628,12 +637,13 @@ html[data-load-sport="basketball"] .load-figure{
   font-family:var(--font-hand); font-size:26px; font-weight:600; color:var(--table); transform:rotate(-1.5deg);
 }
 @media (max-width:760px){
-  /* on a phone the title and intro come first; the photo follows them, a little shorter */
+  /* on a phone the title and intro come first; the art follows them, edge to edge, fading at top and bottom */
   .photo-hero{ display:flex; flex-direction:column; }
-  .photo-hero-inner{ grid-template-columns:1fr; min-height:0; padding-block:22px 22px; }
+  .photo-hero-inner{ grid-template-columns:1fr; min-height:0; padding-block:22px 4px; }
   .photo-hero-img{
-    order:1; position:static; display:block; width:calc(100% - 2 * var(--gutter)); margin:0 auto 32px;
-    aspect-ratio:16/10; box-shadow:0 18px 36px -24px rgba(20,28,40,.55);
+    order:1; position:static; display:block; width:100%; height:auto; aspect-ratio:16/10; margin:0 0 8px;
+    -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 18%, #000 80%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+    mask-image:linear-gradient(180deg, transparent 0%, #000 18%, #000 80%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
   }
 }
 

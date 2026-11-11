@@ -30,9 +30,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=redesign-17">
+<link rel="stylesheet" href="css/style.css?v=redesign-19">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=d92a10f6"></script>
+<script src="js/i18n-ru.js?v=ffcef4de"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <style>
@@ -137,6 +137,9 @@
   .fp-doc{ display:flex; align-items:center; gap:12px; width:100%; padding:11px 8px; border:0; border-radius:10px; background:none; color:inherit; font:inherit; text-align:left; cursor:pointer; transition:background .15s ease; }
   .fp-doc:focus-visible{ outline:3px solid var(--table); outline-offset:2px; }
   .fp-doc:hover{ background:var(--surface-2); }
+  .fp-doc--book{ text-decoration:none; scroll-margin-top:120px; }
+  .fp-doc-cover{ width:34px; flex:0 0 auto; }
+  .fp-doc-cover img{ display:block; width:34px; height:auto; border-radius:1px 3px 3px 1px; box-shadow:1px 2px 6px rgba(14,43,87,.3); }
   .fp-doc-icon{ width:34px; height:34px; border-radius:8px; background:var(--surface-2); color:var(--rally); display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
   .fp-doc:hover .fp-doc-icon{ background:var(--surface-3); }
   .fp-doc-title{ display:block; font-size:14px; font-weight:600; color:var(--chalk); line-height:1.35; }
@@ -216,7 +219,7 @@
 <main>
   <div class="fairplay-flow">
     <section class="photo-hero" aria-labelledby="fairplayTitle">
-      <img class="photo-hero-img" src="images/heroes/fairplay-1800.webp" srcset="images/heroes/fairplay-900.webp 900w, images/heroes/fairplay-1800.webp 1800w" sizes="(max-width:760px) 100vw, 64vw" alt="Данила Титов, игрок ATTP, во время матча" width="1800" height="1273" style="--focus:50% 25%" fetchpriority="high">
+      <img class="photo-hero-img" src="images/heroes/h-fairplay-full.webp" srcset="images/heroes/h-fairplay-900.webp 900w, images/heroes/h-fairplay-full.webp 1536w" sizes="(max-width:760px) 100vw, 60vw" alt="" width="1536" height="1024" style="--focus:46% 56%" fetchpriority="high">
       <div class="container photo-hero-inner">
         <div class="photo-hero-copy">
           <div class="breadcrumb"><a href="ru/index.html">Главная</a> / Фейр-плей</div>
@@ -301,6 +304,7 @@
       { t:'Politica de integritate sportivă', slug:'integritate-sportiva-2026', pages:10, updated:'10.10.2026' },
     ]},
     { title:'Materiale utile', note:'Departamentul de integritate, ghiduri și formulare.', docs:[
+      { t:'Dincolo de victorie', book:'dincolo-de-victorie.html', cover:'carti/dincolo-de-victorie/coperta-560.webp', pages:407 },
       { t:'Cerere de reabilitare sportivă', slug:'cerere-reabilitare-2026', pages:3, updated:'10.10.2026', lang:'ro/ru' },
     ]},
     { title:'Sancțiuni și rapoarte', note:'Lista publică a persoanelor sancționate și rapoartele asociației.', docs:[]},
@@ -311,6 +315,12 @@
   // Every document opens in the viewer as page images (js/doc-viewer.js); there is no file to download.
   const ALL = GROUPS.flatMap(g => g.docs);
   const row = d => {
+    // the book opens in its own page-flip reader (dincolo-de-victorie.html)
+    if (d.book) return `<a class="fp-doc fp-doc--book" id="carte" href="${pageHref(d.book)}">
+      <span class="fp-doc-cover"><img src="${d.cover}" alt="" width="560" height="791" loading="lazy"></span>
+      <span><span class="fp-doc-title">${esc(t(d.t))}</span>
+      <span class="fp-doc-meta">${t('Carte')} · ${esc(t('Rostislav V. Sobiețki'))} · ${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${lang === 'ro' ? '' : '<span class="fp-doc-lang">RO</span>'}</span></span>
+    </a>`;
     const updated = d.updated ? ` · ${t('actualizat')} ${d.updated}` : '';
     // The language tag shows when the document isn't (also) in the page's language; the forms are RO + RU.
     const langs = (d.lang || 'ro').split('/');
