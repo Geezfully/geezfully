@@ -78,6 +78,13 @@
   .person-body{ padding:14px 14px 16px; text-align:left; border-top:3px solid var(--shirt); }
   .person-card h3{ font-size:24px; margin-bottom:2px; }
   .person-role{ font-family:var(--font-label); font-size:14px; font-weight:700; color:var(--table); letter-spacing:.02em; }
+  .person-group{
+    display:flex; align-items:center; gap:12px; margin:8px 0 16px;
+    font-size:clamp(22px,2.2vw,28px); color:var(--table);
+  }
+  .person-group::after{ content:''; flex:1; height:2px; background:var(--rule-2); }
+  .person-grid + .person-group{ margin-top:clamp(32px,4vw,48px); }
+  .person-grid.cols-4 > .person-soon{ flex-basis:100%; max-width:640px; margin:0; padding:18px 20px; border:1px dashed var(--rule-2); border-radius:var(--radius-lg); background:rgba(255,255,255,.6); color:var(--text-2); }
   .person-city{ font-size:13.5px; color:var(--muted); margin-top:4px; }
 </style>
 </head>
@@ -210,11 +217,16 @@
   <section class="container section-tight">
     <div class="eyebrow">Arbitraj</div>
     <h2 class="mb-24">Colegiul arbitraj</h2>
+    <h3 class="person-group">Tenis de masă</h3>
     <div class="person-grid cols-4" id="refereesGrid">
       <div class="card skeleton" style="height:220px"></div>
       <div class="card skeleton" style="height:220px"></div>
       <div class="card skeleton" style="height:220px"></div>
       <div class="card skeleton" style="height:220px"></div>
+    </div>
+    <h3 class="person-group">Baschet</h3>
+    <div class="person-grid cols-4" id="refereesBasketGrid">
+      <p class="person-soon">Componența colegiului de arbitraj la baschet va fi publicată în curând.</p>
     </div>
   </section>
 </main>
@@ -231,7 +243,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script src="js/supabase-init.js?v=20261112-team"></script>
 <script>
 (async function(){
   const STAFF_ROLES = ['founder','president','management','coach','referee'];
@@ -244,21 +256,31 @@
     'd664538c-566e-4986-b5d0-b837e41bd295', // Daniela Chifeac
     '1a23e4e5-e873-478a-bf8b-05ba759f001c', // Oleg Tocan
     '506ba230-9e8c-42a5-ab9e-317bf19fba7c', // Iurie Baghici
-    '4b994296-29ed-4a87-93dd-0b74d53a8484', // Oleg Dobrjinschi
     'a10edafb-1c94-428b-afad-5df8586a970e', // Nicolae Toma
     '258f5472-c2d1-4b45-92ee-771d482e7fb5', // Eduard Buianov
   ]);
   // Management is a fixed list with job titles, as on attp.md/about (two of the four are not players,
   // so they have no player record). Its two players are not listed again in the other sections.
   const MANAGEMENT = [
-    { id:'9d049977-9afe-4bc2-ba69-3dd6cafc7d35', name:'Oksana Halimbaieva',  title:'Manager echipe SKC',     photo:'images/team/oksana-halimbaieva.webp?v=hd1' },
-    { id:'1bc5ffb4-a12a-4b0b-8ce2-76089832168c', name:'Serghei Cucerovschii', title:'Manager arbitraj SKC',  photo:'images/team/serghei-cucerovschii.webp?v=hd1' },
-    { id:null, name:'Alexandra Iurii',  title:'Manager arbitraj BSKC', photo:'images/team/alexandra-iurii.webp' },
-    { id:null, name:'Alexandr Ștubei',  title:'Manager echipe BSKC',  photo:'images/team/alexandr-stubei.webp' },
+    { id:'9d049977-9afe-4bc2-ba69-3dd6cafc7d35', name:'Oksana Halimbaieva',  title:'Manager echipe SKC',     photo:'images/team/oksana-halimbaieva.webp?v=hd2' },
+    { id:'1bc5ffb4-a12a-4b0b-8ce2-76089832168c', name:'Serghei Cucerovschii', title:'Manager arbitraj SKC',  photo:'images/team/serghei-cucerovschii.webp?v=hd2' },
+    { id:null, name:'Alexandra Iurii',  title:'Manager arbitraj BSKC', photo:'images/team/alexandra-iurii.webp?v=hd2' },
+    { id:null, name:'Alexandr Ștubei',  title:'Manager echipe BSKC',  photo:'images/team/alexandr-stubei.webp?v=hd2' },
   ];
   const managementIds = new Set(MANAGEMENT.map(m => m.id).filter(Boolean));
   const players = (all || []).filter(p => !HIDDEN_FROM_ABOUT.has(p.id) && !managementIds.has(p.id));
-  const roleText = p => p.roles.map(roleLabel).join(' · ');
+  // Titles the association asked for, shown instead of the roles list (2026-11-12).
+  const ROLE_TITLE = {
+    '4b994296-29ed-4a87-93dd-0b74d53a8484': 'Fondator',                      // Oleg Dobrjinschi
+    'e198ddf7': 'Antrenor lot național',                                      // Veniamin Dubrovin
+    '22d59d48': 'Arbitru categorie națională',                                // Alexandru Patapi
+    '8d004d0a': 'Arbitru categorie națională',                                // Oleksandr Yavorskiy
+  };
+  const titleFor = p => ROLE_TITLE[p.id] || ROLE_TITLE[p.id.slice(0, 8)];
+  const roleText = p => titleFor(p) ? t(titleFor(p)) : p.roles.map(roleLabel).join(' · ');
+  // Basketball referees: a fixed list like Management, filled in when their photos arrive
+  // ({ name, title, photo }). While it is empty the group says the list is coming.
+  const BASKET_REFEREES = [];
 
   // Each person appears once, bucketed into their primary section (matching attp.md/about's grouping).
   const leadership = players.filter(p => p.roles.includes('founder') || p.roles.includes('president'));
@@ -267,17 +289,17 @@
   const coachIds = new Set(coaches.map(p => p.id));
   const referees = players.filter(p => !leadershipIds.has(p.id) && !coachIds.has(p.id) && p.roles.includes('referee'));
 
-  const renderGrid = list => list.map(p => `
+  const renderGrid = (list, withCity = true) => list.map(p => `
     <div class="person-card">
       <div class="person-photo">${avatarHtml(p, 'lg', 'team')}</div>
       <div class="person-body">
         <h3>${escapeHtml(p.first_name)} ${escapeHtml(p.last_name)}</h3>
         <div class="person-role">${escapeHtml(roleText(p))}</div>
-        ${p.city ? `<div class="person-city">${escapeHtml(p.city)}</div>` : ''}
+        ${withCity && p.city ? `<div class="person-city">${escapeHtml(p.city)}</div>` : ''}
       </div>
     </div>`).join('') || '<p class="muted">—</p>';
 
-  document.getElementById('leadershipGrid').innerHTML = renderGrid(leadership);
+  document.getElementById('leadershipGrid').innerHTML = renderGrid(leadership, false);
   document.getElementById('managementGrid').innerHTML = MANAGEMENT.map(m => `
     <div class="person-card">
       <div class="person-photo"><img src="${m.photo}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>
@@ -288,6 +310,14 @@
     </div>`).join('');
   document.getElementById('coachesGrid').innerHTML = renderGrid(coaches);
   document.getElementById('refereesGrid').innerHTML = renderGrid(referees);
+  if (BASKET_REFEREES.length) document.getElementById('refereesBasketGrid').innerHTML = BASKET_REFEREES.map(m => `
+    <div class="person-card">
+      <div class="person-photo"><img src="${m.photo}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>
+      <div class="person-body">
+        <h3>${escapeHtml(m.name)}</h3>
+        <div class="person-role">${escapeHtml(t(m.title))}</div>
+      </div>
+    </div>`).join('');
 })();
 </script>
 <script src="js/nav.js?v=20260919-social"></script>

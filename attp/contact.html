@@ -297,7 +297,7 @@
             <p>MD-2001, Chișinău</p>
             <div class="ct-map-actions">
               <a class="btn btn-sm btn-rally" href="https://www.google.com/maps/dir/?api=1&amp;destination=47.0149856%2C28.8558379" target="_blank" rel="noopener">Indicații de traseu</a>
-              <a class="btn btn-sm btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=47.0149856%2C28.8558379" target="_blank" rel="noopener">Deschide în Google Maps</a>
+              <a class="btn btn-sm btn-ghost" href="https://www.google.com/maps/search/?api=1&amp;query=ATTP%20Moldova%2C%20Strada%20Albi%C8%99oara%204%2C%20Chi%C8%99in%C4%83u" target="_blank" rel="noopener">Deschide în Google Maps</a>
             </div>
           </div>
         </div>
@@ -342,7 +342,7 @@
   </div>
 </footer>
 
-<script src="js/supabase-init.js?v=20261104-batch"></script>
+<script src="js/supabase-init.js?v=20261112-team"></script>
 <script>
 // TODO: replace with a real Web3Forms access key before launch (same pattern used on the other client sites).
 // Until then the form hands the message to the visitor's email app instead of failing.
@@ -351,7 +351,8 @@ document.getElementById('mapLoad')?.addEventListener('click', () => {
   const gate = document.getElementById('mapGate');
   const f = document.createElement('iframe');
   f.title = t('Harta: sediul ATTP, str. Albișoara 4, Chișinău');
-  f.src = `https://maps.google.com/maps?q=47.0149856%2C28.8558379&z=17&hl=${window.ATTP_LANG || 'ro'}&output=embed`;
+  // searched by name, so Google shows ATTP's place card (name, address, rating, reviews) on the map
+  f.src = `https://maps.google.com/maps?q=${encodeURIComponent('ATTP Moldova, Strada Albișoara 4, Chișinău')}&z=16&hl=${window.ATTP_LANG || 'ro'}&output=embed`;
   f.referrerPolicy = 'no-referrer-when-downgrade';
   f.allowFullscreen = true;
   gate.replaceWith(f);
