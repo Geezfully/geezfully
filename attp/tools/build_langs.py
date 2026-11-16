@@ -62,6 +62,19 @@ def build():
                           + (f'<script src="js/news-{lang}.js?v={nver}"></script>\n' if page in NEWS_PAGES else '')
                           + '<script src="js/i18n.js', 1)
             s = localise_links(s, lang, page)
+            # A book page whose book exists in this language (carti/<slug>-<lang>/book.json: its own page images,
+            # contents and metadata) shows that edition instead of the Romanian one.
+            m = re.search(r'window\.ATTP_BOOK = \{"slug":"([^"]+)"', s)
+            ed = os.path.join(ROOT, 'carti', f'{m.group(1)}-{lang}', 'book.json') if m else None
+            if ed and os.path.exists(ed):
+                with open(ed, encoding='utf-8') as f:
+                    e = json.load(f)
+                dump = lambda o: json.dumps(o, ensure_ascii=False, separators=(',', ':'))
+                s = re.sub(r'<script>window\.ATTP_BOOK = .*?;</script>',
+                           lambda _: '<script>window.ATTP_BOOK = ' + dump(e['book']) + ';</script>', s, count=1, flags=re.S)
+                s = re.sub(r'<script type="application/ld\+json">.*?</script>',
+                           lambda _: '<script type="application/ld+json">' + dump(e['ld']) + '</script>', s, count=1, flags=re.S)
+                s = s.replace(f'carti/{m.group(1)}/pagini/', e['book']['dir'] + 'pagini/')
             # share & search: this language's own address and locale (the alternates stay as they are)
             own = f'https://geezfully.com/attp/{lang}/' + ('' if page == 'index' else f'{page}.html')
             s = re.sub(r'(<link rel="canonical" href=")[^"]*(")', lambda m: m.group(1) + own + m.group(2), s, count=1)

@@ -30,7 +30,7 @@
     var p = pages[i];
     if (p.kind === "back") {
       return '<div class="pg back"><span class="bk-title">' + esc(BOOK.title) + '</span><span class="bk-sub">' + esc(BOOK.author) +
-        '</span><span class="bk-sub">ATTP · ' + esc(BOOK.year) + '</span><span class="bk-isbn">ISBN ' + esc(BOOK.isbn) + "</span></div>";
+        '</span><span class="bk-sub">ATTP · ' + esc(BOOK.year) + '</span>' + (BOOK.isbn ? '<span class="bk-isbn">ISBN ' + esc(BOOK.isbn) + '</span>' : '') + "</div>";
     }
     var alt = p.kind === "cover" ? t(BOOK.coverAlt) : t("Pagina {n}").replace("{n}", p.n);
     return '<div class="pg is-wait ' + (p.kind === "cover" ? "cover" : side(i)) + '"><img data-src="' + src(p.n) + '" alt="' + esc(alt) +
@@ -192,7 +192,7 @@
     $("#navPrev").disabled = current <= 0;
     $("#navNext").disabled = current >= total() - 1;
     try {
-      history.replaceState(null, "", current > 0 ? "#p" + (current + 1) : location.pathname + location.search);
+      history.replaceState(null, "", location.pathname + location.search + (current > 0 ? "#p" + (current + 1) : ""));   // full path: the EN/RU pages have <base href="../">
       if (current > 4) localStorage.setItem(STORE, String(current));
     } catch (e) {}
     if (current > 0) dismissHint();
@@ -513,7 +513,7 @@
     if (on) {
       buildList(); applyTextZoom(false);
       showInList(current, false);
-      try { history.replaceState(null, "", "#lista"); } catch (e) {}
+      try { history.replaceState(null, "", location.pathname + location.search + "#lista"); } catch (e) {}
     } else {
       buildBook(target);
     }

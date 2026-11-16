@@ -32,7 +32,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@700;800;900&family=Sofia+Sans+Condensed:wght@500;600;700;800&family=Golos+Text:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=redesign-20">
 <script>window.__PAGE_LANG__="ru";</script>
-<script src="js/i18n-ru.js?v=6c83a481"></script>
+<script src="js/i18n-ru.js?v=9cdde236"></script>
 <script src="js/i18n.js?v=20260918-i18n"></script>
 <script src="js/load-screen-gate.js?v=20260929-sport-loaders"></script>
 <style>
@@ -305,7 +305,7 @@
       { t:'Politica de integritate sportivă', slug:'integritate-sportiva-2026', pages:10, updated:'10.10.2026' },
     ]},
     { title:'Materiale utile', note:'Departamentul de integritate, ghiduri și formulare.', docs:[
-      { t:'Dincolo de victorie', book:'dincolo-de-victorie.html', cover:'carti/dincolo-de-victorie/coperta-560.webp', pages:407 },
+      { t:'Dincolo de victorie', book:'dincolo-de-victorie.html', cover:'carti/dincolo-de-victorie/coperta-560.webp', pages:407, editions:{ ru:447 } },
       { t:'Cerere de reabilitare sportivă', slug:'cerere-reabilitare-2026', pages:3, updated:'10.10.2026', lang:'ro/ru' },
     ]},
     { title:'Sancțiuni și rapoarte', note:'Lista publică a persoanelor sancționate și rapoartele asociației.', docs:[]},
@@ -317,10 +317,12 @@
   const ALL = GROUPS.flatMap(g => g.docs);
   const row = d => {
     // the book opens in its own page-flip reader (dincolo-de-victorie.html)
+    // a translated edition (editions: { ru: pages }) opens in this language, with the author's name as printed
+    const ed = d.book && d.editions && d.editions[lang], pages = ed || d.pages;
     if (d.book) return `<a class="fp-doc fp-doc--book" id="carte" href="${pageHref(d.book)}">
       <span class="fp-doc-cover"><img src="${d.cover}" alt="" width="560" height="791" loading="lazy"></span>
       <span><span class="fp-doc-title">${esc(t(d.t))}</span>
-      <span class="fp-doc-meta">${t('Carte')} · ${esc(t('Rostislav V. Sobiețki'))} · ${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${lang === 'ro' ? '' : '<span class="fp-doc-lang">RO</span>'}</span></span>
+      <span class="fp-doc-meta">${t('Carte')} · ${esc(ed ? 'Rostislav V. Sobiețki' : t('Rostislav V. Sobiețki'))} · ${pages} ${tp(pages, 'pagină', 'pagini')}${lang === 'ro' || ed ? '' : '<span class="fp-doc-lang">RO</span>'}</span></span>
     </a>`;
     const updated = d.updated ? ` · ${t('actualizat')} ${d.updated}` : '';
     // The language tag shows when the document isn't (also) in the page's language; the forms are RO + RU.

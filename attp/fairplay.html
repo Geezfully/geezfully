@@ -302,7 +302,7 @@
       { t:'Politica de integritate sportivă', slug:'integritate-sportiva-2026', pages:10, updated:'10.10.2026' },
     ]},
     { title:'Materiale utile', note:'Departamentul de integritate, ghiduri și formulare.', docs:[
-      { t:'Dincolo de victorie', book:'dincolo-de-victorie.html', cover:'carti/dincolo-de-victorie/coperta-560.webp', pages:407 },
+      { t:'Dincolo de victorie', book:'dincolo-de-victorie.html', cover:'carti/dincolo-de-victorie/coperta-560.webp', pages:407, editions:{ ru:447 } },
       { t:'Cerere de reabilitare sportivă', slug:'cerere-reabilitare-2026', pages:3, updated:'10.10.2026', lang:'ro/ru' },
     ]},
     { title:'Sancțiuni și rapoarte', note:'Lista publică a persoanelor sancționate și rapoartele asociației.', docs:[]},
@@ -314,10 +314,12 @@
   const ALL = GROUPS.flatMap(g => g.docs);
   const row = d => {
     // the book opens in its own page-flip reader (dincolo-de-victorie.html)
+    // a translated edition (editions: { ru: pages }) opens in this language, with the author's name as printed
+    const ed = d.book && d.editions && d.editions[lang], pages = ed || d.pages;
     if (d.book) return `<a class="fp-doc fp-doc--book" id="carte" href="${pageHref(d.book)}">
       <span class="fp-doc-cover"><img src="${d.cover}" alt="" width="560" height="791" loading="lazy"></span>
       <span><span class="fp-doc-title">${esc(t(d.t))}</span>
-      <span class="fp-doc-meta">${t('Carte')} · ${esc(t('Rostislav V. Sobiețki'))} · ${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${lang === 'ro' ? '' : '<span class="fp-doc-lang">RO</span>'}</span></span>
+      <span class="fp-doc-meta">${t('Carte')} · ${esc(ed ? 'Rostislav V. Sobiețki' : t('Rostislav V. Sobiețki'))} · ${pages} ${tp(pages, 'pagină', 'pagini')}${lang === 'ro' || ed ? '' : '<span class="fp-doc-lang">RO</span>'}</span></span>
     </a>`;
     const updated = d.updated ? ` · ${t('actualizat')} ${d.updated}` : '';
     // The language tag shows when the document isn't (also) in the page's language; the forms are RO + RU.
