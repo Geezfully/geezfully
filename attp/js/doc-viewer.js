@@ -7,6 +7,18 @@
 (function(){
   let dlg, pagesEl, opener = null;
 
+  // Translated versions: documents/view/<slug>-<lang>/<n>.webp, typeset from the reviewed
+  // translation (_traducere/documente, not on the site). Written by its publish.py.
+  /* TRANSLATIONS */const TR = {"antimanipulare-2026":{"ru":{"pages":9,"w":1240,"h":1755}},"avertizare-interna-2026":{"ru":{"pages":11,"w":1240,"h":1755}},"codul-etica-2026":{"ru":{"pages":15,"w":1240,"h":1755}},"conflict-interese-2026":{"ru":{"pages":9,"w":1240,"h":1755}},"integritate-sportiva-2026":{"ru":{"pages":11,"w":1240,"h":1755}},"regulament-arbitri-tt-2026":{"ru":{"pages":25,"w":1240,"h":1755}},"regulament-baschet-3x3-2026":{"ru":{"pages":39,"w":1240,"h":1755}},"regulament-baschet-5x5-2026":{"ru":{"pages":48,"w":1240,"h":1755}},"statut-2026":{"ru":{"pages":16,"w":1240,"h":1605}},"titluri-categorii-tt-2026":{"ru":{"pages":8,"w":1754,"h":1240}}};/* /TRANSLATIONS */
+  const LANG = window.ATTP_LANG || 'ro';
+  // The version of a document the reader gets on this page: the translation if there is
+  // one for this language, else the Romanian original. lang = the language of the pages.
+  window.docVersion = function(d){
+    const v = TR[d.slug] && TR[d.slug][LANG];
+    return v ? { slug:`${d.slug}-${LANG}`, pages:v.pages, w:v.w, h:v.h, lang:LANG }
+             : { slug:d.slug, pages:d.pages, w:d.w || 1240, h:d.h || 1753, lang:'ro' };
+  };
+
   function build(){
     dlg = document.createElement('dialog');
     dlg.className = 'doc-viewer';
@@ -39,8 +51,9 @@
   });
 
   // d = { title, slug, pages, w, h }
-  window.openDocument = function(d, from){
+  window.openDocument = function(doc, from){
     if (!dlg) build();
+    const d = Object.assign({}, doc, docVersion(doc));
     opener = from || null;
     dlg.querySelector('.dv-title').textContent = t(d.title);
     dlg.querySelector('.dv-count').textContent = `${d.pages} ${tp(d.pages, 'pagină', 'pagini')}`;

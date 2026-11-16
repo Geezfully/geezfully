@@ -290,6 +290,7 @@
     <div class="footer-bottom"><span>© 2023–2026 ATTP. All rights reserved.</span><a class="foot-by" href="https://wa.me/37379355432" target="_blank" rel="noopener" aria-label="Message the author on WhatsApp">Made by <span class="foot-sig" role="img" aria-label="Florențiu B."></span></a><span>Rankings via ligas.io · Results via Setka Cup and Bskt Cup</span></div>
   </div>
 </footer>
+<script src="js/doc-viewer.js?v=408ce4f0"></script>
 <script>
 /* Fair Play documents (copied from the original attp.md). Titles are translated; the
    PDFs stay as issued. Where the association published a Russian version, the
@@ -323,12 +324,13 @@
     </a>`;
     const updated = d.updated ? ` · ${t('actualizat')} ${d.updated}` : '';
     // The language tag shows when the document isn't (also) in the page's language; the forms are RO + RU.
-    const langs = (d.lang || 'ro').split('/');
+    const v = docVersion(d);
+    const langs = (d.lang || v.lang).split('/');
     const langTag = langs.includes(lang) ? '' : `<span class="fp-doc-lang">${langs.join('/').toUpperCase()}</span>`;
     return `<button type="button" class="fp-doc" data-doc="${ALL.indexOf(d)}">
       <span class="fp-doc-icon">${icon}</span>
       <span><span class="fp-doc-title">${esc(t(d.t))}</span>
-      <span class="fp-doc-meta">${d.pages} ${tp(d.pages, 'pagină', 'pagini')}${updated}${langTag}</span></span>
+      <span class="fp-doc-meta">${v.pages} ${tp(v.pages, 'pagină', 'pagini')}${updated}${langTag}</span></span>
     </button>`;
   };
   document.getElementById('fpDocGroups').innerHTML = GROUPS.map(g => `
@@ -345,7 +347,6 @@
   });
 })();
 </script>
-<script src="js/doc-viewer.js?v=3"></script>
 <script src="js/nav.js?v=20260919-social"></script>
 <script src="js/motion.js?v=20260730-flow2"></script>
 <script src="js/load-screen.js?v=20260929-sport-loaders"></script>
