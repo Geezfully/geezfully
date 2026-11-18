@@ -1,0 +1,934 @@
+{
+ "_note": "English edition of the book: tools/build_langs.py puts this into en/dincolo-de-victorie.html in place of the Romanian book. Pages are images of _traducere/en-build/Dincolo-de-victorie-EN.pdf (page 1 = the printed cover).",
+ "book": {
+  "slug": "dincolo-de-victorie-en",
+  "dir": "carti/dincolo-de-victorie-en/",
+  "v": "1",
+  "pages": 411,
+  "title": "Dincolo de victorie",
+  "author": "Rostislav V. Sobiețki",
+  "year": "2026",
+  "isbn": "",
+  "coverAlt": "Cover of the book “Dincolo de victorie. Ce face omul când numai el știe adevărul” by Rostislav V. Sobiețki",
+  "toc": [
+   [
+    3,
+    "Cover",
+    1
+   ],
+   [
+    3,
+    "Dedication",
+    2
+   ],
+   [
+    3,
+    "Author’s note",
+    3
+   ],
+   [
+    3,
+    "Contents",
+    5
+   ],
+   [
+    0,
+    "PREFACE",
+    10
+   ],
+   [
+    0,
+    "INTRODUCTION",
+    11
+   ],
+   [
+    0,
+    "PART I. WHAT DOES IT MEAN TO PLAY FAIR?",
+    19
+   ],
+   [
+    1,
+    "CHAPTER 1. WHAT IS A COMPETITION: THE RULE, THE OPPONENT, THE RESULT",
+    20
+   ],
+   [
+    2,
+    "1.1. The unwritten promise of the game",
+    20
+   ],
+   [
+    2,
+    "1.2. The opponent who gives victory its value",
+    21
+   ],
+   [
+    2,
+    "1.3. The truth of the result",
+    23
+   ],
+   [
+    2,
+    "1.4. Beyond the score",
+    25
+   ],
+   [
+    2,
+    "1.5. Victory without justice",
+    26
+   ],
+   [
+    1,
+    "CHAPTER 2. FAIR PLAY: FROM THE LETTER OF THE RULE TO THE SPIRIT OF THE GAME",
+    27
+   ],
+   [
+    2,
+    "2.1. The unseen choice",
+    27
+   ],
+   [
+    2,
+    "2.2. The roots of an honest victory",
+    29
+   ],
+   [
+    2,
+    "2.3. Fair Play, from principle to deed",
+    30
+   ],
+   [
+    2,
+    "2.4. Abuse of the rule",
+    33
+   ],
+   [
+    2,
+    "2.5. The gestures nobody asks for",
+    35
+   ],
+   [
+    2,
+    "2.6. Honesty is not enough",
+    37
+   ],
+   [
+    1,
+    "CHAPTER 3. EQUALITY OF OPPORTUNITY: WHAT MUST BE EQUAL IN A COMPETITION",
+    39
+   ],
+   [
+    2,
+    "3.1. The same chances, different results",
+    39
+   ],
+   [
+    2,
+    "3.2. The conditions of play",
+    40
+   ],
+   [
+    2,
+    "3.3. In turn or by lot",
+    43
+   ],
+   [
+    2,
+    "3.4. Home and away",
+    46
+   ],
+   [
+    2,
+    "3.5. Equipment and technological doping",
+    48
+   ],
+   [
+    2,
+    "3.6. Equal on the field, unequal before it",
+    52
+   ],
+   [
+    1,
+    "CHAPTER 4. THE DIFFERENCES THAT MATTER: THE LIMITS OF A FAIR COMPETITION",
+    54
+   ],
+   [
+    2,
+    "4.1. Why categories exist",
+    54
+   ],
+   [
+    2,
+    "4.2. When age becomes an advantage",
+    56
+   ],
+   [
+    2,
+    "4.3. Hidden years, added years and years that no longer count",
+    58
+   ],
+   [
+    2,
+    "4.4. Capacity: the classification of athletes with disabilities",
+    60
+   ],
+   [
+    2,
+    "4.5. The women’s category: a door opened with difficulty",
+    62
+   ],
+   [
+    2,
+    "4.6. What cannot be measured",
+    66
+   ],
+   [
+    1,
+    "CHAPTER 5. MERIT, TALENT AND LUCK",
+    68
+   ],
+   [
+    2,
+    "5.1. The gift nobody asked for",
+    68
+   ],
+   [
+    2,
+    "5.2. The myth of ten thousand hours",
+    70
+   ],
+   [
+    2,
+    "5.3. The luck the game accepts",
+    72
+   ],
+   [
+    2,
+    "5.4. The raised hand after the lucky ball",
+    74
+   ],
+   [
+    2,
+    "5.5. The moral winner",
+    76
+   ],
+   [
+    2,
+    "5.6. The right to chance",
+    77
+   ],
+   [
+    0,
+    "PART II. CHARACTER: THE PERSON UNDER PRESSURE",
+    80
+   ],
+   [
+    1,
+    "CHAPTER 6. THE ATHLETE’S CHARACTER: THE VIRTUES OF COMPETITION",
+    81
+   ],
+   [
+    2,
+    "6.1. Character under trial",
+    81
+   ],
+   [
+    2,
+    "6.2. Courage and honesty",
+    84
+   ],
+   [
+    2,
+    "6.3. Modesty, perseverance and loyalty",
+    86
+   ],
+   [
+    2,
+    "6.4. The sense of measure and the vices that lie in wait for it",
+    90
+   ],
+   [
+    2,
+    "6.5. The two faces of sport",
+    93
+   ],
+   [
+    2,
+    "6.6. The integrity of the person and the integrity of the competition",
+    95
+   ],
+   [
+    1,
+    "CHAPTER 7. SELF-CONTROL: WHEN EMOTION RISES FASTER THAN JUDGEMENT",
+    98
+   ],
+   [
+    2,
+    "7.1. The moment before thought",
+    98
+   ],
+   [
+    2,
+    "7.2. When injustice comes from beyond the touchline",
+    100
+   ],
+   [
+    2,
+    "7.3. The shame of the next day",
+    103
+   ],
+   [
+    2,
+    "7.4. Fear and hands that no longer obey",
+    107
+   ],
+   [
+    2,
+    "7.5. The school of self-control",
+    109
+   ],
+   [
+    2,
+    "7.6. Help without shame",
+    111
+   ],
+   [
+    2,
+    "7.7. Self-control as a virtue",
+    112
+   ],
+   [
+    1,
+    "CHAPTER 8. THE PRESSURE OF RESULTS: WHEN VICTORY BECOMES TEMPTATION",
+    114
+   ],
+   [
+    2,
+    "8.1. People who knew very well",
+    114
+   ],
+   [
+    2,
+    "8.2. Money, the contract, the family and “I am what I win”",
+    116
+   ],
+   [
+    2,
+    "8.3. The limit of endurance",
+    118
+   ],
+   [
+    2,
+    "8.4. How a person quiets his conscience",
+    119
+   ],
+   [
+    2,
+    "8.5. The body that lies: feigning in football and basketball",
+    121
+   ],
+   [
+    2,
+    "8.6. The scuffed ball and the motor in the frame",
+    124
+   ],
+   [
+    2,
+    "8.7. News told to the wrong person",
+    125
+   ],
+   [
+    2,
+    "8.8. The place that pushes and the place that stops",
+    126
+   ],
+   [
+    0,
+    "PART III. RESPONSIBILITY: THE PEOPLE AND THE SYSTEM BEHIND THE GAME",
+    130
+   ],
+   [
+    1,
+    "CHAPTER 9. THE FREEDOM OF CHOICE AND THE BURDEN OF RESPONSIBILITY",
+    131
+   ],
+   [
+    2,
+    "9.1. How free is the person who chooses",
+    131
+   ],
+   [
+    2,
+    "9.2. The blue pills",
+    133
+   ],
+   [
+    2,
+    "9.3. When everyone around you cheats",
+    135
+   ],
+   [
+    2,
+    "9.4. The responsibility that does not ask about blame",
+    137
+   ],
+   [
+    2,
+    "9.5. Those who said “no”",
+    140
+   ],
+   [
+    2,
+    "9.6. Who prepared the storm",
+    142
+   ],
+   [
+    1,
+    "CHAPTER 10. THE COACH AND THE FAMILY: THE AUTHORITY THAT SHAPES",
+    145
+   ],
+   [
+    2,
+    "10.1. The person who shows what a good match means",
+    145
+   ],
+   [
+    2,
+    "10.2. Power in the training hall and the way it goes bad",
+    147
+   ],
+   [
+    2,
+    "10.3. The open door: the rules that protect the child",
+    151
+   ],
+   [
+    2,
+    "10.4. The club’s medals and the child’s life",
+    155
+   ],
+   [
+    2,
+    "10.5. The parents on the touchline",
+    158
+   ],
+   [
+    2,
+    "10.6. The measure of care",
+    160
+   ],
+   [
+    1,
+    "CHAPTER 11. THE REFEREE: JUSTICE IN REAL TIME",
+    163
+   ],
+   [
+    2,
+    "11.1. Alone in the middle of the field",
+    163
+   ],
+   [
+    2,
+    "11.2. Human error and the sold whistle",
+    168
+   ],
+   [
+    2,
+    "11.3. Judgement put up for sale",
+    170
+   ],
+   [
+    2,
+    "11.4. The person everyone boos",
+    173
+   ],
+   [
+    2,
+    "11.5. The courage of the whistle and the respect of those who play",
+    179
+   ],
+   [
+    1,
+    "CHAPTER 12. THE PUBLIC AND THE PRESS: THE WITNESSES WHO CHANGE THE GAME",
+    182
+   ],
+   [
+    2,
+    "12.1. The crowd that carries a person",
+    182
+   ],
+   [
+    2,
+    "12.2. The crowd that spoils",
+    183
+   ],
+   [
+    2,
+    "12.3. The idol and the scapegoat",
+    186
+   ],
+   [
+    2,
+    "12.4. The stand that never closes",
+    188
+   ],
+   [
+    2,
+    "12.5. The power of the press",
+    192
+   ],
+   [
+    2,
+    "12.6. Words nobody said",
+    196
+   ],
+   [
+    2,
+    "12.7. What the honest spectator can do",
+    199
+   ],
+   [
+    1,
+    "CHAPTER 13. SPORTS ORGANISATIONS: LEADERSHIP, RULES AND THE CULTURE OF THE HOUSE",
+    201
+   ],
+   [
+    2,
+    "13.1. The rule anyone can understand",
+    201
+   ],
+   [
+    2,
+    "13.2. The person on both sides of the table",
+    204
+   ],
+   [
+    2,
+    "13.3. Votes for sale",
+    206
+   ],
+   [
+    2,
+    "13.4. Justice without a master",
+    208
+   ],
+   [
+    2,
+    "13.5. The culture of the house",
+    211
+   ],
+   [
+    2,
+    "13.6. The house people trust",
+    215
+   ],
+   [
+    2,
+    "13.7. The right to one’s own person",
+    218
+   ],
+   [
+    1,
+    "CHAPTER 14. JUSTICE BEFORE THE GAME: RESOURCES, ACCESS AND SOLIDARITY",
+    223
+   ],
+   [
+    2,
+    "14.1. Two roads to the same starting line",
+    223
+   ],
+   [
+    2,
+    "14.2. Wasted talent",
+    226
+   ],
+   [
+    2,
+    "14.3. Amateurism: the virtue only some could afford",
+    227
+   ],
+   [
+    2,
+    "14.4. The power of money",
+    231
+   ],
+   [
+    2,
+    "14.5. Solidarity: the door held open",
+    233
+   ],
+   [
+    2,
+    "14.6. Those who pay for the game without stepping onto the field",
+    237
+   ],
+   [
+    0,
+    "PART IV. WHEN THE GAME IS IN DANGER",
+    242
+   ],
+   [
+    1,
+    "CHAPTER 15. RESULT AND CONSCIENCE: THE LIMITS OF AMBITION",
+    243
+   ],
+   [
+    2,
+    "15.1. The fire that lifts a person",
+    243
+   ],
+   [
+    2,
+    "15.2. The body put in pledge",
+    245
+   ],
+   [
+    2,
+    "15.3. Inner collapse",
+    248
+   ],
+   [
+    2,
+    "15.4. What those at home pay: family, school, childhood",
+    249
+   ],
+   [
+    2,
+    "15.5. “Winning is the only thing”",
+    251
+   ],
+   [
+    2,
+    "15.6. The people who stopped in time",
+    253
+   ],
+   [
+    1,
+    "CHAPTER 16. HOW A MATCH IS SOLD: THE ANATOMY OF A BETRAYAL",
+    256
+   ],
+   [
+    2,
+    "16.1. What fixing a match actually means",
+    256
+   ],
+   [
+    2,
+    "16.2. Why one person is easier to buy than a team",
+    260
+   ],
+   [
+    2,
+    "16.3. The shadow world",
+    263
+   ],
+   [
+    2,
+    "16.4. The art of deception",
+    264
+   ],
+   [
+    2,
+    "16.5. The teammate, the “friend” and the family scheme",
+    267
+   ],
+   [
+    2,
+    "16.6. What a person loses before he is caught",
+    272
+   ],
+   [
+    1,
+    "CHAPTER 17. NOT KEEPING SILENT: THE COURAGE TO REFUSE, THE DUTY TO SPEAK",
+    275
+   ],
+   [
+    2,
+    "17.1. The silence that helps the swindlers",
+    275
+   ],
+   [
+    2,
+    "17.2. The lifespan of a lie",
+    277
+   ],
+   [
+    2,
+    "17.3. Those who spoke and those who kept silent",
+    284
+   ],
+   [
+    2,
+    "17.4. What the law says in the Republic of Moldova",
+    288
+   ],
+   [
+    2,
+    "17.5. The first refusal",
+    290
+   ],
+   [
+    2,
+    "17.6. Courage and protection",
+    291
+   ],
+   [
+    2,
+    "17.7. Education, the first line of defence",
+    296
+   ],
+   [
+    1,
+    "CHAPTER 18. DOPING: THE BODY AS A FIELD OF TEMPTATION",
+    299
+   ],
+   [
+    2,
+    "18.1. Those who stayed clean",
+    299
+   ],
+   [
+    2,
+    "18.2. The body that pays",
+    302
+   ],
+   [
+    2,
+    "18.3. The machinery behind the syringe",
+    304
+   ],
+   [
+    2,
+    "18.4. Between treatment and advantage",
+    307
+   ],
+   [
+    2,
+    "18.5. The argument from freedom, weighed honestly",
+    310
+   ],
+   [
+    2,
+    "18.6. The world’s rules and the young athlete",
+    312
+   ],
+   [
+    1,
+    "CHAPTER 19. DISCRIMINATION AND VIOLENCE: WHEN THE OPPONENT STOPS BEING HUMAN",
+    317
+   ],
+   [
+    2,
+    "19.1. Standing upright under trial",
+    317
+   ],
+   [
+    2,
+    "19.2. Today’s racism, in the stands and in the dressing room",
+    321
+   ],
+   [
+    2,
+    "19.3. Origin, faith and love",
+    323
+   ],
+   [
+    2,
+    "19.4. Women and the price of the same game",
+    325
+   ],
+   [
+    2,
+    "19.5. Violence on the field and from the stands",
+    327
+   ],
+   [
+    2,
+    "19.6. The duty to intervene",
+    329
+   ],
+   [
+    0,
+    "PART V. WHAT KIND OF PERSON DO YOU BECOME THROUGH THE WAY YOU COMPETE?",
+    333
+   ],
+   [
+    1,
+    "CHAPTER 20. STAYING WHOLE",
+    334
+   ],
+   [
+    2,
+    "20.1. The day injustice knocks at the door",
+    335
+   ],
+   [
+    2,
+    "20.2. The seconds someone else decides",
+    337
+   ],
+   [
+    2,
+    "20.3. Gratitude that is not paid for with freedom",
+    339
+   ],
+   [
+    2,
+    "20.4. Under another’s power",
+    343
+   ],
+   [
+    2,
+    "20.5. The gaze of others",
+    347
+   ],
+   [
+    2,
+    "20.6. The enemy within",
+    349
+   ],
+   [
+    2,
+    "20.7. The life that cannot wait for the end of the conflict",
+    352
+   ],
+   [
+    2,
+    "20.8. Before the trial",
+    358
+   ],
+   [
+    1,
+    "CHAPTER 21. THE RESPONSIBILITY OF THE POWERFUL",
+    361
+   ],
+   [
+    2,
+    "21.1. The name that opens doors",
+    361
+   ],
+   [
+    2,
+    "21.2. When a place is no longer won on the field",
+    364
+   ],
+   [
+    2,
+    "21.3. The price of the spectacle",
+    366
+   ],
+   [
+    2,
+    "21.4. The cost of justice",
+    368
+   ],
+   [
+    2,
+    "21.5. Sport, the mirror of power",
+    371
+   ],
+   [
+    2,
+    "21.6. Power that protects",
+    373
+   ],
+   [
+    1,
+    "CHAPTER 22. DIGNITY IN VICTORY AND IN DEFEAT",
+    377
+   ],
+   [
+    2,
+    "22.1. Joy without limits",
+    377
+   ],
+   [
+    2,
+    "22.2. The measure of victory",
+    380
+   ],
+   [
+    2,
+    "22.3. When pain defeats respect",
+    383
+   ],
+   [
+    2,
+    "22.4. The power of admission",
+    386
+   ],
+   [
+    2,
+    "22.5. The lesson of defeat",
+    389
+   ],
+   [
+    2,
+    "22.6. The beauty that remains",
+    391
+   ],
+   [
+    1,
+    "CHAPTER 23. THE MORAL LEGACY: WHAT REMAINS AFTER THE LAST MATCH",
+    394
+   ],
+   [
+    2,
+    "23.1. The balance sheet at the end of a career",
+    395
+   ],
+   [
+    2,
+    "23.2. What time does not erase",
+    396
+   ],
+   [
+    2,
+    "23.3. The price of a lost name",
+    399
+   ],
+   [
+    2,
+    "23.4. The unseen legacy",
+    400
+   ],
+   [
+    2,
+    "23.5. Gestures greater than sport",
+    403
+   ],
+   [
+    2,
+    "23.6. When only the person remains",
+    405
+   ],
+   [
+    0,
+    "CONCLUSIONS",
+    407
+   ]
+  ]
+ },
+ "ld": {
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "Dincolo de victorie. Ce face omul când numai el știe adevărul",
+  "author": {
+   "@type": "Person",
+   "name": "Rostislav V. Sobiețki"
+  },
+  "publisher": {
+   "@type": "Organization",
+   "name": "ATTP"
+  },
+  "datePublished": "2026",
+  "numberOfPages": 411,
+  "inLanguage": "en",
+  "translationOfWork": {
+   "@type": "Book",
+   "name": "Dincolo de victorie. Ce face omul când numai el știe adevărul",
+   "inLanguage": "ro",
+   "isbn": "978-5-36241-914-1"
+  },
+  "image": "https://geezfully.com/attp/carti/dincolo-de-victorie/coperta-900.webp"
+ }
+}
