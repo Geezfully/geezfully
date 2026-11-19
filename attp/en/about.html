@@ -272,15 +272,21 @@
   ];
   const managementIds = new Set(MANAGEMENT.map(m => m.id).filter(Boolean));
   const players = (all || []).filter(p => !HIDDEN_FROM_ABOUT.has(p.id) && !managementIds.has(p.id));
-  // Titles the association asked for, shown instead of the roles list (2026-11-12).
+  // Titles the association asked for (2026-11-12). "Fondator" replaces the roles list; the other titles come first
+  // and the person's remaining roles follow, minus the role the title already names (2026-11-19).
   const ROLE_TITLE = {
-    '4b994296-29ed-4a87-93dd-0b74d53a8484': 'Fondator',                      // Oleg Dobrjinschi
-    'e198ddf7': 'Antrenor lot național',                                      // Veniamin Dubrovin
-    '22d59d48': 'Arbitru categorie națională',                                // Alexandru Patapi
-    '8d004d0a': 'Arbitru categorie națională',                                // Oleksandr Yavorskiy
+    '4b994296-29ed-4a87-93dd-0b74d53a8484': { title:'Fondator' },                               // Oleg Dobrjinschi
+    'e198ddf7': { title:'Antrenor lot național', covers:'coach', keepRoles:true },              // Veniamin Dubrovin
+    '22d59d48': { title:'Arbitru categorie națională', covers:'referee', keepRoles:true },      // Alexandru Patapi
+    '8d004d0a': { title:'Arbitru categorie națională', covers:'referee', keepRoles:true },      // Oleksandr Yavorskiy
   };
   const titleFor = p => ROLE_TITLE[p.id] || ROLE_TITLE[p.id.slice(0, 8)];
-  const roleText = p => titleFor(p) ? t(titleFor(p)) : p.roles.map(roleLabel).join(' · ');
+  const roleText = p => {
+    const tt = titleFor(p);
+    if (!tt) return p.roles.map(roleLabel).join(' · ');
+    if (!tt.keepRoles) return t(tt.title);
+    return [t(tt.title), ...p.roles.filter(r => r !== tt.covers).map(roleLabel)].join(' · ');
+  };
   // Basketball referees: a fixed list like Management, filled in when their photos arrive
   // ({ name, title, photo }). While it is empty the group says the list is coming.
   const BASKET_REFEREES = [];
